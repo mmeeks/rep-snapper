@@ -53,6 +53,8 @@ public:
 	void Read(string filename);
 	void draw();
 	void CalcCuttingPlane(float where, vector<Vector3f> &points);
+	void ShrinkCuttingPlane(vector<Vector3f> &in, vector<Vector3f> &out, float shrinkAmount);
+
 	void CalcInFill(float where, vector<Vector3f> &CuttingPlane, vector<Vector3f> &infill, UINT LayerNr);
 	bool IntersectXY(const Vector3f &p1, const Vector3f &p2, const Vector3f &p3, const Vector3f &p4, InFillHit &hit);
 

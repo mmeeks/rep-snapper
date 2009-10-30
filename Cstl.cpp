@@ -58,7 +58,6 @@ void STL::Read(string filename)
 		
 		infile.seekg(80, ios_base::beg);
 		infile.read(reinterpret_cast < char * > (&count), sizeof(unsigned int));	// N_Triangles
-		fprintf(stderr,"There's %d triangles in this object", count);
 		triangles.reserve(count);
 
 		for(UINT i = 0; i < count; i++)
@@ -199,9 +198,6 @@ void STL::draw()
 	UINT LayerNr = 0;
 
 	float zSize = (Max.z-Min.z);
-	fprintf(stderr,"zSize %f\n",zSize);
-	fprintf(stderr,"Max.z %f\n",Max.z);
-	fprintf(stderr,"Min.z %f\n",Min.z);
 	float z=cvui->CuttingPlaneSlider->value()*zSize+Min.z;
 	float zStep = zSize;
 
@@ -215,8 +211,9 @@ void STL::draw()
 		{
 		vector<Vector3f> cuttingPlane;
 		CalcCuttingPlane(z, cuttingPlane);
+		vector<Vector3f> ShrinkedCuttingPlane;
+		ShrinkCuttingPlane(cuttingPlane, ShrinkedCuttingPlane, cvui->ShrinkSlider->value());
 
-		fprintf(stderr,"Z:%f cuttingPlane size : %d\n",z, cuttingPlane.size());
 
 		// CuttingPlane
 		float offset=0;
@@ -235,22 +232,21 @@ void STL::draw()
 
 		// inFill
 		vector<Vector3f> infill;
-		CalcInFill(z, cuttingPlane, infill, LayerNr);
-
 		if(cvui->DisplayinFillButton->value())
 			{
-				glColor4f(1,1,0,1);
-				glPointSize(5);
-				glBegin(GL_LINES);
-				for(UINT i=0;i<infill.size();i+=2)
+			CalcInFill(z, cuttingPlane, infill, LayerNr);
+			glColor4f(1,1,0,1);
+			glPointSize(5);
+			glBegin(GL_LINES);
+			for(UINT i=0;i<infill.size();i+=2)
+			{
+				if(infill.size() > i+1)
 				{
-					if(infill.size() > i+1)
-					{
-					glVertex3fv((GLfloat*)&infill[i]);
-					glVertex3fv((GLfloat*)&infill[i+1]);
-					}
+				glVertex3fv((GLfloat*)&infill[i]);
+				glVertex3fv((GLfloat*)&infill[i+1]);
 				}
-				glEnd();
+			}
+			glEnd();
 			}
 		glPointSize(1);
 		LayerNr++;
@@ -379,7 +375,7 @@ restart_check:
 			if(examineThis)
 				int a=0;
 			bool found = false;
-			fprintf(stderr, "Hitsbuffer.size: %d\n",HitsBuffer.size());
+
 			for(UINT j=i+1;j<HitsBuffer.size();j++)
 				if( abs(HitsBuffer[i].d - HitsBuffer[j].d) < 0.0001)// && abs( (HitsBuffer[i].p - HitsBuffer[j].d).length()) < 0.0001 )
 					{
@@ -654,4 +650,8 @@ bool STL::IntersectXY(const Vector3f &p1, const Vector3f &p2, const Vector3f &p3
 
   hit.d = segmentLen1-segmentLen2;
   return true;
+}
+void STL::ShrinkCuttingPlane(vector<Vector3f> &in, vector<Vector3f> &out, float shrinkAmount)
+{
+
 }

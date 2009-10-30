@@ -159,6 +159,13 @@ void CubeViewUI::cb_DisplayAllLayers(Fl_Light_Button* o, void* v) {
   ((CubeViewUI*)(o->parent()->user_data()))->cb_DisplayAllLayers_i(o,v);
 }
 
+void CubeViewUI::cb_ShrinkSlider_i(Fl_Value_Slider*, void*) {
+  code->redraw();
+}
+void CubeViewUI::cb_ShrinkSlider(Fl_Value_Slider* o, void* v) {
+  ((CubeViewUI*)(o->parent()->user_data()))->cb_ShrinkSlider_i(o,v);
+}
+
 CubeViewUI::CubeViewUI() {
   { mainWindow = new Fl_Double_Window(1267, 843, "CubeView");
     mainWindow->box(FL_UP_BOX);
@@ -189,7 +196,7 @@ CubeViewUI::CubeViewUI() {
       DisplaySTLButton->value(1);
       DisplaySTLButton->selection_color((Fl_Color)FL_GREEN);
     } // Fl_Light_Button* DisplaySTLButton
-    { CuttingPlaneSlider = new Fl_Value_Slider(820, 395, 370, 20, "CuttingPlane");
+    { CuttingPlaneSlider = new Fl_Value_Slider(820, 360, 370, 20, "CuttingPlane");
       CuttingPlaneSlider->type(1);
       CuttingPlaneSlider->value(0.5);
       CuttingPlaneSlider->textsize(14);
@@ -275,6 +282,13 @@ CubeViewUI::CubeViewUI() {
       DisplayAllLayers->selection_color((Fl_Color)FL_GREEN);
       DisplayAllLayers->callback((Fl_Callback*)cb_DisplayAllLayers);
     } // Fl_Light_Button* DisplayAllLayers
+    { ShrinkSlider = new Fl_Value_Slider(820, 400, 370, 20, "Shrink");
+      ShrinkSlider->type(1);
+      ShrinkSlider->value(0.5);
+      ShrinkSlider->textsize(14);
+      ShrinkSlider->callback((Fl_Callback*)cb_ShrinkSlider);
+      ShrinkSlider->align(FL_ALIGN_TOP_LEFT);
+    } // Fl_Value_Slider* ShrinkSlider
     mainWindow->end();
     mainWindow->resizable(mainWindow);
   } // Fl_Double_Window* mainWindow

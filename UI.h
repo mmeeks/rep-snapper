@@ -98,6 +98,11 @@ private:
   void cb_DisplayAllLayers_i(Fl_Light_Button*, void*);
   static void cb_DisplayAllLayers(Fl_Light_Button*, void*);
 public:
+  Fl_Value_Slider *ShrinkSlider;
+private:
+  void cb_ShrinkSlider_i(Fl_Value_Slider*, void*);
+  static void cb_ShrinkSlider(Fl_Value_Slider*, void*);
+public:
   void show(int argc, char **argv);
 };
 #endif

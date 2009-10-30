@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109 
+version 1.0110 
 header_name {.h} 
 code_name {.cxx}
 class CubeViewUI {open
@@ -8,7 +8,7 @@ class CubeViewUI {open
   } {
     Fl_Window mainWindow {
       label CubeView open
-      xywh {301 291 1267 843} type Double box UP_BOX labelsize 12 hide resizable
+      xywh {-34 83 1267 843} type Double box UP_BOX labelsize 12 hide resizable
     } {
       Fl_Box code {
         label {This is the cube_view}
@@ -64,7 +64,7 @@ code->redraw();
       Fl_Value_Slider CuttingPlaneSlider {
         label CuttingPlane
         callback {code->redraw();}
-        xywh {820 395 370 20} type Horizontal align 5 value 0.5 textsize 14
+        xywh {820 360 370 20} type Horizontal align 5 value 0.5 textsize 14
       }
       Fl_Value_Slider ExamineSlider {
         label Examine
@@ -125,7 +125,7 @@ ExamineSlider->hide();
 }
 
 
-code->redraw();} selected
+code->redraw();}
         xywh {820 745 190 20} selection_color 63
       }
       Fl_Value_Slider InfillRotationPrLayerSlider {
@@ -147,6 +147,11 @@ code->redraw();} selected
         label {Display all layers}
         callback {code->redraw();}
         xywh {820 655 190 20} selection_color 63
+      }
+      Fl_Value_Slider ShrinkSlider {
+        label Shrink
+        callback {code->redraw();} selected
+        xywh {820 400 370 20} type Horizontal align 5 value 0.5 textsize 14
       }
     }
   }
