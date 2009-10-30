@@ -1,0 +1,153 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0109 
+header_name {.h} 
+code_name {.cxx}
+class CubeViewUI {open
+} {
+  Function {CubeViewUI()} {open
+  } {
+    Fl_Window mainWindow {
+      label CubeView open
+      xywh {301 291 1267 843} type Double box UP_BOX labelsize 12 hide resizable
+    } {
+      Fl_Box code {
+        label {This is the cube_view}
+        xywh {5 6 800 800} box UP_BOX align 16
+        code0 {\#include "GCode.h"}
+        class GCode
+      }
+      Fl_Button {} {
+        label {Load Gcode}
+        callback {Fl_File_Chooser chooser("\\\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
+chooser.show();
+while (chooser.shown())
+	Fl::wait();
+if(chooser.value() == 0)
+	return;
+std::string dir(chooser.value());
+
+
+if(dir.length())
+{
+code->Read(dir);
+code->redraw();
+};}
+        xywh {810 5 145 25}
+        code0 {\#include <FL/Fl_File_Chooser.H>}
+      }
+      Fl_Button {} {
+        label {Load STL}
+        callback {Fl_File_Chooser chooser("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose GCode");
+chooser.show();
+while (chooser.shown())
+	Fl::wait();
+if(chooser.value() == 0)
+	return;
+std::string dir(chooser.value());
+
+
+if(dir.length())
+{
+code->ReadStl(dir);
+code->redraw();
+};}
+        xywh {810 40 145 25}
+      }
+      Fl_Light_Button DisplayGCodeButton {
+        label {Display GCode}
+        xywh {820 430 190 20} value 1 selection_color 63
+      }
+      Fl_Light_Button DisplaySTLButton {
+        label {Display STL objects}
+        xywh {820 460 190 20} value 1 selection_color 63
+      }
+      Fl_Value_Slider CuttingPlaneSlider {
+        label CuttingPlane
+        callback {code->redraw();}
+        xywh {820 395 370 20} type Horizontal align 5 value 0.5 textsize 14
+      }
+      Fl_Value_Slider ExamineSlider {
+        label Examine
+        callback {code->redraw();}
+        xywh {820 725 370 20} type Horizontal align 5 value 0.24 textsize 14
+      }
+      Fl_Light_Button DisplayPolygonsButton {
+        label {Display Polygons}
+        callback {code->redraw();}
+        xywh {820 505 190 20} selection_color 63
+      }
+      Fl_Light_Button DisplayWireframeButton {
+        label {Display Wireframe}
+        callback {code->redraw();}
+        xywh {820 530 190 20} selection_color 63
+      }
+      Fl_Light_Button DisplayNormalsButton {
+        label {Display Normals}
+        callback {code->redraw();}
+        xywh {820 555 190 20} selection_color 63
+      }
+      Fl_Light_Button DisplayEndpointsButton {
+        label {Display Endpoints}
+        callback {code->redraw();}
+        xywh {820 580 190 20} value 1 selection_color 63
+      }
+      Fl_Light_Button DisplayCuttingPlaneButton {
+        label {Display CuttingPlane}
+        callback {code->redraw();}
+        xywh {820 605 190 20} value 1 selection_color 63
+      }
+      Fl_Light_Button DisplayinFillButton {
+        label {Display inFill}
+        callback {code->redraw();}
+        xywh {820 630 190 20} value 1 selection_color 63
+      }
+      Fl_Value_Slider RotationSlider {
+        label Rotation
+        callback {code->redraw();}
+        xywh {810 90 370 20} type Horizontal align 5 maximum 360 value 45 textsize 14
+      }
+      Fl_Light_Button DisplayDebuginFillButton {
+        label {Display Debug inFill}
+        callback {code->redraw();}
+        xywh {1015 685 170 20} selection_color 63
+      }
+      Fl_Light_Button DisplayDebugButton {
+        label Debug
+        callback {if(o->value())
+{
+DisplayDebuginFillButton->show();
+ExamineSlider->show();
+}
+else
+{
+DisplayDebuginFillButton->hide();
+ExamineSlider->hide();
+}
+
+
+code->redraw();}
+        xywh {820 685 190 20} value 1 selection_color 63
+      }
+      Fl_Value_Slider InfillRotationPrLayerSlider {
+        label {InFill Rotation pr. Layer}
+        callback {code->redraw();}
+        xywh {810 130 370 20} type Horizontal align 5 maximum 360 value 60 textsize 14
+      }
+      Fl_Value_Slider InfillDistanceSlider {
+        label {Infill Distance}
+        callback {code->redraw();}
+        xywh {810 170 370 20} type Horizontal align 5 minimum 0.001 maximum 10 value 2 textsize 14
+      }
+      Fl_Value_Slider LayerThicknessSlider {
+        label {Layer Thickness}
+        callback {code->redraw();}
+        xywh {810 210 370 20} type Horizontal align 5 maximum 3 value 0.5 textsize 14
+      }
+    }
+  }
+  Function {show(int argc, char **argv)} {open
+  } {
+    code {mainWindow->show(argc, argv);
+code->ReadStl("C:/TorusKnot.stl");} {}
+  }
+} 
