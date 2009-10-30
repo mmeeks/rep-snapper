@@ -152,6 +152,13 @@ void CubeViewUI::cb_LayerThicknessSlider(Fl_Value_Slider* o, void* v) {
   ((CubeViewUI*)(o->parent()->user_data()))->cb_LayerThicknessSlider_i(o,v);
 }
 
+void CubeViewUI::cb_DisplayAllLayers_i(Fl_Light_Button*, void*) {
+  code->redraw();
+}
+void CubeViewUI::cb_DisplayAllLayers(Fl_Light_Button* o, void* v) {
+  ((CubeViewUI*)(o->parent()->user_data()))->cb_DisplayAllLayers_i(o,v);
+}
+
 CubeViewUI::CubeViewUI() {
   { mainWindow = new Fl_Double_Window(1267, 843, "CubeView");
     mainWindow->box(FL_UP_BOX);
@@ -189,7 +196,7 @@ CubeViewUI::CubeViewUI() {
       CuttingPlaneSlider->callback((Fl_Callback*)cb_CuttingPlaneSlider);
       CuttingPlaneSlider->align(FL_ALIGN_TOP_LEFT);
     } // Fl_Value_Slider* CuttingPlaneSlider
-    { ExamineSlider = new Fl_Value_Slider(820, 725, 370, 20, "Examine");
+    { ExamineSlider = new Fl_Value_Slider(820, 785, 370, 20, "Examine");
       ExamineSlider->type(1);
       ExamineSlider->value(0.24);
       ExamineSlider->textsize(14);
@@ -231,12 +238,11 @@ CubeViewUI::CubeViewUI() {
       RotationSlider->callback((Fl_Callback*)cb_RotationSlider);
       RotationSlider->align(FL_ALIGN_TOP_LEFT);
     } // Fl_Value_Slider* RotationSlider
-    { DisplayDebuginFillButton = new Fl_Light_Button(1015, 685, 170, 20, "Display Debug inFill");
+    { DisplayDebuginFillButton = new Fl_Light_Button(1015, 745, 170, 20, "Display Debug inFill");
       DisplayDebuginFillButton->selection_color((Fl_Color)FL_GREEN);
       DisplayDebuginFillButton->callback((Fl_Callback*)cb_DisplayDebuginFillButton);
     } // Fl_Light_Button* DisplayDebuginFillButton
-    { DisplayDebugButton = new Fl_Light_Button(820, 685, 190, 20, "Debug");
-      DisplayDebugButton->value(1);
+    { DisplayDebugButton = new Fl_Light_Button(820, 745, 190, 20, "Debug");
       DisplayDebugButton->selection_color((Fl_Color)FL_GREEN);
       DisplayDebugButton->callback((Fl_Callback*)cb_DisplayDebugButton);
     } // Fl_Light_Button* DisplayDebugButton
@@ -250,7 +256,7 @@ CubeViewUI::CubeViewUI() {
     } // Fl_Value_Slider* InfillRotationPrLayerSlider
     { InfillDistanceSlider = new Fl_Value_Slider(810, 170, 370, 20, "Infill Distance");
       InfillDistanceSlider->type(1);
-      InfillDistanceSlider->minimum(0.001);
+      InfillDistanceSlider->minimum(0.1);
       InfillDistanceSlider->maximum(10);
       InfillDistanceSlider->value(2);
       InfillDistanceSlider->textsize(14);
@@ -265,6 +271,10 @@ CubeViewUI::CubeViewUI() {
       LayerThicknessSlider->callback((Fl_Callback*)cb_LayerThicknessSlider);
       LayerThicknessSlider->align(FL_ALIGN_TOP_LEFT);
     } // Fl_Value_Slider* LayerThicknessSlider
+    { DisplayAllLayers = new Fl_Light_Button(820, 655, 190, 20, "Display all layers");
+      DisplayAllLayers->selection_color((Fl_Color)FL_GREEN);
+      DisplayAllLayers->callback((Fl_Callback*)cb_DisplayAllLayers);
+    } // Fl_Light_Button* DisplayAllLayers
     mainWindow->end();
     mainWindow->resizable(mainWindow);
   } // Fl_Double_Window* mainWindow
@@ -272,5 +282,5 @@ CubeViewUI::CubeViewUI() {
 
 void CubeViewUI::show(int argc, char **argv) {
   mainWindow->show(argc, argv);
-code->ReadStl("C:/TorusKnot.stl");
+code->ReadStl("C:/bendbox.stl");
 }

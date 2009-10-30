@@ -93,6 +93,11 @@ private:
   void cb_LayerThicknessSlider_i(Fl_Value_Slider*, void*);
   static void cb_LayerThicknessSlider(Fl_Value_Slider*, void*);
 public:
+  Fl_Light_Button *DisplayAllLayers;
+private:
+  void cb_DisplayAllLayers_i(Fl_Light_Button*, void*);
+  static void cb_DisplayAllLayers(Fl_Light_Button*, void*);
+public:
   void show(int argc, char **argv);
 };
 #endif

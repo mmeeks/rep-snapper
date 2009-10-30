@@ -48,19 +48,18 @@ void STL::Read(string filename)
 			
 		// Ascii ot binary?
 		long header;
-		infile.read(reinterpret_cast < char * > (&header), sizeof(long));	// N_Triangles
+		infile.read(reinterpret_cast < char * > (&header), sizeof(long));	// Header
+		//Check if the header is "soli"
 		if(header == 0x696c6f73)
 		{
 //		ReadAsciiFile();
 		return;
 		}
-		//soli
-			
-			
+		
 		infile.seekg(80, ios_base::beg);
 		infile.read(reinterpret_cast < char * > (&count), sizeof(unsigned int));	// N_Triangles
-
-		triangles.resize(count);	// pre-allocate array
+		fprintf(stderr,"There's %d triangles in this object", count);
+		triangles.reserve(count);
 
 		for(UINT i = 0; i < count; i++)
 		{
@@ -199,35 +198,44 @@ void STL::draw()
 	// Make Layers
 	UINT LayerNr = 0;
 
-	float ySize = (Max.y-Min.y);
-	fprintf(stderr,"ySize %f\n",ySize);
-	fprintf(stderr,"Max.y %f\n",Max.y);
-	fprintf(stderr,"Min.y %f\n",Min.y);
-	float y=cvui->CuttingPlaneSlider->value()*ySize+Min.y;
+	float zSize = (Max.z-Min.z);
+	fprintf(stderr,"zSize %f\n",zSize);
+	fprintf(stderr,"Max.z %f\n",Max.z);
+	fprintf(stderr,"Min.z %f\n",Min.z);
+	float z=cvui->CuttingPlaneSlider->value()*zSize+Min.z;
+	float zStep = zSize;
 
-//	for(float y=Min.y ; y<Max.y; y+=cvui->LayerThicknessSlider->value())
+	if(cvui->DisplayAllLayers->value())
+		{
+		z=Min.z;
+		zStep = cvui->LayerThicknessSlider->value();
+		}
+	while(z<Max.z)
+	{
 		{
 		vector<Vector3f> cuttingPlane;
-		CalcCuttingPlane(y, cuttingPlane);
+		CalcCuttingPlane(z, cuttingPlane);
 
-		fprintf(stderr,"cuttingPlane size : %d\n",cuttingPlane.size());
+		fprintf(stderr,"Z:%f cuttingPlane size : %d\n",z, cuttingPlane.size());
 
 		// CuttingPlane
+		float offset=0;
 		if(cvui->DisplayCuttingPlaneButton->value())
 			{
 			glColor4f(1,1,1,1);
 			glBegin(GL_LINES);
 			for(UINT i=0;i<cuttingPlane.size();i+=2)
 				{
-				glVertex3fv((GLfloat*)&cuttingPlane[i]);
-				glVertex3fv((GLfloat*)&cuttingPlane[i+1]);
+				glVertex3f(cuttingPlane[i].x, cuttingPlane[i].y, cuttingPlane[i].z + offset);
+				glVertex3f(cuttingPlane[i+1].x, cuttingPlane[i+1].y, cuttingPlane[i+1].z + offset);
+//				offset -= cvui->LayerThicknessSlider->value()/100.0f;
 				}
 			glEnd();
 			}
 
 		// inFill
 		vector<Vector3f> infill;
-//		CalcInFill(y, cuttingPlane, infill, LayerNr);
+		CalcInFill(z, cuttingPlane, infill, LayerNr);
 
 		if(cvui->DisplayinFillButton->value())
 			{
@@ -247,6 +255,8 @@ void STL::draw()
 		glPointSize(1);
 		LayerNr++;
 		}
+	z+=zStep;
+	}
 }
 
 void STL::CalcCuttingPlane(float where, vector<Vector3f> &points)
@@ -306,7 +316,7 @@ void STL::CalcInFill(float where, vector<Vector3f> &CuttingPlane, vector<Vector3
 	Vector3f InfillDirX(cosf(rot), sinf(rot), 0.0f);	// Length = 1
 	Vector3f InfillDirY(-InfillDirX.y, InfillDirX.x, 0.0f);	// Length = 1
 	Vector3f Center = (Max+Min)/2.0f;
-	Center.z = where*(Max.z+Min.z);
+	Center.z = where;//*(Max.z+Min.z);
 	
 	glBegin(GL_LINES);
 	for(float x = -Length ; x < Length ; x+=step)
@@ -315,12 +325,12 @@ void STL::CalcInFill(float where, vector<Vector3f> &CuttingPlane, vector<Vector3
 
 		HitsBuffer.clear();
 
-		Vector3f P1 = (InfillDirX * Length)+(InfillDirY*x)+ Center + Vector3f(0,0,Z);
-		Vector3f P2 = (InfillDirX * -Length)+(InfillDirY*x) + Center + Vector3f(0,0,Z);
+		Vector3f P1 = (InfillDirX * Length)+(InfillDirY*x)+ Center;// + Vector3f(0,0,Z);
+		Vector3f P2 = (InfillDirX * -Length)+(InfillDirY*x) + Center;// + Vector3f(0,0,Z);
 
 		if(cvui->DisplayDebuginFillButton->value())
 		{
-		glColor3f(0,0.5f,0);
+		glColor3f(0,0.2f,0);
 		glVertex3fv((GLfloat*)&P1);
 		glVertex3fv((GLfloat*)&P2);
 		}

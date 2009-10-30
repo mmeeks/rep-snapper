@@ -69,7 +69,7 @@ code->redraw();
       Fl_Value_Slider ExamineSlider {
         label Examine
         callback {code->redraw();}
-        xywh {820 725 370 20} type Horizontal align 5 value 0.24 textsize 14
+        xywh {820 785 370 20} type Horizontal align 5 value 0.24 textsize 14
       }
       Fl_Light_Button DisplayPolygonsButton {
         label {Display Polygons}
@@ -109,7 +109,7 @@ code->redraw();
       Fl_Light_Button DisplayDebuginFillButton {
         label {Display Debug inFill}
         callback {code->redraw();}
-        xywh {1015 685 170 20} selection_color 63
+        xywh {1015 745 170 20} selection_color 63
       }
       Fl_Light_Button DisplayDebugButton {
         label Debug
@@ -125,8 +125,8 @@ ExamineSlider->hide();
 }
 
 
-code->redraw();}
-        xywh {820 685 190 20} value 1 selection_color 63
+code->redraw();} selected
+        xywh {820 745 190 20} selection_color 63
       }
       Fl_Value_Slider InfillRotationPrLayerSlider {
         label {InFill Rotation pr. Layer}
@@ -136,18 +136,23 @@ code->redraw();}
       Fl_Value_Slider InfillDistanceSlider {
         label {Infill Distance}
         callback {code->redraw();}
-        xywh {810 170 370 20} type Horizontal align 5 minimum 0.001 maximum 10 value 2 textsize 14
+        xywh {810 170 370 20} type Horizontal align 5 minimum 0.1 maximum 10 value 2 textsize 14
       }
       Fl_Value_Slider LayerThicknessSlider {
         label {Layer Thickness}
         callback {code->redraw();}
         xywh {810 210 370 20} type Horizontal align 5 maximum 3 value 0.5 textsize 14
       }
+      Fl_Light_Button DisplayAllLayers {
+        label {Display all layers}
+        callback {code->redraw();}
+        xywh {820 655 190 20} selection_color 63
+      }
     }
   }
   Function {show(int argc, char **argv)} {open
   } {
     code {mainWindow->show(argc, argv);
-code->ReadStl("C:/TorusKnot.stl");} {}
+code->ReadStl("C:/bendbox.stl");} {}
   }
 } 
