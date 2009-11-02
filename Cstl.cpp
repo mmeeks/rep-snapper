@@ -5,6 +5,8 @@
 #include "UI.h"
 #include "math.h"
 
+#include <gl/glu.h>
+
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -20,7 +22,19 @@ using namespace std;
 
 STL stl;
 extern CubeViewUI *cvui;
-
+/*
+// Utility functions
+void GLText(Vector3f &pos, char *text)
+{
+	int len, i;
+	glRasterPos3fv((GLfloat*) &pos);
+	len = (int) strlen(text);
+	for (i = 0; i < len; i++)
+	{
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[i]);
+	}
+}
+*/
 // STL constructor
 STL::STL()
 {
@@ -192,8 +206,6 @@ void STL::draw()
 		glEnd();
 	}
 
-//	CalcCuttingPlane(cvui->CuttingPlaneSlider->value(), cuttingPlane);
-
 	// Make Layers
 	UINT LayerNr = 0;
 
@@ -209,32 +221,16 @@ void STL::draw()
 	while(z<Max.z)
 	{
 		{
-		vector<Vector3f> cuttingPlane;
-		CalcCuttingPlane(z, cuttingPlane);
-		vector<Vector3f> ShrinkedCuttingPlane;
-		ShrinkCuttingPlane(cuttingPlane, ShrinkedCuttingPlane, cvui->ShrinkSlider->value());
-
-
-		// CuttingPlane
-		float offset=0;
-		if(cvui->DisplayCuttingPlaneButton->value())
-			{
-			glColor4f(1,1,1,1);
-			glBegin(GL_LINES);
-			for(UINT i=0;i<cuttingPlane.size();i+=2)
-				{
-				glVertex3f(cuttingPlane[i].x, cuttingPlane[i].y, cuttingPlane[i].z + offset);
-				glVertex3f(cuttingPlane[i+1].x, cuttingPlane[i+1].y, cuttingPlane[i+1].z + offset);
-//				offset -= cvui->LayerThicknessSlider->value()/100.0f;
-				}
-			glEnd();
-			}
+		CuttingPlane plane;
+		CalcCuttingPlane(z, plane);
+		plane.LinkSegments(z);
+		plane.Draw(z);
 
 		// inFill
-		vector<Vector3f> infill;
+		vector<Vector2f> infill;
 		if(cvui->DisplayinFillButton->value())
 			{
-			CalcInFill(z, cuttingPlane, infill, LayerNr);
+			plane.CalcInFill(infill, LayerNr, z);
 			glColor4f(1,1,0,1);
 			glPointSize(5);
 			glBegin(GL_LINES);
@@ -242,8 +238,8 @@ void STL::draw()
 			{
 				if(infill.size() > i+1)
 				{
-				glVertex3fv((GLfloat*)&infill[i]);
-				glVertex3fv((GLfloat*)&infill[i+1]);
+				glVertex3f(infill[i  ].x, infill[i  ].y, z);
+				glVertex3f(infill[i+1].x, infill[i+1].y, z);
 				}
 			}
 			glEnd();
@@ -255,34 +251,60 @@ void STL::draw()
 	}
 }
 
-void STL::CalcCuttingPlane(float where, vector<Vector3f> &points)
+void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 {
 	// intersect lines with plane
 
+	plane.Min.x = Min.x;
+	plane.Min.y = Min.y;
+	plane.Max.x = Max.x;
+	plane.Max.y = Max.y;
+
 	GCode *code = cvui->code;
 
+	UINT pointNr = 0;
+	bool foundOne = false;
 	for(UINT i=0;i<triangles.size();i++)
 	{
+		foundOne=false;
+		Segment line(-1,-1);
 		Vector3f P1 = triangles[i].A;
 		Vector3f P2 = triangles[i].B;
 		if(where < P1.z != where < P2.z)
 		{
 			float t = (where-P1.z)/(P2.z-P1.z);
-			points.push_back(P1+((P2-P1)*t));
+			Vector3f p = P1+((P2-P1)*t);
+			line.start = pointNr++;
+			plane.vertices.push_back(Vector2f(p.x,p.y));;
+			foundOne = true;
 		}
 		P1 = triangles[i].B;
 		P2 = triangles[i].C;
 		if(where < P1.z != where < P2.z)
 		{
 			float t = (where-P1.z)/(P2.z-P1.z);
-			points.push_back(P1+((P2-P1)*t));
+			Vector3f p = P1+((P2-P1)*t);
+			if(foundOne)
+				line.end = pointNr++;
+			else
+				line.start = pointNr++;
+			plane.vertices.push_back(Vector2f(p.x,p.y));;
+			if(foundOne)
+			{
+				plane.lines.push_back(line);
+				continue;// next triangle
+			}
+			foundOne=true;
 		}
 		P1 = triangles[i].C;
 		P2 = triangles[i].A;
 		if(where < P1.z != where < P2.z)
 		{
 			float t = (where-P1.z)/(P2.z-P1.z);
-			points.push_back(P1+((P2-P1)*t));
+			Vector3f p = P1+((P2-P1)*t);
+			line.end = pointNr++;
+			plane.vertices.push_back(Vector2f(p.x,p.y));;
+			plane.lines.push_back(line);
 		}
 	}
 
@@ -295,66 +317,60 @@ bool InFillHitCompareFunc(const InFillHit& d1, const InFillHit& d2)
 
 vector<InFillHit> HitsBuffer;
 
-void STL::CalcInFill(float where, vector<Vector3f> &CuttingPlane, vector<Vector3f> &infill, UINT layerNr)
+
+void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z)
 {
 	int c=0;
 
 	float step = cvui->InfillDistanceSlider->value();
-
-	float Z = where;//*(Max.z-Min.z)+Min.z;
 
 	bool examine = false;
 
 	float Length = sqrtf(2)*(   ((Max.x)>(Max.y)? (Max.x):(Max.y))  -  ((Min.x)<(Min.y)? (Min.x):(Min.y))  )/2.0f;
 
 	float rot = cvui->RotationSlider->value()/180.0f*M_PI;
-	rot += layerNr*cvui->InfillRotationPrLayerSlider->value()/180.0f*M_PI;
-	Vector3f InfillDirX(cosf(rot), sinf(rot), 0.0f);	// Length = 1
-	Vector3f InfillDirY(-InfillDirX.y, InfillDirX.x, 0.0f);	// Length = 1
-	Vector3f Center = (Max+Min)/2.0f;
-	Center.z = where;//*(Max.z+Min.z);
+	rot += (float)LayerNr*(float)cvui->InfillRotationPrLayerSlider->value()/180.0f*M_PI;
+	Vector2f InfillDirX(cosf(rot), sinf(rot));
+	Vector2f InfillDirY(-InfillDirX.y, InfillDirX.x);
+	Vector2f Center = (Max+Min)/2.0f;
 	
-	glBegin(GL_LINES);
 	for(float x = -Length ; x < Length ; x+=step)
 	{
 		bool examineThis = false;
 
 		HitsBuffer.clear();
 
-		Vector3f P1 = (InfillDirX * Length)+(InfillDirY*x)+ Center;// + Vector3f(0,0,Z);
-		Vector3f P2 = (InfillDirX * -Length)+(InfillDirY*x) + Center;// + Vector3f(0,0,Z);
+		Vector2f P1 = (InfillDirX * Length)+(InfillDirY*x)+ Center;
+		Vector2f P2 = (InfillDirX * -Length)+(InfillDirY*x) + Center;
 
 		if(cvui->DisplayDebuginFillButton->value())
 		{
+		glBegin(GL_LINES);
 		glColor3f(0,0.2f,0);
-		glVertex3fv((GLfloat*)&P1);
-		glVertex3fv((GLfloat*)&P2);
+		glVertex3f(P1.x, P1.y, z);
+		glVertex3f(P2.x, P2.y, z);
+		glEnd();
 		}
 
 		if(cvui->DisplayDebugButton->value())
 			if(!examine && ((cvui->ExamineSlider->value()-0.5f)*2 * Length <= x))
 				{
 				examineThis = examine = true;
-				glColor3f(1,1,1);
-				glVertex3fv((GLfloat*)&P1);
-				glVertex3fv((GLfloat*)&P2);
+				glColor3f(1,1,1);				// Draw the line
+				glVertex3f(P1.x, P1.y, z);
+				glVertex3f(P2.x, P2.y, z);
 				}
 
 
-		for(UINT i=0;i<CuttingPlane.size();i+=2)
+		for(UINT i=0;i<lines.size();i++)
 		{
-			Vector3f P3 = CuttingPlane[i];
-			Vector3f P4 = CuttingPlane[i+1];
-
-			glVertex3fv((GLfloat*)&P3);
-			glVertex3fv((GLfloat*)&P4);
+			Vector2f P3 = vertices[lines[i].start];
+			Vector2f P4 = vertices[lines[i].end];
 
 			Vector3f point;
 			InFillHit hit;
-			P1.z = P2.z = P3.z = P4.z = Z;
 			if(IntersectXY(P1,P2,P3,P4,hit))
 			{
-				hit.p.z = P1.z;
 				if(examineThis)
 					int a=0;
 				HitsBuffer.push_back(hit);
@@ -366,7 +382,17 @@ void STL::CalcInFill(float where, vector<Vector3f> &CuttingPlane, vector<Vector3
 			if(examineThis)
 				int a=0;
 	  std::sort(HitsBuffer.begin(), HitsBuffer.end(), InFillHitCompareFunc);
-		
+
+	  if(examineThis)
+	  {
+		  glPointSize(4);
+		  glBegin(GL_POINTS);
+		  for(UINT i=0;i<HitsBuffer.size();i++)
+			  glVertex3f(HitsBuffer[0].p.x, HitsBuffer[0].p.y, z);
+		  glEnd();
+		  glPointSize(1);
+	  }
+
 		// Verify hits intregrety
 		// Check if hit extists in table
 restart_check:
@@ -377,7 +403,7 @@ restart_check:
 			bool found = false;
 
 			for(UINT j=i+1;j<HitsBuffer.size();j++)
-				if( abs(HitsBuffer[i].d - HitsBuffer[j].d) < 0.0001)// && abs( (HitsBuffer[i].p - HitsBuffer[j].d).length()) < 0.0001 )
+				if( abs(HitsBuffer[i].d - HitsBuffer[j].d) < 0.0001)
 					{
 					found = true;
 					// Delete both points, and continue
@@ -418,27 +444,21 @@ restart_check:
 					case 13: glColor3f(1,1,1); break;
 					}
 					c++;
-					glEnd();
 					glPointSize(10);
 					glBegin(GL_POINTS);
-					glVertex3fv((GLfloat *)&HitsBuffer[0].p);
+					glVertex3f(HitsBuffer[0].p.x, HitsBuffer[0].p.y, z);
 					glEnd();
 					glPointSize(1);
-					glColor3f(1,1,1);
-					glBegin(GL_LINES);
 				}
 			HitsBuffer.erase(HitsBuffer.begin());
 		}
 	}
-
-	glEnd();
-
 }
 
 
 #define SMALL_NUM  0.00000001 // anything that avoids division overflow
 // dot product (3D) which allows vector operations in arguments
-#define dot(u,v)   ((u).x * (v).x + (u).y * (v).y + (u).z * (v).z)
+#define dot(u,v)   ((u).x * (v).x + (u).y * (v).y)
 #define perp(u,v)  ((u).x * (v).y - (u).y * (v).x)  // perp product (2D)
 
 //===================================================================
@@ -447,7 +467,7 @@ restart_check:
 //    Input:  a point P, and a collinear segment S
 //    Return: 1 = P is inside S
 //            0 = P is not inside S
-int inSegment( const Vector3f &P, const Vector3f &p1, const Vector3f &p2)
+int inSegment( const Vector2f &P, const Vector2f &p1, const Vector2f &p2)
 {
 	if (p1.x != p2.x) {    // S is not vertical
 		if (p1.x <= P.x && P.x <= p2.x)
@@ -470,11 +490,11 @@ int inSegment( const Vector3f &P, const Vector3f &p1, const Vector3f &p2)
 //    Return: 0=disjoint (no intersect)
 //            1=intersect in unique point I0
 //            2=overlap in segment from I0 to I1
-int intersect2D_Segments( const Vector3f &p1, const Vector3f &p2, const Vector3f &p3, const Vector3f &p4, Vector3f &I0, Vector3f &I1 )
+int intersect2D_Segments( const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, Vector2f &I0, Vector2f &I1 )
 {
-	Vector3f    u = p2 - p1;
-	Vector3f    v = p4 - p3;
-	Vector3f    w = p1 - p3;
+	Vector2f    u = p2 - p1;
+	Vector2f    v = p4 - p3;
+	Vector2f    w = p1 - p3;
 	float    D = perp(u,v);
 
 	// test if they are parallel (includes either being a point)
@@ -506,7 +526,7 @@ int intersect2D_Segments( const Vector3f &p1, const Vector3f &p2, const Vector3f
 		}
 		// they are collinear segments - get overlap (or not)
 		float t0, t1;                   // endpoints of S1 in eqn for S2
-		Vector3f w2 = p2 - p3;
+		Vector2f w2 = p2 - p3;
 		if (v.x != 0) {
 			t0 = w.x / v.x;
 			t1 = w2.x / v.x;
@@ -553,7 +573,7 @@ int intersect2D_Segments( const Vector3f &p1, const Vector3f &p2, const Vector3f
 // calculates intersection and checks for parallel lines.  
 // also checks that the intersection point is actually on  
 // the line segment p1-p2
-bool STL::IntersectXY(const Vector3f &p1, const Vector3f &p2, const Vector3f &p3, const Vector3f &p4, InFillHit &hit)
+bool CuttingPlane::IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, InFillHit &hit)
 {
 
 	if(abs(p1.x-p3.x) < 0.01 && abs(p1.y - p3.y) < 0.01)
@@ -617,7 +637,7 @@ bool STL::IntersectXY(const Vector3f &p1, const Vector3f &p2, const Vector3f &p3
 	  return false;
   
   // find intersection Pt between two lines  
-  hit.p=Vector3f (0,0,0);
+  hit.p=Vector2f (0,0);
   div=yD2*xD1-xD2*yD1;  
   ua=(xD2*yD3-yD2*xD3)/div;  
   ub=(xD1*yD3-yD1*xD3)/div;  
@@ -651,7 +671,246 @@ bool STL::IntersectXY(const Vector3f &p1, const Vector3f &p2, const Vector3f &p3
   hit.d = segmentLen1-segmentLen2;
   return true;
 }
-void STL::ShrinkCuttingPlane(vector<Vector3f> &in, vector<Vector3f> &out, float shrinkAmount)
-{
 
+void CuttingPlane::LinkSegments(float z)
+{
+	// find friend vertices for all vertices (Double vertices)
+
+	UINT count = vertices.size();
+	int* friends = new int[count];  // Allocate n ints and save ptr in a.
+	for (int i=0; i<count; i++)
+		friends[i] = -1;
+
+	for(UINT i=0;i<count;i++)
+		{
+		if(friends[i] == -1)
+			for(UINT j=i+1;j<count;j++)
+				if((vertices[i]-vertices[j]).length() < 0.00001)
+					{
+					assert(i >= 0);
+					assert(j >= 0);
+					friends[i] = j;
+					friends[j] = i;
+					break;
+					}
+		}
+
+	// If we want errors fixed, draw the problems
+
+	if(cvui->FixSTLerrorsButton->value() == 1)
+	{
+			if(cvui->DisplayDebugButton->value())
+			{
+				glPointSize(5);
+				glColor3f(0,1,1);
+				glBegin(GL_POINTS);
+				for(UINT i=0;i<count;i++)
+				{
+					if(friends[i] == -1)
+					{
+						glVertex3f(vertices[i].x, vertices[i].y, z);
+					}
+				}
+				glEnd();
+			}
+	}
+
+	// If a point don't have a friend, they are bad
+
+	vector<int> errorlist;
+	for(UINT i=0;i<count;i++)
+		if(friends[i] < 0)
+			errorlist.push_back(i);
+
+	// try and fix errors, connect any unconnected vertex to the nearest other unconnected that's not at the same point
+	if(errorlist.size() != 0)
+		{
+		bool fixedErrors = false;
+		int closest = -1;
+		for(UINT i=0;i<errorlist.size();i++)
+			{
+			if(errorlist[i] >= 0)
+				if(friends[errorlist[i]] < 0)	// If not fixed yet
+					{
+					float dist = 99999999;
+					closest = -1;
+					for(UINT j=i+1;j<errorlist.size();j++)
+						{
+							if(errorlist[j]  >= 0)
+							{
+							float d = (vertices[errorlist[i]]-vertices[errorlist[j]]).length();
+							if( d < dist  && vertices[errorlist[i]] != errorlist[j])
+								{
+								dist = d;
+								closest = j;
+								}
+							}
+						}
+					// Make a new line segment from I to closest
+					if(closest != -1)
+						{
+						Segment S(errorlist[i],errorlist[closest]);
+						friends[errorlist[i]] = errorlist[i];			// make me a friend to myself, so the friend-replacement-code don't delete me
+						friends[errorlist[closest]] = errorlist[i];
+						errorlist[i] = -1;			// fixed, "remove" from list
+						errorlist[closest] = -1;	// fixed, "remove" from list
+						lines.push_back(S);
+						}
+					else
+						{
+						// Unfixable error, error message?
+							assert(0);
+						}
+					}
+			}
+		}
+
+	errorlist.clear();
+
+	// delete double vertices
+	for(UINT i=0;i<count;i++)
+	{
+	// [0] = 27, so 27 and 0 are the same place in space. Delete 27 and continue
+		if(friends[i] >= 0)	// if not deleted yet
+		{
+		int doubleVertex = friends[i];	// 27
+		assert(doubleVertex != -1);
+		for(UINT L=0;L<lines.size();L++)
+			{
+				if(lines[L].start == doubleVertex)
+					lines[L].start = i;
+				if(lines[L].end == doubleVertex)
+					lines[L].end = i;
+			}
+		friends[friends[i]] = 0-i-1;	// has been deleted
+		}
+	}
+
+	// Make a new vertex array
+	int a=0;
+	vector<Vector2f> newVertices;
+	for(UINT i=0;i<count;i++)
+		if(friends[i] >= 0)
+			{
+			friends[i] =newVertices.size();
+			newVertices.push_back(vertices[i]);
+			}
+	// replace doublevertices in lines list
+	for(UINT L=0;L<lines.size();L++)
+		{
+		lines[L].start = friends[lines[L].start];
+		lines[L].end = friends[lines[L].end];
+		}
+	// Use new vertices
+	vertices = newVertices;
+	// cleanup
+	delete [] friends;  // When done, free memory pointed to by a.
+
+/*
+	// Split into polygons
+//	for(UINT i=0 ; i < lines.size();i++)
+	count = lines.size();
+	bool* usedList = new bool[count];  // Allocate n ints and save ptr in a.
+	for (int i=0; i<count; i++)
+		usedList[i] = false;
+
+	count = 0;
+	while(count < lines.size())
+	{
+	UINT i=0;
+	while(usedList[i] == true)  i++; // Find first unsued segment
+	Poly p;
+	UINT startVertex = lines[i].start;
+	while(lines[i].end != startVertex)	// untill we loop
+		{
+		count++;
+		usedList[i] = true;
+
+		if(lines[i].end == lines[i].start)	// bogus line segment
+		{
+			i++;
+			continue;
+		}
+
+		p.lines.push_back(lines[i]);
+		// Find a line that starts with end
+		UINT j=0;
+		while(j<lines.size())
+			{
+				if(j==124)
+					int a=0;
+				if(j != i)
+				{
+				if(lines[j].end == lines[i].end)	// segment is reversed, reverse it back
+					{
+					int a=lines[j].end;
+					lines[j].start = lines[j].end;
+					lines[j].start = a;
+					break;
+					}
+				else if (lines[j].start == lines[i].end)
+					break;
+				}
+			j++;
+			}
+		i=j;
+		}
+	polygons.push_back(p);
+	}
+
+	delete[] usedList;
+	*/
 }
+
+
+void CuttingPlane::Shrink(float distance)
+{
+	CuttingPlane result;
+	if(cvui->DisplayCuttingPlaneButton->value())
+	{
+		glColor4f(1,1,1,1);
+		glBegin(GL_LINES);
+		for(UINT i=0;i<lines.size();i++)
+		{
+			//float angle = atan2(v2.y,v2.x) - atan2(v1.y,v1.x);
+//			glVertex3f(vertices[lines[i].start].x, vertices[lines[i].start].y, z);
+//			glVertex3f(vertices[lines[i].end].x, vertices[lines[i].end].y, z);
+		}
+		glEnd();
+	}
+}
+
+void CuttingPlane::Draw(float z)
+{
+	if(cvui->DisplayCuttingPlaneButton->value())
+		{
+		glColor4f(1,0,0,1);
+		glBegin(GL_LINES);
+		for(UINT i=0;i<lines.size();i++)
+			{
+				if(cvui->DisplayDebugButton->value() && (int)(cvui->ExamineSlider->value()*((float)lines.size()-1)) == i)
+				{
+				glEnd();
+				glColor4f(1,1,0,1);
+				glLineWidth(3);
+				glBegin(GL_LINES);
+				glVertex3f(vertices[lines[i].start].x, vertices[lines[i].start].y, z);
+				glVertex3f(vertices[lines[i].end].x, vertices[lines[i].end].y, z);
+				glEnd();
+				glColor4f(0.5f,0.5f,0.5f,1);
+				glLineWidth(1);
+				glBegin(GL_LINES);
+				glColor4f(1,0,0,1);
+				}
+
+			glVertex3f(vertices[lines[i].start].x, vertices[lines[i].start].y, z);
+			glVertex3f(vertices[lines[i].end].x, vertices[lines[i].end].y, z);
+			}
+		glEnd();
+		}
+}
+
+
+
+
+

@@ -41,9 +41,41 @@ public:
 
 
 struct InFillHit{
-	Vector3f p;
+	Vector2f p;
 	float d;
 };
+
+struct Segment{
+	Segment(UINT s, UINT e){start = s; end = e; before=after=-1;}
+	int start;
+	int end;
+	int before;
+	int after;
+};
+
+class Poly{
+public:
+	Poly(){};
+
+	vector<Segment> lines;			// points
+};
+
+class  CuttingPlane{
+public:
+	CuttingPlane(){}
+	void Shrink(float distance);
+	void CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z = 0);
+	bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, InFillHit &hit);
+	void Draw(float z);
+	void LinkSegments(float z);
+
+	Vector2f Min, Max;				// Bounding box
+	vector<Vector2f> vertices;		// points
+	vector<Segment> lines;			// points
+
+	vector<Poly> polygons;		// Closed loops
+};
+
 
 class STL
 {
@@ -52,11 +84,7 @@ public:
 
 	void Read(string filename);
 	void draw();
-	void CalcCuttingPlane(float where, vector<Vector3f> &points);
-	void ShrinkCuttingPlane(vector<Vector3f> &in, vector<Vector3f> &out, float shrinkAmount);
-
-	void CalcInFill(float where, vector<Vector3f> &CuttingPlane, vector<Vector3f> &infill, UINT LayerNr);
-	bool IntersectXY(const Vector3f &p1, const Vector3f &p2, const Vector3f &p3, const Vector3f &p4, InFillHit &hit);
+	void CalcCuttingPlane(float where, CuttingPlane &plane);
 
 	vector<Triangle> triangles;
 	Vector3f Min, Max;

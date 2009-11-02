@@ -103,6 +103,11 @@ private:
   void cb_ShrinkSlider_i(Fl_Value_Slider*, void*);
   static void cb_ShrinkSlider(Fl_Value_Slider*, void*);
 public:
+  Fl_Light_Button *FixSTLerrorsButton;
+private:
+  void cb_FixSTLerrorsButton_i(Fl_Light_Button*, void*);
+  static void cb_FixSTLerrorsButton(Fl_Light_Button*, void*);
+public:
   void show(int argc, char **argv);
 };
 #endif

@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0110 
+version 1.0109 
 header_name {.h} 
 code_name {.cxx}
 class CubeViewUI {open
@@ -8,7 +8,7 @@ class CubeViewUI {open
   } {
     Fl_Window mainWindow {
       label CubeView open
-      xywh {-34 83 1267 843} type Double box UP_BOX labelsize 12 hide resizable
+      xywh {8 83 1886 843} type Double box UP_BOX labelsize 12 hide resizable
     } {
       Fl_Box code {
         label {This is the cube_view}
@@ -69,7 +69,7 @@ code->redraw();
       Fl_Value_Slider ExamineSlider {
         label Examine
         callback {code->redraw();}
-        xywh {820 785 370 20} type Horizontal align 5 value 0.24 textsize 14
+        xywh {820 785 1055 20} type Horizontal align 5 step 0.001 value 0.24 textsize 14
       }
       Fl_Light_Button DisplayPolygonsButton {
         label {Display Polygons}
@@ -104,7 +104,7 @@ code->redraw();
       Fl_Value_Slider RotationSlider {
         label Rotation
         callback {code->redraw();}
-        xywh {810 90 370 20} type Horizontal align 5 maximum 360 value 45 textsize 14
+        xywh {810 90 370 20} type Horizontal align 5 maximum 360 step 1 value 45 textsize 14
       }
       Fl_Light_Button DisplayDebuginFillButton {
         label {Display Debug inFill}
@@ -131,17 +131,17 @@ code->redraw();}
       Fl_Value_Slider InfillRotationPrLayerSlider {
         label {InFill Rotation pr. Layer}
         callback {code->redraw();}
-        xywh {810 130 370 20} type Horizontal align 5 maximum 360 value 60 textsize 14
+        xywh {810 130 370 20} type Horizontal align 5 maximum 360 step 1 value 90 textsize 14
       }
       Fl_Value_Slider InfillDistanceSlider {
         label {Infill Distance}
         callback {code->redraw();}
-        xywh {810 170 370 20} type Horizontal align 5 minimum 0.1 maximum 10 value 2 textsize 14
+        xywh {810 170 370 20} type Horizontal align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14
       }
       Fl_Value_Slider LayerThicknessSlider {
         label {Layer Thickness}
         callback {code->redraw();}
-        xywh {810 210 370 20} type Horizontal align 5 maximum 3 value 0.5 textsize 14
+        xywh {810 210 370 20} type Horizontal align 5 minimum 0.1 maximum 3 step 0.1 value 0.5 textsize 14
       }
       Fl_Light_Button DisplayAllLayers {
         label {Display all layers}
@@ -150,14 +150,22 @@ code->redraw();}
       }
       Fl_Value_Slider ShrinkSlider {
         label Shrink
-        callback {code->redraw();} selected
-        xywh {820 400 370 20} type Horizontal align 5 value 0.5 textsize 14
+        callback {code->redraw();}
+        xywh {820 400 370 20} type Horizontal align 5 step 0 value 0.5 textsize 14
+      }
+      Fl_Light_Button FixSTLerrorsButton {
+        label {Fix STL errors}
+        callback {code->redraw()}
+        xywh {960 40 135 25} value 1 selection_color 63
       }
     }
   }
   Function {show(int argc, char **argv)} {open
   } {
     code {mainWindow->show(argc, argv);
-code->ReadStl("C:/bendbox.stl");} {}
+//code->ReadStl("C:/y-bearing-180-inner_2off.stl");
+code->ReadStl("C:/box.stl");
+code->redraw();} {selected
+    }
   }
 } 

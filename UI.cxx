@@ -166,8 +166,15 @@ void CubeViewUI::cb_ShrinkSlider(Fl_Value_Slider* o, void* v) {
   ((CubeViewUI*)(o->parent()->user_data()))->cb_ShrinkSlider_i(o,v);
 }
 
+void CubeViewUI::cb_FixSTLerrorsButton_i(Fl_Light_Button*, void*) {
+  code->redraw();
+}
+void CubeViewUI::cb_FixSTLerrorsButton(Fl_Light_Button* o, void* v) {
+  ((CubeViewUI*)(o->parent()->user_data()))->cb_FixSTLerrorsButton_i(o,v);
+}
+
 CubeViewUI::CubeViewUI() {
-  { mainWindow = new Fl_Double_Window(1267, 843, "CubeView");
+  { mainWindow = new Fl_Double_Window(1886, 843, "CubeView");
     mainWindow->box(FL_UP_BOX);
     mainWindow->labelsize(12);
     mainWindow->user_data((void*)(this));
@@ -203,8 +210,9 @@ CubeViewUI::CubeViewUI() {
       CuttingPlaneSlider->callback((Fl_Callback*)cb_CuttingPlaneSlider);
       CuttingPlaneSlider->align(FL_ALIGN_TOP_LEFT);
     } // Fl_Value_Slider* CuttingPlaneSlider
-    { ExamineSlider = new Fl_Value_Slider(820, 785, 370, 20, "Examine");
+    { ExamineSlider = new Fl_Value_Slider(820, 785, 1055, 20, "Examine");
       ExamineSlider->type(1);
+      ExamineSlider->step(0.001);
       ExamineSlider->value(0.24);
       ExamineSlider->textsize(14);
       ExamineSlider->callback((Fl_Callback*)cb_ExamineSlider);
@@ -240,6 +248,7 @@ CubeViewUI::CubeViewUI() {
     { RotationSlider = new Fl_Value_Slider(810, 90, 370, 20, "Rotation");
       RotationSlider->type(1);
       RotationSlider->maximum(360);
+      RotationSlider->step(1);
       RotationSlider->value(45);
       RotationSlider->textsize(14);
       RotationSlider->callback((Fl_Callback*)cb_RotationSlider);
@@ -256,7 +265,8 @@ CubeViewUI::CubeViewUI() {
     { InfillRotationPrLayerSlider = new Fl_Value_Slider(810, 130, 370, 20, "InFill Rotation pr. Layer");
       InfillRotationPrLayerSlider->type(1);
       InfillRotationPrLayerSlider->maximum(360);
-      InfillRotationPrLayerSlider->value(60);
+      InfillRotationPrLayerSlider->step(1);
+      InfillRotationPrLayerSlider->value(90);
       InfillRotationPrLayerSlider->textsize(14);
       InfillRotationPrLayerSlider->callback((Fl_Callback*)cb_InfillRotationPrLayerSlider);
       InfillRotationPrLayerSlider->align(FL_ALIGN_TOP_LEFT);
@@ -265,6 +275,7 @@ CubeViewUI::CubeViewUI() {
       InfillDistanceSlider->type(1);
       InfillDistanceSlider->minimum(0.1);
       InfillDistanceSlider->maximum(10);
+      InfillDistanceSlider->step(0.1);
       InfillDistanceSlider->value(2);
       InfillDistanceSlider->textsize(14);
       InfillDistanceSlider->callback((Fl_Callback*)cb_InfillDistanceSlider);
@@ -272,7 +283,9 @@ CubeViewUI::CubeViewUI() {
     } // Fl_Value_Slider* InfillDistanceSlider
     { LayerThicknessSlider = new Fl_Value_Slider(810, 210, 370, 20, "Layer Thickness");
       LayerThicknessSlider->type(1);
+      LayerThicknessSlider->minimum(0.1);
       LayerThicknessSlider->maximum(3);
+      LayerThicknessSlider->step(0.1);
       LayerThicknessSlider->value(0.5);
       LayerThicknessSlider->textsize(14);
       LayerThicknessSlider->callback((Fl_Callback*)cb_LayerThicknessSlider);
@@ -284,11 +297,17 @@ CubeViewUI::CubeViewUI() {
     } // Fl_Light_Button* DisplayAllLayers
     { ShrinkSlider = new Fl_Value_Slider(820, 400, 370, 20, "Shrink");
       ShrinkSlider->type(1);
+      ShrinkSlider->step(0);
       ShrinkSlider->value(0.5);
       ShrinkSlider->textsize(14);
       ShrinkSlider->callback((Fl_Callback*)cb_ShrinkSlider);
       ShrinkSlider->align(FL_ALIGN_TOP_LEFT);
     } // Fl_Value_Slider* ShrinkSlider
+    { FixSTLerrorsButton = new Fl_Light_Button(960, 40, 135, 25, "Fix STL errors");
+      FixSTLerrorsButton->value(1);
+      FixSTLerrorsButton->selection_color((Fl_Color)FL_GREEN);
+      FixSTLerrorsButton->callback((Fl_Callback*)cb_FixSTLerrorsButton);
+    } // Fl_Light_Button* FixSTLerrorsButton
     mainWindow->end();
     mainWindow->resizable(mainWindow);
   } // Fl_Double_Window* mainWindow
@@ -296,5 +315,7 @@ CubeViewUI::CubeViewUI() {
 
 void CubeViewUI::show(int argc, char **argv) {
   mainWindow->show(argc, argv);
-code->ReadStl("C:/bendbox.stl");
+//code->ReadStl("C:/y-bearing-180-inner_2off.stl");
+code->ReadStl("C:/box.stl");
+code->redraw();
 }
