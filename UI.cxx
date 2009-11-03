@@ -174,7 +174,7 @@ void CubeViewUI::cb_FixSTLerrorsButton(Fl_Light_Button* o, void* v) {
 }
 
 CubeViewUI::CubeViewUI() {
-  { mainWindow = new Fl_Double_Window(1886, 843, "CubeView");
+  { mainWindow = new Fl_Double_Window(1190, 843, "CubeView");
     mainWindow->box(FL_UP_BOX);
     mainWindow->labelsize(12);
     mainWindow->user_data((void*)(this));
@@ -210,10 +210,10 @@ CubeViewUI::CubeViewUI() {
       CuttingPlaneSlider->callback((Fl_Callback*)cb_CuttingPlaneSlider);
       CuttingPlaneSlider->align(FL_ALIGN_TOP_LEFT);
     } // Fl_Value_Slider* CuttingPlaneSlider
-    { ExamineSlider = new Fl_Value_Slider(820, 785, 1055, 20, "Examine");
+    { ExamineSlider = new Fl_Value_Slider(820, 785, 365, 20, "Examine");
       ExamineSlider->type(1);
       ExamineSlider->step(0.001);
-      ExamineSlider->value(0.24);
+      ExamineSlider->value(0.047);
       ExamineSlider->textsize(14);
       ExamineSlider->callback((Fl_Callback*)cb_ExamineSlider);
       ExamineSlider->align(FL_ALIGN_TOP_LEFT);
@@ -231,7 +231,6 @@ CubeViewUI::CubeViewUI() {
       DisplayNormalsButton->callback((Fl_Callback*)cb_DisplayNormalsButton);
     } // Fl_Light_Button* DisplayNormalsButton
     { DisplayEndpointsButton = new Fl_Light_Button(820, 580, 190, 20, "Display Endpoints");
-      DisplayEndpointsButton->value(1);
       DisplayEndpointsButton->selection_color((Fl_Color)FL_GREEN);
       DisplayEndpointsButton->callback((Fl_Callback*)cb_DisplayEndpointsButton);
     } // Fl_Light_Button* DisplayEndpointsButton
@@ -316,6 +315,6 @@ CubeViewUI::CubeViewUI() {
 void CubeViewUI::show(int argc, char **argv) {
   mainWindow->show(argc, argv);
 //code->ReadStl("C:/y-bearing-180-inner_2off.stl");
-code->ReadStl("C:/box.stl");
+code->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
 code->redraw();
 }

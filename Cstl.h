@@ -64,7 +64,7 @@ class  CuttingPlane{
 public:
 	CuttingPlane(){}
 	void Shrink(float distance);
-	void CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z = 0);
+	void CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z=0);
 	bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, InFillHit &hit);
 	void Draw(float z);
 	void LinkSegments(float z);

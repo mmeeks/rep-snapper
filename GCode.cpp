@@ -184,7 +184,7 @@ void GCode::draw()
 	glViewport (0, 0, w(),h());											// Reset The Current Viewport
 	glMatrixMode (GL_PROJECTION);										// Select The Projection Matrix
 	glLoadIdentity ();													// Reset The Projection Matrix
-	gluPerspective (45.0f, w()/h(),1.0f, 1000.0f);						// Calculate The Aspect Ratio Of The Window
+	gluPerspective (45.0f, w()/h(),10.0f, 1000000.0f);						// Calculate The Aspect Ratio Of The Window
 	glMatrixMode (GL_MODELVIEW);										// Select The Modelview Matrix
 	glLoadIdentity ();													// Reset The Modelview Matrix
 	return;

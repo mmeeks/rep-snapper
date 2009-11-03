@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109 
+version 1.0110 
 header_name {.h} 
 code_name {.cxx}
 class CubeViewUI {open
@@ -7,8 +7,8 @@ class CubeViewUI {open
   Function {CubeViewUI()} {open
   } {
     Fl_Window mainWindow {
-      label CubeView open
-      xywh {8 83 1886 843} type Double box UP_BOX labelsize 12 hide resizable
+      label CubeView open selected
+      xywh {152 19 1190 843} type Double box UP_BOX labelsize 12 hide resizable
     } {
       Fl_Box code {
         label {This is the cube_view}
@@ -69,7 +69,7 @@ code->redraw();
       Fl_Value_Slider ExamineSlider {
         label Examine
         callback {code->redraw();}
-        xywh {820 785 1055 20} type Horizontal align 5 step 0.001 value 0.24 textsize 14
+        xywh {820 785 365 20} type Horizontal align 5 step 0.001 value 0.047 textsize 14
       }
       Fl_Light_Button DisplayPolygonsButton {
         label {Display Polygons}
@@ -89,7 +89,7 @@ code->redraw();
       Fl_Light_Button DisplayEndpointsButton {
         label {Display Endpoints}
         callback {code->redraw();}
-        xywh {820 580 190 20} value 1 selection_color 63
+        xywh {820 580 190 20} selection_color 63
       }
       Fl_Light_Button DisplayCuttingPlaneButton {
         label {Display CuttingPlane}
@@ -164,8 +164,7 @@ code->redraw();}
   } {
     code {mainWindow->show(argc, argv);
 //code->ReadStl("C:/y-bearing-180-inner_2off.stl");
-code->ReadStl("C:/box.stl");
-code->redraw();} {selected
-    }
+code->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
+code->redraw();} {}
   }
 } 

@@ -216,7 +216,7 @@ void STL::draw()
 	if(cvui->DisplayAllLayers->value())
 		{
 		z=Min.z;
-		zStep = cvui->LayerThicknessSlider->value();
+		zStep = cvui->LayerThicknessSlider->value()*1000;
 		}
 	while(z<Max.z)
 	{
@@ -272,8 +272,8 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 		Vector3f P2 = triangles[i].B;
 		if(where < P1.z != where < P2.z)
 		{
-			float t = (where-P1.z)/(P2.z-P1.z);
-			Vector3f p = P1+((P2-P1)*t);
+			float t = (where-P1.z)/(float)(P2.z-P1.z);
+			Vector3f p = P1+((Vector3f)(P2-P1)*t);
 			line.start = pointNr++;
 			plane.vertices.push_back(Vector2f(p.x,p.y));;
 			foundOne = true;
@@ -282,8 +282,8 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 		P2 = triangles[i].C;
 		if(where < P1.z != where < P2.z)
 		{
-			float t = (where-P1.z)/(P2.z-P1.z);
-			Vector3f p = P1+((P2-P1)*t);
+			float t = (where-P1.z)/(float)(P2.z-P1.z);
+			Vector3f p = P1+((Vector3f)(P2-P1)*t);
 			if(foundOne)
 				line.end = pointNr++;
 			else
@@ -301,7 +301,7 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 		if(where < P1.z != where < P2.z)
 		{
 			float t = (where-P1.z)/(P2.z-P1.z);
-			Vector3f p = P1+((P2-P1)*t);
+			Vector3f p = P1+((Vector3f)(P2-P1)*t);
 			line.end = pointNr++;
 			plane.vertices.push_back(Vector2f(p.x,p.y));;
 			plane.lines.push_back(line);
@@ -322,7 +322,7 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z)
 {
 	int c=0;
 
-	float step = cvui->InfillDistanceSlider->value();
+	float step = cvui->InfillDistanceSlider->value()*1000;
 
 	bool examine = false;
 
@@ -490,7 +490,7 @@ int inSegment( const Vector2f &P, const Vector2f &p1, const Vector2f &p2)
 //    Return: 0=disjoint (no intersect)
 //            1=intersect in unique point I0
 //            2=overlap in segment from I0 to I1
-int intersect2D_Segments( const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, Vector2f &I0, Vector2f &I1 )
+int intersect2D_Segments( const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, Vector2f &I0, Vector2f &I1, float &t0, float &t1 )
 {
 	Vector2f    u = p2 - p1;
 	Vector2f    v = p4 - p3;
@@ -525,7 +525,7 @@ int intersect2D_Segments( const Vector2f &p1, const Vector2f &p2, const Vector2f
 			return 1;
 		}
 		// they are collinear segments - get overlap (or not)
-		float t0, t1;                   // endpoints of S1 in eqn for S2
+		//float t0, t1;                   // endpoints of S1 in eqn for S2
 		Vector2f w2 = p2 - p3;
 		if (v.x != 0) {
 			t0 = w.x / v.x;
@@ -602,13 +602,14 @@ bool CuttingPlane::IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vec
 	}
 
 	InFillHit hit2;
-	if(intersect2D_Segments(p1,p2,p3,p4,hit.p, hit2.p) == 1)
+	float t0,t1;
+	if(intersect2D_Segments(p1,p2,p3,p4,hit.p, hit2.p, t0,t1) == 1)
 	{
 	hit.d = sqrtf( (p1.x-hit.p.x) * (p1.x-hit.p.x) + (p1.y-hit.p.y) * (p1.y-hit.p.y));
 	return true;
 	}
 	return false;
-
+/*
 
   float xD1,yD1,xD2,yD2,xD3,yD3;  
   float dot,deg,len1,len2;  
@@ -669,11 +670,234 @@ bool CuttingPlane::IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vec
     return false;
 
   hit.d = segmentLen1-segmentLen2;
-  return true;
+  return true;*/
 }
+/*
+int PntOnLine(Vector2f p1, Vector2f p2, Vector2f t)
+{
+/*
+ * given a line through P:(px,py) Q:(qx,qy) and T:(tx,ty)
+ * return 0 if T is not on the line through      <--P--Q-->
+ *        1 if T is on the open ray ending at P: <--P
+ *        2 if T is on the closed interior along:   P--Q
+ *        3 if T is on the open ray beginning at Q:    Q-->
+ *
+ * Example: consider the line P = (3,2), Q = (17,7). A plot
+ * of the test points T(x,y) (with 0 mapped onto '.') yields:
+ *
+ *     8| . . . . . . . . . . . . . . . . . 3 3
+ *  Y  7| . . . . . . . . . . . . . . 2 2 Q 3 3    Q = 3
+ *     6| . . . . . . . . . . . 2 2 2 2 2 . . .
+ *  a  5| . . . . . . . . 2 2 2 2 2 2 . . . . .
+ *  x  4| . . . . . 2 2 2 2 2 2 . . . . . . . .
+ *  i  3| . . . 2 2 2 2 2 . . . . . . . . . . .
+ *  s  2| 1 1 P 2 2 . . . . . . . . . . . . . .    P = 1
+ *     1| 1 1 . . . . . . . . . . . . . . . . .
+ *      +--------------------------------------
+ *        1 2 3 4 5 X-axis 10        15      19
+ *
+ * Point-Line distance is normalized with the Infinity Norm
+ * avoiding square-root code and tightening the test vs the
+ * Manhattan Norm. All math is done on the field of integers.
+ * The latter replaces the initial ">= MAX(...)" test with
+ * "> (ABS(qx-px) + ABS(qy-py))" loosening both inequality
+ * and norm, yielding a broader target line for selection.
+ * The tightest test is employed here for best discrimination
+ * in merging collinear (to grid coordinates) vertex chains
+ * into a larger, spanning vectors within the Lemming editor.
+ 
+
+    if ( abs((p2.y-p1.y)*(t.x-p1.x)-(t.y-p1.y)*(p2.x-p1.x)) >= (MAX(abs(p2.x-p1.x), abs(p2.y-p1.y)))) return(0);
+    if (((p2.x<=p1.x)&&(p1.x<=t.x)) || ((p2.y<=p1.y)&&(p1.y<=t.y))) return(1);
+    if (((t.x<=p1.x)&&(p1.x<=p2.x)) || ((t.y<=p1.y)&&(p1.y<=p2.y))) return(1);
+    if (((p1.x<=p2.x)&&(p2.x<=t.x)) || ((p1.y<=p2.y)&&(p2.y<=t.y))) return(3);
+    if (((t.x<=p2.x)&&(p2.x<=p1.x)) || ((t.y<=p2.y)&&(p2.y<=p1.y))) return(3);
+    return(2);
+}
+*/
+float dist ( float x1, float y1, float x2, float y2)
+{
+return sqrt( ((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)) ) ;
+}
+
+int PntOnLine(Vector2f p1, Vector2f p2, Vector2f t, float &where)
+{
+
+	float A = t.x - p1.x;
+	float B = t.y - p1.y;
+	float C = p2.x - p1.x;
+	float D = p2.y - p1.y;
+
+	float dist_line = abs(A * D - C * B) / sqrt(C * C + D * D);
+
+	if(dist_line > 0.0001)
+		return 0;
+
+	float dot = A * C + B * D;
+	float len_sq = C * C + D * D;
+	float param = dot / len_sq;
+
+	float xx,yy;
+
+	if(param < 0)	// before p1
+		{
+		where = param;
+		return 1;
+/*		xx = p1.x;
+		yy = p1.y;
+		where = dist(t.x, t.y, xx, yy);//your distance function
+		return 1;*/
+		}
+	else if(param > 1) // after p2
+		{
+		where = param;
+		return 3;
+/*		xx = p2.x;
+		yy = p2.y;
+		where = dist(t.x, t.y, xx, yy);//your distance function
+		return 3;*/
+		}
+	else				// between p1 and p2
+		{
+		where = param;
+		return 2;			// fast exit, don't need where for this case
+/*		xx = p1.x + param * C;
+		yy = p1.y + param * D;
+		where = dist(t.x, t.y, xx, yy);//your distance function
+		return 2;*/
+		}
+}
+
+class OverlapLine{
+public:
+	OverlapLine(Vector2f start, Vector2f end){s=start;e=end;};
+	bool overlaps(Vector2f p1, Vector2f p2)
+	{
+	int res[2];
+	float t1,t2;
+	res[0] = PntOnLine(s,e,p1, t1);	// Is p1 on my line?
+	if(res[0] == 0)
+		return false;
+	res[1] = PntOnLine(s,e,p2, t2);	// Is p2 on my line?
+	if(res[1] == 0)
+		return false;
+
+	if(res[0] != res[1])	// expanding both points
+		{
+		Vector2f i1 = p1+((p1-p2).normalise())*t1;
+		Vector2f i2 = p1+((p1-p2).normalise())*t2;
+
+		if(t1 < 0 && t1 < t2)	// Move p1
+			s = i1;
+		else if(t2 < 0)	// Move p1
+			s = i2;
+		if(t1 > 1 && t1 > t2)
+			e = i1;
+		else if(t2 > 1)
+			e = i2;
+
+			glPointSize(3);
+			glBegin(GL_POINTS);
+			glColor3f(1,0,0);
+			glVertex2f(s.x, s.y);
+			glColor3f(0,0,1);
+			glVertex2f(e.x, e.y);
+			glEnd();
+		}
+/*
+	if(res[0] == 1 || res[0] == 3)	// If p1 extends start or end
+		{
+		if(res[1] == 1 || res[1] == 3) 	// If p2 extends start or end
+			{
+			if(res[0] != res[1])	// If p1 & p2 extends this line in both ends (start and end point included)
+				{
+				if(res[0] == 1)			// Extend start
+					{
+					s = p1;
+					e = p2;
+					return true;
+					}
+				s = p2;
+				e = p1;
+				return true;
+				}
+			}
+		}*/
+	return false;
+	}
+	Vector2f s,e;
+};
+
 
 void CuttingPlane::LinkSegments(float z)
 {
+	if(lines.size() == 0)
+		return;
+	// Merge lines that overlap
+	vector<OverlapLine> lineGroups;
+	int l = (int)(cvui->ExamineSlider->value()*(float)(lines.size()-1));
+	{
+	OverlapLine L(vertices[lines[l].start], vertices[lines[l].end]);
+	lineGroups.push_back(L);
+	}
+for(int x=0;x<10;x++)
+	for(int g=0;g<lineGroups.size();g++)
+	{
+	for(int i=0;i<lines.size();)
+		{
+		Vector2f p1(vertices[lines[i].start]);
+		Vector2f p2(vertices[lines[i].end]);
+		if(lineGroups[g].overlaps(p1, p2))	// This will update the linegroup to make the check-line longer
+			{
+			// consume line
+			lines.erase(lines.begin()+i);
+			continue;							// goto next line
+			}
+		i++;
+		}
+	// No overlapping lineGroup found, add a new one.
+/*	OverlapLine L(p1, p2);
+	lineGroups.push_back(L);
+	lines.erase(lines.begin());	// delete the one we already made a group
+*/	}
+/*
+LinkSegments_start_overB:
+	while(lines.size())	// remove the i >= 0
+	{
+	Vector2f p1(vertices[lines[0].start]);
+	Vector2f p2(vertices[lines[0].end]);
+	for(int g=0;g<lineGroups.size();g++)
+		{
+		if(lineGroups[g].overlaps(p1, p2))
+			{
+			lines.erase(lines.begin());
+			goto LinkSegments_start_overB;
+			}
+		}
+	// No overlapping lineGroup found, add a new one.
+	OverlapLine L(p1, p2);
+	lineGroups.push_back(L);
+	lines.erase(lines.begin());	// delete the one we already made a group
+	}
+*/
+
+	// Convert LineGroups to lines
+	lines.clear();
+	vertices.clear();
+	int count=0;
+	for(int g=0;g<lineGroups.size();g++)
+	{
+	Segment s(count,count+1);
+	count+=2;
+	lines.push_back(s);
+	vertices.push_back(lineGroups[g].s);	// store start
+	vertices.push_back(lineGroups[g].e);	// store start
+	}
+
+
+int a=0;
+/*
+
 	// find friend vertices for all vertices (Double vertices)
 
 	UINT count = vertices.size();
@@ -907,7 +1131,19 @@ void CuttingPlane::Draw(float z)
 			glVertex3f(vertices[lines[i].end].x, vertices[lines[i].end].y, z);
 			}
 		glEnd();
+
+
+	// Endpoints
+		glColor4f(1,1,0,1);
+		glPointSize(2);
+		glBegin(GL_POINTS);
+		for(UINT i=0;i<lines.size();i++)
+		{
+				glVertex3f(vertices[lines[i].start].x, vertices[lines[i].start].y, z);
+				glVertex3f(vertices[lines[i].end].x, vertices[lines[i].end].y, z);
 		}
+		glEnd();
+	}
 }
 
 
