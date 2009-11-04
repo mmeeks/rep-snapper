@@ -7,13 +7,16 @@ class CubeViewUI {open
   Function {CubeViewUI()} {open
   } {
     Fl_Window mainWindow {
-      label CubeView open selected
-      xywh {152 19 1190 843} type Double box UP_BOX labelsize 12 hide resizable
+      label CubeView open
+      xywh {246 19 1190 843} type Double box UP_BOX labelsize 12 hide resizable
     } {
       Fl_Box code {
         label {This is the cube_view}
         xywh {5 6 800 800} box UP_BOX align 16
         code0 {\#include "GCode.h"}
+        code1 {\#ifndef M_PI
+\#define M_PI 3.14159265358979323846
+\#endif}
         class GCode
       }
       Fl_Button {} {
@@ -157,6 +160,34 @@ code->redraw();}
         label {Fix STL errors}
         callback {code->redraw()}
         xywh {960 40 135 25} value 1 selection_color 63
+      }
+      Fl_Button AutoRotateButton {
+        label {Auto rotate}
+        callback {code->OptimizeRotation();
+code->CalcBoundingBoxAndZoom(code);
+code->redraw();}
+        xywh {810 235 100 20}
+      }
+      Fl_Button RotateXButton {
+        label {Rotate X}
+        callback {code->RotateObject(1,0,0, M_PI/4);
+code->CalcBoundingBoxAndZoom(code);
+code->redraw();}
+        xywh {810 260 100 20}
+      }
+      Fl_Button RotateYButton {
+        label {Rotate Y}
+        callback {code->RotateObject(0,1,0, M_PI/4);
+code->CalcBoundingBoxAndZoom(code);
+code->redraw();}
+        xywh {810 285 100 20}
+      }
+      Fl_Button RotateZButton {
+        label {Rotate Z}
+        callback {code->RotateObject(0,0,1, M_PI/4);
+code->CalcBoundingBoxAndZoom(code);
+code->redraw();} selected
+        xywh {810 310 100 20}
       }
     }
   }

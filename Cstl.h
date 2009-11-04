@@ -27,6 +27,8 @@ glVertex3fv( position.xyz );
 using namespace std;
 using namespace vmml;
 
+enum AXIS {NEGX, POSX, NEGY, POSY, NEGZ, POSZ, NOT_ALIGNED};
+
 class Triangle
 {
 public:
@@ -35,7 +37,9 @@ public:
 
 	void SetPoints(const Vector3f &P1, const Vector3f &P2, const Vector3f &P3) { A=P1;B=P2;C=P3; }
 	void SetNormal(const Vector3f &Normal) { N = Normal;}
+	float area();
 
+	AXIS axis;
 	Vector3f A,B,C,N;
 };
 
@@ -76,6 +80,7 @@ public:
 	vector<Poly> polygons;		// Closed loops
 };
 
+class GCode;
 
 class STL
 {
@@ -85,6 +90,9 @@ public:
 	void Read(string filename);
 	void draw();
 	void CalcCuttingPlane(float where, CuttingPlane &plane);
+	void OptimizeRotation();
+	void CalcBoundingBoxAndZoom(GCode *code);
+	void RotateObject(Vector3f axis, float angle);
 
 	vector<Triangle> triangles;
 	Vector3f Min, Max;

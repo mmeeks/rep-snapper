@@ -78,7 +78,9 @@ public:
 	void resize (int x,int y, int width, int height);									// Reshape The Window When It's Moved Or Resized
 
 	void ReadStl(string filename) {stl.Read(filename);};
-
+	void RotateObject(float x, float y, float z, float a) {stl.RotateObject(Vector3f(x,y,z),a);}
+	void CalcBoundingBoxAndZoom(GCode* code) { stl.CalcBoundingBoxAndZoom(code);}
+	void OptimizeRotation() { stl.OptimizeRotation();}
 
 	/*--------------ArcBall-------------------*/
 

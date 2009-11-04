@@ -173,6 +173,42 @@ void CubeViewUI::cb_FixSTLerrorsButton(Fl_Light_Button* o, void* v) {
   ((CubeViewUI*)(o->parent()->user_data()))->cb_FixSTLerrorsButton_i(o,v);
 }
 
+void CubeViewUI::cb_AutoRotateButton_i(Fl_Button*, void*) {
+  code->OptimizeRotation();
+code->CalcBoundingBoxAndZoom(code);
+code->redraw();
+}
+void CubeViewUI::cb_AutoRotateButton(Fl_Button* o, void* v) {
+  ((CubeViewUI*)(o->parent()->user_data()))->cb_AutoRotateButton_i(o,v);
+}
+
+void CubeViewUI::cb_RotateXButton_i(Fl_Button*, void*) {
+  code->RotateObject(1,0,0, M_PI/4);
+code->CalcBoundingBoxAndZoom(code);
+code->redraw();
+}
+void CubeViewUI::cb_RotateXButton(Fl_Button* o, void* v) {
+  ((CubeViewUI*)(o->parent()->user_data()))->cb_RotateXButton_i(o,v);
+}
+
+void CubeViewUI::cb_RotateYButton_i(Fl_Button*, void*) {
+  code->RotateObject(0,1,0, M_PI/4);
+code->CalcBoundingBoxAndZoom(code);
+code->redraw();
+}
+void CubeViewUI::cb_RotateYButton(Fl_Button* o, void* v) {
+  ((CubeViewUI*)(o->parent()->user_data()))->cb_RotateYButton_i(o,v);
+}
+
+void CubeViewUI::cb_RotateZButton_i(Fl_Button*, void*) {
+  code->RotateObject(0,0,1, M_PI/4);
+code->CalcBoundingBoxAndZoom(code);
+code->redraw();
+}
+void CubeViewUI::cb_RotateZButton(Fl_Button* o, void* v) {
+  ((CubeViewUI*)(o->parent()->user_data()))->cb_RotateZButton_i(o,v);
+}
+
 CubeViewUI::CubeViewUI() {
   { mainWindow = new Fl_Double_Window(1190, 843, "CubeView");
     mainWindow->box(FL_UP_BOX);
@@ -307,6 +343,18 @@ CubeViewUI::CubeViewUI() {
       FixSTLerrorsButton->selection_color((Fl_Color)FL_GREEN);
       FixSTLerrorsButton->callback((Fl_Callback*)cb_FixSTLerrorsButton);
     } // Fl_Light_Button* FixSTLerrorsButton
+    { AutoRotateButton = new Fl_Button(810, 235, 100, 20, "Auto rotate");
+      AutoRotateButton->callback((Fl_Callback*)cb_AutoRotateButton);
+    } // Fl_Button* AutoRotateButton
+    { RotateXButton = new Fl_Button(810, 260, 100, 20, "Rotate X");
+      RotateXButton->callback((Fl_Callback*)cb_RotateXButton);
+    } // Fl_Button* RotateXButton
+    { RotateYButton = new Fl_Button(810, 285, 100, 20, "Rotate Y");
+      RotateYButton->callback((Fl_Callback*)cb_RotateYButton);
+    } // Fl_Button* RotateYButton
+    { RotateZButton = new Fl_Button(810, 310, 100, 20, "Rotate Z");
+      RotateZButton->callback((Fl_Callback*)cb_RotateZButton);
+    } // Fl_Button* RotateZButton
     mainWindow->end();
     mainWindow->resizable(mainWindow);
   } // Fl_Double_Window* mainWindow

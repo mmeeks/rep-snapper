@@ -5,6 +5,9 @@
 #include <FL/Fl.H>
 #include <FL/Fl_Double_Window.H>
 #include "GCode.h"
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 #include <FL/Fl_Button.H>
 #include <FL/Fl_File_Chooser.H>
 #include <FL/Fl_Light_Button.H>
@@ -107,6 +110,26 @@ public:
 private:
   void cb_FixSTLerrorsButton_i(Fl_Light_Button*, void*);
   static void cb_FixSTLerrorsButton(Fl_Light_Button*, void*);
+public:
+  Fl_Button *AutoRotateButton;
+private:
+  void cb_AutoRotateButton_i(Fl_Button*, void*);
+  static void cb_AutoRotateButton(Fl_Button*, void*);
+public:
+  Fl_Button *RotateXButton;
+private:
+  void cb_RotateXButton_i(Fl_Button*, void*);
+  static void cb_RotateXButton(Fl_Button*, void*);
+public:
+  Fl_Button *RotateYButton;
+private:
+  void cb_RotateYButton_i(Fl_Button*, void*);
+  static void cb_RotateYButton(Fl_Button*, void*);
+public:
+  Fl_Button *RotateZButton;
+private:
+  void cb_RotateZButton_i(Fl_Button*, void*);
+  static void cb_RotateZButton(Fl_Button*, void*);
 public:
   void show(int argc, char **argv);
 };

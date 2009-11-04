@@ -111,14 +111,13 @@ void STL::Read(string filename)
 		cout << "Exception opening/reading file";
 		string error = e.what();
 	}
-/*
-	Min.x = MIN(code->Min.T[0], Min.x);
-	Min.y = MIN(code->Min.T[1], Min.y);
-	Min.z = MIN(code->Min.T[2], Min.z);
-	Max.x = MAX(code->Max.T[0], Max.x);
-	Max.y = MAX(code->Max.T[2], Max.y);
-	Max.z = MAX(code->Max.T[0], Max.z);
-*/
+	
+	OptimizeRotation();
+	CalcBoundingBoxAndZoom(code);
+}
+
+void STL::CalcBoundingBoxAndZoom(GCode *code)
+{
 	code->Min.T[0] = Min.x;
 	code->Min.T[1] = Min.y;
 	code->Min.T[2] = Min.z;
@@ -138,8 +137,9 @@ void STL::Read(string filename)
 	if(code->Max.T[2] - code->Min.T[2] > L)	L = code->Max.T[2] - code->Min.T[2];
 
 	code->zoom= L;
-
 }
+
+
 void STL::draw()
 {
 
@@ -148,12 +148,23 @@ void STL::draw()
 	if(cvui->DisplayPolygonsButton->value())
 	{
 		glEnable(GL_CULL_FACE);
-		glEnable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+		glDepthMask(GL_TRUE);
+//		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  //define blending factors
-		glColor4f(0,1,0,0.5f);
 		glBegin(GL_TRIANGLES);
 		for(UINT i=0;i<triangles.size();i++)
 		{
+			switch(triangles[i].axis)
+				{
+				case NEGX:	glColor3f(1,0,0); break;
+				case POSX:	glColor3f(0.5f,0,0); break;
+				case NEGY:	glColor3f(0,1,0); break;
+				case POSY:	glColor3f(0,0.5f,0); break;
+				case NEGZ:	glColor3f(0,0,1); break;
+				case POSZ:	glColor3f(0,0,0.3f); break;
+				default: glColor3f(0.2f,0.2f,0.2f); break;
+				}
 			glNormal3fv((GLfloat*)&triangles[i].N);
 			glVertex3fv((GLfloat*)&triangles[i].A);
 			glVertex3fv((GLfloat*)&triangles[i].B);
@@ -223,7 +234,7 @@ void STL::draw()
 		{
 		CuttingPlane plane;
 		CalcCuttingPlane(z, plane);
-		plane.LinkSegments(z);
+//		plane.LinkSegments(z);
 		plane.Draw(z);
 
 		// inFill
@@ -1146,7 +1157,105 @@ void CuttingPlane::Draw(float z)
 	}
 }
 
+void STL::OptimizeRotation()
+{
+	// Find the axis that has the largest surface
+	// Rotate to point this face towards -Z
+
+	// if dist center <|> 0.1 && Normal points towards, add area
+
+	Vector3f AXIS_VECTORS[3];
+	AXIS_VECTORS[0] = Vector3f(1,0,0);
+	AXIS_VECTORS[1] = Vector3f(0,1,0);
+	AXIS_VECTORS[2] = Vector3f(0,0,1);
+
+	float area[6];
+	for(UINT i=0;i<6;i++)
+		area[i] = 0.0f;
+
+	for(UINT i=0;i<triangles.size();i++)
+		{
+		triangles[i].axis = NOT_ALIGNED;				
+		for(UINT triangleAxis=0;triangleAxis<3;triangleAxis++)
+			{
+			if (  triangles[i].N.cross(AXIS_VECTORS[triangleAxis]).length() < 0.1)
+				{
+				int positive=0;
+				if(triangles[i].N[triangleAxis] > 0)// positive
+					positive=1;
+				AXIS axisNr = (AXIS)(triangleAxis*2+positive);
+				triangles[i].axis = axisNr;
+				if( ! (abs(Min[triangleAxis]-triangles[i].A[triangleAxis]) < 1.1 || abs(Max[triangleAxis]-triangles[i].A[triangleAxis]) < 1.1) )	// not close to boundingbox edges?
+					{
+					triangles[i].axis = NOT_ALIGNED;	// Not close to bounding box
+					break;
+					}
+				area[axisNr] += triangles[i].area();
+				break;
+				}
+			}
+		}
 
 
+	AXIS down = NOT_ALIGNED;
+	float LargestArea = 0;
+	for(UINT i=0;i<6;i++)
+	{
+	if(area[i] > LargestArea)
+		{
+		LargestArea = area[i];
+		down = (AXIS)i;
+		}
+	}
 
+	switch(down)
+	{
+	case NEGX: RotateObject(Vector3f(0,-1,0), M_PI/2.0f); break;
+	case POSX: RotateObject(Vector3f(0,1,0), M_PI/2.0f); break;
+	case NEGY: RotateObject(Vector3f(1,0,0), M_PI/2.0f); break;
+	case POSY: RotateObject(Vector3f(-1,0,0), M_PI/2.0f); break;
+	case POSZ: RotateObject(Vector3f(1,0,0), M_PI); break;
+	}
 
+}
+
+void STL::RotateObject(Vector3f axis, float angle)
+{
+	Vector3f min,max;
+
+	min.x = min.y = min.z = 99999999.0f;
+	max.x = max.y = max.z = -99999999.0f;
+
+	for(UINT i=0; i<triangles.size() ; i++)
+	{
+	triangles[i].N = triangles[i].N.rotate(angle, axis.x, axis.y, axis.z);
+	triangles[i].A = triangles[i].A.rotate(angle, axis.x, axis.y, axis.z);
+	triangles[i].B = triangles[i].B.rotate(angle, axis.x, axis.y, axis.z);
+	triangles[i].C = triangles[i].C.rotate(angle, axis.x, axis.y, axis.z);
+	min.x = MIN(min.x, triangles[i].A.x);
+	min.y = MIN(min.y, triangles[i].A.y);
+	min.z = MIN(min.z, triangles[i].A.z);
+	max.x = MAX(max.x, triangles[i].A.x);
+	max.y = MAX(max.y, triangles[i].A.y);
+	max.z = MAX(max.z, triangles[i].A.z);
+	min.x = MIN(min.x, triangles[i].B.x);
+	min.y = MIN(min.y, triangles[i].B.y);
+	min.z = MIN(min.z, triangles[i].B.z);
+	max.x = MAX(max.x, triangles[i].B.x);
+	max.y = MAX(max.y, triangles[i].B.y);
+	max.z = MAX(max.z, triangles[i].B.z);
+	min.x = MIN(min.x, triangles[i].C.x);
+	min.y = MIN(min.y, triangles[i].C.y);
+	min.z = MIN(min.z, triangles[i].C.z);
+	max.x = MAX(max.x, triangles[i].C.x);
+	max.y = MAX(max.y, triangles[i].C.y);
+	max.z = MAX(max.z, triangles[i].C.z);
+	}
+	Min = min;
+	Max = max;
+}
+
+float Triangle::area()
+{
+	return ( ((C-A).cross(B-A)).length() );
+}
