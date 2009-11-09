@@ -141,7 +141,7 @@ void STL::CalcBoundingBoxAndZoom(GCode *code)
 	code->Min = Min;
 	code->Max = Max;
 
-	code->Center = (code->Max.x + code->Min.x )/2;
+	code->Center = (code->Max + code->Min )/2;
 
 	// Find zoom
 
@@ -162,22 +162,22 @@ void STL::draw()
 	if(cvui->DisplayPolygonsButton->value())
 	{
 		glEnable(GL_CULL_FACE);
-		glEnable(GL_DEPTH_TEST);
+//		glEnable(GL_DEPTH_TEST);
 		glDepthMask(GL_TRUE);
-//		glEnable(GL_BLEND);
+		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  //define blending factors
 		glBegin(GL_TRIANGLES);
 		for(UINT i=0;i<triangles.size();i++)
 		{
 			switch(triangles[i].axis)
 				{
-				case NEGX:	glColor3f(1,0,0); break;
-				case POSX:	glColor3f(0.5f,0,0); break;
-				case NEGY:	glColor3f(0,1,0); break;
-				case POSY:	glColor3f(0,0.5f,0); break;
-				case NEGZ:	glColor3f(0,0,1); break;
-				case POSZ:	glColor3f(0,0,0.3f); break;
-				default: glColor3f(0.2f,0.2f,0.2f); break;
+				case NEGX:	glColor4f(1,0,0,0.2f); break;
+				case POSX:	glColor4f(0.5f,0,0,0.2f); break;
+				case NEGY:	glColor4f(0,1,0,0.2f); break;
+				case POSY:	glColor4f(0,0.5f,0,0.2f); break;
+				case NEGZ:	glColor4f(0,0,1,0.2f); break;
+				case POSZ:	glColor4f(0,0,0.3f,0.2f); break;
+				default: glColor4f(0.2f,0.2f,0.2f,0.2f); break;
 				}
 			glNormal3fv((GLfloat*)&triangles[i].N);
 			glVertex3fv((GLfloat*)&triangles[i].A);
@@ -248,8 +248,9 @@ void STL::draw()
 		{
 		CuttingPlane plane;
 		CalcCuttingPlane(z, plane);
-//		plane.LinkSegments(z);
 		plane.Draw(z);
+		plane.LinkSegments(z);
+		plane.Draw(1);
 
 		// inFill
 		vector<Vector2f> infill;
@@ -753,29 +754,37 @@ int PntOnLine(Vector2f p1, Vector2f p2, Vector2f t, float &where)
 	float C = p2.x - p1.x;
 	float D = p2.y - p1.y;
 
-	float dist_line = abs(A * D - C * B) / sqrt(C * C + D * D);
+	where = abs(A * D - C * B) / sqrt(C * C + D * D);
 
-	if(dist_line > 0.0001)
+	if(where > 0.01)
 		return 0;
 
 	float dot = A * C + B * D;
 	float len_sq = C * C + D * D;
-	float param = dot / len_sq;
+	where = dot / len_sq;
 
-	float xx,yy;
+/*	float xx,yy;
+	xx = p1.x + where * C;
+	yy = p1.y + where * D;
 
-	if(param < 0)	// before p1
+	glPointSize(8);
+	glBegin(GL_POINTS);
+	glColor3f(1,0,1);
+	glVertex2f(xx, yy);
+	glEnd();
+*/
+	if(where <= 0.0f)	// before p1
 		{
-		where = param;
+//		where = param;
 		return 1;
 /*		xx = p1.x;
 		yy = p1.y;
 		where = dist(t.x, t.y, xx, yy);//your distance function
 		return 1;*/
 		}
-	else if(param > 1) // after p2
+	else if(where >= 1.0f) // after p2
 		{
-		where = param;
+//		where = param;
 		return 3;
 /*		xx = p2.x;
 		yy = p2.y;
@@ -784,7 +793,7 @@ int PntOnLine(Vector2f p1, Vector2f p2, Vector2f t, float &where)
 		}
 	else				// between p1 and p2
 		{
-		where = param;
+//		where = param;
 		return 2;			// fast exit, don't need where for this case
 /*		xx = p1.x + param * C;
 		yy = p1.y + param * D;
@@ -800,6 +809,12 @@ public:
 	{
 	int res[2];
 	float t1,t2;
+	
+	if(p1 == s || p2==s)
+		return 1;
+	if(p1 == e || p2==e)
+		return 3;
+	
 	res[0] = PntOnLine(s,e,p1, t1);	// Is p1 on my line?
 	if(res[0] == 0)
 		return false;
@@ -807,47 +822,47 @@ public:
 	if(res[1] == 0)
 		return false;
 
-	if(res[0] != res[1])	// expanding both points
+	glPointSize(2);
+	glBegin(GL_POINTS);
+	glColor3f(1,0,0);
+	glVertex2f(s.x, s.y);
+	glColor3f(0,1,0);
+	glVertex2f(e.x, e.y);
+	glEnd();
+
+
+	if(res[0] != res[1])	// expanding both ends
 		{
-		Vector2f i1 = p1+((p1-p2).normalise())*t1;
-		Vector2f i2 = p1+((p1-p2).normalise())*t2;
+		Vector2f i1 = s+(e-s)*t1;
+		Vector2f i2 = s+(e-s)*t2;
 
 		if(t1 < 0 && t1 < t2)	// Move p1
-			s = i1;
+			s = p1;
 		else if(t2 < 0)	// Move p1
-			s = i2;
+			s = p2;
 		if(t1 > 1 && t1 > t2)
-			e = i1;
+			e = p1;
 		else if(t2 > 1)
-			e = i2;
+//			e = p2;
 
-			glPointSize(3);
+			glPointSize(5);
 			glBegin(GL_POINTS);
 			glColor3f(1,0,0);
 			glVertex2f(s.x, s.y);
-			glColor3f(0,0,1);
+			glColor3f(0,1,0);
 			glVertex2f(e.x, e.y);
 			glEnd();
+		
+			return true;
 		}
-/*
-	if(res[0] == 1 || res[0] == 3)	// If p1 extends start or end
-		{
-		if(res[1] == 1 || res[1] == 3) 	// If p2 extends start or end
-			{
-			if(res[0] != res[1])	// If p1 & p2 extends this line in both ends (start and end point included)
-				{
-				if(res[0] == 1)			// Extend start
-					{
-					s = p1;
-					e = p2;
-					return true;
-					}
-				s = p2;
-				e = p1;
-				return true;
-				}
-			}
-		}*/
+
+			glPointSize(1);
+			glBegin(GL_POINTS);
+			glColor3f(0.5,0.5,0.5);
+			glVertex2f(s.x, s.y);
+			glColor3f(0.5,0.5,0.5);
+			glVertex2f(e.x, e.y);
+			glEnd();
 	return false;
 	}
 	Vector2f s,e;
@@ -856,280 +871,117 @@ public:
 
 void CuttingPlane::LinkSegments(float z)
 {
-	if(lines.size() == 0)
-		return;
-	// Merge lines that overlap
-	vector<OverlapLine> lineGroups;
-	int l = (int)(cvui->ExamineSlider->value()*(float)(lines.size()-1));
-	{
-	OverlapLine L(vertices[lines[l].start], vertices[lines[l].end]);
-	lineGroups.push_back(L);
-	}
-for(int x=0;x<10;x++)
-	for(int g=0;g<lineGroups.size();g++)
-	{
-	for(int i=0;i<lines.size();)
+	// pick a point.
+	
+	//Follow it round
+	
+	float precission = 0.0001;
+	
+	for(int i=0;i<lines.size();i++)
 		{
-		Vector2f p1(vertices[lines[i].start]);
-		Vector2f p2(vertices[lines[i].end]);
-		if(lineGroups[g].overlaps(p1, p2))	// This will update the linegroup to make the check-line longer
+		for(int j=i;j<lines.size();j++)
 			{
-			// consume line
-			lines.erase(lines.begin()+i);
-			continue;							// goto next line
-			}
-		i++;
-		}
-	// No overlapping lineGroup found, add a new one.
-/*	OverlapLine L(p1, p2);
-	lineGroups.push_back(L);
-	lines.erase(lines.begin());	// delete the one we already made a group
-*/	}
-/*
-LinkSegments_start_overB:
-	while(lines.size())	// remove the i >= 0
-	{
-	Vector2f p1(vertices[lines[0].start]);
-	Vector2f p2(vertices[lines[0].end]);
-	for(int g=0;g<lineGroups.size();g++)
-		{
-		if(lineGroups[g].overlaps(p1, p2))
-			{
-			lines.erase(lines.begin());
-			goto LinkSegments_start_overB;
-			}
-		}
-	// No overlapping lineGroup found, add a new one.
-	OverlapLine L(p1, p2);
-	lineGroups.push_back(L);
-	lines.erase(lines.begin());	// delete the one we already made a group
-	}
-*/
-
-	// Convert LineGroups to lines
-	lines.clear();
-	vertices.clear();
-	int count=0;
-	for(int g=0;g<lineGroups.size();g++)
-	{
-	Segment s(count,count+1);
-	count+=2;
-	lines.push_back(s);
-	vertices.push_back(lineGroups[g].s);	// store start
-	vertices.push_back(lineGroups[g].e);	// store start
-	}
-
-
-int a=0;
-/*
-
-	// find friend vertices for all vertices (Double vertices)
-
-	UINT count = vertices.size();
-	int* friends = new int[count];  // Allocate n ints and save ptr in a.
-	for (int i=0; i<count; i++)
-		friends[i] = -1;
-
-	for(UINT i=0;i<count;i++)
-		{
-		if(friends[i] == -1)
-			for(UINT j=i+1;j<count;j++)
-				if((vertices[i]-vertices[j]).length() < 0.00001)
-					{
-					assert(i >= 0);
-					assert(j >= 0);
-					friends[i] = j;
-					friends[j] = i;
-					break;
-					}
-		}
-
-	// If we want errors fixed, draw the problems
-
-	if(cvui->FixSTLerrorsButton->value() == 1)
-	{
-			if(cvui->DisplayDebugButton->value())
-			{
-				glPointSize(5);
-				glColor3f(0,1,1);
-				glBegin(GL_POINTS);
-				for(UINT i=0;i<count;i++)
+			if( (vertices[lines[i].start] - vertices[lines[j].start]).length() < precission)
 				{
-					if(friends[i] == -1)
-					{
-						glVertex3f(vertices[i].x, vertices[i].y, z);
-					}
+				lines[j].start = lines[i].start;	// vertices[lines[i].start] may now be unused
 				}
-				glEnd();
-			}
-	}
+			if( (vertices[lines[i].start] - vertices[lines[j].end]).length() < precission)
+				{
+				lines[j].end = lines[i].start;	// vertices[lines[i].start] may now be unused
+				}
 
-	// If a point don't have a friend, they are bad
-
-	vector<int> errorlist;
-	for(UINT i=0;i<count;i++)
-		if(friends[i] < 0)
-			errorlist.push_back(i);
-
-	// try and fix errors, connect any unconnected vertex to the nearest other unconnected that's not at the same point
-	if(errorlist.size() != 0)
-		{
-		bool fixedErrors = false;
-		int closest = -1;
-		for(UINT i=0;i<errorlist.size();i++)
-			{
-			if(errorlist[i] >= 0)
-				if(friends[errorlist[i]] < 0)	// If not fixed yet
-					{
-					float dist = 99999999;
-					closest = -1;
-					for(UINT j=i+1;j<errorlist.size();j++)
-						{
-							if(errorlist[j]  >= 0)
-							{
-							float d = (vertices[errorlist[i]]-vertices[errorlist[j]]).length();
-							if( d < dist  && vertices[errorlist[i]] != errorlist[j])
-								{
-								dist = d;
-								closest = j;
-								}
-							}
-						}
-					// Make a new line segment from I to closest
-					if(closest != -1)
-						{
-						Segment S(errorlist[i],errorlist[closest]);
-						friends[errorlist[i]] = errorlist[i];			// make me a friend to myself, so the friend-replacement-code don't delete me
-						friends[errorlist[closest]] = errorlist[i];
-						errorlist[i] = -1;			// fixed, "remove" from list
-						errorlist[closest] = -1;	// fixed, "remove" from list
-						lines.push_back(S);
-						}
-					else
-						{
-						// Unfixable error, error message?
-							assert(0);
-						}
-					}
+			if( (vertices[lines[i].end] - vertices[lines[j].start]).length() < precission)
+				{
+				lines[j].start = lines[i].end;	// vertices[lines[i].start] may now be unused
+				}
+			if( (vertices[lines[i].end] - vertices[lines[j].end]).length() < precission)
+				{
+				lines[j].end = lines[i].end;	// vertices[lines[i].start] may now be unused
+				}
 			}
 		}
+		
+	// delete unused points
+	vector<int> usedlist;
+	usedlist.resize(vertices.size());
+	for(int i=0;i<usedlist.size();i++)
+		usedlist[i] = 0;
 
-	errorlist.clear();
+	for(int i=0;i<lines.size();i++)
+		{
+		usedlist[lines[i].start]++;
+		usedlist[lines[i].end]++;
+		}
 
-	// delete double vertices
-	for(UINT i=0;i<count;i++)
+	// check
+	for(int i=0;i<lines.size();i++)
+		{
+		assert(usedlist[lines[i].start] == 2 || usedlist[lines[i].start] == 0);
+		assert(usedlist[lines[i].end] == 2 || usedlist[lines[i].end] == 0);
+		}
+
+	// Make new vertex array
+	std::vector<Vector2f> newVertices;
+	std::vector<int> oldVertexNumbers;
+	std::vector<int> oldVertexNumbersToNew;
+
+	oldVertexNumbersToNew.resize(vertices.size());
+
+	for(int i=0;i<vertices.size();i++)
 	{
-	// [0] = 27, so 27 and 0 are the same place in space. Delete 27 and continue
-		if(friends[i] >= 0)	// if not deleted yet
+	if(usedlist[i] != 0)
 		{
-		int doubleVertex = friends[i];	// 27
-		assert(doubleVertex != -1);
-		for(UINT L=0;L<lines.size();L++)
-			{
-				if(lines[L].start == doubleVertex)
-					lines[L].start = i;
-				if(lines[L].end == doubleVertex)
-					lines[L].end = i;
-			}
-		friends[friends[i]] = 0-i-1;	// has been deleted
+		newVertices.push_back(vertices[i]);
+		oldVertexNumbersToNew[i] = oldVertexNumbers.size();
+		oldVertexNumbers.push_back(i);
 		}
 	}
 
-	// sort lines to have lowest numbered vertex first
-	for(UINT L=0;L<lines.size();L++)
-	{
-		if(lines[L].end < lines[L].start)
+	// adjust lines to use new vertices
+	for(int i=0;i<lines.size();i++)
 		{
-		int tmp = lines[L].end;
-		lines[L].end = lines[L].start;
-		lines[L].start = tmp;
+		lines[i].start = oldVertexNumbersToNew[lines[i].start];
+		lines[i].end = oldVertexNumbersToNew[lines[i].end];
 		}
-	}
-		// Make a new vertex array
-	int a=0;
-	vector<Vector2f> newVertices;
-	for(UINT i=0;i<count;i++)
-		if(friends[i] >= 0)
-			{
-			friends[i] =newVertices.size();
-			newVertices.push_back(vertices[i]);
-			}
-	// replace doublevertices in lines list
-	for(UINT L=0;L<lines.size();L++)
-		{
-		lines[L].start = friends[lines[L].start];
-		lines[L].end = friends[lines[L].end];
-		}
-	// Use new vertices
 	vertices = newVertices;
-	// cleanup
-	delete [] friends;  // When done, free memory pointed to by a.
-
-	// Delete zero-length lines
-restart_zero_length:
-	for(int i = 0; i < lines.size() ; i++)
+	// Build polygons
+	glBegin(GL_LINE_LOOP);
+	glColor3f(1.0f,1.0f,1.0f);
+	int startLine = cvui->ExamineSlider->value()*(float)(lines.size()-1);
+	int startPoint = lines[startLine].start;
+	int end = lines[startLine].end;
+	glVertex3f(vertices[startPoint].x, vertices[startPoint].y, z);
+	glVertex3f(vertices[end].x, vertices[end].y, z);
+	
+	while(end != startPoint)	// While not closed
 	{
-		if(lines[i].end == lines[i].start)
+	// Find a lines that starts with my end point
+	for(int i=0;i<lines.size();i++)
 		{
-			lines.erase(lines.begin()+i);
-			goto restart_zero_length;
-		}
-	}
-
-
-	// Split into polygons
-//	for(UINT i=0 ; i < lines.size();i++)
-
-	count = lines.size();
-	bool* usedList = new bool[count];  // Allocate n ints and save ptr in a.
-	for (int i=0; i<count; i++)
-		usedList[i] = false;
-
-	count = 0;
-	while(count < lines.size())
-	{
-	UINT i=0;
-	while(usedList[i] == true)  i++; // Find first unsued segment
-	Poly p;
-	UINT startVertex = lines[i].start;
-	while(lines[i].end != startVertex)	// untill we loop
-		{
-		count++;
-		usedList[i] = true;
-
-		if(lines[i].end == lines[i].start)	// bogus line segment
-		{
-			i++;
-			continue;
-		}
-
-		p.lines.push_back(lines[i]);
-		// Find a line that starts with end
-		UINT j=0;
-		while(j<lines.size())
+		if(i==startLine)
+			continue;				// avoid infinite loop
+		if(lines[i].start == end)	// store point
 			{
-				if(j==124)
-					int a=0;
-				if(j != i)
-				{
-				if(lines[j].end == lines[i].end)	// segment is reversed, reverse it back
-					{
-					int a=lines[j].end;
-					lines[j].start = lines[j].end;
-					lines[j].start = a;
-					break;
-					}
-				else if (lines[j].start == lines[i].end)
-					break;
-				}
-			j++;
+			startLine = i;
+			end = lines[startLine].end;
+			break;				// done
 			}
-		i=j;
+		else if(lines[i].end == end)	// store point
+			{
+			startLine = i;
+			end = lines[startLine].start;
+			break;				// done
+			}
+		if(end==startPoint)
+			break;				// done
 		}
-	polygons.push_back(p);
+	glVertex3f(vertices[end].x, vertices[end].y, z);
+	glColor3f(0.0f,1.0f,0.0f);
 	}
-
-	delete[] usedList;*/
+	glVertex3f(vertices[startPoint].x, vertices[startPoint].y, z);
+	glEnd();
+	// draw poly
+	
 }
 
 

@@ -241,7 +241,7 @@ CubeViewUI::CubeViewUI() {
     } // Fl_Light_Button* DisplaySTLButton
     { CuttingPlaneSlider = new Fl_Value_Slider(820, 360, 370, 20, "CuttingPlane");
       CuttingPlaneSlider->type(1);
-      CuttingPlaneSlider->value(0.5);
+      CuttingPlaneSlider->value(0.68);
       CuttingPlaneSlider->textsize(14);
       CuttingPlaneSlider->callback((Fl_Callback*)cb_CuttingPlaneSlider);
       CuttingPlaneSlider->align(FL_ALIGN_TOP_LEFT);
@@ -249,7 +249,7 @@ CubeViewUI::CubeViewUI() {
     { ExamineSlider = new Fl_Value_Slider(820, 785, 365, 20, "Examine");
       ExamineSlider->type(1);
       ExamineSlider->step(0.001);
-      ExamineSlider->value(0.047);
+      ExamineSlider->value(0.098);
       ExamineSlider->textsize(14);
       ExamineSlider->callback((Fl_Callback*)cb_ExamineSlider);
       ExamineSlider->align(FL_ALIGN_TOP_LEFT);
@@ -365,6 +365,7 @@ CubeViewUI::CubeViewUI() {
 void CubeViewUI::show(int argc, char **argv) {
   mainWindow->show(argc, argv);
 //code->ReadStl("C:/y-bearing-180-inner_2off.stl");
-code->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
+code->ReadStl("C:/code/printed-parts/circuit-board-spacer-m4_2off.stl");
+//code->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
 code->redraw();
 }

@@ -269,20 +269,30 @@ void GCode::draw()
 
 int GCode::handle(int event) 
 {
+	Vector2f    Clickpoint;												// NEW: Current Mouse Point
+	static float Click_y;
+	static float old_zoom;
+	
+	Clickpoint.x =  (GLfloat)Fl::event_x();;
+	Clickpoint.y =  (GLfloat)Fl::event_y();;
+
 	switch(event) {
 		case FL_PUSH:	//mouse down event position in Fl::event_x() and Fl::event_y()
 			{
-				MousePt.T[0] = (GLfloat)Fl::event_x();
-				MousePt.T[1] = (GLfloat)Fl::event_y();
 				switch(Fl::event_button())	{
 				case FL_LEFT_MOUSE:
+					MousePt.T[0] = (GLfloat)Clickpoint.x;
+					MousePt.T[1] = (GLfloat)Clickpoint.y;
 					ArcBall->click(&MousePt);								// Update Start Vector And Prepare For Dragging
 					break;
-				case FL_MIDDLE_MOUSE: break;
-				case FL_RIGHT_MOUSE:
+				case FL_MIDDLE_MOUSE:
 					Matrix3fSetIdentity(&LastRot);								// Reset Rotation
 					Matrix3fSetIdentity(&ThisRot);								// Reset Rotation
 					Matrix4fSetRotationFromMatrix3f(&Transform, &ThisRot);		// Reset Rotation
+					break;
+				case FL_RIGHT_MOUSE:
+					Click_y = Clickpoint.y;
+					old_zoom = zoom;
 					break;
 				}
 				LastRot = ThisRot;										// Set Last Static Rotation To Last Dynamic One
@@ -290,15 +300,28 @@ int GCode::handle(int event)
 				return 1;
 			}
 		case FL_DRAG:	//mouse moved while down event ...
-			MousePt.T[0] = (GLfloat)Fl::event_x();
-			MousePt.T[1] = (GLfloat)Fl::event_y();
-            Quat4fT     ThisQuat;
+			switch(Fl::event_button())
+				{
+				case FL_LEFT_MOUSE:
+					Quat4fT     ThisQuat;
 
-            ArcBall->drag(&MousePt, &ThisQuat);						// Update End Vector And Get Rotation As Quaternion
-            Matrix3fSetRotationFromQuat4f(&ThisRot, &ThisQuat);		// Convert Quaternion Into Matrix3fT
-            Matrix3fMulMatrix3f(&ThisRot, &LastRot);				// Accumulate Last Rotation Into This One
-            Matrix4fSetRotationFromMatrix3f(&Transform, &ThisRot);	// Set Our Final Transform's Rotation From This One
-			redraw();
+					MousePt.T[0] = Clickpoint.x;
+					MousePt.T[1] = Clickpoint.y;
+
+					ArcBall->drag(&MousePt, &ThisQuat);						// Update End Vector And Get Rotation As Quaternion
+					Matrix3fSetRotationFromQuat4f(&ThisRot, &ThisQuat);		// Convert Quaternion Into Matrix3fT
+					Matrix3fMulMatrix3f(&ThisRot, &LastRot);				// Accumulate Last Rotation Into This One
+					Matrix4fSetRotationFromMatrix3f(&Transform, &ThisRot);	// Set Our Final Transform's Rotation From This One
+					redraw();
+					break;
+				case FL_MIDDLE_MOUSE:
+					break;				
+				case FL_RIGHT_MOUSE:
+					float y = 	Click_y - Clickpoint.y;
+					zoom = old_zoom + y*0.1;
+					redraw();
+					break;				
+				}
 			return 1;
 		case FL_RELEASE: //mouse up event ...
 			MousePt.T[0] = (GLfloat)Fl::event_x();
