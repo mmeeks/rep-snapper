@@ -355,6 +355,8 @@ CubeViewUI::CubeViewUI() {
     { RotateZButton = new Fl_Button(810, 310, 100, 20, "Rotate Z");
       RotateZButton->callback((Fl_Callback*)cb_RotateZButton);
     } // Fl_Button* RotateZButton
+    { GCodeLengthText = new Fl_Output(960, 6, 225, 24);
+    } // Fl_Output* GCodeLengthText
     mainWindow->end();
     mainWindow->resizable(mainWindow);
   } // Fl_Double_Window* mainWindow

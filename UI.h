@@ -12,6 +12,7 @@
 #include <FL/Fl_File_Chooser.H>
 #include <FL/Fl_Light_Button.H>
 #include <FL/Fl_Value_Slider.H>
+#include <FL/Fl_Output.H>
 
 class CubeViewUI {
 public:
@@ -131,6 +132,7 @@ private:
   void cb_RotateZButton_i(Fl_Button*, void*);
   static void cb_RotateZButton(Fl_Button*, void*);
 public:
+  Fl_Output *GCodeLengthText;
   void show(int argc, char **argv);
 };
 #endif

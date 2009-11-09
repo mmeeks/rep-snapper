@@ -19,7 +19,27 @@ using namespace std;
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
-
+/*
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Polygon_2.h>
+#include <iostream>
+typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+typedef K::Point_2 Point;
+typedef CGAL::Polygon_2<K> Polygon_2;
+using std::cout; using std::endl;
+int test()
+{
+	Point points[] = { Point(0,0), Point(5.1,0), Point(1,1), Point(0.5,6)};
+	Polygon_2 pgn(points, points+4);
+	// check if the polygon is simple.
+	cout << "The polygon is " <<
+		(pgn.is_simple() ? "" : "not ") << "simple." << endl;
+	// check if the polygon is convex
+	cout << "The polygon is " <<
+		(pgn.is_convex() ? "" : "not ") << "convex." << endl;
+	return 0;
+}
+*/
 STL stl;
 extern CubeViewUI *cvui;
 /*
@@ -118,23 +138,17 @@ void STL::Read(string filename)
 
 void STL::CalcBoundingBoxAndZoom(GCode *code)
 {
-	code->Min.T[0] = Min.x;
-	code->Min.T[1] = Min.y;
-	code->Min.T[2] = Min.z;
-	code->Max.T[0] = Max.x;
-	code->Max.T[1] = Max.y;
-	code->Max.T[2] = Max.z;
+	code->Min = Min;
+	code->Max = Max;
 
-	code->Center.T[0] = (code->Max.T[0] + code->Min.T[0] )/2;
-	code->Center.T[1] = (code->Max.T[1] + code->Min.T[1] )/2;
-	code->Center.T[2] = (code->Max.T[2] + code->Min.T[2] )/2;
+	code->Center = (code->Max.x + code->Min.x )/2;
 
 	// Find zoom
 
 	float L=0;
-	if(code->Max.T[0] - code->Min.T[0] > L)	L = code->Max.T[0] - code->Min.T[0];
-	if(code->Max.T[1] - code->Min.T[1] > L)	L = code->Max.T[1] - code->Min.T[1];
-	if(code->Max.T[2] - code->Min.T[2] > L)	L = code->Max.T[2] - code->Min.T[2];
+	if(code->Max.x - code->Min.x > L)	L = code->Max.x - code->Min.x;
+	if(code->Max.y - code->Min.y > L)	L = code->Max.y - code->Min.y;
+	if(code->Max.z - code->Min.z > L)	L = code->Max.z - code->Min.z;
 
 	code->zoom= L;
 }
@@ -1021,7 +1035,17 @@ int a=0;
 		}
 	}
 
-	// Make a new vertex array
+	// sort lines to have lowest numbered vertex first
+	for(UINT L=0;L<lines.size();L++)
+	{
+		if(lines[L].end < lines[L].start)
+		{
+		int tmp = lines[L].end;
+		lines[L].end = lines[L].start;
+		lines[L].start = tmp;
+		}
+	}
+		// Make a new vertex array
 	int a=0;
 	vector<Vector2f> newVertices;
 	for(UINT i=0;i<count;i++)
@@ -1041,9 +1065,21 @@ int a=0;
 	// cleanup
 	delete [] friends;  // When done, free memory pointed to by a.
 
-/*
+	// Delete zero-length lines
+restart_zero_length:
+	for(int i = 0; i < lines.size() ; i++)
+	{
+		if(lines[i].end == lines[i].start)
+		{
+			lines.erase(lines.begin()+i);
+			goto restart_zero_length;
+		}
+	}
+
+
 	// Split into polygons
 //	for(UINT i=0 ; i < lines.size();i++)
+
 	count = lines.size();
 	bool* usedList = new bool[count];  // Allocate n ints and save ptr in a.
 	for (int i=0; i<count; i++)
@@ -1093,8 +1129,7 @@ int a=0;
 	polygons.push_back(p);
 	}
 
-	delete[] usedList;
-	*/
+	delete[] usedList;*/
 }
 
 

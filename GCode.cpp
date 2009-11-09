@@ -3,14 +3,20 @@
 #include "gcode.h"
 #include "FL/FL.h"
 
+#include <iostream>
+#include <sstream>
+
+#include "UI.h"
+
 using namespace std;
+extern CubeViewUI *cvui;
 
 
 GCode::GCode(int x,int y,int w,int h,const char *l) : Fl_Gl_Window(x,y,w,h,l)
 {
-	Min.T[0] = Min.T[1] = Min.T[2] = 99999999.0f;
-	Max.T[0] = Max.T[1] = Max.T[2] = -99999999.0f;
-	Center.T[0] = Center.T[1] = Center.T[2] = 0.0f;
+	Min.x = Min.y = Min.z = 99999999.0f;
+	Max.x = Max.y = Max.z = -99999999.0f;
+	Center.x = Center.y = Center.z = 0.0f;
 	
 
 	glClearColor (0.0f, 0.0f, 0.0f, 0.5f);							// Black Background
@@ -58,11 +64,9 @@ void GCode::Read(string filename)
 
 	string s;
 
-	Vector3fT globalPos;
-	Min.T[0] = Min.T[1] = Min.T[2] = 99999999.0f;
-	Max.T[0] = Max.T[1] = Max.T[2] = -99999999.0f;
-
-	globalPos.T[0] = globalPos.T[1] = globalPos.T[2] = 0;
+	Vector3f globalPos(0,0,0);
+	Min.x = Min.y = Min.z = 99999999.0f;
+	Max.x = Max.y = Max.z = -99999999.0f;
 
 	while(getline(file,s))
 	{
@@ -95,61 +99,61 @@ void GCode::Read(string filename)
 				if( buffer.find( "X", 0) != string::npos )	//string::npos means not defined
 				{
 					string number = buffer.substr(1,buffer.length()-1);				// 16 characters
-					command.where.s.X = ToFloat(number);
+					command.where.x = ToFloat(number);
 				}
 				if( buffer.find( "Y", 0) != string::npos )	//string::npos means not defined
 				{
 					string number = buffer.substr(1,buffer.length()-1);				// 16 characters
-					command.where.s.Y = ToFloat(number);
+					command.where.y = ToFloat(number);
 				}
 				if( buffer.find( "Z", 0) != string::npos )	//string::npos means not defined
 				{
 					string number = buffer.substr(1,buffer.length()-1);				// 16 characters
-					command.where.s.Z = ToFloat(number);
+					command.where.z = ToFloat(number);
 				}
 			}
-			if(command.where.T[0] < -100)
+			if(command.where.x < -100)
 				continue;
-			if(command.where.T[1] < -100)
+			if(command.where.y < -100)
 				continue;
 			globalPos = command.where;
 
-			if(command.where.T[0] < Min.T[0])
-				Min.T[0] = command.where.T[0];
-			if(command.where.T[1] < Min.T[1])
-				Min.T[1] = command.where.T[1];
-			if(command.where.T[2] < Min.T[2])
-				Min.T[2] = command.where.T[2];
-			if(command.where.T[0] > Max.T[0])
-				Max.T[0] = command.where.T[0];
-			if(command.where.T[1] > Max.T[1])
-				Max.T[1] = command.where.T[1];
-			if(command.where.T[2] > Max.T[2])
-				Max.T[2] = command.where.T[2];
+			if(command.where.x < Min.x)
+				Min.x = command.where.x;
+			if(command.where.y < Min.y)
+				Min.y = command.where.y;
+			if(command.where.z < Min.z)
+				Min.z = command.where.z;
+			if(command.where.x > Max.x)
+				Max.x = command.where.x;
+			if(command.where.y > Max.y)
+				Max.y = command.where.y;
+			if(command.where.z > Max.z)
+				Max.z = command.where.z;
 			commands.push_back(command);
 		}
 	}
 
-	Center.T[0] = (Max.T[0] + Min.T[0] )/2;
-	Center.T[1] = (Max.T[1] + Min.T[1] )/2;
-	Center.T[2] = (Max.T[2] + Min.T[2] )/2;
+	Center.x = (Max.x + Min.x )/2;
+	Center.y = (Max.y + Min.y )/2;
+	Center.z = (Max.z + Min.z )/2;
 
 	// Find zoom
 
 	float L=0;
-	if(Max.T[0] - Min.T[0] > L)
-		L = Max.T[0] - Min.T[0];
-	if(Max.T[1] - Min.T[1] > L)
-		L = Max.T[1] - Min.T[1];
-	if(Max.T[2] - Min.T[2] > L)
-		L = Max.T[2] - Min.T[2];
+	if(Max.x - Min.x > L)
+		L = Max.x - Min.x;
+	if(Max.y - Min.y > L)
+		L = Max.y - Min.y;
+	if(Max.z - Min.z > L)
+		L = Max.z - Min.z;
 
 	zoom= L;
 
 }
 void GCode::CenterView()
 {
-	glTranslatef(-Center.T[0], -Center.T[1], -Center.T[2]);
+	glTranslatef(-Center.x, -Center.y, -Center.z);
 }
 
 /*
@@ -206,41 +210,51 @@ void GCode::draw()
 	/*--------------- Drawing -----------------*/
 
 	glBegin(GL_LINE_STRIP);
+	Vector3f thisPos(0,0,0);
+
+	float	Distance = 0.0f;
 	for(UINT i=0;i<commands.size();i++)
 	{
 		switch(commands[i].Code)
 		{
 		case COORDINATEDMOTION:
-			glVertex3f(commands[i].where.T[0], commands[i].where.T[1], commands[i].where.T[2] );
+			Distance += (commands[i].where-thisPos).length();
+			glVertex3fv((GLfloat*)&commands[i].where);
 			break;
 		}
 	}
 	glEnd();
 
+	std::stringstream oss;
+
+	oss << "Length: "  << Distance/1000.0f;
+//	std::cout << oss.str();
+	cvui->GCodeLengthText->value(oss.str().c_str());
+
 
 	// Draw bbox
 	glColor3f(1,0,0);
 	glBegin(GL_LINE_LOOP);
-	glVertex3f(Min.T[0], Min.T[1], Min.T[2]);
-	glVertex3f(Max.T[0], Min.T[1], Min.T[2]);
-	glVertex3f(Max.T[0], Max.T[1], Min.T[2]);
-	glVertex3f(Min.T[0], Max.T[1], Min.T[2]);
+	glVertex3f(Min.x, Min.y, Min.z);
+	glVertex3f(Max.x, Min.y, Min.z);
+	glVertex3f(Max.x, Max.y, Min.z);
+	glVertex3f(Min.x, Max.y, Min.z);
 	glEnd();
 	glBegin(GL_LINE_LOOP);
-	glVertex3f(Min.T[0], Min.T[1], Max.T[2]);
-	glVertex3f(Max.T[0], Min.T[1], Max.T[2]);
-	glVertex3f(Max.T[0], Max.T[1], Max.T[2]);
-	glVertex3f(Min.T[0], Max.T[1], Max.T[2]);
+	glVertex3f(Min.x, Min.y, Max.z);
+	glVertex3f(Max.x, Min.y, Max.z);
+	glVertex3f(Max.x, Max.y, Max.z);
+	glVertex3f(Min.x, Max.y, Max.z);
 	glEnd();
 	glBegin(GL_LINES);
-	glVertex3f(Min.T[0], Min.T[1], Min.T[2]);
-	glVertex3f(Min.T[0], Min.T[1], Max.T[2]);
-	glVertex3f(Min.T[0], Max.T[1], Min.T[2]);
-	glVertex3f(Min.T[0], Max.T[1], Max.T[2]);
-	glVertex3f(Max.T[0], Max.T[1], Min.T[2]);
-	glVertex3f(Max.T[0], Max.T[1], Max.T[2]);
-	glVertex3f(Max.T[0], Min.T[1], Min.T[2]);
-	glVertex3f(Max.T[0], Min.T[1], Max.T[2]);
+	glVertex3f(Min.x, Min.y, Min.z);
+	glVertex3f(Min.x, Min.y, Max.z);
+	glVertex3f(Min.x, Max.y, Min.z);
+	glVertex3f(Min.x, Max.y, Max.z);
+	glVertex3f(Max.x, Max.y, Min.z);
+	glVertex3f(Max.x, Max.y, Max.z);
+	glVertex3f(Max.x, Min.y, Min.z);
+	glVertex3f(Max.x, Min.y, Max.z);
 	glEnd();
 
 	/*--------------- Draw STL ------------------*/

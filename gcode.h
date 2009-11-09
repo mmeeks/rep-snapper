@@ -63,7 +63,7 @@ class Command
 public:
 	Command(){};
 	GCodes Code;
-	Vector3fT where;
+	Vector3f where;
 };
 
 class GCode : public Fl_Gl_Window
@@ -90,12 +90,12 @@ public:
 	Matrix3fT   LastRot;
 	Matrix3fT   ThisRot;
 	ArcBallT    *ArcBall;								                // NEW: ArcBall Instance
-	Point2fT    MousePt;												// NEW: Current Mouse Point
+	Vector2fT    MousePt;												// NEW: Current Mouse Point
 	/*--------------View-------------------*/
 
-	Vector3fT Center;
-	Vector3fT Min;
-	Vector3fT Max;
+	Vector3f Center;
+	Vector3f Min;
+	Vector3f Max;
 	float zoom;
 	/*--------------GCode-------------------*/
 	std::vector<Command> commands;

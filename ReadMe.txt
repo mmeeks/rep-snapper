@@ -1,3 +1,5 @@
+You need CGAL 3.5 or higher. Get it here: http://gforge.inria.fr/frs/?group_id=52
+
 
 Read this
 

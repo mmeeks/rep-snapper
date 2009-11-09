@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0110 
+version 1.0109 
 header_name {.h} 
 code_name {.cxx}
 class CubeViewUI {open
@@ -7,8 +7,8 @@ class CubeViewUI {open
   Function {CubeViewUI()} {open
   } {
     Fl_Window mainWindow {
-      label CubeView open
-      xywh {246 19 1190 843} type Double box UP_BOX labelsize 12 hide resizable
+      label CubeView open selected
+      xywh {303 198 1190 843} type Double box UP_BOX labelsize 12 hide resizable
     } {
       Fl_Box code {
         label {This is the cube_view}
@@ -186,8 +186,11 @@ code->redraw();}
         label {Rotate Z}
         callback {code->RotateObject(0,0,1, M_PI/4);
 code->CalcBoundingBoxAndZoom(code);
-code->redraw();} selected
+code->redraw();}
         xywh {810 310 100 20}
+      }
+      Fl_Output GCodeLengthText {
+        xywh {960 6 225 24}
       }
     }
   }
