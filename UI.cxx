@@ -364,8 +364,8 @@ CubeViewUI::CubeViewUI() {
 
 void CubeViewUI::show(int argc, char **argv) {
   mainWindow->show(argc, argv);
-//code->ReadStl("C:/y-bearing-180-inner_2off.stl");
-code->ReadStl("C:/code/printed-parts/circuit-board-spacer-m4_2off.stl");
+code->ReadStl("C:box.stl");
+//code->ReadStl("C:/code/printed-parts/circuit-board-spacer-m4_2off.stl");
 //code->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
 code->redraw();
 }

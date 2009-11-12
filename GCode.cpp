@@ -227,7 +227,7 @@ void GCode::draw()
 
 	std::stringstream oss;
 
-	oss << "Length: "  << Distance/1000.0f;
+	oss << "Length: "  << Distance/1000.0f << " - " << Distance/200000.0f << " Hour.";
 //	std::cout << oss.str();
 	cvui->GCodeLengthText->value(oss.str().c_str());
 

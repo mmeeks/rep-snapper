@@ -19,27 +19,6 @@ using namespace std;
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
-/*
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Polygon_2.h>
-#include <iostream>
-typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
-typedef K::Point_2 Point;
-typedef CGAL::Polygon_2<K> Polygon_2;
-using std::cout; using std::endl;
-int test()
-{
-	Point points[] = { Point(0,0), Point(5.1,0), Point(1,1), Point(0.5,6)};
-	Polygon_2 pgn(points, points+4);
-	// check if the polygon is simple.
-	cout << "The polygon is " <<
-		(pgn.is_simple() ? "" : "not ") << "simple." << endl;
-	// check if the polygon is convex
-	cout << "The polygon is " <<
-		(pgn.is_convex() ? "" : "not ") << "convex." << endl;
-	return 0;
-}
-*/
 STL stl;
 extern CubeViewUI *cvui;
 /*
@@ -913,11 +892,13 @@ void CuttingPlane::LinkSegments(float z)
 		usedlist[lines[i].end]++;
 		}
 
-	// check
+	// check that all vertices are used 0 (because of prevous loop) or 2 line segments. - or Bail.
 	for(int i=0;i<lines.size();i++)
 		{
-		assert(usedlist[lines[i].start] == 2 || usedlist[lines[i].start] == 0);
-		assert(usedlist[lines[i].end] == 2 || usedlist[lines[i].end] == 0);
+			if(usedlist[lines[i].start] != 2 && usedlist[lines[i].start] != 0)
+				return;
+			if(usedlist[lines[i].end] != 2 && usedlist[lines[i].end] != 0)
+				return;
 		}
 
 	// Make new vertex array
@@ -943,45 +924,109 @@ void CuttingPlane::LinkSegments(float z)
 		lines[i].start = oldVertexNumbersToNew[lines[i].start];
 		lines[i].end = oldVertexNumbersToNew[lines[i].end];
 		}
+
+
 	vertices = newVertices;
-	// Build polygons
-	glBegin(GL_LINE_LOOP);
-	glColor3f(1.0f,1.0f,1.0f);
-	int startLine = cvui->ExamineSlider->value()*(float)(lines.size()-1);
-	int startPoint = lines[startLine].start;
-	int end = lines[startLine].end;
-	glVertex3f(vertices[startPoint].x, vertices[startPoint].y, z);
-	glVertex3f(vertices[end].x, vertices[end].y, z);
-	
-	while(end != startPoint)	// While not closed
-	{
-	// Find a lines that starts with my end point
+
+	// make reverse lines/vertices lookup table
+	//vertex[i] is used by (line)5
+
+	vector<Vector2i> vertexUseList;
+	vertexUseList.resize(vertices.size());
+	for(int i=0;i<vertexUseList.size();i++)
+		vertexUseList[i][0] = vertexUseList[i][1] = -1;
+
+	int c=0;
 	for(int i=0;i<lines.size();i++)
-		{
-		if(i==startLine)
-			continue;				// avoid infinite loop
-		if(lines[i].start == end)	// store point
-			{
-			startLine = i;
-			end = lines[startLine].end;
-			break;				// done
-			}
-		else if(lines[i].end == end)	// store point
-			{
-			startLine = i;
-			end = lines[startLine].start;
-			break;				// done
-			}
-		if(end==startPoint)
-			break;				// done
-		}
-	glVertex3f(vertices[end].x, vertices[end].y, z);
-	glColor3f(0.0f,1.0f,0.0f);
+	{
+		int vertexNr = lines[i].start;
+		if(vertexUseList[vertexNr][0] == -1)
+			vertexUseList[vertexNr][0] = i;
+		else
+			vertexUseList[vertexNr][1] = i;
+
+		vertexNr = lines[i].end;
+		if(vertexUseList[vertexNr][0] == -1)
+			vertexUseList[vertexNr][0] = i;
+		else
+			vertexUseList[vertexNr][1] = i;
+
 	}
-	glVertex3f(vertices[startPoint].x, vertices[startPoint].y, z);
-	glEnd();
-	// draw poly
-	
+
+	// While (unised line segments)
+		{
+		// Build polygons
+		glBegin(GL_LINE_LOOP);
+		glColor3f(1.0f,1.0f,1.0f);
+		int startLine = cvui->ExamineSlider->value()*(float)(lines.size()-1);
+		int startPoint = lines[startLine].start;
+		int end = lines[startLine].end;
+		glVertex3f(vertices[startPoint].x, vertices[startPoint].y, z);
+		glVertex3f(vertices[end].x, vertices[end].y, z);
+		
+		Poly poly;
+		poly.points.push_back(startPoint);
+		poly.points.push_back(end);
+
+		vertexUseList[startPoint][0] = -1;// used
+		vertexUseList[end][0] = -1;// used
+
+		while(end != startPoint)	// While not closed
+		{
+			Vector2i linesThatUseThisVertex = vertexUseList[end];
+
+			// Is the vertex we are looking at from line 1 ?
+			if(linesThatUseThisVertex[0] != -1 && lines[linesThatUseThisVertex[0]].start == end)	// 22 is used by 4 and 6 - we are looking for 4
+			{
+				end = lines[linesThatUseThisVertex[0]].end;
+				linesThatUseThisVertex[0]= -1;		// Been used
+			}
+			else if(linesThatUseThisVertex[0] != -1 && lines[linesThatUseThisVertex[0]].end == end)	// 22 is used by 4 and 6 - we are looking for 4
+			{
+				end = lines[linesThatUseThisVertex[0]].start;
+				linesThatUseThisVertex[0] = -1;
+			}
+
+			else if(linesThatUseThisVertex[1] != -1 && lines[linesThatUseThisVertex[1]].start == end)	// 22 is used by 4 and 6 - we are looking for 4
+			{
+				end = lines[linesThatUseThisVertex[1]].end;
+				linesThatUseThisVertex[1] = -1;
+			}
+			else if(linesThatUseThisVertex[1] != -1 && lines[linesThatUseThisVertex[1]].end == end)	// 22 is used by 4 and 6 - we are looking for 4
+			{
+				end = lines[linesThatUseThisVertex[1]].start;
+				linesThatUseThisVertex[1] = -1;
+			}
+
+/*			// Find a lines that starts with my end point
+			for(int i=0;i<lines.size();i++)
+			{
+				if(i==startLine)
+					continue;				// avoid infinite loop
+				if(lines[i].start == end)	// store point
+				{
+					startLine = i;
+					end = lines[startLine].end;
+					break;				// done
+				}
+				else if(lines[i].end == end)	// store point
+				{
+					startLine = i;
+					end = lines[startLine].start;
+					break;				// done
+				}
+				if(end==startPoint)
+					break;				// done
+			}*/
+			glVertex3f(vertices[end].x, vertices[end].y, z);
+			glColor3f(0.0f,1.0f,0.0f);
+			poly.points.push_back(end);
+		}
+		glVertex3f(vertices[startPoint].x, vertices[startPoint].y, z);
+		glEnd();
+		polygons.push_back(poly);
+		}
+
 }
 
 

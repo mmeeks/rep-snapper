@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0110 
+version 1.0109 
 header_name {.h} 
 code_name {.cxx}
 class CubeViewUI {open
@@ -197,8 +197,8 @@ code->redraw();}
   Function {show(int argc, char **argv)} {open
   } {
     code {mainWindow->show(argc, argv);
-//code->ReadStl("C:/y-bearing-180-inner_2off.stl");
-code->ReadStl("C:/code/printed-parts/circuit-board-spacer-m4_2off.stl");
+code->ReadStl("C:box.stl");
+//code->ReadStl("C:/code/printed-parts/circuit-board-spacer-m4_2off.stl");
 //code->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
 code->redraw();} {selected
     }

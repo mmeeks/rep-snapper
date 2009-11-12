@@ -61,7 +61,7 @@ class Poly{
 public:
 	Poly(){};
 
-	vector<Segment> lines;			// points
+	vector<int> points;			// points
 };
 
 class  CuttingPlane{
