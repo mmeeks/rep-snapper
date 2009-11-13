@@ -6,6 +6,7 @@
 #include "math.h"
 
 #include <gl/glu.h>
+#include <glut.h>
 
 #include <iostream>
 #include <fstream>
@@ -34,6 +35,19 @@ void GLText(Vector3f &pos, char *text)
 	}
 }
 */
+
+
+
+void renderBitmapString(Vector3f pos, void* font, string text)
+{
+	char asd[100];
+	char *a = &asd[0];
+	sprintf(asd,text.c_str());
+	glRasterPos3f(pos.x, pos.y, pos.z);
+	for (int c=0;c<text.size();c++)
+		glutBitmapCharacter(font, (int)*a++);
+}
+
 // STL constructor
 STL::STL()
 {
@@ -943,88 +957,109 @@ void CuttingPlane::LinkSegments(float z)
 		if(vertexUseList[vertexNr][0] == -1)
 			vertexUseList[vertexNr][0] = i;
 		else
+			{
+			assert(vertexUseList[vertexNr][1] == -1);
 			vertexUseList[vertexNr][1] = i;
+			}
 
 		vertexNr = lines[i].end;
 		if(vertexUseList[vertexNr][0] == -1)
 			vertexUseList[vertexNr][0] = i;
 		else
+			{
+			assert(vertexUseList[vertexNr][1] == -1);
 			vertexUseList[vertexNr][1] = i;
-
+			}
 	}
 
-	// While (unised line segments)
+	// While (there's usused line segments left)
 		{
 		// Build polygons
-		glBegin(GL_LINE_LOOP);
-		glColor3f(1.0f,1.0f,1.0f);
 		int startLine = cvui->ExamineSlider->value()*(float)(lines.size()-1);
 		int startPoint = lines[startLine].start;
-		int end = lines[startLine].end;
-		glVertex3f(vertices[startPoint].x, vertices[startPoint].y, z);
-		glVertex3f(vertices[end].x, vertices[end].y, z);
+		int endPoint = lines[startLine].end;
 		
 		Poly poly;
-		poly.points.push_back(startPoint);
-		poly.points.push_back(end);
-
 		vertexUseList[startPoint][0] = -1;// used
-		vertexUseList[end][0] = -1;// used
+		vertexUseList[endPoint][0] = -1;// used
 
-		while(end != startPoint)	// While not closed
+		poly.points.push_back(endPoint);
+
+		while(endPoint != startPoint)	// While not closed
 		{
-			Vector2i linesThatUseThisVertex = vertexUseList[end];
+/*			Vector2i linesThatUseThisVertex = vertexUseList[endPoint];
+			int oldEndPoint = endPoint;
 
 			// Is the vertex we are looking at from line 1 ?
-			if(linesThatUseThisVertex[0] != -1 && lines[linesThatUseThisVertex[0]].start == end)	// 22 is used by 4 and 6 - we are looking for 4
+			if(linesThatUseThisVertex[0] != -1 && lines[linesThatUseThisVertex[0]].start == endPoint)	// 22 is used by 4 and 6 - we are looking for 4
 			{
-				end = lines[linesThatUseThisVertex[0]].end;
-				linesThatUseThisVertex[0]= -1;		// Been used
+				endPoint = lines[linesThatUseThisVertex[0]].end;
+				vertexUseList[endPoint][0]= -1;		// Been used
 			}
-			else if(linesThatUseThisVertex[0] != -1 && lines[linesThatUseThisVertex[0]].end == end)	// 22 is used by 4 and 6 - we are looking for 4
+			else if(linesThatUseThisVertex[0] != -1 && lines[linesThatUseThisVertex[0]].end == endPoint)	// 22 is used by 4 and 6 - we are looking for 4
 			{
-				end = lines[linesThatUseThisVertex[0]].start;
-				linesThatUseThisVertex[0] = -1;
-			}
-
-			else if(linesThatUseThisVertex[1] != -1 && lines[linesThatUseThisVertex[1]].start == end)	// 22 is used by 4 and 6 - we are looking for 4
-			{
-				end = lines[linesThatUseThisVertex[1]].end;
-				linesThatUseThisVertex[1] = -1;
-			}
-			else if(linesThatUseThisVertex[1] != -1 && lines[linesThatUseThisVertex[1]].end == end)	// 22 is used by 4 and 6 - we are looking for 4
-			{
-				end = lines[linesThatUseThisVertex[1]].start;
-				linesThatUseThisVertex[1] = -1;
+				endPoint = lines[linesThatUseThisVertex[0]].start;
+				vertexUseList[endPoint][0] = -1;
 			}
 
-/*			// Find a lines that starts with my end point
+			else if(linesThatUseThisVertex[1] != -1 && lines[linesThatUseThisVertex[1]].start == endPoint)	// 22 is used by 4 and 6 - we are looking for 4
+			{
+				endPoint = lines[linesThatUseThisVertex[1]].end;
+				vertexUseList[endPoint][1] = -1;
+			}
+			else if(linesThatUseThisVertex[1] != -1 && lines[linesThatUseThisVertex[1]].end == endPoint)	// 22 is used by 4 and 6 - we are looking for 4
+			{
+				endPoint = lines[linesThatUseThisVertex[1]].start;
+				vertexUseList[endPoint][1] = -1;
+			}
+			else
+			{
+				assert(0);	// Fucked up
+			}
+*/
+			// Find a lines that starts with my endPoint point
 			for(int i=0;i<lines.size();i++)
 			{
 				if(i==startLine)
 					continue;				// avoid infinite loop
-				if(lines[i].start == end)	// store point
+				if(lines[i].start == endPoint)	// store point
 				{
 					startLine = i;
-					end = lines[startLine].end;
+					endPoint = lines[startLine].end;
 					break;				// done
 				}
-				else if(lines[i].end == end)	// store point
+				else if(lines[i].end == endPoint)	// store point
 				{
 					startLine = i;
-					end = lines[startLine].start;
+					endPoint = lines[startLine].start;
 					break;				// done
 				}
-				if(end==startPoint)
+				if(endPoint==startPoint)
 					break;				// done
-			}*/
-			glVertex3f(vertices[end].x, vertices[end].y, z);
-			glColor3f(0.0f,1.0f,0.0f);
-			poly.points.push_back(end);
+			}
+			poly.points.push_back(endPoint);
 		}
-		glVertex3f(vertices[startPoint].x, vertices[startPoint].y, z);
-		glEnd();
 		polygons.push_back(poly);
+		}
+
+
+		// Cleanup polygons
+		CleanupPolygons();
+		// Draw resulting poly
+		glColor3f(1,1,0);
+		for(int p=0; p<polygons.size();p++)
+		{
+			glBegin(GL_LINE_LOOP);
+			for(int v=0; v<polygons[p].points.size();v++)
+				glVertex3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, z);
+			glEnd();
+			glColor3f(1,0,1);
+			glEnable(GL_POINT_SMOOTH);
+			glPointSize(15);
+			glBegin(GL_POINTS);
+			for(int v=0; v<polygons[p].points.size();v++)
+				glVertex3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, z);
+			glEnd();
 		}
 
 }
@@ -1190,4 +1225,38 @@ void STL::RotateObject(Vector3f axis, float angle)
 float Triangle::area()
 {
 	return ( ((C-A).cross(B-A)).length() );
+}
+
+void CuttingPlane::CleanupPolygons()
+{
+	
+	Poly poly = polygons[0];
+
+	glColor3f(1,1,1);
+	for(int v=0;v<poly.points.size();v++)
+	{
+		ostringstream oss;
+		oss << v;
+		renderBitmapString(Vector3f (vertices[poly.points[v]].x, vertices[poly.points[v]].y, 0) , GLUT_BITMAP_8_BY_13 , oss.str());
+	}
+	for(int v=0;v<poly.points.size();)
+	{
+		Vector2f p1 =vertices[poly.points[(v-1+poly.points.size())%poly.points.size()]];
+		Vector2f p2 =vertices[poly.points[v]];
+		Vector2f p3 =vertices[poly.points[(v+1)%poly.points.size()]];
+
+		Vector2f v1 = (p2-p1);
+		Vector2f v2 = (p3-p2);
+
+		v1.normalize();
+		v2.normalize();
+
+		if((v1-v2).lengthSquared() < 0.01)
+			{
+			poly.points.erase(poly.points.begin()+v);
+			}
+		else
+			v++;
+	}
+	polygons[0] = poly ;
 }

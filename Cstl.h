@@ -60,6 +60,7 @@ struct Segment{
 class Poly{
 public:
 	Poly(){};
+	void cleanup();
 
 	vector<int> points;			// points
 };
@@ -72,6 +73,7 @@ public:
 	bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, InFillHit &hit);
 	void Draw(float z);
 	void LinkSegments(float z);
+	void CleanupPolygons();
 
 	Vector2f Min, Max;				// Bounding box
 	vector<Vector2f> vertices;		// points
