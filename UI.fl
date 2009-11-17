@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109 
+version 1.0110 
 header_name {.h} 
 code_name {.cxx}
 class CubeViewUI {open
@@ -8,7 +8,7 @@ class CubeViewUI {open
   } {
     Fl_Window mainWindow {
       label CubeView open
-      xywh {303 198 1190 843} type Double box UP_BOX labelsize 12 hide resizable
+      xywh {25 19 1190 843} type Double box UP_BOX labelsize 12 hide resizable
     } {
       Fl_Box code {
         label {This is the cube_view}
@@ -67,7 +67,7 @@ code->redraw();
       Fl_Value_Slider CuttingPlaneSlider {
         label CuttingPlane
         callback {code->redraw();}
-        xywh {820 360 370 20} type Horizontal align 5 value 0.68 textsize 14
+        xywh {810 360 375 20} type Horizontal align 5 value 0.68 textsize 14
       }
       Fl_Value_Slider ExamineSlider {
         label Examine
@@ -154,7 +154,7 @@ code->redraw();}
       Fl_Value_Slider ShrinkSlider {
         label Shrink
         callback {code->redraw();}
-        xywh {820 400 370 20} type Horizontal align 5 step 0 value 0.5 textsize 14
+        xywh {810 400 375 20} type Horizontal align 5 step 0 value 0.5 textsize 14
       }
       Fl_Light_Button FixSTLerrorsButton {
         label {Fix STL errors}
@@ -166,39 +166,54 @@ code->redraw();}
         callback {code->OptimizeRotation();
 code->CalcBoundingBoxAndZoom(code);
 code->redraw();}
-        xywh {810 235 100 20}
+        xywh {810 320 90 20}
       }
       Fl_Button RotateXButton {
         label {Rotate X}
         callback {code->RotateObject(1,0,0, M_PI/4);
 code->CalcBoundingBoxAndZoom(code);
 code->redraw();}
-        xywh {810 260 100 20}
+        xywh {905 320 90 20}
       }
       Fl_Button RotateYButton {
         label {Rotate Y}
         callback {code->RotateObject(0,1,0, M_PI/4);
 code->CalcBoundingBoxAndZoom(code);
 code->redraw();}
-        xywh {810 285 100 20}
+        xywh {1000 320 90 20}
       }
       Fl_Button RotateZButton {
         label {Rotate Z}
         callback {code->RotateObject(0,0,1, M_PI/4);
 code->CalcBoundingBoxAndZoom(code);
 code->redraw();}
-        xywh {810 310 100 20}
+        xywh {1095 320 90 20}
       }
       Fl_Output GCodeLengthText {
         xywh {960 6 225 24}
+      }
+      Fl_Light_Button DrawVertexNumbersButton {
+        label {Draw vertex numbers}
+        callback {code->redraw();}
+        xywh {1015 505 170 20} selection_color 63
+      }
+      Fl_Light_Button DrawLineNumbersButton {
+        label {Draw line numbers}
+        callback {code->redraw();}
+        xywh {1015 530 170 20} selection_color 63
+      }
+      Fl_Value_Slider OptimizationSlider {
+        label Optimize
+        callback {code->redraw();}
+        xywh {810 250 370 20} type Horizontal align 5 step 0.001 value 0.001 textsize 14
       }
     }
   }
   Function {show(int argc, char **argv)} {open
   } {
     code {mainWindow->show(argc, argv);
-code->ReadStl("C:/box.stl");
-//code->ReadStl("C:/code/printed-parts/circuit-board-spacer-m4_2off.stl");
+//code->ReadStl("C:/box.stl");
+code->ReadStl("C:/code/printed-parts/y-bearing-180-outer-right_1off.stl");
 //code->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
 code->redraw();} {selected
     }

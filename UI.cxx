@@ -209,6 +209,27 @@ void CubeViewUI::cb_RotateZButton(Fl_Button* o, void* v) {
   ((CubeViewUI*)(o->parent()->user_data()))->cb_RotateZButton_i(o,v);
 }
 
+void CubeViewUI::cb_DrawVertexNumbersButton_i(Fl_Light_Button*, void*) {
+  code->redraw();
+}
+void CubeViewUI::cb_DrawVertexNumbersButton(Fl_Light_Button* o, void* v) {
+  ((CubeViewUI*)(o->parent()->user_data()))->cb_DrawVertexNumbersButton_i(o,v);
+}
+
+void CubeViewUI::cb_DrawLineNumbersButton_i(Fl_Light_Button*, void*) {
+  code->redraw();
+}
+void CubeViewUI::cb_DrawLineNumbersButton(Fl_Light_Button* o, void* v) {
+  ((CubeViewUI*)(o->parent()->user_data()))->cb_DrawLineNumbersButton_i(o,v);
+}
+
+void CubeViewUI::cb_OptimizationSlider_i(Fl_Value_Slider*, void*) {
+  code->redraw();
+}
+void CubeViewUI::cb_OptimizationSlider(Fl_Value_Slider* o, void* v) {
+  ((CubeViewUI*)(o->parent()->user_data()))->cb_OptimizationSlider_i(o,v);
+}
+
 CubeViewUI::CubeViewUI() {
   { mainWindow = new Fl_Double_Window(1190, 843, "CubeView");
     mainWindow->box(FL_UP_BOX);
@@ -239,7 +260,7 @@ CubeViewUI::CubeViewUI() {
       DisplaySTLButton->value(1);
       DisplaySTLButton->selection_color((Fl_Color)FL_GREEN);
     } // Fl_Light_Button* DisplaySTLButton
-    { CuttingPlaneSlider = new Fl_Value_Slider(820, 360, 370, 20, "CuttingPlane");
+    { CuttingPlaneSlider = new Fl_Value_Slider(810, 360, 375, 20, "CuttingPlane");
       CuttingPlaneSlider->type(1);
       CuttingPlaneSlider->value(0.68);
       CuttingPlaneSlider->textsize(14);
@@ -330,7 +351,7 @@ CubeViewUI::CubeViewUI() {
       DisplayAllLayers->selection_color((Fl_Color)FL_GREEN);
       DisplayAllLayers->callback((Fl_Callback*)cb_DisplayAllLayers);
     } // Fl_Light_Button* DisplayAllLayers
-    { ShrinkSlider = new Fl_Value_Slider(820, 400, 370, 20, "Shrink");
+    { ShrinkSlider = new Fl_Value_Slider(810, 400, 375, 20, "Shrink");
       ShrinkSlider->type(1);
       ShrinkSlider->step(0);
       ShrinkSlider->value(0.5);
@@ -343,20 +364,36 @@ CubeViewUI::CubeViewUI() {
       FixSTLerrorsButton->selection_color((Fl_Color)FL_GREEN);
       FixSTLerrorsButton->callback((Fl_Callback*)cb_FixSTLerrorsButton);
     } // Fl_Light_Button* FixSTLerrorsButton
-    { AutoRotateButton = new Fl_Button(810, 235, 100, 20, "Auto rotate");
+    { AutoRotateButton = new Fl_Button(810, 320, 90, 20, "Auto rotate");
       AutoRotateButton->callback((Fl_Callback*)cb_AutoRotateButton);
     } // Fl_Button* AutoRotateButton
-    { RotateXButton = new Fl_Button(810, 260, 100, 20, "Rotate X");
+    { RotateXButton = new Fl_Button(905, 320, 90, 20, "Rotate X");
       RotateXButton->callback((Fl_Callback*)cb_RotateXButton);
     } // Fl_Button* RotateXButton
-    { RotateYButton = new Fl_Button(810, 285, 100, 20, "Rotate Y");
+    { RotateYButton = new Fl_Button(1000, 320, 90, 20, "Rotate Y");
       RotateYButton->callback((Fl_Callback*)cb_RotateYButton);
     } // Fl_Button* RotateYButton
-    { RotateZButton = new Fl_Button(810, 310, 100, 20, "Rotate Z");
+    { RotateZButton = new Fl_Button(1095, 320, 90, 20, "Rotate Z");
       RotateZButton->callback((Fl_Callback*)cb_RotateZButton);
     } // Fl_Button* RotateZButton
     { GCodeLengthText = new Fl_Output(960, 6, 225, 24);
     } // Fl_Output* GCodeLengthText
+    { DrawVertexNumbersButton = new Fl_Light_Button(1015, 505, 170, 20, "Draw vertex numbers");
+      DrawVertexNumbersButton->selection_color((Fl_Color)FL_GREEN);
+      DrawVertexNumbersButton->callback((Fl_Callback*)cb_DrawVertexNumbersButton);
+    } // Fl_Light_Button* DrawVertexNumbersButton
+    { DrawLineNumbersButton = new Fl_Light_Button(1015, 530, 170, 20, "Draw line numbers");
+      DrawLineNumbersButton->selection_color((Fl_Color)FL_GREEN);
+      DrawLineNumbersButton->callback((Fl_Callback*)cb_DrawLineNumbersButton);
+    } // Fl_Light_Button* DrawLineNumbersButton
+    { OptimizationSlider = new Fl_Value_Slider(810, 250, 370, 20, "Optimize");
+      OptimizationSlider->type(1);
+      OptimizationSlider->step(0.001);
+      OptimizationSlider->value(0.001);
+      OptimizationSlider->textsize(14);
+      OptimizationSlider->callback((Fl_Callback*)cb_OptimizationSlider);
+      OptimizationSlider->align(FL_ALIGN_TOP_LEFT);
+    } // Fl_Value_Slider* OptimizationSlider
     mainWindow->end();
     mainWindow->resizable(mainWindow);
   } // Fl_Double_Window* mainWindow
@@ -364,8 +401,8 @@ CubeViewUI::CubeViewUI() {
 
 void CubeViewUI::show(int argc, char **argv) {
   mainWindow->show(argc, argv);
-code->ReadStl("C:/box.stl");
-//code->ReadStl("C:/code/printed-parts/circuit-board-spacer-m4_2off.stl");
+//code->ReadStl("C:/box.stl");
+code->ReadStl("C:/code/printed-parts/y-bearing-180-outer-right_1off.stl");
 //code->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
 code->redraw();
 }

@@ -133,6 +133,21 @@ private:
   static void cb_RotateZButton(Fl_Button*, void*);
 public:
   Fl_Output *GCodeLengthText;
+  Fl_Light_Button *DrawVertexNumbersButton;
+private:
+  void cb_DrawVertexNumbersButton_i(Fl_Light_Button*, void*);
+  static void cb_DrawVertexNumbersButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *DrawLineNumbersButton;
+private:
+  void cb_DrawLineNumbersButton_i(Fl_Light_Button*, void*);
+  static void cb_DrawLineNumbersButton(Fl_Light_Button*, void*);
+public:
+  Fl_Value_Slider *OptimizationSlider;
+private:
+  void cb_OptimizationSlider_i(Fl_Value_Slider*, void*);
+  static void cb_OptimizationSlider(Fl_Value_Slider*, void*);
+public:
   void show(int argc, char **argv);
 };
 #endif

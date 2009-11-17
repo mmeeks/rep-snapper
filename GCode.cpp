@@ -183,16 +183,16 @@ void CubeView::draw() {
 void GCode::draw()
 {
     if (!valid())
-	{
-	glLoadIdentity();
-	glViewport (0, 0, w(),h());											// Reset The Current Viewport
-	glMatrixMode (GL_PROJECTION);										// Select The Projection Matrix
-	glLoadIdentity ();													// Reset The Projection Matrix
-	gluPerspective (45.0f, w()/h(),10.0f, 1000000.0f);						// Calculate The Aspect Ratio Of The Window
-	glMatrixMode (GL_MODELVIEW);										// Select The Modelview Matrix
-	glLoadIdentity ();													// Reset The Modelview Matrix
-	return;
-	}
+		{
+		glLoadIdentity();
+		glViewport (0, 0, w(),h());											// Reset The Current Viewport
+		glMatrixMode (GL_PROJECTION);										// Select The Projection Matrix
+		glLoadIdentity ();													// Reset The Projection Matrix
+		gluPerspective (45.0f, w()/h(),10.0f, 1000000.0f);						// Calculate The Aspect Ratio Of The Window
+		glMatrixMode (GL_MODELVIEW);										// Select The Modelview Matrix
+		glLoadIdentity ();													// Reset The Modelview Matrix
+		return;
+		}
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

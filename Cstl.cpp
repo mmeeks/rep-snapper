@@ -12,6 +12,8 @@
 #include <fstream>
 #include <algorithm>
 
+#include <ANN/ANN.h>
+
 #define MIN(A,B) ((A)<(B)? (A):(B))
 #define MAX(A,B) ((A)>(B)? (A):(B))
 
@@ -22,21 +24,6 @@ using namespace std;
 #endif
 STL stl;
 extern CubeViewUI *cvui;
-/*
-// Utility functions
-void GLText(Vector3f &pos, char *text)
-{
-	int len, i;
-	glRasterPos3fv((GLfloat*) &pos);
-	len = (int) strlen(text);
-	for (i = 0; i < len; i++)
-	{
-		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[i]);
-	}
-}
-*/
-
-
 
 void renderBitmapString(Vector3f pos, void* font, string text)
 {
@@ -149,7 +136,6 @@ void STL::CalcBoundingBoxAndZoom(GCode *code)
 
 void STL::draw()
 {
-
 	// polygons
 
 	if(cvui->DisplayPolygonsButton->value())
@@ -240,10 +226,10 @@ void STL::draw()
 	{
 		{
 		CuttingPlane plane;
-		CalcCuttingPlane(z, plane);
-		plane.Draw(z);
+		CalcCuttingPlane(z, plane);	// output is alot of un-connected line segments with individual vertices
+//		plane.Draw(z);
 		plane.LinkSegments(z);
-		plane.Draw(1);
+		plane.Draw(z);
 
 		// inFill
 		vector<Vector2f> infill;
@@ -863,56 +849,59 @@ public:
 
 
 void CuttingPlane::LinkSegments(float z)
-{
-	// pick a point.
-	
-	//Follow it round
-	
-	float precission = 0.0001;
-	
-	for(int i=0;i<lines.size();i++)
-		{
-		for(int j=i;j<lines.size();j++)
-			{
-			if( (vertices[lines[i].start] - vertices[lines[j].start]).length() < precission)
-				{
-				lines[j].start = lines[i].start;	// vertices[lines[i].start] may now be unused
-				}
-			if( (vertices[lines[i].start] - vertices[lines[j].end]).length() < precission)
-				{
-				lines[j].end = lines[i].start;	// vertices[lines[i].start] may now be unused
-				}
+	{
+	// Find doublepoints (they all should be)
+	vector<int> myDouble;
+	myDouble.resize(vertices.size());
+	for(int i=0;i<myDouble.size();i++)
+		myDouble[i] = -1;
 
-			if( (vertices[lines[i].end] - vertices[lines[j].start]).length() < precission)
+	int nearestPoint = 0;
+	for(int i=0;i<vertices.size();i++)
+		{
+		float nearestDist = 9999999;
+		for(int j=0;j<vertices.size();j++)
+			{
+			if(i==j)
+				continue;
+			float dist = (vertices[i]-vertices[j]).length();
+			if(dist < nearestDist)
 				{
-				lines[j].start = lines[i].end;	// vertices[lines[i].start] may now be unused
-				}
-			if( (vertices[lines[i].end] - vertices[lines[j].end]).length() < precission)
-				{
-				lines[j].end = lines[i].end;	// vertices[lines[i].start] may now be unused
+				nearestDist = dist;
+				nearestPoint = j;
 				}
 			}
-		}
-		
-	// delete unused points
-	vector<int> usedlist;
-	usedlist.resize(vertices.size());
-	for(int i=0;i<usedlist.size();i++)
-		usedlist[i] = 0;
-
-	for(int i=0;i<lines.size();i++)
-		{
-		usedlist[lines[i].start]++;
-		usedlist[lines[i].end]++;
+		// nearestPoint = the nearestPoint that's not me
+		myDouble[i] = nearestPoint;
 		}
 
-	// check that all vertices are used 0 (because of prevous loop) or 2 line segments. - or Bail.
+	bool error = false;
+	for(int i=0;i<vertices.size();i++)
+		{
+		// Check doubleness
+		if(myDouble[myDouble[i]] != i)
+			{
+			error = true;
+			}
+		}
+
+	if(error)	// Some doubleVertices don't match
+		return;
+
+	// Reassign double vertices to their copy
+	for(int i=0;i<vertices.size();i++)
+		{
+		if(myDouble[i] > 0 && myDouble[myDouble[i]] > 0)
+			myDouble[myDouble[i]] = 0-i;
+		}
+
+	// Adjust lines
 	for(int i=0;i<lines.size();i++)
 		{
-			if(usedlist[lines[i].start] != 2 && usedlist[lines[i].start] != 0)
-				return;
-			if(usedlist[lines[i].end] != 2 && usedlist[lines[i].end] != 0)
-				return;
+		if(myDouble[lines[i].end] <= 0)
+			lines[i].end = 0-myDouble[lines[i].end];
+		if(myDouble[lines[i].start] <= 0)
+			lines[i].start = 0-myDouble[lines[i].start];
 		}
 
 	// Make new vertex array
@@ -923,14 +912,14 @@ void CuttingPlane::LinkSegments(float z)
 	oldVertexNumbersToNew.resize(vertices.size());
 
 	for(int i=0;i<vertices.size();i++)
-	{
-	if(usedlist[i] != 0)
 		{
-		newVertices.push_back(vertices[i]);
-		oldVertexNumbersToNew[i] = oldVertexNumbers.size();
-		oldVertexNumbers.push_back(i);
+		if(myDouble[i] >= 0)
+			{
+			newVertices.push_back(vertices[i]);
+			oldVertexNumbersToNew[i] = oldVertexNumbers.size();
+			oldVertexNumbers.push_back(i);
+			}
 		}
-	}
 
 	// adjust lines to use new vertices
 	for(int i=0;i<lines.size();i++)
@@ -939,130 +928,93 @@ void CuttingPlane::LinkSegments(float z)
 		lines[i].end = oldVertexNumbersToNew[lines[i].end];
 		}
 
-
 	vertices = newVertices;
 
-	// make reverse lines/vertices lookup table
-	//vertex[i] is used by (line)5
+	// Build polygons
+	vector<bool> used;
+	used.resize(lines.size());
+	for(int i=0;i>used.size();i++)
+		used[i]= false;
 
-	vector<Vector2i> vertexUseList;
-	vertexUseList.resize(vertices.size());
-	for(int i=0;i<vertexUseList.size();i++)
-		vertexUseList[i][0] = vertexUseList[i][1] = -1;
-
-	int c=0;
-	for(int i=0;i<lines.size();i++)
-	{
-		int vertexNr = lines[i].start;
-		if(vertexUseList[vertexNr][0] == -1)
-			vertexUseList[vertexNr][0] = i;
-		else
-			{
-			assert(vertexUseList[vertexNr][1] == -1);
-			vertexUseList[vertexNr][1] = i;
-			}
-
-		vertexNr = lines[i].end;
-		if(vertexUseList[vertexNr][0] == -1)
-			vertexUseList[vertexNr][0] = i;
-		else
-			{
-			assert(vertexUseList[vertexNr][1] == -1);
-			vertexUseList[vertexNr][1] = i;
-			}
-	}
-
-	// While (there's usused line segments left)
+	int startLine = cvui->ExamineSlider->value()*(float)(lines.size()-1);
+	used[startLine]=true;
+	while(startLine != -1)
 		{
-		// Build polygons
-		int startLine = cvui->ExamineSlider->value()*(float)(lines.size()-1);
 		int startPoint = lines[startLine].start;
 		int endPoint = lines[startLine].end;
-		
+
 		Poly poly;
-		vertexUseList[startPoint][0] = -1;// used
-		vertexUseList[endPoint][0] = -1;// used
-
 		poly.points.push_back(endPoint);
-
-		while(endPoint != startPoint)	// While not closed
-		{
-/*			Vector2i linesThatUseThisVertex = vertexUseList[endPoint];
-			int oldEndPoint = endPoint;
-
-			// Is the vertex we are looking at from line 1 ?
-			if(linesThatUseThisVertex[0] != -1 && lines[linesThatUseThisVertex[0]].start == endPoint)	// 22 is used by 4 and 6 - we are looking for 4
+		int count = 10000;
+		while(endPoint != startPoint && count != 0)	// While not closed
 			{
-				endPoint = lines[linesThatUseThisVertex[0]].end;
-				vertexUseList[endPoint][0]= -1;		// Been used
-			}
-			else if(linesThatUseThisVertex[0] != -1 && lines[linesThatUseThisVertex[0]].end == endPoint)	// 22 is used by 4 and 6 - we are looking for 4
-			{
-				endPoint = lines[linesThatUseThisVertex[0]].start;
-				vertexUseList[endPoint][0] = -1;
-			}
-
-			else if(linesThatUseThisVertex[1] != -1 && lines[linesThatUseThisVertex[1]].start == endPoint)	// 22 is used by 4 and 6 - we are looking for 4
-			{
-				endPoint = lines[linesThatUseThisVertex[1]].end;
-				vertexUseList[endPoint][1] = -1;
-			}
-			else if(linesThatUseThisVertex[1] != -1 && lines[linesThatUseThisVertex[1]].end == endPoint)	// 22 is used by 4 and 6 - we are looking for 4
-			{
-				endPoint = lines[linesThatUseThisVertex[1]].start;
-				vertexUseList[endPoint][1] = -1;
-			}
-			else
-			{
-				assert(0);	// Fucked up
-			}
-*/
 			// Find a lines that starts with my endPoint point
 			for(int i=0;i<lines.size();i++)
-			{
+				{
 				if(i==startLine)
 					continue;				// avoid infinite loop
 				if(lines[i].start == endPoint)	// store point
-				{
+					{
 					startLine = i;
 					endPoint = lines[startLine].end;
 					break;				// done
-				}
+					}
 				else if(lines[i].end == endPoint)	// store point
-				{
+					{
 					startLine = i;
 					endPoint = lines[startLine].start;
 					break;				// done
-				}
+					}
 				if(endPoint==startPoint)
 					break;				// done
-			}
+				}
+			used[startLine]=true;
 			poly.points.push_back(endPoint);
-		}
+			count--;
+			}
 		polygons.push_back(poly);
-		}
 
+		// Check if loop is complete
+		if(count == 0)
+			{
+			assert(-1);
+			error = true;
+			// Should return here or try and fix problem
+			}
 
-		// Cleanup polygons
-		CleanupPolygons();
-		// Draw resulting poly
-		glColor3f(1,1,0);
-		for(int p=0; p<polygons.size();p++)
+		startLine = -1;
+		// find next unused line
+		for(int l=0;l < lines.size(); l++)
+			{
+			if(used[l] == false)
+				{
+				startLine = l;
+				used[startLine]=true;
+				break;	// process this line loop
+				}
+			}
+		}	// while startLine != -1
+
+	// Cleanup polygons
+	CleanupPolygons();
+	// Draw resulting poly
+	glColor3f(1,1,0);
+	for(int p=0; p<polygons.size();p++)
 		{
-			glBegin(GL_LINE_LOOP);
-			for(int v=0; v<polygons[p].points.size();v++)
-				glVertex3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, z);
-			glEnd();
-			glColor3f(1,0,1);
-			glEnable(GL_POINT_SMOOTH);
-			glPointSize(15);
-			glBegin(GL_POINTS);
-			for(int v=0; v<polygons[p].points.size();v++)
-				glVertex3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, z);
-			glEnd();
+		glBegin(GL_LINE_LOOP);
+		for(int v=0; v<polygons[p].points.size();v++)
+			glVertex3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, z);
+		glEnd();
+		glColor3f(1,0,1);
+		glEnable(GL_POINT_SMOOTH);
+		glPointSize(15);
+		glBegin(GL_POINTS);
+		for(int v=0; v<polygons[p].points.size();v++)
+			glVertex3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, z);
+		glEnd();
 		}
 
-}
+	}
 
 
 void CuttingPlane::Shrink(float distance)
@@ -1122,6 +1074,24 @@ void CuttingPlane::Draw(float z)
 		}
 		glEnd();
 	}
+
+
+	// Vertex numbers
+	if(cvui->DrawVertexNumbersButton->value())
+		for(int v=0;v<vertices.size();v++)
+		{
+			ostringstream oss;
+			oss << v;
+			renderBitmapString(Vector3f (vertices[v].x, vertices[v].y, z) , GLUT_BITMAP_8_BY_13 , oss.str());
+		}
+	if(cvui->DrawLineNumbersButton->value())
+		for(int l=0;l<lines.size();l++)
+		{
+			ostringstream oss;
+			oss << l;
+			Vector2f Center = (vertices[lines[l].start]+vertices[lines[l].end]) *0.5f;
+			renderBitmapString(Vector3f (Center.x, Center.y, z) , GLUT_BITMAP_8_BY_13 , oss.str());
+		}
 }
 
 void STL::OptimizeRotation()
@@ -1229,34 +1199,27 @@ float Triangle::area()
 
 void CuttingPlane::CleanupPolygons()
 {
-	
-	Poly poly = polygons[0];
-
-	glColor3f(1,1,1);
-	for(int v=0;v<poly.points.size();v++)
+	float allowedError = cvui->OptimizationSlider->value();
+	for(int p=0;p<polygons.size();p++)
 	{
-		ostringstream oss;
-		oss << v;
-		renderBitmapString(Vector3f (vertices[poly.points[v]].x, vertices[poly.points[v]].y, 0) , GLUT_BITMAP_8_BY_13 , oss.str());
+	for(int v=0;v<polygons[p].points.size();)
+		{
+			Vector2f p1 =vertices[polygons[p].points[(v-1+polygons[p].points.size())%polygons[p].points.size()]];
+			Vector2f p2 =vertices[polygons[p].points[v]];
+			Vector2f p3 =vertices[polygons[p].points[(v+1)%polygons[p].points.size()]];
+
+			Vector2f v1 = (p2-p1);
+			Vector2f v2 = (p3-p2);
+
+			v1.normalize();
+			v2.normalize();
+
+			if((v1-v2).lengthSquared() < allowedError)
+				{
+				polygons[p].points.erase(polygons[p].points.begin()+v);
+				}
+			else
+				v++;
+		}
 	}
-	for(int v=0;v<poly.points.size();)
-	{
-		Vector2f p1 =vertices[poly.points[(v-1+poly.points.size())%poly.points.size()]];
-		Vector2f p2 =vertices[poly.points[v]];
-		Vector2f p3 =vertices[poly.points[(v+1)%poly.points.size()]];
-
-		Vector2f v1 = (p2-p1);
-		Vector2f v2 = (p3-p2);
-
-		v1.normalize();
-		v2.normalize();
-
-		if((v1-v2).lengthSquared() < 0.01)
-			{
-			poly.points.erase(poly.points.begin()+v);
-			}
-		else
-			v++;
-	}
-	polygons[0] = poly ;
 }
