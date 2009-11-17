@@ -220,7 +220,7 @@ void STL::draw()
 	if(cvui->DisplayAllLayers->value())
 		{
 		z=Min.z;
-		zStep = cvui->LayerThicknessSlider->value()*1000;
+		zStep = cvui->LayerThicknessSlider->value();
 		}
 	while(z<Max.z)
 	{
@@ -324,10 +324,10 @@ vector<InFillHit> HitsBuffer;
 
 
 void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z)
-{
+	{
 	int c=0;
 
-	float step = cvui->InfillDistanceSlider->value()*1000;
+	float step = cvui->InfillDistanceSlider->value();
 
 	bool examine = false;
 
@@ -338,9 +338,9 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z)
 	Vector2f InfillDirX(cosf(rot), sinf(rot));
 	Vector2f InfillDirY(-InfillDirX.y, InfillDirX.x);
 	Vector2f Center = (Max+Min)/2.0f;
-	
+
 	for(float x = -Length ; x < Length ; x+=step)
-	{
+		{
 		bool examineThis = false;
 
 		HitsBuffer.clear();
@@ -349,13 +349,13 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z)
 		Vector2f P2 = (InfillDirX * -Length)+(InfillDirY*x) + Center;
 
 		if(cvui->DisplayDebuginFillButton->value())
-		{
-		glBegin(GL_LINES);
-		glColor3f(0,0.2f,0);
-		glVertex3f(P1.x, P1.y, z);
-		glVertex3f(P2.x, P2.y, z);
-		glEnd();
-		}
+			{
+			glBegin(GL_LINES);
+			glColor3f(0,0.2f,0);
+			glVertex3f(P1.x, P1.y, z);
+			glVertex3f(P2.x, P2.y, z);
+			glEnd();
+			}
 
 		if(cvui->DisplayDebugButton->value())
 			if(!examine && ((cvui->ExamineSlider->value()-0.5f)*2 * Length <= x))
@@ -366,99 +366,119 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z)
 				glVertex3f(P2.x, P2.y, z);
 				}
 
+			if(polygons.size() != 0)
+				{
+				for(UINT p=0;p<polygons.size();p++)
+					{
+					for(UINT i=0;i<polygons[p].points.size();i++)
+						{
+						Vector2f P3 = vertices[polygons[p].points[i]];
+						Vector2f P4 = vertices[polygons[p].points[(i+1)%polygons[p].points.size()]];
 
-		for(UINT i=0;i<lines.size();i++)
-		{
-			Vector2f P3 = vertices[lines[i].start];
-			Vector2f P4 = vertices[lines[i].end];
+						Vector3f point;
+						InFillHit hit;
+						if(IntersectXY(P1,P2,P3,P4,hit))
+							{
+							if(examineThis)
+								int a=0;
+							HitsBuffer.push_back(hit);
+							}
+						}
+					}
+				}
+			else
+				{
+				// Fallback, collide with lines rather then polygons
+				for(UINT i=0;i<lines.size();i++)
+					{
+					Vector2f P3 = vertices[lines[i].start];
+					Vector2f P4 = vertices[lines[i].end];
 
-			Vector3f point;
-			InFillHit hit;
-			if(IntersectXY(P1,P2,P3,P4,hit))
-			{
+					Vector3f point;
+					InFillHit hit;
+					if(IntersectXY(P1,P2,P3,P4,hit))
+						{
+						if(examineThis)
+							int a=0;
+						HitsBuffer.push_back(hit);
+						}
+					}
+				}
+			// Sort hits
+			// Sort the vector using predicate and std::sort
+			std::sort(HitsBuffer.begin(), HitsBuffer.end(), InFillHitCompareFunc);
+
+			if(examineThis)
+				{
+				glPointSize(4);
+				glBegin(GL_POINTS);
+				for(UINT i=0;i<HitsBuffer.size();i++)
+					glVertex3f(HitsBuffer[0].p.x, HitsBuffer[0].p.y, z);
+				glEnd();
+				glPointSize(1);
+				}
+
+			// Verify hits intregrety
+			// Check if hit extists in table
+restart_check:
+			for(UINT i=0;i<HitsBuffer.size();i++)
+				{
 				if(examineThis)
 					int a=0;
-				HitsBuffer.push_back(hit);
-			}
-		}
-		
-		// Sort hits
-	  // Sort the vector using predicate and std::sort
-			if(examineThis)
-				int a=0;
-	  std::sort(HitsBuffer.begin(), HitsBuffer.end(), InFillHitCompareFunc);
+				bool found = false;
 
-	  if(examineThis)
-	  {
-		  glPointSize(4);
-		  glBegin(GL_POINTS);
-		  for(UINT i=0;i<HitsBuffer.size();i++)
-			  glVertex3f(HitsBuffer[0].p.x, HitsBuffer[0].p.y, z);
-		  glEnd();
-		  glPointSize(1);
-	  }
+				for(UINT j=i+1;j<HitsBuffer.size();j++)
+					if( abs(HitsBuffer[i].d - HitsBuffer[j].d) < 0.0001)
+						{
+						found = true;
+						// Delete both points, and continue
+						HitsBuffer.erase(HitsBuffer.begin()+j);
+						if(i != 0 && i != HitsBuffer.size()-1)	//If we are "Going IN" to solid material, and there's more points, keep one of the points
+							HitsBuffer.erase(HitsBuffer.begin()+i);
+						goto restart_check;
+						}
+					if(found)
+						continue;
+				}		
 
-		// Verify hits intregrety
-		// Check if hit extists in table
-restart_check:
-		for(UINT i=0;i<HitsBuffer.size();i++)
-			{
-			if(examineThis)
-				int a=0;
-			bool found = false;
 
-			for(UINT j=i+1;j<HitsBuffer.size();j++)
-				if( abs(HitsBuffer[i].d - HitsBuffer[j].d) < 0.0001)
-					{
-					found = true;
-					// Delete both points, and continue
-					HitsBuffer.erase(HitsBuffer.begin()+j);
-					if(i != 0 && i != HitsBuffer.size()-1)	//If we are "Going IN" to solid material, and there's more points, keep one of the points
-						HitsBuffer.erase(HitsBuffer.begin()+i);
-					goto restart_check;
-					}
-			if(found)
-				continue;
-			}		
-		
-		
-		// Sort hits by distance and transfer to InFill Buffer
-		if(HitsBuffer.size() != 0 && HitsBuffer.size() % 2)
-			continue;	// There's a uneven number of hits, skip this infill line (U'll live)
-		c=0;	// Color counter
-		while(HitsBuffer.size())
-		{
-			infill.push_back(HitsBuffer[0].p);
-				if(examineThis)
+			// Sort hits by distance and transfer to InFill Buffer
+			if(HitsBuffer.size() != 0 && HitsBuffer.size() % 2)
+				continue;	// There's a uneven number of hits, skip this infill line (U'll live)
+			c=0;	// Color counter
+			while(HitsBuffer.size())
 				{
-					switch(c)
+				infill.push_back(HitsBuffer[0].p);
+				if(examineThis)
 					{
-					case 0: glColor3f(1,0,0); break;
-					case 1: glColor3f(0,1,0); break;
-					case 2: glColor3f(0,0,1); break;
-					case 3: glColor3f(1,1,0); break;
-					case 4: glColor3f(0,1,1); break;
-					case 5: glColor3f(1,0,1); break;
-					case 6: glColor3f(1,1,1); break;
-					case 7: glColor3f(1,0,0); break;
-					case 8: glColor3f(0,1,0); break;
-					case 9: glColor3f(0,0,1); break;
-					case 10: glColor3f(1,1,0); break;
-					case 11: glColor3f(0,1,1); break;
-					case 12: glColor3f(1,0,1); break;
-					case 13: glColor3f(1,1,1); break;
-					}
+					switch(c)
+						{
+						case 0: glColor3f(1,0,0); break;
+						case 1: glColor3f(0,1,0); break;
+						case 2: glColor3f(0,0,1); break;
+						case 3: glColor3f(1,1,0); break;
+						case 4: glColor3f(0,1,1); break;
+						case 5: glColor3f(1,0,1); break;
+						case 6: glColor3f(1,1,1); break;
+						case 7: glColor3f(1,0,0); break;
+						case 8: glColor3f(0,1,0); break;
+						case 9: glColor3f(0,0,1); break;
+						case 10: glColor3f(1,1,0); break;
+						case 11: glColor3f(0,1,1); break;
+						case 12: glColor3f(1,0,1); break;
+						case 13: glColor3f(1,1,1); break;
+						}
 					c++;
 					glPointSize(10);
 					glBegin(GL_POINTS);
 					glVertex3f(HitsBuffer[0].p.x, HitsBuffer[0].p.y, z);
 					glEnd();
 					glPointSize(1);
+					}
+				HitsBuffer.erase(HitsBuffer.begin());
 				}
-			HitsBuffer.erase(HitsBuffer.begin());
 		}
 	}
-}
 
 
 #define SMALL_NUM  0.00000001 // anything that avoids division overflow
@@ -849,7 +869,7 @@ public:
 
 
 void CuttingPlane::LinkSegments(float z)
-	{
+{
 	// Find doublepoints (they all should be)
 	vector<int> myDouble;
 	myDouble.resize(vertices.size());
@@ -875,18 +895,31 @@ void CuttingPlane::LinkSegments(float z)
 		myDouble[i] = nearestPoint;
 		}
 
-	bool error = false;
+	vector<int> single_vertices;
 	for(int i=0;i<vertices.size();i++)
 		{
 		// Check doubleness
 		if(myDouble[myDouble[i]] != i)
-			{
-			error = true;
-			}
+			single_vertices.push_back(i);
 		}
 
-	if(error)	// Some doubleVertices don't match
-		return;
+	if(single_vertices.size() != 0)	// Some doubleVertices don't match. Try to link unconnected vertices
+		{
+		glColor3f(0.0f, 1.0f, 0.0f);
+		glEnable(GL_POINT_SMOOTH);
+		glPointSize(15);
+		glBegin(GL_POINTS);
+		for(int i=0;i<single_vertices.size();i++)
+			glVertex3f(vertices[single_vertices[i]].x, vertices[single_vertices[i]].y, z);
+		glEnd();
+/*		if(single_vertices.size() == 2)	// Only 2 unconnected, link'em
+			{
+			Segment s(single_vertices[0], single_vertices[1]);
+			lines.push_back(s);
+			}
+		else return;*/
+		}
+		
 
 	// Reassign double vertices to their copy
 	for(int i=0;i<vertices.size();i++)
@@ -936,7 +969,8 @@ void CuttingPlane::LinkSegments(float z)
 	for(int i=0;i>used.size();i++)
 		used[i]= false;
 
-	int startLine = cvui->ExamineSlider->value()*(float)(lines.size()-1);
+	bool error = false;
+	int startLine = 0;//cvui->ExamineSlider->value()*(float)(lines.size()-1);
 	used[startLine]=true;
 	while(startLine != -1)
 		{
@@ -945,7 +979,7 @@ void CuttingPlane::LinkSegments(float z)
 
 		Poly poly;
 		poly.points.push_back(endPoint);
-		int count = 10000;
+		int count = lines.size();
 		while(endPoint != startPoint && count != 0)	// While not closed
 			{
 			// Find a lines that starts with my endPoint point
@@ -1007,7 +1041,7 @@ void CuttingPlane::LinkSegments(float z)
 		glEnd();
 		glColor3f(1,0,1);
 		glEnable(GL_POINT_SMOOTH);
-		glPointSize(15);
+		glPointSize(10);
 		glBegin(GL_POINTS);
 		for(int v=0; v<polygons[p].points.size();v++)
 			glVertex3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, z);
