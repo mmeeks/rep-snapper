@@ -50,11 +50,9 @@ struct InFillHit{
 };
 
 struct Segment{
-	Segment(UINT s, UINT e){start = s; end = e; before=after=-1;}
+	Segment(UINT s, UINT e){start = s; end = e;}
 	int start;
 	int end;
-	int before;
-	int after;
 };
 
 class Poly{
@@ -68,7 +66,7 @@ public:
 class  CuttingPlane{
 public:
 	CuttingPlane(){}
-	void Shrink(float distance);
+	void Shrink(float distance, float z);
 	void CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z=0);
 	bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, InFillHit &hit);
 	void Draw(float z);
@@ -80,6 +78,7 @@ public:
 	vector<Segment> lines;			// points
 
 	vector<Poly> polygons;		// Closed loops
+	vector<Poly> offsetPolygons;		// Closed loops
 };
 
 class GCode;
