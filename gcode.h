@@ -61,9 +61,10 @@ enum GCodes{GOTO, DRAWTO, MILLIMETERSASUNITS, RAPIDMOTION, COORDINATEDMOTION, AR
 class Command
 {
 public:
-	Command(){};
+	Command(){f=e=0.0f;};
 	GCodes Code;
 	Vector3f where;
+	float f,e;	// Feedrates
 };
 
 class GCode : public Fl_Gl_Window

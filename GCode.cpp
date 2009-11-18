@@ -83,7 +83,7 @@ void GCode::Read(string filename)
 
 		Command command;
 
-		if( buffer.find( "G21", 0) != string::npos )	//string::npos means not defined
+		if( buffer.find( "G21", 0) != string::npos )	//Coordinated Motion
 		{
 			command.Code = MILLIMETERSASUNITS;
 			commands.push_back(command);
@@ -111,6 +111,68 @@ void GCode::Read(string filename)
 					string number = buffer.substr(1,buffer.length()-1);				// 16 characters
 					command.where.z = ToFloat(number);
 				}
+				if( buffer.find( "E", 0) != string::npos )	//string::npos means not defined
+				{
+					string number = buffer.substr(1,buffer.length()-1);				// 16 characters
+					command.e = ToFloat(number);
+				}
+				if( buffer.find( "F", 0) != string::npos )	//string::npos means not defined
+				{
+					string number = buffer.substr(1,buffer.length()-1);				// 16 characters
+					command.f = ToFloat(number);
+				}
+			}
+			if(command.where.x < -100)
+				continue;
+			if(command.where.y < -100)
+				continue;
+			globalPos = command.where;
+
+			if(command.where.x < Min.x)
+				Min.x = command.where.x;
+			if(command.where.y < Min.y)
+				Min.y = command.where.y;
+			if(command.where.z < Min.z)
+				Min.z = command.where.z;
+			if(command.where.x > Max.x)
+				Max.x = command.where.x;
+			if(command.where.y > Max.y)
+				Max.y = command.where.y;
+			if(command.where.z > Max.z)
+				Max.z = command.where.z;
+			commands.push_back(command);
+		}
+		else if( buffer.find( "G0", 0) != string::npos )	//Rapid Motion
+		{
+			command.Code = RAPIDMOTION;
+			command.where = globalPos;
+			while(line >> buffer)	// read next keyword
+			{
+				if( buffer.find( "X", 0) != string::npos )	//string::npos means not defined
+				{
+					string number = buffer.substr(1,buffer.length()-1);				// 16 characters
+					command.where.x = ToFloat(number);
+				}
+				if( buffer.find( "Y", 0) != string::npos )	//string::npos means not defined
+				{
+					string number = buffer.substr(1,buffer.length()-1);				// 16 characters
+					command.where.y = ToFloat(number);
+				}
+				if( buffer.find( "Z", 0) != string::npos )	//string::npos means not defined
+				{
+					string number = buffer.substr(1,buffer.length()-1);				// 16 characters
+					command.where.z = ToFloat(number);
+				}
+				if( buffer.find( "E", 0) != string::npos )	//string::npos means not defined
+				{
+					string number = buffer.substr(1,buffer.length()-1);				// 16 characters
+					command.e = ToFloat(number);
+				}
+				if( buffer.find( "F", 0) != string::npos )	//string::npos means not defined
+				{
+					string number = buffer.substr(1,buffer.length()-1);				// 16 characters
+					command.f = ToFloat(number);
+				}
 			}
 			if(command.where.x < -100)
 				continue;
@@ -133,6 +195,8 @@ void GCode::Read(string filename)
 			commands.push_back(command);
 		}
 	}
+
+
 
 	Center.x = (Max.x + Min.x )/2;
 	Center.y = (Max.y + Min.y )/2;
@@ -209,19 +273,34 @@ void GCode::draw()
 
 	/*--------------- Drawing -----------------*/
 
-	glBegin(GL_LINE_STRIP);
+	glBegin(GL_LINES);
 	Vector3f thisPos(0,0,0);
 
 	float	Distance = 0.0f;
-	for(UINT i=0;i<commands.size();i++)
+	Vector3f pos(0,0,0);
+	UINT start = (UINT)(cvui->GCodeDrawStartSlider->value()*(float)(commands.size()));
+	UINT end = (UINT)(cvui->GCodeDrawEndSlider->value()*(float)(commands.size()));
+	for(UINT i=start;i<commands.size() && i < end ;i++)
 	{
 		switch(commands[i].Code)
 		{
 		case COORDINATEDMOTION:
+			if(commands[i].f == 0 && commands[i].e == 0)
+				glColor3f(0.75f,0.75f,1.0f);
+			else
+				glColor3f(0,1,0);
 			Distance += (commands[i].where-thisPos).length();
+			glVertex3fv((GLfloat*)&pos);
+			glVertex3fv((GLfloat*)&commands[i].where);
+			break;
+		case RAPIDMOTION:
+			glColor3f(0.75f,0.0f,0.0f);
+			Distance += (commands[i].where-thisPos).length();
+			glVertex3fv((GLfloat*)&pos);
 			glVertex3fv((GLfloat*)&commands[i].where);
 			break;
 		}
+		pos = commands[i].where;
 	}
 	glEnd();
 
