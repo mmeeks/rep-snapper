@@ -278,7 +278,7 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 		Segment line(-1,-1);
 		Vector3f P1 = triangles[i].A;
 		Vector3f P2 = triangles[i].B;
-		if(where < P1.z != where < P2.z)
+		if(where <= P1.z != where <= P2.z)
 		{
 			float t = (where-P1.z)/(float)(P2.z-P1.z);
 			Vector3f p = P1+((Vector3f)(P2-P1)*t);
@@ -288,7 +288,7 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 		}
 		P1 = triangles[i].B;
 		P2 = triangles[i].C;
-		if(where < P1.z != where < P2.z)
+		if(where <= P1.z != where <= P2.z)
 		{
 			float t = (where-P1.z)/(float)(P2.z-P1.z);
 			Vector3f p = P1+((Vector3f)(P2-P1)*t);
@@ -300,19 +300,67 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 			if(foundOne)
 			{
 				plane.lines.push_back(line);
-				continue;// next triangle
+//				continue;// next triangle
 			}
 			foundOne=true;
 		}
 		P1 = triangles[i].C;
 		P2 = triangles[i].A;
-		if(where < P1.z != where < P2.z)
+		if(where <= P1.z != where <= P2.z)
 		{
 			float t = (where-P1.z)/(P2.z-P1.z);
 			Vector3f p = P1+((Vector3f)(P2-P1)*t);
 			line.end = pointNr++;
 			plane.vertices.push_back(Vector2f(p.x,p.y));;
 			plane.lines.push_back(line);
+		}
+	// Check segment normal against triangle normal. Flip segment, as needed.
+	if(line.start != -1 && line.end != -1)	// if we found a intersecting triangle
+		{
+		Vector2f triangleNormal = Vector2f(triangles[i].N.x, triangles[i].N.y);
+		Vector2f p = plane.vertices[line.start];
+		Vector2f segmentNormal = (plane.vertices[line.end] - p);
+		segmentNormal = Vector2f(-segmentNormal.y, segmentNormal.x);
+		triangleNormal.normalise();
+		segmentNormal.normalise();
+/*
+	if(1)
+	{
+		glColor3f(1,0,0);
+		glBegin(GL_LINES);
+		Vector2f Center = (p + plane.vertices[line.end]) /2;
+		glVertex3f( Center.x, Center.y, where);
+		glVertex3f( Center.x+triangleNormal.x*2,  Center.y+triangleNormal.y*2,  where);
+		glColor3f(0,0,1);
+		glVertex3f( Center.x, Center.y, where);
+		glVertex3f( Center.x+segmentNormal.x,  Center.y+segmentNormal.y,  where);
+		glEnd();
+	}	*/
+		if( (triangleNormal-segmentNormal).lengthSquared() > 0.2f)	// if normals does not align, flip the segment
+			{
+			int tmp = line.start;
+			line.start = line.end;
+			line.end = tmp;
+			plane.lines.back() = line;
+
+/*	if(1)
+	{
+		Vector2f triangleNormal = Vector2f(triangles[i].N.x, triangles[i].N.y);
+		Vector2f p = plane.vertices[line.start];
+		Vector2f segmentNormal = (plane.vertices[line.end] - p);
+		segmentNormal = Vector2f(-segmentNormal.y, segmentNormal.x);
+		triangleNormal.normalise();
+		segmentNormal.normalise();
+
+		Vector2f Center = (p + plane.vertices[line.end]) /2;
+		glBegin(GL_LINES);
+		glColor3f(0,1,0);
+		glVertex3f( Center.x, Center.y, where);
+		glVertex3f( Center.x+segmentNormal.x,  Center.y+segmentNormal.y,  where);
+		glEnd();
+	}	*/
+
+			}
 		}
 	}
 
@@ -873,6 +921,9 @@ public:
 
 void CuttingPlane::LinkSegments(float z)
 {
+	if(vertices.size() == 0)
+		return;
+
 	// Find doublepoints (they all should be)
 	vector<int> myDouble;
 	myDouble.resize(vertices.size());
@@ -1054,9 +1105,8 @@ void CuttingPlane::LinkSegments(float z)
 
 	}
 
+/*
 
-void CuttingPlane::Shrink(float distance, float z)
-{
 	// Orientate polygons, based on a triangulation
   struct triangulateio in;
   struct triangulateio mid;
@@ -1064,7 +1114,7 @@ void CuttingPlane::Shrink(float distance, float z)
   struct triangulateio vorout;
 /* 
   Define the input points. 
-*/
+*
 		in.pointlist = 0;
 		in.pointmarkerlist = 0;
 		in.numberofpointattributes = 0;
@@ -1122,13 +1172,13 @@ void CuttingPlane::Shrink(float distance, float z)
 */
 /* 
   Regional attribute (for whole mesh). 
-*/
+*
 	in.regionlist = 0;
 	in.segmentmarkerlist = 0;
 //  in.regionlist[2] = 7.0;
 /* 
   Area constraint that will not be used. 
-*/            
+*
 //  in.regionlist[3] = 0.1;          
 
   printf("Input point set:\n\n");
@@ -1137,7 +1187,7 @@ void CuttingPlane::Shrink(float distance, float z)
 /* 
   Make necessary initializations so that Triangle can return a 
   triangulation in `mid' and a Voronoi diagram in `vorout'.  
-*/
+*
   mid.pointlist = (REAL *) NULL;            
   mid.pointattributelist = (REAL *) NULL;
   mid.pointmarkerlist = (int *) NULL; 
@@ -1162,23 +1212,42 @@ void CuttingPlane::Shrink(float distance, float z)
     produce an edge list (e), 
     produce a Voronoi diagram (v),
     produce a triangle neighbor list (n).
-*/
+*
 //  triangulate ( "pczAevn", &in, &mid, &vorout );
-  triangulate ( "ze", &in, &mid, &vorout );
+  triangulate ( "pczAevn", &in, &mid, &vorout );//pAzYYe
   
   glBegin(GL_LINES);
   for(int i=0;i<mid.numberofedges;i++)
 	  {
 	  if(mid.edgemarkerlist[i] == 0)	// Shared edge
 		  glColor3f(1,0,0);
-	  else
+	  else if(mid.edgemarkerlist[i] == 1)
 		  glColor3f(1.0f,0.5f,0.0f);
+		else
+		  glColor3f(1.0f,1.5f,1.0f);
 	  Vector3f p1 = Vector3f(mid.pointlist[mid.edgelist[i*2]*2], mid.pointlist[mid.edgelist[i*2]*2+1], z-2);
 	  Vector3f p2 = Vector3f(mid.pointlist[mid.edgelist[i*2+1]*2], mid.pointlist[mid.edgelist[i*2+1]*2+1], z-2);
 	  glVertex3f(p1.x, p1.y, p1.z);
 	  glVertex3f(p2.x, p2.y, p2.z);
 	  }
 	glEnd();  
+
+  for(int i=0;i<mid.numberoftriangles;i++)
+	  {
+	  glBegin(GL_LINE_LOOP);
+	  if(mid.triangleattributelist[i] == 0)	// Shared edge
+		  glColor3f(0,1,0);
+	  else
+		  glColor3f(0.0f,0.5f,1.0f);
+	  Vector3f p1 = Vector3f(mid.pointlist[mid.trianglelist[i*3]*2], mid.pointlist[mid.trianglelist[i*3]*2+1], z-4);
+	  Vector3f p2 = Vector3f(mid.pointlist[mid.trianglelist[i*3+1]*2], mid.pointlist[mid.trianglelist[i*3+1]*2+1], z-4);
+	  Vector3f p3 = Vector3f(mid.pointlist[mid.trianglelist[i*3+2]*2], mid.pointlist[mid.trianglelist[i*3+2]*2+1], z-4);
+	  glVertex3f(p1.x, p1.y, p1.z);
+	  glVertex3f(p2.x, p2.y, p2.z);
+	  glVertex3f(p3.x, p3.y, p3.z);
+		glEnd();  
+	  }
+
   
   }
   
@@ -1243,7 +1312,10 @@ void CuttingPlane::Shrink(float distance, float z)
   free(out.triangleattributelist);
 
 */
-	
+
+void CuttingPlane::Shrink(float distance, float z)
+{
+
 	if(cvui->DisplayCuttingPlaneButton->value())
 	{
 		glColor4f(1,1,1,1);
@@ -1273,7 +1345,7 @@ void CuttingPlane::Shrink(float distance, float z)
 				
 //				glVertex3f(vertices[vertexNr].x, vertices[vertexNr].y, z);
 
-				Vector2f p = vertices[vertexNr] + (Normal * distance*20);
+				Vector2f p = vertices[vertexNr] - (Normal * distance);
 				//offsetPoly.push_back(p);
 				glVertex3f(p.x,p.y,z);
 				}
