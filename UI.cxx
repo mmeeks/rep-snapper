@@ -306,11 +306,11 @@ CubeViewUI::CubeViewUI() {
       DisplayEndpointsButton->callback((Fl_Callback*)cb_DisplayEndpointsButton);
     } // Fl_Light_Button* DisplayEndpointsButton
     { DisplayCuttingPlaneButton = new Fl_Light_Button(820, 670, 155, 20, "Display CuttingPlane");
-      DisplayCuttingPlaneButton->value(1);
       DisplayCuttingPlaneButton->selection_color((Fl_Color)FL_GREEN);
       DisplayCuttingPlaneButton->callback((Fl_Callback*)cb_DisplayCuttingPlaneButton);
     } // Fl_Light_Button* DisplayCuttingPlaneButton
     { DisplayinFillButton = new Fl_Light_Button(820, 695, 155, 20, "Display inFill");
+      DisplayinFillButton->value(1);
       DisplayinFillButton->selection_color((Fl_Color)FL_GREEN);
       DisplayinFillButton->callback((Fl_Callback*)cb_DisplayinFillButton);
     } // Fl_Light_Button* DisplayinFillButton
@@ -366,6 +366,7 @@ CubeViewUI::CubeViewUI() {
     } // Fl_Light_Button* DisplayAllLayers
     { ShrinkSlider = new Fl_Value_Slider(820, 540, 375, 20, "Shrink");
       ShrinkSlider->type(1);
+      ShrinkSlider->maximum(10);
       ShrinkSlider->value(0.05);
       ShrinkSlider->textsize(14);
       ShrinkSlider->callback((Fl_Callback*)cb_ShrinkSlider);

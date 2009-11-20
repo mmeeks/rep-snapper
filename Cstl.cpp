@@ -230,8 +230,14 @@ void STL::draw()
 		{
 		CuttingPlane plane;
 		CalcCuttingPlane(z, plane);	// output is alot of un-connected line segments with individual vertices
-//		plane.Draw(z);
-		plane.LinkSegments(z);
+
+		float hackedZ = z;
+		while(plane.LinkSegments(hackedZ) == false)
+			{
+			hackedZ+= 0.1f;
+			plane.polygons.clear();
+			CalcCuttingPlane(hackedZ, plane);	// output is alot of un-connected line segments with individual vertices
+			}
 		plane.Draw(z);
 
 		// inFill
@@ -262,7 +268,11 @@ void STL::draw()
 void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 {
 	// intersect lines with plane
-
+	
+	plane.lines.clear();
+	plane.vertices.clear();
+	plane.polygons.clear();
+	
 	plane.Min.x = Min.x;
 	plane.Min.y = Min.y;
 	plane.Max.x = Max.x;
@@ -375,7 +385,7 @@ vector<InFillHit> HitsBuffer;
 
 
 void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z)
-	{
+{
 	int c=0;
 
 	float step = cvui->InfillDistanceSlider->value();
@@ -417,14 +427,14 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z)
 				glVertex3f(P2.x, P2.y, z);
 				}
 
-			if(polygons.size() != 0)
+			if(offsetPolygons.size() != 0)
 				{
-				for(UINT p=0;p<polygons.size();p++)
+				for(UINT p=0;p<offsetPolygons.size();p++)
 					{
-					for(UINT i=0;i<polygons[p].points.size();i++)
+					for(UINT i=0;i<offsetPolygons[p].points.size();i++)
 						{
-						Vector2f P3 = vertices[polygons[p].points[i]];
-						Vector2f P4 = vertices[polygons[p].points[(i+1)%polygons[p].points.size()]];
+						Vector2f P3 = offsetVertices[offsetPolygons[p].points[i]];
+						Vector2f P4 = offsetVertices[offsetPolygons[p].points[(i+1)%offsetPolygons[p].points.size()]];
 
 						Vector3f point;
 						InFillHit hit;
@@ -529,7 +539,7 @@ restart_check:
 				HitsBuffer.erase(HitsBuffer.begin());
 				}
 		}
-	}
+}
 
 
 #define SMALL_NUM  0.00000001 // anything that avoids division overflow
@@ -919,10 +929,10 @@ public:
 };
 
 
-void CuttingPlane::LinkSegments(float z)
+bool CuttingPlane::LinkSegments(float z)
 {
 	if(vertices.size() == 0)
-		return;
+		return true;
 
 	// Find doublepoints (they all should be)
 	vector<int> myDouble;
@@ -1033,7 +1043,7 @@ void CuttingPlane::LinkSegments(float z)
 
 		Poly poly;
 		poly.points.push_back(endPoint);
-		int count = lines.size();
+		int count = lines.size()+100;
 		while(endPoint != startPoint && count != 0)	// While not closed
 			{
 			// Find a lines that starts with my endPoint point
@@ -1047,7 +1057,7 @@ void CuttingPlane::LinkSegments(float z)
 					endPoint = lines[startLine].end;
 					break;				// done
 					}
-				else if(lines[i].end == endPoint)	// store point
+				else if(lines[i].end == endPoint)	// This should never happen
 					{
 					startLine = i;
 					endPoint = lines[startLine].start;
@@ -1060,14 +1070,17 @@ void CuttingPlane::LinkSegments(float z)
 			poly.points.push_back(endPoint);
 			count--;
 			}
-		polygons.push_back(poly);
 
 		// Check if loop is complete
-		if(count == 0)
+		if(count != 0)
+			polygons.push_back(poly);		// This is good
+		else
 			{
+			return false;
 			assert(-1);
 			error = true;
 			// Should return here or try and fix problem
+			//Solution: Call myself recursive, with a differetn Z
 			}
 
 		startLine = -1;
@@ -1102,8 +1115,8 @@ void CuttingPlane::LinkSegments(float z)
 			glVertex3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, z);
 		glEnd();
 		}
-
-	}
+	return true;
+}
 
 /*
 
@@ -1315,12 +1328,12 @@ void CuttingPlane::LinkSegments(float z)
 
 void CuttingPlane::Shrink(float distance, float z)
 {
-
 	if(cvui->DisplayCuttingPlaneButton->value())
 	{
 		glColor4f(1,1,1,1);
 		for(int p=0; p<polygons.size();p++)
 			{
+			Poly offsetPoly;
 			glBegin(GL_LINE_LOOP);
 			UINT count = polygons[p].points.size();
 			for(int i=0; i<count;i++)
@@ -1343,15 +1356,14 @@ void CuttingPlane::Shrink(float distance, float z)
 				
 				int vertexNr = polygons[p].points[i];
 				
-//				glVertex3f(vertices[vertexNr].x, vertices[vertexNr].y, z);
-
 				Vector2f p = vertices[vertexNr] - (Normal * distance);
-				//offsetPoly.push_back(p);
+				offsetPoly.points.push_back(offsetVertices.size());
+				offsetVertices.push_back(p);
 				glVertex3f(p.x,p.y,z);
 				}
 			glEnd();
+			offsetPolygons.push_back(offsetPoly);
 			}
-//		offsetPolygons.push_back(offsetPoly);
 	}
 }
 

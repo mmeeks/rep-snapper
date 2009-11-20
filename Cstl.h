@@ -70,7 +70,7 @@ public:
 	void CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z=0);
 	bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, InFillHit &hit);
 	void Draw(float z);
-	void LinkSegments(float z);
+	bool LinkSegments(float z);
 	void CleanupPolygons();
 
 	Vector2f Min, Max;				// Bounding box
@@ -79,6 +79,7 @@ public:
 
 	vector<Poly> polygons;		// Closed loops
 	vector<Poly> offsetPolygons;		// Closed loops
+	vector<Vector2f> offsetVertices;		// points
 };
 
 class GCode;
