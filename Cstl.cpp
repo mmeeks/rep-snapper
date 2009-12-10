@@ -233,8 +233,8 @@ void STL::draw()
 		CalcCuttingPlane(z, plane);	// output is alot of un-connected line segments with individual vertices
 
 		float hackedZ = z;
-		while(plane.LinkSegments(hackedZ) == false)
-			{
+		while(plane.LinkSegments(hackedZ) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
+			{										// This happens when there's triangles missing in the input STL
 			hackedZ+= 0.1f;
 			plane.polygons.clear();
 			CalcCuttingPlane(hackedZ, plane);	// output is alot of un-connected line segments with individual vertices
@@ -259,12 +259,151 @@ void STL::draw()
 			}
 			glEnd();
 			}
+		
+		// Make the GCode from the plane and the infill
+		
+		GCode *code = cvui->code;
+		code->commands.clear();
+		if(code != 0)
+			{
+			MakeGcode(plane, infill, code, z);
+
+			// Draw GCode
+
+			/*--------------- Drawing -----------------*/
+
+			glBegin(GL_LINES);
+			Vector3f thisPos(0,0,0);
+
+			float	Distance = 0.0f;
+			Vector3f pos(0,0,0);
+			UINT start = (UINT)(cvui->GCodeDrawStartSlider->value()*(float)(code->commands.size()));
+			UINT end = (UINT)(cvui->GCodeDrawEndSlider->value()*(float)(code->commands.size()));
+			for(UINT i=start;i<code->commands.size() && i < end ;i++)
+			{
+				switch(code->commands[i].Code)
+				{
+				case COORDINATEDMOTION:
+					if(code->commands[i].f == 0 && code->commands[i].e == 0)
+						glColor3f(0.75f,0.75f,1.0f);
+					else
+						glColor3f(0,1,0);
+					Distance += (code->commands[i].where-thisPos).length();
+					glVertex3fv((GLfloat*)&pos);
+					glVertex3fv((GLfloat*)&code->commands[i].where);
+					break;
+				case RAPIDMOTION:
+					glColor3f(0.75f,0.0f,0.0f);
+					Distance += (code->commands[i].where-thisPos).length();
+					glVertex3fv((GLfloat*)&pos);
+					glVertex3fv((GLfloat*)&code->commands[i].where);
+					break;
+				}
+				pos = code->commands[i].where;
+			}
+			glEnd();
+			// Draw GCode end
+
+			}			
+			
+			
 		glPointSize(1);
 		LayerNr++;
 		}
 	z+=zStep;
 	}
 }
+
+UINT findClosestUnused(std::vector<Vector3f> lines, Vector3f point, std::vector<bool> &used)
+{
+	UINT closest = -1;
+	float closestDist = 9999999999999;
+	
+	UINT count = lines.size();
+	
+	for(UINT i=0;i<count;i++)
+	{
+		if(used[i] == false)
+			{
+			float dist = (lines[i]-point).length();
+			if(dist < closestDist)
+				{
+				closestDist = dist;
+				closest = i;
+				}
+			}
+	}
+	
+	return closest;
+}
+
+UINT findOtherEnd(UINT p)
+{
+	UINT a = p%2;
+	if(a == 0)
+		return p+1;
+	return p-1;
+}
+
+void STL::MakeGcode(const CuttingPlane &plane, const std::vector<Vector2f> &infill, GCode* code, float z)
+{
+	// Make an array with all lines, then link'em
+	
+	static Vector3f LastPosition= Vector3f(0,0,z);
+	
+	LastPosition.z = z;
+
+	std::vector<Vector3f> lines;
+	
+	for(UINT i=0;i<infill.size();i++)
+		lines.push_back(Vector3f(infill[i].x, infill[i].y, z));
+	for(UINT i=0;i<plane.lines.size();i++)
+		{
+		lines.push_back(Vector3f(plane.vertices[plane.lines[i].start].x, plane.vertices[plane.lines[i].start].y, z));
+		lines.push_back(Vector3f(plane.vertices[plane.lines[i].end].x, plane.vertices[plane.lines[i].end].y, z));
+		}
+
+	// Find closest point to last point
+
+	std::vector<bool> used;
+	used.resize(lines.size());
+	for(UINT i=0;i<used.size();i++)
+		used[i] = false;
+
+
+	UINT thisPoint = findClosestUnused(lines, LastPosition, used);
+	used[thisPoint] = true;
+	
+	Command command;
+	while(thisPoint != -1)
+		{
+		// store thisPoint
+		//sadkjshdkfshkdjfhskjdhf
+		command.Code = COORDINATEDMOTION;
+		command.where = LastPosition;
+		command.e = 0.0f;					// move
+		code->commands.push_back(command);
+
+		// Find other end of line
+		thisPoint = findOtherEnd(thisPoint);
+		used[thisPoint] = true;
+		// store thisPoint
+		//sadkjshdkfshkdjfhskjdhf
+
+		command.Code = COORDINATEDMOTION;
+		command.where = lines[thisPoint];
+		float len = (LastPosition - command.where).length();
+		command.e = len;					// draw
+		code->commands.push_back(command);
+
+		LastPosition = lines[thisPoint];
+		thisPoint = findClosestUnused(lines, LastPosition, used);
+		if(thisPoint != -1)
+			used[thisPoint] = true;
+		}	
+	int a=0;
+}
+
 
 void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 {

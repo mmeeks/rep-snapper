@@ -2,7 +2,7 @@
 
 #include "search.h"
 
-
+/*
 // returns 1=OK, 0=bad
 bool Search::addPoint(const Vector3f &p)
 {
@@ -74,3 +74,4 @@ Search::~Search()
     delete kdTree;
 	annClose();									// done with ANN
 }
+*/

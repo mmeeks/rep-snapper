@@ -95,6 +95,7 @@ public:
 	void OptimizeRotation();
 	void CalcBoundingBoxAndZoom(GCode *code);
 	void RotateObject(Vector3f axis, float angle);
+	void MakeGcode(const CuttingPlane &plane, const std::vector<Vector2f> &infill, GCode* code, float z);
 
 	vector<Triangle> triangles;
 	Vector3f Min, Max;

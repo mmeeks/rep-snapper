@@ -64,7 +64,7 @@ public:
 	Command(){f=e=0.0f;};
 	GCodes Code;
 	Vector3f where;
-	float f,e;	// Feedrates
+	float f,e;	// Feedrates f=speed, e=extrusion to preform while moving
 };
 
 class GCode : public Fl_Gl_Window
