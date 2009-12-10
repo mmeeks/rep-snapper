@@ -372,6 +372,8 @@ void STL::MakeGcode(const CuttingPlane &plane, const std::vector<Vector2f> &infi
 
 
 	UINT thisPoint = findClosestUnused(lines, LastPosition, used);
+	if(thisPoint == -1)	// No lines = no gcode
+		return;
 	used[thisPoint] = true;
 	
 	Command command;
