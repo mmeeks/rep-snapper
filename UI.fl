@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0110 
+version 1.0109 
 header_name {.h} 
 code_name {.cxx}
 class CubeViewUI {open
@@ -153,7 +153,7 @@ code->redraw();}
       }
       Fl_Value_Slider ShrinkSlider {
         label Shrink
-        callback {code->redraw();} selected
+        callback {code->redraw();}
         xywh {820 540 375 20} type Horizontal align 5 maximum 10 value 0.05 textsize 14
       }
       Fl_Light_Button FixSTLerrorsButton {
@@ -223,8 +223,9 @@ code->redraw();}
   } {
     code {mainWindow->show(argc, argv);
 //code->ReadStl("C:/box.stl");
-code->ReadStl("C:/code/printed-parts/y-bearing-180-outer-right_1off.stl");
+code->ReadStl("C:/\#Downloads/Reprap Exchange/N_DSL-Stylus.stl");
 //code->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
-code->redraw();} {}
+code->redraw();} {selected
+    }
   }
 } 

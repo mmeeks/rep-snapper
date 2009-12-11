@@ -272,6 +272,7 @@ void STL::draw()
 
 			/*--------------- Drawing -----------------*/
 
+			glLineWidth(4);
 			glBegin(GL_LINES);
 			Vector3f thisPos(0,0,0);
 
@@ -287,7 +288,7 @@ void STL::draw()
 					if(code->commands[i].f == 0 && code->commands[i].e == 0)
 						glColor3f(0.75f,0.75f,1.0f);
 					else
-						glColor3f(0,1,0);
+						glColor3f(1,1,0);
 					Distance += (code->commands[i].where-thisPos).length();
 					glVertex3fv((GLfloat*)&pos);
 					glVertex3fv((GLfloat*)&code->commands[i].where);
@@ -302,8 +303,8 @@ void STL::draw()
 				pos = code->commands[i].where;
 			}
 			glEnd();
+			glLineWidth(1);
 			// Draw GCode end
-
 			}			
 			
 			
@@ -382,7 +383,7 @@ void STL::MakeGcode(const CuttingPlane &plane, const std::vector<Vector2f> &infi
 		// store thisPoint
 		//sadkjshdkfshkdjfhskjdhf
 		command.Code = COORDINATEDMOTION;
-		command.where = LastPosition;
+		command.where = lines[thisPoint];
 		command.e = 0.0f;					// move
 		code->commands.push_back(command);
 

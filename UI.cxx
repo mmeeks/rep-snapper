@@ -430,7 +430,7 @@ CubeViewUI::CubeViewUI() {
 void CubeViewUI::show(int argc, char **argv) {
   mainWindow->show(argc, argv);
 //code->ReadStl("C:/box.stl");
-code->ReadStl("C:/code/printed-parts/y-bearing-180-outer-right_1off.stl");
+code->ReadStl("C:/#Downloads/Reprap Exchange/N_DSL-Stylus.stl");
 //code->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
 code->redraw();
 }
