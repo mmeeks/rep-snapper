@@ -239,13 +239,16 @@ void STL::draw()
 			plane.polygons.clear();
 			CalcCuttingPlane(hackedZ, plane);	// output is alot of un-connected line segments with individual vertices
 			}
+
 		plane.Draw(z);
 
 		// inFill
 		vector<Vector2f> infill;
+
+		plane.CalcInFill(infill, LayerNr, z);
+
 		if(cvui->DisplayinFillButton->value())
 			{
-			plane.CalcInFill(infill, LayerNr, z);
 			glColor4f(1,1,0,1);
 			glPointSize(5);
 			glBegin(GL_LINES);
@@ -286,7 +289,7 @@ void STL::draw()
 				{
 				case COORDINATEDMOTION:
 					if(code->commands[i].f == 0 && code->commands[i].e == 0)
-						glColor3f(0.75f,0.75f,1.0f);
+						glColor3f(0.55f,0.55f,0.55f);
 					else
 						glColor3f(1,1,0);
 					Distance += (code->commands[i].where-thisPos).length();
@@ -350,7 +353,7 @@ void STL::MakeGcode(const CuttingPlane &plane, const std::vector<Vector2f> &infi
 {
 	// Make an array with all lines, then link'em
 	
-	static Vector3f LastPosition= Vector3f(0,0,z);
+	Vector3f LastPosition= Vector3f(0,0,z);
 	
 	LastPosition.z = z;
 
@@ -358,12 +361,21 @@ void STL::MakeGcode(const CuttingPlane &plane, const std::vector<Vector2f> &infi
 	
 	for(UINT i=0;i<infill.size();i++)
 		lines.push_back(Vector3f(infill[i].x, infill[i].y, z));
-	for(UINT i=0;i<plane.lines.size();i++)
-		{
-		lines.push_back(Vector3f(plane.vertices[plane.lines[i].start].x, plane.vertices[plane.lines[i].start].y, z));
-		lines.push_back(Vector3f(plane.vertices[plane.lines[i].end].x, plane.vertices[plane.lines[i].end].y, z));
-		}
 
+	// Copy polygons
+	if(plane.offsetPolygons.size() != 0)
+	{
+		for(UINT p=0;p<plane.offsetPolygons.size();p++)
+		{
+			for(UINT i=0;i<plane.offsetPolygons[p].points.size();i++)
+			{
+				Vector2f P3 = plane.offsetVertices[plane.offsetPolygons[p].points[i]];
+				Vector2f P4 = plane.offsetVertices[plane.offsetPolygons[p].points[(i+1)%plane.offsetPolygons[p].points.size()]];
+				lines.push_back(Vector3f(P3.x, P3.y, z));
+				lines.push_back(Vector3f(P4.x, P4.y, z));
+			}
+		}
+	}
 	// Find closest point to last point
 
 	std::vector<bool> used;
@@ -381,7 +393,6 @@ void STL::MakeGcode(const CuttingPlane &plane, const std::vector<Vector2f> &infi
 	while(thisPoint != -1)
 		{
 		// store thisPoint
-		//sadkjshdkfshkdjfhskjdhf
 		command.Code = COORDINATEDMOTION;
 		command.where = lines[thisPoint];
 		command.e = 0.0f;					// move
@@ -391,7 +402,13 @@ void STL::MakeGcode(const CuttingPlane &plane, const std::vector<Vector2f> &infi
 		thisPoint = findOtherEnd(thisPoint);
 		used[thisPoint] = true;
 		// store thisPoint
-		//sadkjshdkfshkdjfhskjdhf
+
+		//G1 X23.9 Y39.0 Z0.2526 E66.5 F3000.0 ;print segment
+		//G1 X23.9 Y39.7 Z0.2526 E67.2 F3000.0 ;print segment
+		// So, for example, the second line is saying move 0.7mm in Y from where you last were, extrude 0.7mm of filament during the move, and accelerate from 1500.0 mm/minute to 3000.0 mm/minute while doing so. To make a movement at constant speed, simply set the feedrate first:
+		//G1 F1500.0 ;set feedrate
+		//G1 X23.9 Y39.7 Z0.2526 E67.2;print segment
+		// This would do exactly the same movement and extrusion, but at a constant feedrate of 1500 mm/minute. 
 
 		command.Code = COORDINATEDMOTION;
 		command.where = lines[thisPoint];
@@ -1471,43 +1488,43 @@ bool CuttingPlane::LinkSegments(float z)
 
 void CuttingPlane::Shrink(float distance, float z)
 {
-	if(cvui->DisplayCuttingPlaneButton->value())
-	{
-		glColor4f(1,1,1,1);
-		for(int p=0; p<polygons.size();p++)
-			{
-			Poly offsetPoly;
+	glColor4f(1,1,1,1);
+	for(int p=0; p<polygons.size();p++)
+		{
+		Poly offsetPoly;
+		if(cvui->DisplayCuttingPlaneButton->value())
 			glBegin(GL_LINE_LOOP);
-			UINT count = polygons[p].points.size();
-			for(int i=0; i<count;i++)
-				{
-				Vector2f Na = Vector2f(vertices[polygons[p].points[(i-1+count)%count]].x, vertices[polygons[p].points[(i-1+count)%count]].y);
-				Vector2f Nb = Vector2f(vertices[polygons[p].points[i]].x, vertices[polygons[p].points[i]].y);
-				Vector2f Nc = Vector2f(vertices[polygons[p].points[(i+1)%count]].x, vertices[polygons[p].points[(i+1)%count]].y);
-				
-				Vector2f V1 = (Nb-Na);
-				Vector2f V2 = (Nc-Nb);
-				
-				Vector2f N1 = Vector2f(-V1.y, V1.x);
-				Vector2f N2 = Vector2f(-V2.y, V2.x);
-				
-				N1.normalise();
-				N2.normalise();
+		UINT count = polygons[p].points.size();
+		for(int i=0; i<count;i++)
+			{
+			Vector2f Na = Vector2f(vertices[polygons[p].points[(i-1+count)%count]].x, vertices[polygons[p].points[(i-1+count)%count]].y);
+			Vector2f Nb = Vector2f(vertices[polygons[p].points[i]].x, vertices[polygons[p].points[i]].y);
+			Vector2f Nc = Vector2f(vertices[polygons[p].points[(i+1)%count]].x, vertices[polygons[p].points[(i+1)%count]].y);
+			
+			Vector2f V1 = (Nb-Na);
+			Vector2f V2 = (Nc-Nb);
+			
+			Vector2f N1 = Vector2f(-V1.y, V1.x);
+			Vector2f N2 = Vector2f(-V2.y, V2.x);
+			
+			N1.normalise();
+			N2.normalise();
 
-				Vector2f Normal = N1+N2;
-				Normal.normalise();
-				
-				int vertexNr = polygons[p].points[i];
-				
-				Vector2f p = vertices[vertexNr] - (Normal * distance);
-				offsetPoly.points.push_back(offsetVertices.size());
-				offsetVertices.push_back(p);
+			Vector2f Normal = N1+N2;
+			Normal.normalise();
+			
+			int vertexNr = polygons[p].points[i];
+			
+			Vector2f p = vertices[vertexNr] - (Normal * distance);
+			offsetPoly.points.push_back(offsetVertices.size());
+			offsetVertices.push_back(p);
+			if(cvui->DisplayCuttingPlaneButton->value())
 				glVertex3f(p.x,p.y,z);
-				}
-			glEnd();
-			offsetPolygons.push_back(offsetPoly);
 			}
-	}
+		if(cvui->DisplayCuttingPlaneButton->value())
+			glEnd();
+		offsetPolygons.push_back(offsetPoly);
+		}
 }
 
 

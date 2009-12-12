@@ -8,39 +8,28 @@ class CubeViewUI {open
   } {
     Fl_Window mainWindow {
       label CubeView open
-      xywh {225 19 1211 843} type Double box UP_BOX labelsize 12 hide resizable
+      xywh {272 98 1354 809} type Double box UP_BOX labelsize 12 hide resizable
     } {
       Fl_Box code {
         label {This is the cube_view}
-        xywh {5 6 800 800} box UP_BOX align 16
+        xywh {5 5 800 800} box UP_BOX align 16
         code0 {\#include "GCode.h"}
         code1 {\#ifndef M_PI
 \#define M_PI 3.14159265358979323846
 \#endif}
         class GCode
       }
-      Fl_Button {} {
-        label {Load Gcode}
-        callback {Fl_File_Chooser chooser("\\\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
-chooser.show();
-while (chooser.shown())
-	Fl::wait();
-if(chooser.value() == 0)
-	return;
-std::string dir(chooser.value());
-
-
-if(dir.length())
-{
-code->Read(dir);
-code->redraw();
-};}
-        xywh {810 5 145 25}
-        code0 {\#include <FL/Fl_File_Chooser.H>}
-      }
-      Fl_Button {} {
-        label {Load STL}
-        callback {Fl_File_Chooser chooser("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose GCode");
+      Fl_Tabs Tabs {
+        label {Process:} open
+        xywh {810 20 540 785} align 5
+      } {
+        Fl_Group {} {
+          label {Input file}
+          xywh {810 40 540 765} hide
+        } {
+          Fl_Button {} {
+            label {Load STL}
+            callback {Fl_File_Chooser chooser("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose GCode");
 chooser.show();
 while (chooser.shown())
 	Fl::wait();
@@ -54,69 +43,158 @@ if(dir.length())
 code->ReadStl(dir);
 code->redraw();
 };}
-        xywh {815 230 145 25}
-      }
-      Fl_Light_Button DisplayGCodeButton {
-        label {Display GCode}
-        xywh {820 565 155 20} value 1 selection_color 63
-      }
-      Fl_Light_Button DisplaySTLButton {
-        label {Display STL objects}
-        xywh {820 595 155 20} value 1 selection_color 63
-      }
-      Fl_Value_Slider CuttingPlaneSlider {
-        label CuttingPlane
-        callback {code->redraw();}
-        xywh {820 500 375 20} type Horizontal align 5 value 0.9 textsize 14
-      }
-      Fl_Value_Slider ExamineSlider {
-        label Examine
-        callback {code->redraw();}
-        xywh {820 785 365 20} type Horizontal align 5 step 0.001 value 0.098 textsize 14
-      }
-      Fl_Light_Button DisplayPolygonsButton {
-        label {Display Polygons}
-        callback {code->redraw();}
-        xywh {820 620 155 20} selection_color 63
-      }
-      Fl_Light_Button DisplayWireframeButton {
-        label {Display Wireframe}
-        callback {code->redraw();}
-        xywh {820 645 155 20} selection_color 63
-      }
-      Fl_Light_Button DisplayNormalsButton {
-        label {Display Normals}
-        callback {code->redraw();}
-        xywh {980 645 155 20} selection_color 63
-      }
-      Fl_Light_Button DisplayEndpointsButton {
-        label {Display Endpoints}
-        callback {code->redraw();}
-        xywh {980 670 155 20} selection_color 63
-      }
-      Fl_Light_Button DisplayCuttingPlaneButton {
-        label {Display CuttingPlane}
-        callback {code->redraw();}
-        xywh {820 670 155 20} selection_color 63
-      }
-      Fl_Light_Button DisplayinFillButton {
-        label {Display inFill}
-        callback {code->redraw();}
-        xywh {820 695 155 20} value 1 selection_color 63
-      }
-      Fl_Value_Slider RotationSlider {
-        label Rotation
-        callback {code->redraw();}
-        xywh {815 275 370 20} type Horizontal align 5 maximum 360 step 1 value 45 textsize 14
-      }
-      Fl_Light_Button DisplayDebuginFillButton {
-        label {Display Debug inFill}
-        callback {code->redraw();}
-        xywh {1015 745 170 20} selection_color 63
-      }
-      Fl_Light_Button DisplayDebugButton {
-        label Debug
-        callback {if(o->value())
+            xywh {815 55 145 25}
+          }
+          Fl_Light_Button FixSTLerrorsButton {
+            label {Fix STL errors}
+            callback {code->redraw()}
+            xywh {965 55 135 25} value 1 selection_color 63
+          }
+          Fl_Button AutoRotateButton {
+            label {Auto rotate}
+            callback {code->OptimizeRotation();
+code->CalcBoundingBoxAndZoom(code);
+code->redraw();}
+            xywh {815 85 90 20}
+          }
+          Fl_Button RotateXButton {
+            label {Rotate X}
+            callback {code->RotateObject(1,0,0, M_PI/4);
+code->CalcBoundingBoxAndZoom(code);
+code->redraw();}
+            xywh {910 85 90 20}
+          }
+          Fl_Button RotateYButton {
+            label {Rotate Y}
+            callback {code->RotateObject(0,1,0, M_PI/4);
+code->CalcBoundingBoxAndZoom(code);
+code->redraw();}
+            xywh {1005 85 90 20}
+          }
+          Fl_Button RotateZButton {
+            label {Rotate Z}
+            callback {code->RotateObject(0,0,1, M_PI/4);
+code->CalcBoundingBoxAndZoom(code);
+code->redraw();}
+            xywh {1100 85 90 20}
+          }
+        }
+        Fl_Group {} {
+          label {Printer definition} open selected
+          xywh {810 40 540 765}
+        } {
+          Fl_Value_Slider ShrinkSlider {
+            label {Extruded material width}
+            callback {code->redraw();}
+            xywh {825 270 375 20} type Horizontal align 5 value 0.7 textsize 14
+          }
+          Fl_Group {} {
+            label {Build volume (mm)} open
+            xywh {820 60 165 35} box UP_BOX
+          } {
+            Fl_Value_Input {} {
+              label X
+              xywh {840 66 35 24}
+            }
+            Fl_Value_Input {} {
+              label Y
+              xywh {895 66 35 24}
+            }
+            Fl_Value_Input {} {
+              label Z
+              xywh {950 66 25 24}
+            }
+          }
+        }
+        Fl_Group {} {
+          label Slicing
+          xywh {810 40 540 765} hide
+        } {
+          Fl_Value_Slider CuttingPlaneSlider {
+            label CuttingPlane
+            callback {code->redraw();}
+            xywh {840 450 375 20} type Horizontal align 5 value 0.9 textsize 14
+          }
+          Fl_Value_Slider RotationSlider {
+            label Rotation
+            callback {code->redraw();}
+            xywh {840 490 370 20} type Horizontal align 5 maximum 360 step 1 value 45 textsize 14
+          }
+          Fl_Value_Slider InfillRotationPrLayerSlider {
+            label {InFill Rotation pr. Layer}
+            callback {code->redraw();}
+            xywh {840 530 370 20} type Horizontal align 5 maximum 360 step 1 value 90 textsize 14
+          }
+          Fl_Value_Slider InfillDistanceSlider {
+            label {Infill Distance}
+            callback {code->redraw();}
+            xywh {840 570 370 20} type Horizontal align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14
+          }
+          Fl_Value_Slider LayerThicknessSlider {
+            label {Layer Thickness}
+            callback {code->redraw();}
+            xywh {840 610 370 20} type Horizontal align 5 minimum 0.1 maximum 3 step 0.1 value 0.4 textsize 14
+          }
+          Fl_Value_Slider OptimizationSlider {
+            label Optimize
+            callback {code->redraw();}
+            xywh {840 650 370 20} type Horizontal align 5 step 0.001 value 0.001 textsize 14
+          }
+        }
+        Fl_Group {} {
+          label GCode
+          xywh {810 40 540 765} hide
+        } {
+          Fl_Button {} {
+            label {Load Gcode}
+            callback {Fl_File_Chooser chooser("\\\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
+chooser.show();
+while (chooser.shown())
+	Fl::wait();
+if(chooser.value() == 0)
+	return;
+std::string dir(chooser.value());
+
+
+if(dir.length())
+{
+code->Read(dir);
+code->redraw();
+};}
+            xywh {815 220 145 25}
+            code0 {\#include <FL/Fl_File_Chooser.H>}
+          }
+          Fl_Output GCodeLengthText {
+            xywh {965 221 225 24}
+          }
+          Fl_Value_Slider GCodeDrawStartSlider {
+            label {GCode draw start}
+            callback {code->redraw();}
+            xywh {815 270 370 20} type Horizontal align 5 step 0 textsize 14
+          }
+          Fl_Value_Slider GCodeDrawEndSlider {
+            label {GCode draw end}
+            callback {code->redraw();}
+            xywh {815 305 370 20} type Horizontal align 5 step 0 value 1 textsize 14
+          }
+        }
+        Fl_Group {} {
+          label Debug open
+          xywh {810 40 540 765} color 47 labelfont 1 labelcolor 1 hide
+        } {
+          Fl_Value_Slider ExamineSlider {
+            label Examine
+            callback {code->redraw();}
+            xywh {880 760 365 20} type Horizontal align 5 step 0.001 value 0.098 textsize 14
+          }
+          Fl_Light_Button DisplayDebuginFillButton {
+            label {Display Debug inFill}
+            callback {code->redraw();}
+            xywh {1075 720 170 20} selection_color 63
+          }
+          Fl_Light_Button DisplayDebugButton {
+            label Debug
+            callback {if(o->value())
 {
 DisplayDebuginFillButton->show();
 ExamineSlider->show();
@@ -129,93 +207,62 @@ ExamineSlider->hide();
 
 
 code->redraw();}
-        xywh {820 745 190 20} selection_color 63
-      }
-      Fl_Value_Slider InfillRotationPrLayerSlider {
-        label {InFill Rotation pr. Layer}
-        callback {code->redraw();}
-        xywh {815 315 370 20} type Horizontal align 5 maximum 360 step 1 value 90 textsize 14
-      }
-      Fl_Value_Slider InfillDistanceSlider {
-        label {Infill Distance}
-        callback {code->redraw();}
-        xywh {815 355 370 20} type Horizontal align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14
-      }
-      Fl_Value_Slider LayerThicknessSlider {
-        label {Layer Thickness}
-        callback {code->redraw();}
-        xywh {815 395 370 20} type Horizontal align 5 minimum 0.1 maximum 3 step 0.1 value 0.5 textsize 14
-      }
-      Fl_Light_Button DisplayAllLayers {
-        label {Display all layers}
-        callback {code->redraw();}
-        xywh {820 720 155 20} selection_color 63
-      }
-      Fl_Value_Slider ShrinkSlider {
-        label Shrink
-        callback {code->redraw();}
-        xywh {820 540 375 20} type Horizontal align 5 maximum 10 value 0.05 textsize 14
-      }
-      Fl_Light_Button FixSTLerrorsButton {
-        label {Fix STL errors}
-        callback {code->redraw()}
-        xywh {965 230 135 25} value 1 selection_color 63
-      }
-      Fl_Button AutoRotateButton {
-        label {Auto rotate}
-        callback {code->OptimizeRotation();
-code->CalcBoundingBoxAndZoom(code);
-code->redraw();}
-        xywh {815 460 90 20}
-      }
-      Fl_Button RotateXButton {
-        label {Rotate X}
-        callback {code->RotateObject(1,0,0, M_PI/4);
-code->CalcBoundingBoxAndZoom(code);
-code->redraw();}
-        xywh {910 460 90 20}
-      }
-      Fl_Button RotateYButton {
-        label {Rotate Y}
-        callback {code->RotateObject(0,1,0, M_PI/4);
-code->CalcBoundingBoxAndZoom(code);
-code->redraw();}
-        xywh {1005 460 90 20}
-      }
-      Fl_Button RotateZButton {
-        label {Rotate Z}
-        callback {code->RotateObject(0,0,1, M_PI/4);
-code->CalcBoundingBoxAndZoom(code);
-code->redraw();}
-        xywh {1100 460 90 20}
-      }
-      Fl_Output GCodeLengthText {
-        xywh {960 6 225 24}
-      }
-      Fl_Light_Button DrawVertexNumbersButton {
-        label {Draw vertex numbers}
-        callback {code->redraw();}
-        xywh {980 695 155 20} selection_color 63
-      }
-      Fl_Light_Button DrawLineNumbersButton {
-        label {Draw line numbers}
-        callback {code->redraw();}
-        xywh {980 720 155 20} selection_color 63
-      }
-      Fl_Value_Slider OptimizationSlider {
-        label Optimize
-        callback {code->redraw();}
-        xywh {815 435 370 20} type Horizontal align 5 step 0.001 value 0.001 textsize 14
-      }
-      Fl_Value_Slider GCodeDrawStartSlider {
-        label {GCode draw start}
-        callback {code->redraw();}
-        xywh {810 55 370 20} type Horizontal align 5 step 0 textsize 14
-      }
-      Fl_Value_Slider GCodeDrawEndSlider {
-        label {GCode draw end}
-        callback {code->redraw();}
-        xywh {810 90 370 20} type Horizontal align 5 step 0 value 1 textsize 14
+            xywh {880 720 190 20} selection_color 63
+          }
+          Fl_Light_Button DisplayGCodeButton {
+            label {Display GCode}
+            xywh {880 540 155 20} value 1 selection_color 63
+          }
+          Fl_Light_Button DisplaySTLButton {
+            label {Display STL objects}
+            xywh {880 570 155 20} selection_color 63
+          }
+          Fl_Light_Button DisplayPolygonsButton {
+            label {Display Polygons}
+            callback {code->redraw();}
+            xywh {880 595 155 20} selection_color 63
+          }
+          Fl_Light_Button DisplayWireframeButton {
+            label {Display Wireframe}
+            callback {code->redraw();}
+            xywh {880 620 155 20} selection_color 63
+          }
+          Fl_Light_Button DisplayNormalsButton {
+            label {Display Normals}
+            callback {code->redraw();}
+            xywh {1040 620 155 20} selection_color 63
+          }
+          Fl_Light_Button DisplayEndpointsButton {
+            label {Display Endpoints}
+            callback {code->redraw();}
+            xywh {1040 645 155 20} selection_color 63
+          }
+          Fl_Light_Button DisplayCuttingPlaneButton {
+            label {Display CuttingPlane}
+            callback {code->redraw();}
+            xywh {880 645 155 20} selection_color 63
+          }
+          Fl_Light_Button DisplayinFillButton {
+            label {Display inFill}
+            callback {code->redraw();}
+            xywh {880 670 155 20} selection_color 63
+          }
+          Fl_Light_Button DisplayAllLayers {
+            label {Display all layers}
+            callback {code->redraw();}
+            xywh {880 695 155 20} selection_color 63
+          }
+          Fl_Light_Button DrawVertexNumbersButton {
+            label {Draw vertex numbers}
+            callback {code->redraw();}
+            xywh {1040 670 155 20} selection_color 63
+          }
+          Fl_Light_Button DrawLineNumbersButton {
+            label {Draw line numbers}
+            callback {code->redraw();}
+            xywh {1040 695 155 20} selection_color 63
+          }
+        }
       }
     }
   }
@@ -225,7 +272,6 @@ code->redraw();}
 //code->ReadStl("C:/box.stl");
 code->ReadStl("C:/\#Downloads/Reprap Exchange/N_DSL-Stylus.stl");
 //code->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
-code->redraw();} {selected
-    }
+code->redraw();} {}
   }
 } 
