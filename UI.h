@@ -4,7 +4,7 @@
 #define UI_h
 #include <FL/Fl.H>
 #include <FL/Fl_Double_Window.H>
-#include "GCode.h"
+#include "ModelViewController.h"
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -17,11 +17,13 @@
 #include <FL/Fl_File_Chooser.H>
 #include <FL/Fl_Output.H>
 
-class CubeViewUI {
+class ModelViewController;
+
+class GUI {
 public:
-  CubeViewUI();
+  GUI();
   Fl_Double_Window *mainWindow;
-  GCode *code;
+  ModelViewController *MVC;
   Fl_Tabs *Tabs;
 private:
   void cb_Load_i(Fl_Button*, void*);

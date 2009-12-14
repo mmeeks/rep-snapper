@@ -13,5 +13,6 @@
 #include <tchar.h>
 
 
+#include "ModelViewController.h"
 
 // TODO: reference additional headers your program requires here

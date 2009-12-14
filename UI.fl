@@ -1,23 +1,22 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109 
+version 1.0110 
 header_name {.h} 
 code_name {.cxx}
-class CubeViewUI {open
+class GUI {open selected
 } {
-  Function {CubeViewUI()} {open
-  } {
+  Function {GUI()} {} {
     Fl_Window mainWindow {
       label CubeView open
-      xywh {272 98 1354 809} type Double box UP_BOX labelsize 12 hide resizable
+      xywh {82 53 1354 809} type Double box UP_BOX labelsize 12 hide resizable
     } {
-      Fl_Box code {
-        label {This is the cube_view}
+      Fl_Box MVC {
+        label {An instace of ModelViewController}
         xywh {5 5 800 800} box UP_BOX align 16
-        code0 {\#include "GCode.h"}
+        code0 {\#include "ModelViewController.h"}
         code1 {\#ifndef M_PI
 \#define M_PI 3.14159265358979323846
 \#endif}
-        class GCode
+        class ModelViewController
       }
       Fl_Tabs Tabs {
         label {Process:} open
@@ -80,7 +79,7 @@ code->redraw();}
           }
         }
         Fl_Group {} {
-          label {Printer definition} open selected
+          label {Printer definition} open
           xywh {810 40 540 765}
         } {
           Fl_Value_Slider ShrinkSlider {
@@ -266,8 +265,7 @@ code->redraw();}
       }
     }
   }
-  Function {show(int argc, char **argv)} {open
-  } {
+  Function {show(int argc, char **argv)} {} {
     code {mainWindow->show(argc, argv);
 //code->ReadStl("C:/box.stl");
 code->ReadStl("C:/\#Downloads/Reprap Exchange/N_DSL-Stylus.stl");

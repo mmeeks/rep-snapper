@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "Cstl.h"
+#include "stl.h"
 #include "gcode.h"
 #include "UI.h"
 #include "math.h"
@@ -26,8 +26,6 @@ using namespace std;
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
-STL stl;
-extern CubeViewUI *cvui;
 
 void renderBitmapString(Vector3f pos, void* font, string text)
 {
@@ -46,10 +44,6 @@ STL::STL()
 
 void STL::Read(string filename)
 {
-	GCode *code = cvui->code;
-	if(code == 0)
-		return;
-
 	triangles.clear();
 
 	unsigned int count;
@@ -60,9 +54,6 @@ void STL::Read(string filename)
 		infile.open(filename.c_str(),  ios::in | ios::binary);
 		if(!infile.good())
 			return;
-		// Set window title
-		
-		cvui->mainWindow->label(filename.c_str()); 
 			
 		// Ascii ot binary?
 		long header;
@@ -117,32 +108,20 @@ void STL::Read(string filename)
 	}
 	
 	OptimizeRotation();
-	CalcBoundingBoxAndZoom(code);
+	CalcBoundingBoxAndZoom();
 }
 
-void STL::CalcBoundingBoxAndZoom(GCode *code)
+void STL::CalcBoundingBoxAndZoom()
 {
-	code->Min = Min;
-	code->Max = Max;
-
-	code->Center = (code->Max + code->Min )/2;
-
-	// Find zoom
-
-	float L=0;
-	if(code->Max.x - code->Min.x > L)	L = code->Max.x - code->Min.x;
-	if(code->Max.y - code->Min.y > L)	L = code->Max.y - code->Min.y;
-	if(code->Max.z - code->Min.z > L)	L = code->Max.z - code->Min.z;
-
-	code->zoom= L;
+	Center = (Max + Min )/2;
 }
 
 
-void STL::draw()
+void STL::draw(GUI* gui)
 {
 	// polygons
 
-	if(cvui->DisplayPolygonsButton->value())
+	if(gui->DisplayPolygonsButton->value())
 	{
 		glEnable(GL_CULL_FACE);
 //		glEnable(GL_DEPTH_TEST);
@@ -172,7 +151,7 @@ void STL::draw()
 	}
 
 	// WireFrame
-	if(cvui->DisplayWireframeButton->value())
+	if(gui->DisplayWireframeButton->value())
 	{
 		glColor4f(0,1,0,1);
 		for(UINT i=0;i<triangles.size();i++)
@@ -185,7 +164,7 @@ void STL::draw()
 		}
 	}
 	// normals
-	if(cvui->DisplayNormalsButton->value())
+	if(gui->DisplayNormalsButton->value())
 	{
 		glColor4f(0,0,1,1);
 		glBegin(GL_LINES);
@@ -200,7 +179,7 @@ void STL::draw()
 	}
 
 	// Endpoints
-	if(cvui->DisplayEndpointsButton->value())
+	if(gui->DisplayEndpointsButton->value())
 	{
 		glColor4f(1,0,0,1);
 		glPointSize(2);
@@ -218,13 +197,13 @@ void STL::draw()
 	UINT LayerNr = 0;
 
 	float zSize = (Max.z-Min.z);
-	float z=cvui->CuttingPlaneSlider->value()*zSize+Min.z;
+	float z=gui->CuttingPlaneSlider->value()*zSize+Min.z;
 	float zStep = zSize;
 
-	if(cvui->DisplayAllLayers->value())
+	if(gui->DisplayAllLayers->value())
 		{
 		z=Min.z;
-		zStep = cvui->LayerThicknessSlider->value();
+		zStep = gui->LayerThicknessSlider->value();
 		}
 	while(z<Max.z)
 	{
@@ -247,7 +226,7 @@ void STL::draw()
 
 		plane.CalcInFill(infill, LayerNr, z);
 
-		if(cvui->DisplayinFillButton->value())
+		if(gui->DisplayinFillButton->value())
 			{
 			glColor4f(1,1,0,1);
 			glPointSize(5);
@@ -264,16 +243,16 @@ void STL::draw()
 			}
 		
 		// Make the GCode from the plane and the infill
-		
-		GCode *code = cvui->code;
+		/*
+		GCode *code = gui->code;
 		code->commands.clear();
 		if(code != 0)
 			{
-			MakeGcode(plane, infill, code, z);
+			plane.MakeGcode(infill, code, z);
 
 			// Draw GCode
 
-			/*--------------- Drawing -----------------*/
+			//--------------- Drawing -----------------
 
 			glLineWidth(4);
 			glBegin(GL_LINES);
@@ -281,8 +260,8 @@ void STL::draw()
 
 			float	Distance = 0.0f;
 			Vector3f pos(0,0,0);
-			UINT start = (UINT)(cvui->GCodeDrawStartSlider->value()*(float)(code->commands.size()));
-			UINT end = (UINT)(cvui->GCodeDrawEndSlider->value()*(float)(code->commands.size()));
+			UINT start = (UINT)(gui->GCodeDrawStartSlider->value()*(float)(code->commands.size()));
+			UINT end = (UINT)(gui->GCodeDrawEndSlider->value()*(float)(code->commands.size()));
 			for(UINT i=start;i<code->commands.size() && i < end ;i++)
 			{
 				switch(code->commands[i].Code)
@@ -309,9 +288,8 @@ void STL::draw()
 			glLineWidth(1);
 			// Draw GCode end
 			}			
-			
-			
 		glPointSize(1);
+		*/
 		LayerNr++;
 		}
 	z+=zStep;
@@ -349,7 +327,7 @@ UINT findOtherEnd(UINT p)
 	return p-1;
 }
 
-void STL::MakeGcode(const CuttingPlane &plane, const std::vector<Vector2f> &infill, GCode* code, float z)
+void CuttingPlane::MakeGcode(const CuttingPlane &plane, const std::vector<Vector2f> &infill, GCode* code, float z)
 {
 	// Make an array with all lines, then link'em
 	
@@ -363,14 +341,14 @@ void STL::MakeGcode(const CuttingPlane &plane, const std::vector<Vector2f> &infi
 		lines.push_back(Vector3f(infill[i].x, infill[i].y, z));
 
 	// Copy polygons
-	if(plane.offsetPolygons.size() != 0)
+	if(offsetPolygons.size() != 0)
 	{
-		for(UINT p=0;p<plane.offsetPolygons.size();p++)
+		for(UINT p=0;p<offsetPolygons.size();p++)
 		{
-			for(UINT i=0;i<plane.offsetPolygons[p].points.size();i++)
+			for(UINT i=0;i<offsetPolygons[p].points.size();i++)
 			{
-				Vector2f P3 = plane.offsetVertices[plane.offsetPolygons[p].points[i]];
-				Vector2f P4 = plane.offsetVertices[plane.offsetPolygons[p].points[(i+1)%plane.offsetPolygons[p].points.size()]];
+				Vector2f P3 = offsetVertices[offsetPolygons[p].points[i]];
+				Vector2f P4 = offsetVertices[offsetPolygons[p].points[(i+1)%offsetPolygons[p].points.size()]];
 				lines.push_back(Vector3f(P3.x, P3.y, z));
 				lines.push_back(Vector3f(P4.x, P4.y, z));
 			}
@@ -420,8 +398,7 @@ void STL::MakeGcode(const CuttingPlane &plane, const std::vector<Vector2f> &infi
 		thisPoint = findClosestUnused(lines, LastPosition, used);
 		if(thisPoint != -1)
 			used[thisPoint] = true;
-		}	
-	int a=0;
+		}
 }
 
 
@@ -437,8 +414,6 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 	plane.Min.y = Min.y;
 	plane.Max.x = Max.x;
 	plane.Max.y = Max.y;
-
-	GCode *code = cvui->code;
 
 	UINT pointNr = 0;
 	bool foundOne = false;
@@ -548,14 +523,14 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z)
 {
 	int c=0;
 
-	float step = cvui->InfillDistanceSlider->value();
+	float step = gui->InfillDistanceSlider->value();
 
 	bool examine = false;
 
 	float Length = sqrtf(2)*(   ((Max.x)>(Max.y)? (Max.x):(Max.y))  -  ((Min.x)<(Min.y)? (Min.x):(Min.y))  )/2.0f;
 
-	float rot = cvui->RotationSlider->value()/180.0f*M_PI;
-	rot += (float)LayerNr*(float)cvui->InfillRotationPrLayerSlider->value()/180.0f*M_PI;
+	float rot = gui->RotationSlider->value()/180.0f*M_PI;
+	rot += (float)LayerNr*(float)gui->InfillRotationPrLayerSlider->value()/180.0f*M_PI;
 	Vector2f InfillDirX(cosf(rot), sinf(rot));
 	Vector2f InfillDirY(-InfillDirX.y, InfillDirX.x);
 	Vector2f Center = (Max+Min)/2.0f;
@@ -569,7 +544,7 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z)
 		Vector2f P1 = (InfillDirX * Length)+(InfillDirY*x)+ Center;
 		Vector2f P2 = (InfillDirX * -Length)+(InfillDirY*x) + Center;
 
-		if(cvui->DisplayDebuginFillButton->value())
+		if(gui->DisplayDebuginFillButton->value())
 			{
 			glBegin(GL_LINES);
 			glColor3f(0,0.2f,0);
@@ -578,8 +553,8 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z)
 			glEnd();
 			}
 
-		if(cvui->DisplayDebugButton->value())
-			if(!examine && ((cvui->ExamineSlider->value()-0.5f)*2 * Length <= x))
+		if(gui->DisplayDebugButton->value())
+			if(!examine && ((gui->ExamineSlider->value()-0.5f)*2 * Length <= x))
 				{
 				examineThis = examine = true;
 				glColor3f(1,1,1);				// Draw the line
@@ -1194,7 +1169,7 @@ bool CuttingPlane::LinkSegments(float z)
 		used[i]= false;
 
 	bool error = false;
-	int startLine = 0;//cvui->ExamineSlider->value()*(float)(lines.size()-1);
+	int startLine = 0;//gui->ExamineSlider->value()*(float)(lines.size()-1);
 	used[startLine]=true;
 	while(startLine != -1)
 		{
@@ -1258,7 +1233,7 @@ bool CuttingPlane::LinkSegments(float z)
 
 	// Cleanup polygons
 	CleanupPolygons();
-	Shrink(cvui->ShrinkSlider->value(), z);
+	Shrink(gui->ShrinkSlider->value(), z);
 	// Draw resulting poly
 	glColor3f(1,1,0);
 	for(int p=0; p<polygons.size();p++)
@@ -1492,7 +1467,7 @@ void CuttingPlane::Shrink(float distance, float z)
 	for(int p=0; p<polygons.size();p++)
 		{
 		Poly offsetPoly;
-		if(cvui->DisplayCuttingPlaneButton->value())
+		if(gui->DisplayCuttingPlaneButton->value())
 			glBegin(GL_LINE_LOOP);
 		UINT count = polygons[p].points.size();
 		for(int i=0; i<count;i++)
@@ -1518,10 +1493,10 @@ void CuttingPlane::Shrink(float distance, float z)
 			Vector2f p = vertices[vertexNr] - (Normal * distance);
 			offsetPoly.points.push_back(offsetVertices.size());
 			offsetVertices.push_back(p);
-			if(cvui->DisplayCuttingPlaneButton->value())
+			if(gui->DisplayCuttingPlaneButton->value())
 				glVertex3f(p.x,p.y,z);
 			}
-		if(cvui->DisplayCuttingPlaneButton->value())
+		if(gui->DisplayCuttingPlaneButton->value())
 			glEnd();
 		offsetPolygons.push_back(offsetPoly);
 		}
@@ -1530,13 +1505,13 @@ void CuttingPlane::Shrink(float distance, float z)
 
 void CuttingPlane::Draw(float z)
 {
-	if(cvui->DisplayCuttingPlaneButton->value())
+	if(gui->DisplayCuttingPlaneButton->value())
 		{
 		glColor4f(1,0,0,1);
 		glBegin(GL_LINES);
 		for(UINT i=0;i<lines.size();i++)
 			{
-				if(cvui->DisplayDebugButton->value() && (int)(cvui->ExamineSlider->value()*((float)lines.size()-1)) == i)
+				if(gui->DisplayDebugButton->value() && (int)(gui->ExamineSlider->value()*((float)lines.size()-1)) == i)
 				{
 				glEnd();
 				glColor4f(1,1,0,1);
@@ -1571,14 +1546,14 @@ void CuttingPlane::Draw(float z)
 
 
 	// Vertex numbers
-	if(cvui->DrawVertexNumbersButton->value())
+	if(gui->DrawVertexNumbersButton->value())
 		for(int v=0;v<vertices.size();v++)
 		{
 			ostringstream oss;
 			oss << v;
 			renderBitmapString(Vector3f (vertices[v].x, vertices[v].y, z) , GLUT_BITMAP_8_BY_13 , oss.str());
 		}
-	if(cvui->DrawLineNumbersButton->value())
+	if(gui->DrawLineNumbersButton->value())
 		for(int l=0;l<lines.size();l++)
 		{
 			ostringstream oss;
@@ -1693,7 +1668,7 @@ float Triangle::area()
 
 void CuttingPlane::CleanupPolygons()
 {
-	float allowedError = cvui->OptimizationSlider->value();
+	float allowedError = gui->OptimizationSlider->value();
 	for(int p=0;p<polygons.size();p++)
 	{
 	for(int v=0;v<polygons[p].points.size();)

@@ -2,7 +2,7 @@
 
 #include "UI.h"
 
-void CubeViewUI::cb_Load_i(Fl_Button*, void*) {
+void GUI::cb_Load_i(Fl_Button*, void*) {
   Fl_File_Chooser chooser("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose GCode");
 chooser.show();
 while (chooser.shown())
@@ -18,103 +18,103 @@ code->ReadStl(dir);
 code->redraw();
 };
 }
-void CubeViewUI::cb_Load(Fl_Button* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load_i(o,v);
+void GUI::cb_Load(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load_i(o,v);
 }
 
-void CubeViewUI::cb_FixSTLerrorsButton_i(Fl_Light_Button*, void*) {
+void GUI::cb_FixSTLerrorsButton_i(Fl_Light_Button*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_FixSTLerrorsButton(Fl_Light_Button* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_FixSTLerrorsButton_i(o,v);
+void GUI::cb_FixSTLerrorsButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_FixSTLerrorsButton_i(o,v);
 }
 
-void CubeViewUI::cb_AutoRotateButton_i(Fl_Button*, void*) {
+void GUI::cb_AutoRotateButton_i(Fl_Button*, void*) {
   code->OptimizeRotation();
 code->CalcBoundingBoxAndZoom(code);
 code->redraw();
 }
-void CubeViewUI::cb_AutoRotateButton(Fl_Button* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_AutoRotateButton_i(o,v);
+void GUI::cb_AutoRotateButton(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_AutoRotateButton_i(o,v);
 }
 
-void CubeViewUI::cb_RotateXButton_i(Fl_Button*, void*) {
+void GUI::cb_RotateXButton_i(Fl_Button*, void*) {
   code->RotateObject(1,0,0, M_PI/4);
 code->CalcBoundingBoxAndZoom(code);
 code->redraw();
 }
-void CubeViewUI::cb_RotateXButton(Fl_Button* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_RotateXButton_i(o,v);
+void GUI::cb_RotateXButton(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_RotateXButton_i(o,v);
 }
 
-void CubeViewUI::cb_RotateYButton_i(Fl_Button*, void*) {
+void GUI::cb_RotateYButton_i(Fl_Button*, void*) {
   code->RotateObject(0,1,0, M_PI/4);
 code->CalcBoundingBoxAndZoom(code);
 code->redraw();
 }
-void CubeViewUI::cb_RotateYButton(Fl_Button* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_RotateYButton_i(o,v);
+void GUI::cb_RotateYButton(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_RotateYButton_i(o,v);
 }
 
-void CubeViewUI::cb_RotateZButton_i(Fl_Button*, void*) {
+void GUI::cb_RotateZButton_i(Fl_Button*, void*) {
   code->RotateObject(0,0,1, M_PI/4);
 code->CalcBoundingBoxAndZoom(code);
 code->redraw();
 }
-void CubeViewUI::cb_RotateZButton(Fl_Button* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_RotateZButton_i(o,v);
+void GUI::cb_RotateZButton(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_RotateZButton_i(o,v);
 }
 
-void CubeViewUI::cb_ShrinkSlider_i(Fl_Value_Slider*, void*) {
+void GUI::cb_ShrinkSlider_i(Fl_Value_Slider*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_ShrinkSlider(Fl_Value_Slider* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_ShrinkSlider_i(o,v);
+void GUI::cb_ShrinkSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_ShrinkSlider_i(o,v);
 }
 
-void CubeViewUI::cb_CuttingPlaneSlider_i(Fl_Value_Slider*, void*) {
+void GUI::cb_CuttingPlaneSlider_i(Fl_Value_Slider*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_CuttingPlaneSlider(Fl_Value_Slider* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_CuttingPlaneSlider_i(o,v);
+void GUI::cb_CuttingPlaneSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_CuttingPlaneSlider_i(o,v);
 }
 
-void CubeViewUI::cb_RotationSlider_i(Fl_Value_Slider*, void*) {
+void GUI::cb_RotationSlider_i(Fl_Value_Slider*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_RotationSlider(Fl_Value_Slider* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_RotationSlider_i(o,v);
+void GUI::cb_RotationSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_RotationSlider_i(o,v);
 }
 
-void CubeViewUI::cb_InfillRotationPrLayerSlider_i(Fl_Value_Slider*, void*) {
+void GUI::cb_InfillRotationPrLayerSlider_i(Fl_Value_Slider*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_InfillRotationPrLayerSlider(Fl_Value_Slider* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_InfillRotationPrLayerSlider_i(o,v);
+void GUI::cb_InfillRotationPrLayerSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_InfillRotationPrLayerSlider_i(o,v);
 }
 
-void CubeViewUI::cb_InfillDistanceSlider_i(Fl_Value_Slider*, void*) {
+void GUI::cb_InfillDistanceSlider_i(Fl_Value_Slider*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_InfillDistanceSlider(Fl_Value_Slider* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_InfillDistanceSlider_i(o,v);
+void GUI::cb_InfillDistanceSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_InfillDistanceSlider_i(o,v);
 }
 
-void CubeViewUI::cb_LayerThicknessSlider_i(Fl_Value_Slider*, void*) {
+void GUI::cb_LayerThicknessSlider_i(Fl_Value_Slider*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_LayerThicknessSlider(Fl_Value_Slider* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_LayerThicknessSlider_i(o,v);
+void GUI::cb_LayerThicknessSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_LayerThicknessSlider_i(o,v);
 }
 
-void CubeViewUI::cb_OptimizationSlider_i(Fl_Value_Slider*, void*) {
+void GUI::cb_OptimizationSlider_i(Fl_Value_Slider*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_OptimizationSlider(Fl_Value_Slider* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_OptimizationSlider_i(o,v);
+void GUI::cb_OptimizationSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_OptimizationSlider_i(o,v);
 }
 
-void CubeViewUI::cb_Load1_i(Fl_Button*, void*) {
+void GUI::cb_Load1_i(Fl_Button*, void*) {
   Fl_File_Chooser chooser("\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
 chooser.show();
 while (chooser.shown())
@@ -130,39 +130,39 @@ code->Read(dir);
 code->redraw();
 };
 }
-void CubeViewUI::cb_Load1(Fl_Button* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load1_i(o,v);
+void GUI::cb_Load1(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load1_i(o,v);
 }
 
-void CubeViewUI::cb_GCodeDrawStartSlider_i(Fl_Value_Slider*, void*) {
+void GUI::cb_GCodeDrawStartSlider_i(Fl_Value_Slider*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_GCodeDrawStartSlider(Fl_Value_Slider* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_GCodeDrawStartSlider_i(o,v);
+void GUI::cb_GCodeDrawStartSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_GCodeDrawStartSlider_i(o,v);
 }
 
-void CubeViewUI::cb_GCodeDrawEndSlider_i(Fl_Value_Slider*, void*) {
+void GUI::cb_GCodeDrawEndSlider_i(Fl_Value_Slider*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_GCodeDrawEndSlider(Fl_Value_Slider* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_GCodeDrawEndSlider_i(o,v);
+void GUI::cb_GCodeDrawEndSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_GCodeDrawEndSlider_i(o,v);
 }
 
-void CubeViewUI::cb_ExamineSlider_i(Fl_Value_Slider*, void*) {
+void GUI::cb_ExamineSlider_i(Fl_Value_Slider*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_ExamineSlider(Fl_Value_Slider* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_ExamineSlider_i(o,v);
+void GUI::cb_ExamineSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_ExamineSlider_i(o,v);
 }
 
-void CubeViewUI::cb_DisplayDebuginFillButton_i(Fl_Light_Button*, void*) {
+void GUI::cb_DisplayDebuginFillButton_i(Fl_Light_Button*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_DisplayDebuginFillButton(Fl_Light_Button* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayDebuginFillButton_i(o,v);
+void GUI::cb_DisplayDebuginFillButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayDebuginFillButton_i(o,v);
 }
 
-void CubeViewUI::cb_DisplayDebugButton_i(Fl_Light_Button* o, void*) {
+void GUI::cb_DisplayDebugButton_i(Fl_Light_Button* o, void*) {
   if(o->value())
 {
 DisplayDebuginFillButton->show();
@@ -177,89 +177,89 @@ ExamineSlider->hide();
 
 code->redraw();
 }
-void CubeViewUI::cb_DisplayDebugButton(Fl_Light_Button* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayDebugButton_i(o,v);
+void GUI::cb_DisplayDebugButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayDebugButton_i(o,v);
 }
 
-void CubeViewUI::cb_DisplayPolygonsButton_i(Fl_Light_Button*, void*) {
+void GUI::cb_DisplayPolygonsButton_i(Fl_Light_Button*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_DisplayPolygonsButton(Fl_Light_Button* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayPolygonsButton_i(o,v);
+void GUI::cb_DisplayPolygonsButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayPolygonsButton_i(o,v);
 }
 
-void CubeViewUI::cb_DisplayWireframeButton_i(Fl_Light_Button*, void*) {
+void GUI::cb_DisplayWireframeButton_i(Fl_Light_Button*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_DisplayWireframeButton(Fl_Light_Button* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayWireframeButton_i(o,v);
+void GUI::cb_DisplayWireframeButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayWireframeButton_i(o,v);
 }
 
-void CubeViewUI::cb_DisplayNormalsButton_i(Fl_Light_Button*, void*) {
+void GUI::cb_DisplayNormalsButton_i(Fl_Light_Button*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_DisplayNormalsButton(Fl_Light_Button* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayNormalsButton_i(o,v);
+void GUI::cb_DisplayNormalsButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayNormalsButton_i(o,v);
 }
 
-void CubeViewUI::cb_DisplayEndpointsButton_i(Fl_Light_Button*, void*) {
+void GUI::cb_DisplayEndpointsButton_i(Fl_Light_Button*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_DisplayEndpointsButton(Fl_Light_Button* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayEndpointsButton_i(o,v);
+void GUI::cb_DisplayEndpointsButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayEndpointsButton_i(o,v);
 }
 
-void CubeViewUI::cb_DisplayCuttingPlaneButton_i(Fl_Light_Button*, void*) {
+void GUI::cb_DisplayCuttingPlaneButton_i(Fl_Light_Button*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_DisplayCuttingPlaneButton(Fl_Light_Button* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayCuttingPlaneButton_i(o,v);
+void GUI::cb_DisplayCuttingPlaneButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayCuttingPlaneButton_i(o,v);
 }
 
-void CubeViewUI::cb_DisplayinFillButton_i(Fl_Light_Button*, void*) {
+void GUI::cb_DisplayinFillButton_i(Fl_Light_Button*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_DisplayinFillButton(Fl_Light_Button* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayinFillButton_i(o,v);
+void GUI::cb_DisplayinFillButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayinFillButton_i(o,v);
 }
 
-void CubeViewUI::cb_DisplayAllLayers_i(Fl_Light_Button*, void*) {
+void GUI::cb_DisplayAllLayers_i(Fl_Light_Button*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_DisplayAllLayers(Fl_Light_Button* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayAllLayers_i(o,v);
+void GUI::cb_DisplayAllLayers(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayAllLayers_i(o,v);
 }
 
-void CubeViewUI::cb_DrawVertexNumbersButton_i(Fl_Light_Button*, void*) {
+void GUI::cb_DrawVertexNumbersButton_i(Fl_Light_Button*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_DrawVertexNumbersButton(Fl_Light_Button* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_DrawVertexNumbersButton_i(o,v);
+void GUI::cb_DrawVertexNumbersButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DrawVertexNumbersButton_i(o,v);
 }
 
-void CubeViewUI::cb_DrawLineNumbersButton_i(Fl_Light_Button*, void*) {
+void GUI::cb_DrawLineNumbersButton_i(Fl_Light_Button*, void*) {
   code->redraw();
 }
-void CubeViewUI::cb_DrawLineNumbersButton(Fl_Light_Button* o, void* v) {
-  ((CubeViewUI*)(o->parent()->parent()->parent()->user_data()))->cb_DrawLineNumbersButton_i(o,v);
+void GUI::cb_DrawLineNumbersButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DrawLineNumbersButton_i(o,v);
 }
 
-CubeViewUI::CubeViewUI() {
+GUI::GUI() {
   { mainWindow = new Fl_Double_Window(1354, 809, "CubeView");
     mainWindow->box(FL_UP_BOX);
     mainWindow->labelsize(12);
     mainWindow->user_data((void*)(this));
-    { code = new GCode(5, 5, 800, 800, "This is the cube_view");
-      code->box(FL_UP_BOX);
-      code->color((Fl_Color)FL_BACKGROUND_COLOR);
-      code->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
-      code->labeltype(FL_NORMAL_LABEL);
-      code->labelfont(0);
-      code->labelsize(14);
-      code->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-      code->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
-      code->when(FL_WHEN_RELEASE);
-    } // GCode* code
+    { MVC = new ModelViewController(5, 5, 800, 800, "An instace of ModelViewController");
+      MVC->box(FL_UP_BOX);
+      MVC->color((Fl_Color)FL_BACKGROUND_COLOR);
+      MVC->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
+      MVC->labeltype(FL_NORMAL_LABEL);
+      MVC->labelfont(0);
+      MVC->labelsize(14);
+      MVC->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+      MVC->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
+      MVC->when(FL_WHEN_RELEASE);
+    } // ModelViewController* MVC
     { Tabs = new Fl_Tabs(810, 20, 540, 785, "Process:");
       Tabs->align(FL_ALIGN_TOP_LEFT);
       { Fl_Group* o = new Fl_Group(810, 40, 540, 765, "Input file");
@@ -460,7 +460,7 @@ CubeViewUI::CubeViewUI() {
   } // Fl_Double_Window* mainWindow
 }
 
-void CubeViewUI::show(int argc, char **argv) {
+void GUI::show(int argc, char **argv) {
   mainWindow->show(argc, argv);
 //code->ReadStl("C:/box.stl");
 code->ReadStl("C:/#Downloads/Reprap Exchange/N_DSL-Stylus.stl");

@@ -6,24 +6,16 @@
 #include <gl\glaux.h>											// Header File For The GLaux Library
 
 #include "math.h"                                               // Needed for sqrtf
-#include "ArcBall.h"
 
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <sstream>
 
-#include <FL/Fl_Gl_Window.H>
-#include <FL/gl.h>
-
-#include "ArcBall.h"												// NEW: ArcBall Header
-#include "Cstl.h"
+#include <vmmlib/vmmlib.h>
 
 using namespace std;
-
-extern STL stl;
-
-
+using namespace vmml;
 /*
 Extruder0_ExtrudeRatio(0..)=1.0
 
@@ -203,40 +195,18 @@ public:
 	Command(){f=e=0.0f;};
 	GCodes Code;
 	Vector3f where;
-	float f,e;	// Feedrates f=speed, e=extrusion to preform while moving
+	float f,e;	// Feedrates f=speed, e=extrusion to preform while moving (Pythagoras)
 };
 
-class GCode : public Fl_Gl_Window
+class GCode
 {
 public:
-    GCode(int x,int y,int w,int h,const char *l=0);
+    GCode();
 
 	void Read(string filename);
 	void draw();
-	void CenterView();
-	int  handle(int);
-	void resize (int x,int y, int width, int height);									// Reshape The Window When It's Moved Or Resized
 
-	void ReadStl(string filename) {stl.Read(filename);};
-	void RotateObject(float x, float y, float z, float a) {stl.RotateObject(Vector3f(x,y,z),a);}
-	void CalcBoundingBoxAndZoom(GCode* code) { stl.CalcBoundingBoxAndZoom(code);}
-	void OptimizeRotation() { stl.OptimizeRotation();}
-
-	/*--------------ArcBall-------------------*/
-
-	GLUquadricObj *quadratic;											// Used For Our Quadric
-
-	Matrix4fT   Transform;
-	Matrix3fT   LastRot;
-	Matrix3fT   ThisRot;
-	ArcBallT    *ArcBall;								                // NEW: ArcBall Instance
-	Vector2fT    MousePt;												// NEW: Current Mouse Point
-	/*--------------View-------------------*/
-
-	Vector3f Center;
-	Vector3f Min;
-	Vector3f Max;
-	float zoom;
 	/*--------------GCode-------------------*/
 	std::vector<Command> commands;
+	Vector3f Min,Max,Center;			// Boundingbox
 };
