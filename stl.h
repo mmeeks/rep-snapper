@@ -17,7 +17,7 @@
 
 #include <vmmlib/vmmlib.h>
 
-class GCode;
+class GUI;
 
 /*
 Vector3f position, normal;
@@ -68,7 +68,7 @@ public:
 // A (set of) 2D polygon extracted from a 3D model
 class  CuttingPlane{
 public:
-	CuttingPlane(){}
+	CuttingPlane();
 	void Shrink(float distance, float z);		// Contracts polygons
 	void CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z=0);	// Collide a infill-line with the polygons
 	bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, InFillHit &hit);	// Utilityfunction for CalcInFill
@@ -85,6 +85,20 @@ public:
 
 	vector<Poly> offsetPolygons;	// Shrinked closed loops
 	vector<Vector2f> offsetVertices;// points for shrinked closed loops
+
+	// GUI values
+	float InfillDistance;
+	float InfillRotation;
+	float InfillRotationPrLayer;
+	float Optimization;
+	float Examine;
+	float ShrinkValue;
+
+	bool DisplayDebuginFill;
+	bool DisplayDebug;
+	bool DisplayCuttingPlane;
+	bool DrawVertexNumbers;
+	bool DrawLineNumbers;
 };
 
 class STL
@@ -101,5 +115,16 @@ public:
 
 	vector<Triangle> triangles;
 	Vector3f Min, Max, Center;
+
+	// GUI Values
+	float LayerThickness;
+	float CuttingPlaneValue;
+
+	bool DisplayEndpoints;
+	bool DisplayNormals;
+	bool DisplayWireframe;
+	bool DisplayPolygons;
+	bool DisplayAllLayers;
+	bool DisplayinFill;
 };
 

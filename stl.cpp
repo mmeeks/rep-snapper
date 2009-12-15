@@ -40,6 +40,15 @@ void renderBitmapString(Vector3f pos, void* font, string text)
 // STL constructor
 STL::STL()
 {
+	LayerThickness = 0.4f;
+	CuttingPlaneValue = 0.5f;
+
+	DisplayEndpoints = false;
+	DisplayNormals = false;
+	DisplayWireframe = false;
+	DisplayPolygons = false;
+	DisplayAllLayers = false;
+	DisplayinFill = false;
 }
 
 void STL::Read(string filename)
@@ -121,7 +130,7 @@ void STL::draw(GUI* gui)
 {
 	// polygons
 
-	if(gui->DisplayPolygonsButton->value())
+	if(DisplayPolygons)
 	{
 		glEnable(GL_CULL_FACE);
 //		glEnable(GL_DEPTH_TEST);
@@ -151,7 +160,7 @@ void STL::draw(GUI* gui)
 	}
 
 	// WireFrame
-	if(gui->DisplayWireframeButton->value())
+	if(DisplayWireframe)
 	{
 		glColor4f(0,1,0,1);
 		for(UINT i=0;i<triangles.size();i++)
@@ -164,7 +173,7 @@ void STL::draw(GUI* gui)
 		}
 	}
 	// normals
-	if(gui->DisplayNormalsButton->value())
+	if(DisplayNormals)
 	{
 		glColor4f(0,0,1,1);
 		glBegin(GL_LINES);
@@ -179,7 +188,7 @@ void STL::draw(GUI* gui)
 	}
 
 	// Endpoints
-	if(gui->DisplayEndpointsButton->value())
+	if(DisplayEndpoints)
 	{
 		glColor4f(1,0,0,1);
 		glPointSize(2);
@@ -197,13 +206,13 @@ void STL::draw(GUI* gui)
 	UINT LayerNr = 0;
 
 	float zSize = (Max.z-Min.z);
-	float z=gui->CuttingPlaneSlider->value()*zSize+Min.z;
+	float z=CuttingPlaneValue*zSize+Min.z;
 	float zStep = zSize;
 
-	if(gui->DisplayAllLayers->value())
+	if(DisplayAllLayers)
 		{
 		z=Min.z;
-		zStep = gui->LayerThicknessSlider->value();
+		zStep = LayerThickness;
 		}
 	while(z<Max.z)
 	{
@@ -226,7 +235,7 @@ void STL::draw(GUI* gui)
 
 		plane.CalcInFill(infill, LayerNr, z);
 
-		if(gui->DisplayinFillButton->value())
+		if(DisplayinFill)
 			{
 			glColor4f(1,1,0,1);
 			glPointSize(5);
@@ -325,6 +334,25 @@ UINT findOtherEnd(UINT p)
 	if(a == 0)
 		return p+1;
 	return p-1;
+}
+
+CuttingPlane::CuttingPlane()
+{
+
+	// GUI values
+	InfillDistance = 2.0f;
+	InfillRotation = 45.0f;
+	InfillRotationPrLayer = 90.0f;
+	Optimization = 0.02f;
+	Examine = 0.5f;
+	ShrinkValue = 0.7f;
+
+	DisplayDebuginFill = false;
+	DisplayDebug = false;
+	DisplayCuttingPlane = false;
+	DrawVertexNumbers = false;
+	DrawLineNumbers = false;
+
 }
 
 void CuttingPlane::MakeGcode(const CuttingPlane &plane, const std::vector<Vector2f> &infill, GCode* code, float z)
@@ -523,14 +551,14 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z)
 {
 	int c=0;
 
-	float step = gui->InfillDistanceSlider->value();
+	float step = InfillDistance;
 
 	bool examine = false;
 
 	float Length = sqrtf(2)*(   ((Max.x)>(Max.y)? (Max.x):(Max.y))  -  ((Min.x)<(Min.y)? (Min.x):(Min.y))  )/2.0f;
 
-	float rot = gui->RotationSlider->value()/180.0f*M_PI;
-	rot += (float)LayerNr*(float)gui->InfillRotationPrLayerSlider->value()/180.0f*M_PI;
+	float rot = InfillRotation/180.0f*M_PI;
+	rot += (float)LayerNr*InfillRotationPrLayer/180.0f*M_PI;
 	Vector2f InfillDirX(cosf(rot), sinf(rot));
 	Vector2f InfillDirY(-InfillDirX.y, InfillDirX.x);
 	Vector2f Center = (Max+Min)/2.0f;
@@ -544,7 +572,7 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z)
 		Vector2f P1 = (InfillDirX * Length)+(InfillDirY*x)+ Center;
 		Vector2f P2 = (InfillDirX * -Length)+(InfillDirY*x) + Center;
 
-		if(gui->DisplayDebuginFillButton->value())
+		if(DisplayDebuginFill)
 			{
 			glBegin(GL_LINES);
 			glColor3f(0,0.2f,0);
@@ -553,8 +581,8 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z)
 			glEnd();
 			}
 
-		if(gui->DisplayDebugButton->value())
-			if(!examine && ((gui->ExamineSlider->value()-0.5f)*2 * Length <= x))
+		if(DisplayDebug)
+			if(!examine && ((Examine-0.5f)*2 * Length <= x))
 				{
 				examineThis = examine = true;
 				glColor3f(1,1,1);				// Draw the line
@@ -1169,7 +1197,7 @@ bool CuttingPlane::LinkSegments(float z)
 		used[i]= false;
 
 	bool error = false;
-	int startLine = 0;//gui->ExamineSlider->value()*(float)(lines.size()-1);
+	int startLine = 0;//Examine*(float)(lines.size()-1);
 	used[startLine]=true;
 	while(startLine != -1)
 		{
@@ -1233,7 +1261,7 @@ bool CuttingPlane::LinkSegments(float z)
 
 	// Cleanup polygons
 	CleanupPolygons();
-	Shrink(gui->ShrinkSlider->value(), z);
+	Shrink(ShrinkValue, z);
 	// Draw resulting poly
 	glColor3f(1,1,0);
 	for(int p=0; p<polygons.size();p++)
@@ -1467,7 +1495,7 @@ void CuttingPlane::Shrink(float distance, float z)
 	for(int p=0; p<polygons.size();p++)
 		{
 		Poly offsetPoly;
-		if(gui->DisplayCuttingPlaneButton->value())
+		if(DisplayCuttingPlane)
 			glBegin(GL_LINE_LOOP);
 		UINT count = polygons[p].points.size();
 		for(int i=0; i<count;i++)
@@ -1493,10 +1521,10 @@ void CuttingPlane::Shrink(float distance, float z)
 			Vector2f p = vertices[vertexNr] - (Normal * distance);
 			offsetPoly.points.push_back(offsetVertices.size());
 			offsetVertices.push_back(p);
-			if(gui->DisplayCuttingPlaneButton->value())
+			if(DisplayCuttingPlane)
 				glVertex3f(p.x,p.y,z);
 			}
-		if(gui->DisplayCuttingPlaneButton->value())
+		if(DisplayCuttingPlane)
 			glEnd();
 		offsetPolygons.push_back(offsetPoly);
 		}
@@ -1505,13 +1533,13 @@ void CuttingPlane::Shrink(float distance, float z)
 
 void CuttingPlane::Draw(float z)
 {
-	if(gui->DisplayCuttingPlaneButton->value())
+	if(DisplayCuttingPlane)
 		{
 		glColor4f(1,0,0,1);
 		glBegin(GL_LINES);
 		for(UINT i=0;i<lines.size();i++)
 			{
-				if(gui->DisplayDebugButton->value() && (int)(gui->ExamineSlider->value()*((float)lines.size()-1)) == i)
+				if(DisplayDebug && (int)(Examine*((float)lines.size()-1)) == i)
 				{
 				glEnd();
 				glColor4f(1,1,0,1);
@@ -1546,14 +1574,14 @@ void CuttingPlane::Draw(float z)
 
 
 	// Vertex numbers
-	if(gui->DrawVertexNumbersButton->value())
+	if(DrawVertexNumbers)
 		for(int v=0;v<vertices.size();v++)
 		{
 			ostringstream oss;
 			oss << v;
 			renderBitmapString(Vector3f (vertices[v].x, vertices[v].y, z) , GLUT_BITMAP_8_BY_13 , oss.str());
 		}
-	if(gui->DrawLineNumbersButton->value())
+	if(DrawLineNumbers)
 		for(int l=0;l<lines.size();l++)
 		{
 			ostringstream oss;
@@ -1668,7 +1696,7 @@ float Triangle::area()
 
 void CuttingPlane::CleanupPolygons()
 {
-	float allowedError = gui->OptimizationSlider->value();
+	float allowedError = Optimization;
 	for(int p=0;p<polygons.size();p++)
 	{
 	for(int v=0;v<polygons[p].points.size();)

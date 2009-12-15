@@ -14,8 +14,8 @@ std::string dir(chooser.value());
 
 if(dir.length())
 {
-code->ReadStl(dir);
-code->redraw();
+MVC->ReadStl(dir);
+MVC->redraw();
 };
 }
 void GUI::cb_Load(Fl_Button* o, void* v) {
@@ -23,92 +23,92 @@ void GUI::cb_Load(Fl_Button* o, void* v) {
 }
 
 void GUI::cb_FixSTLerrorsButton_i(Fl_Light_Button*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_FixSTLerrorsButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_FixSTLerrorsButton_i(o,v);
 }
 
 void GUI::cb_AutoRotateButton_i(Fl_Button*, void*) {
-  code->OptimizeRotation();
-code->CalcBoundingBoxAndZoom(code);
-code->redraw();
+  MVC->OptimizeRotation();
+MVC->CalcBoundingBoxAndZoom();
+MVC->redraw();
 }
 void GUI::cb_AutoRotateButton(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_AutoRotateButton_i(o,v);
 }
 
 void GUI::cb_RotateXButton_i(Fl_Button*, void*) {
-  code->RotateObject(1,0,0, M_PI/4);
-code->CalcBoundingBoxAndZoom(code);
-code->redraw();
+  MVC->RotateObject(1,0,0, M_PI/4);
+MVC->CalcBoundingBoxAndZoom();
+MVC->redraw();
 }
 void GUI::cb_RotateXButton(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_RotateXButton_i(o,v);
 }
 
 void GUI::cb_RotateYButton_i(Fl_Button*, void*) {
-  code->RotateObject(0,1,0, M_PI/4);
-code->CalcBoundingBoxAndZoom(code);
-code->redraw();
+  MVC->RotateObject(0,1,0, M_PI/4);
+MVC->CalcBoundingBoxAndZoom();
+MVC->redraw();
 }
 void GUI::cb_RotateYButton(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_RotateYButton_i(o,v);
 }
 
 void GUI::cb_RotateZButton_i(Fl_Button*, void*) {
-  code->RotateObject(0,0,1, M_PI/4);
-code->CalcBoundingBoxAndZoom(code);
-code->redraw();
+  MVC->RotateObject(0,0,1, M_PI/4);
+MVC->CalcBoundingBoxAndZoom();
+MVC->redraw();
 }
 void GUI::cb_RotateZButton(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_RotateZButton_i(o,v);
 }
 
 void GUI::cb_ShrinkSlider_i(Fl_Value_Slider*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_ShrinkSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_ShrinkSlider_i(o,v);
 }
 
 void GUI::cb_CuttingPlaneSlider_i(Fl_Value_Slider*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_CuttingPlaneSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_CuttingPlaneSlider_i(o,v);
 }
 
 void GUI::cb_RotationSlider_i(Fl_Value_Slider*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_RotationSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_RotationSlider_i(o,v);
 }
 
 void GUI::cb_InfillRotationPrLayerSlider_i(Fl_Value_Slider*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_InfillRotationPrLayerSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_InfillRotationPrLayerSlider_i(o,v);
 }
 
 void GUI::cb_InfillDistanceSlider_i(Fl_Value_Slider*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_InfillDistanceSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_InfillDistanceSlider_i(o,v);
 }
 
 void GUI::cb_LayerThicknessSlider_i(Fl_Value_Slider*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_LayerThicknessSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_LayerThicknessSlider_i(o,v);
 }
 
 void GUI::cb_OptimizationSlider_i(Fl_Value_Slider*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_OptimizationSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_OptimizationSlider_i(o,v);
@@ -126,8 +126,8 @@ std::string dir(chooser.value());
 
 if(dir.length())
 {
-code->Read(dir);
-code->redraw();
+MVC->ReadGCode(dir);
+MVC->redraw();
 };
 }
 void GUI::cb_Load1(Fl_Button* o, void* v) {
@@ -135,28 +135,28 @@ void GUI::cb_Load1(Fl_Button* o, void* v) {
 }
 
 void GUI::cb_GCodeDrawStartSlider_i(Fl_Value_Slider*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_GCodeDrawStartSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_GCodeDrawStartSlider_i(o,v);
 }
 
 void GUI::cb_GCodeDrawEndSlider_i(Fl_Value_Slider*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_GCodeDrawEndSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_GCodeDrawEndSlider_i(o,v);
 }
 
 void GUI::cb_ExamineSlider_i(Fl_Value_Slider*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_ExamineSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_ExamineSlider_i(o,v);
 }
 
 void GUI::cb_DisplayDebuginFillButton_i(Fl_Light_Button*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_DisplayDebuginFillButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayDebuginFillButton_i(o,v);
@@ -175,70 +175,70 @@ ExamineSlider->hide();
 }
 
 
-code->redraw();
+MVC->redraw();
 }
 void GUI::cb_DisplayDebugButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayDebugButton_i(o,v);
 }
 
 void GUI::cb_DisplayPolygonsButton_i(Fl_Light_Button*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_DisplayPolygonsButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayPolygonsButton_i(o,v);
 }
 
 void GUI::cb_DisplayWireframeButton_i(Fl_Light_Button*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_DisplayWireframeButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayWireframeButton_i(o,v);
 }
 
 void GUI::cb_DisplayNormalsButton_i(Fl_Light_Button*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_DisplayNormalsButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayNormalsButton_i(o,v);
 }
 
 void GUI::cb_DisplayEndpointsButton_i(Fl_Light_Button*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_DisplayEndpointsButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayEndpointsButton_i(o,v);
 }
 
 void GUI::cb_DisplayCuttingPlaneButton_i(Fl_Light_Button*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_DisplayCuttingPlaneButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayCuttingPlaneButton_i(o,v);
 }
 
 void GUI::cb_DisplayinFillButton_i(Fl_Light_Button*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_DisplayinFillButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayinFillButton_i(o,v);
 }
 
 void GUI::cb_DisplayAllLayers_i(Fl_Light_Button*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_DisplayAllLayers(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayAllLayers_i(o,v);
 }
 
 void GUI::cb_DrawVertexNumbersButton_i(Fl_Light_Button*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_DrawVertexNumbersButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DrawVertexNumbersButton_i(o,v);
 }
 
 void GUI::cb_DrawLineNumbersButton_i(Fl_Light_Button*, void*) {
-  code->redraw();
+  MVC->redraw();
 }
 void GUI::cb_DrawLineNumbersButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DrawLineNumbersButton_i(o,v);
@@ -287,6 +287,7 @@ GUI::GUI() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(810, 40, 540, 765, "Printer definition");
+        o->hide();
         { ShrinkSlider = new Fl_Value_Slider(825, 270, 375, 20, "Extruded material width");
           ShrinkSlider->type(1);
           ShrinkSlider->value(0.7);
@@ -364,7 +365,6 @@ GUI::GUI() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(810, 40, 540, 765, "GCode");
-        o->hide();
         { Fl_Button* o = new Fl_Button(815, 220, 145, 25, "Load Gcode");
           o->callback((Fl_Callback*)cb_Load1);
         } // Fl_Button* o
@@ -462,8 +462,8 @@ GUI::GUI() {
 
 void GUI::show(int argc, char **argv) {
   mainWindow->show(argc, argv);
-//code->ReadStl("C:/box.stl");
-code->ReadStl("C:/#Downloads/Reprap Exchange/N_DSL-Stylus.stl");
-//code->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
-code->redraw();
+//MVC->ReadStl("C:/box.stl");
+MVC->ReadStl("C:/#Downloads/Reprap Exchange/N_DSL-Stylus.stl");
+//MVC->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
+MVC->redraw();
 }

@@ -29,17 +29,22 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 	ThisRot.M[3]=0.0f;ThisRot.M[4]=1.0f;ThisRot.M[5]=0.0f;					// NEW: Last Rotation
 	ThisRot.M[6]=0.0f;ThisRot.M[7]=0.0f;ThisRot.M[8]=1.0f;					// NEW: Last Rotation
 
-
 	quadratic=gluNewQuadric();										// Create A Pointer To The Quadric Object
 	gluQuadricNormals(quadratic, GLU_SMOOTH);						// Create Smooth Normals
 	gluQuadricTexture(quadratic, GL_TRUE);							// Create Texture Coords
 
+
+	zoom = 10.0f;
 }
 
-void ModelViewController::CalcBoundingBoxAndZoom(GCode* code)
+void ModelViewController::CalcBoundingBoxAndZoom()
 {
 	stl.CalcBoundingBoxAndZoom();
 	
+	Max = stl.Max;
+	Min = stl.Min;
+	Center = stl.Center;
+
 	// Find zoom
 	float L=0;
 	if(Max.x - Min.x > L)	L = Max.x - Min.x;

@@ -9,7 +9,6 @@
 #include "UI.h"
 
 using namespace std;
-extern GUI *gui;
 
 
 GCode::GCode()
@@ -209,8 +208,8 @@ void GCode::draw()
 
 	float	Distance = 0.0f;
 	Vector3f pos(0,0,0);
-	UINT start = (UINT)(gui->GCodeDrawStartSlider->value()*(float)(commands.size()));
-	UINT end = (UINT)(gui->GCodeDrawEndSlider->value()*(float)(commands.size()));
+	UINT start = (UINT)(GCodeDrawStart*(float)(commands.size()));
+	UINT end = (UINT)(GCodeDrawEnd*(float)(commands.size()));
 	for(UINT i=start;i<commands.size() && i < end ;i++)
 	{
 		switch(commands[i].Code)
@@ -239,7 +238,8 @@ void GCode::draw()
 
 	oss << "Length: "  << Distance/1000.0f << " - " << Distance/200000.0f << " Hour.";
 //	std::cout << oss.str();
-	gui->GCodeLengthText->value(oss.str().c_str());
+
+//	gui->GCodeLengthText->value(oss.str().c_str());	// todo: Fix
 
 
 	// Draw bbox

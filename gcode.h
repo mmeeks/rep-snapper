@@ -209,4 +209,8 @@ public:
 	/*--------------GCode-------------------*/
 	std::vector<Command> commands;
 	Vector3f Min,Max,Center;			// Boundingbox
+
+	// GUI Stuff
+	float GCodeDrawStart;
+	float GCodeDrawEnd;
 };

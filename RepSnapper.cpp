@@ -9,18 +9,20 @@
 #include "gcode.h"
 #include "UI.h"
 
+GUI *gui;
+
 int _tmain(int argc, _TCHAR* argv[])
 {
-/*	GUI gui();
+	gui = new GUI();
 
 	Fl::visual(FL_DOUBLE|FL_INDEX);
 
 	char WindowTitle[100] = "GCodeView";
 	char* W = &WindowTitle[0];
-	MVC.gui = gui;
-	gui.show(1,&W);
+	gui->MVC->gui = gui;
+	gui->show(1,&W);
 	//	gui->code->Read("c:/ViewMe.gcode");
 
-	return Fl::run();*/
+	return Fl::run();
 }
 
