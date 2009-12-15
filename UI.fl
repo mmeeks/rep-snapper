@@ -14,7 +14,7 @@ class GUI {open
       xywh {40 40 1354 809} type Double box UP_BOX labelsize 12 hide resizable
     } {
       Fl_Box MVC {
-        label {An instace of ModelViewController} selected
+        label {An instace of ModelViewController}
         xywh {5 5 800 800} box UP_BOX align 16
         code0 {\#include "StdAfx.h"}
         code1 {\#ifndef M_PI
@@ -27,7 +27,7 @@ class GUI {open
         xywh {810 20 540 785} align 5
       } {
         Fl_Group {} {
-          label {Input file} open
+          label {Input file}
           xywh {810 40 540 765} hide
         } {
           Fl_Button {} {
@@ -144,7 +144,7 @@ MVC->redraw();
           }
         }
         Fl_Group {} {
-          label {Printer definition} open
+          label {Printer definition}
           xywh {810 40 540 765} hide
         } {
           Fl_Value_Slider ShrinkSlider {
@@ -188,7 +188,7 @@ MVC->redraw();
           }
         }
         Fl_Group {} {
-          label Slicing open
+          label Slicing
           xywh {810 40 540 765} hide
         } {
           Fl_Value_Slider CuttingPlaneSlider {
@@ -224,7 +224,7 @@ MVC->redraw();
         }
         Fl_Group {} {
           label GCode open
-          xywh {810 40 540 765} hide
+          xywh {810 40 540 765}
         } {
           Fl_Button {} {
             label {Load Gcode}
@@ -242,26 +242,35 @@ if(dir.length())
 MVC->ReadGCode(dir);
 MVC->redraw();
 };}
-            xywh {815 220 145 25}
+            xywh {815 80 145 25}
             code0 {\#include <FL/Fl_File_Chooser.H>}
           }
           Fl_Output GCodeLengthText {
-            xywh {965 221 225 24}
+            xywh {965 81 225 24}
           }
           Fl_Value_Slider GCodeDrawStartSlider {
             label {GCode draw start}
             callback {MVC->SetGCodeDrawStart(o->value());}
-            xywh {815 270 370 20} type Horizontal align 5 step 0 textsize 14
+            xywh {815 130 370 20} type Horizontal align 5 step 0 textsize 14
           }
           Fl_Value_Slider GCodeDrawEndSlider {
             label {GCode draw end}
             callback {MVC->SetGCodeDrawEnd(o->value());}
-            xywh {815 305 370 20} type Horizontal align 5 step 0 value 1 textsize 14
+            xywh {815 165 370 20} type Horizontal align 5 step 0 value 1 textsize 14
+          }
+          Fl_Button {} {
+            label {Convert to GCode}
+            callback {MVC->ConvertToGCode();}
+            xywh {815 50 145 25}
+          }
+          Fl_Text_Editor GCodeEditor {
+            label {GCode:} selected
+            xywh {815 205 530 595}
           }
         }
         Fl_Group {} {
-          label Debug open
-          xywh {810 40 540 765} color 47 labelfont 1 labelcolor 1
+          label Debug
+          xywh {810 40 540 765} color 47 labelfont 1 labelcolor 1 hide
         } {
           Fl_Value_Slider ExamineSlider {
             label Examine

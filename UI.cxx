@@ -223,6 +223,13 @@ void GUI::cb_GCodeDrawEndSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_GCodeDrawEndSlider_i(o,v);
 }
 
+void GUI::cb_Convert_i(Fl_Button*, void*) {
+  MVC->ConvertToGCode();
+}
+void GUI::cb_Convert(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Convert_i(o,v);
+}
+
 void GUI::cb_ExamineSlider_i(Fl_Value_Slider* o, void*) {
   MVC->SetExamine(o->value());
 }
@@ -483,20 +490,19 @@ GUI::GUI() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(810, 40, 540, 765, "GCode");
-        o->hide();
-        { Fl_Button* o = new Fl_Button(815, 220, 145, 25, "Load Gcode");
+        { Fl_Button* o = new Fl_Button(815, 80, 145, 25, "Load Gcode");
           o->callback((Fl_Callback*)cb_Load1);
         } // Fl_Button* o
-        { GCodeLengthText = new Fl_Output(965, 221, 225, 24);
+        { GCodeLengthText = new Fl_Output(965, 81, 225, 24);
         } // Fl_Output* GCodeLengthText
-        { GCodeDrawStartSlider = new Fl_Value_Slider(815, 270, 370, 20, "GCode draw start");
+        { GCodeDrawStartSlider = new Fl_Value_Slider(815, 130, 370, 20, "GCode draw start");
           GCodeDrawStartSlider->type(1);
           GCodeDrawStartSlider->step(0);
           GCodeDrawStartSlider->textsize(14);
           GCodeDrawStartSlider->callback((Fl_Callback*)cb_GCodeDrawStartSlider);
           GCodeDrawStartSlider->align(FL_ALIGN_TOP_LEFT);
         } // Fl_Value_Slider* GCodeDrawStartSlider
-        { GCodeDrawEndSlider = new Fl_Value_Slider(815, 305, 370, 20, "GCode draw end");
+        { GCodeDrawEndSlider = new Fl_Value_Slider(815, 165, 370, 20, "GCode draw end");
           GCodeDrawEndSlider->type(1);
           GCodeDrawEndSlider->step(0);
           GCodeDrawEndSlider->value(1);
@@ -504,12 +510,18 @@ GUI::GUI() {
           GCodeDrawEndSlider->callback((Fl_Callback*)cb_GCodeDrawEndSlider);
           GCodeDrawEndSlider->align(FL_ALIGN_TOP_LEFT);
         } // Fl_Value_Slider* GCodeDrawEndSlider
+        { Fl_Button* o = new Fl_Button(815, 50, 145, 25, "Convert to GCode");
+          o->callback((Fl_Callback*)cb_Convert);
+        } // Fl_Button* o
+        { GCodeEditor = new Fl_Text_Editor(815, 205, 530, 595, "GCode:");
+        } // Fl_Text_Editor* GCodeEditor
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(810, 40, 540, 765, "Debug");
         o->color((Fl_Color)FL_DARK1);
         o->labelfont(1);
         o->labelcolor((Fl_Color)1);
+        o->hide();
         { ExamineSlider = new Fl_Value_Slider(880, 760, 365, 20, "Examine");
           ExamineSlider->type(1);
           ExamineSlider->step(0.001);

@@ -16,6 +16,10 @@ GCode::GCode()
 	Min.x = Min.y = Min.z = 99999999.0f;
 	Max.x = Max.y = Max.z = -99999999.0f;
 	Center.x = Center.y = Center.z = 0.0f;
+	
+	GCodeDrawStart = 0.0f;;
+	GCodeDrawEnd = 1.0f;
+	
 }
 
 void GCode::Read(string filename)
@@ -219,13 +223,13 @@ void GCode::draw()
 				glColor3f(0.75f,0.75f,1.0f);
 			else
 				glColor3f(0,1,0);
-			Distance += (commands[i].where-thisPos).length();
+			Distance += (commands[i].where-pos).length();
 			glVertex3fv((GLfloat*)&pos);
 			glVertex3fv((GLfloat*)&commands[i].where);
 			break;
 		case RAPIDMOTION:
 			glColor3f(0.75f,0.0f,0.0f);
-			Distance += (commands[i].where-thisPos).length();
+			Distance += (commands[i].where-pos).length();
 			glVertex3fv((GLfloat*)&pos);
 			glVertex3fv((GLfloat*)&commands[i].where);
 			break;
@@ -269,4 +273,40 @@ void GCode::draw()
 
 }
 
+void GCode::MakeText(string &GcodeTxt)
+{
+	Vector3f pos(0,0,0);
+	
+	GcodeTxt.clear();
+	float Distance = 0;
+	std::stringstream oss;
+	
+	for(UINT i=0;i<commands.size() ;i++)
+	{
+		oss.str( "" );
+		switch(commands[i].Code)
+		{
+		case COORDINATEDMOTION:
+			if(commands[i].f == 0 && commands[i].e == 0)
+				glColor3f(0.75f,0.75f,1.0f);
+			else
+				glColor3f(0,1,0);
+			Distance += (commands[i].where-pos).length();
+			oss  << "G1 X" << commands[i].where.x << " Y" << commands[i].where.y << " Z" << commands[i].where.z;
+			{
+			int asd = oss.str().length();
+			GcodeTxt = GcodeTxt + oss.str();
+			}
+			break;
+		case RAPIDMOTION:
+			glColor3f(0.75f,0.0f,0.0f);
+			Distance += (commands[i].where-pos).length();
+			oss  << "G1 X" << commands[i].where.x << " Y" << commands[i].where.y << " Z" << commands[i].where.z;
+			GcodeTxt = GcodeTxt + oss.str();
+			break;
+		}
+		oss.clear();
+		pos = commands[i].where;
+	}
+}
 

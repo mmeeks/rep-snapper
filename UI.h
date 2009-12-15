@@ -17,6 +17,7 @@ class ModelViewController;
 #include <FL/Fl_Value_Input.H>
 #include <FL/Fl_File_Chooser.H>
 #include <FL/Fl_Output.H>
+#include <FL/Fl_Text_Editor.H>
 
 class GUI {
 public:
@@ -129,7 +130,10 @@ public:
 private:
   void cb_GCodeDrawEndSlider_i(Fl_Value_Slider*, void*);
   static void cb_GCodeDrawEndSlider(Fl_Value_Slider*, void*);
+  void cb_Convert_i(Fl_Button*, void*);
+  static void cb_Convert(Fl_Button*, void*);
 public:
+  Fl_Text_Editor *GCodeEditor;
   Fl_Value_Slider *ExamineSlider;
 private:
   void cb_ExamineSlider_i(Fl_Value_Slider*, void*);

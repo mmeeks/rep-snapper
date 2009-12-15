@@ -15,6 +15,8 @@ public:
 	void OptimizeRotation() { stl.OptimizeRotation();}
 	void RotateObject(float x, float y, float z, float a) {stl.RotateObject(Vector3f(x,y,z),a);}
 
+	void ConvertToGCode(string &GcodeTxt);
+
 	// GCode Functions
 	void ReadGCode(string filename) {gcode.Read(filename);};
 
@@ -26,4 +28,5 @@ public:
 	STL stl;
 	CuttingPlane previewCuttingPlane;
 	GCode gcode;
+	string GcodeTxt;
 };

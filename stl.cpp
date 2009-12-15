@@ -367,11 +367,11 @@ CuttingPlane::CuttingPlane()
 
 }
 
-void CuttingPlane::MakeGcode(const CuttingPlane &plane, const std::vector<Vector2f> &infill, GCode* code, float z)
+void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float z)
 {
 	// Make an array with all lines, then link'em
 	
-	Vector3f LastPosition= Vector3f(0,0,z);
+	static Vector3f LastPosition= Vector3f(0,0,z);
 	
 	LastPosition.z = z;
 
@@ -414,7 +414,7 @@ void CuttingPlane::MakeGcode(const CuttingPlane &plane, const std::vector<Vector
 		command.Code = COORDINATEDMOTION;
 		command.where = lines[thisPoint];
 		command.e = 0.0f;					// move
-		code->commands.push_back(command);
+		code.commands.push_back(command);
 
 		// Find other end of line
 		thisPoint = findOtherEnd(thisPoint);
@@ -432,7 +432,7 @@ void CuttingPlane::MakeGcode(const CuttingPlane &plane, const std::vector<Vector
 		command.where = lines[thisPoint];
 		float len = (LastPosition - command.where).length();
 		command.e = len;					// draw
-		code->commands.push_back(command);
+		code.commands.push_back(command);
 
 		LastPosition = lines[thisPoint];
 		thisPoint = findClosestUnused(lines, LastPosition, used);

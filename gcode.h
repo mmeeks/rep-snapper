@@ -140,6 +140,8 @@ public:
 
 	void Read(string filename);
 	void draw();
+	void MakeText(string &GcodeTxt);
+
 
 	/*--------------GCode-------------------*/
 	std::vector<Command> commands;

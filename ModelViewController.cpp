@@ -196,3 +196,16 @@ void ModelViewController::DrawGridAndAxis()
 {
 	//Grid
 }
+
+void ModelViewController::ConvertToGCode()
+{
+	string GcodeTxt;
+	ProcessControl.ConvertToGCode(GcodeTxt);
+	Fl_Text_Buffer* buffer = gui->GCodeEditor->buffer();
+	
+	int length = GcodeTxt.length();
+	GcodeTxt = GcodeTxt + "\0";
+	int length2 = GcodeTxt.length();
+//	buffer->insert(0, GcodeTxt.c_str());
+//	gui->GCodeEditor->value()
+}

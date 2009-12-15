@@ -75,7 +75,7 @@ public:
 	void Draw(float z);
 	bool LinkSegments(float z);		// Link Segments to form polygons
 	void CleanupPolygons();			// remove redudant points
-	void MakeGcode(const CuttingPlane &plane, const std::vector<Vector2f> &infill, GCode* code, float z);	// Convert Cuttingplane to GCode
+	void MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float z);	// Convert Cuttingplane to GCode
 
 	Vector2f Min, Max;				// Bounding box
 	vector<Segment> lines;			// Segments - 2 points pr. line-segment
