@@ -53,6 +53,35 @@ private:
   void cb_RotateZButton_i(Fl_Button*, void*);
   static void cb_RotateZButton(Fl_Button*, void*);
 public:
+  Fl_Value_Slider *PolygonOpasitySlider;
+private:
+  void cb_PolygonOpasitySlider_i(Fl_Value_Slider*, void*);
+  static void cb_PolygonOpasitySlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Light_Button *DisplayPolygonsButton;
+private:
+  void cb_DisplayPolygonsButton_i(Fl_Light_Button*, void*);
+  static void cb_DisplayPolygonsButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *DisplayWireframeButton;
+private:
+  void cb_DisplayWireframeButton_i(Fl_Light_Button*, void*);
+  static void cb_DisplayWireframeButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *DisplayNormalsButton;
+private:
+  void cb_DisplayNormalsButton_i(Fl_Light_Button*, void*);
+  static void cb_DisplayNormalsButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *DisplayEndpointsButton;
+private:
+  void cb_DisplayEndpointsButton_i(Fl_Light_Button*, void*);
+  static void cb_DisplayEndpointsButton(Fl_Light_Button*, void*);
+  void cb_Save_i(Fl_Button*, void*);
+  static void cb_Save(Fl_Button*, void*);
+  void cb_Scale_i(Fl_Button*, void*);
+  static void cb_Scale(Fl_Button*, void*);
+public:
   Fl_Value_Slider *ShrinkSlider;
 private:
   void cb_ShrinkSlider_i(Fl_Value_Slider*, void*);
@@ -117,26 +146,14 @@ private:
   static void cb_DisplayDebugButton(Fl_Light_Button*, void*);
 public:
   Fl_Light_Button *DisplayGCodeButton;
+private:
+  void cb_DisplayGCodeButton_i(Fl_Light_Button*, void*);
+  static void cb_DisplayGCodeButton(Fl_Light_Button*, void*);
+public:
   Fl_Light_Button *DisplaySTLButton;
-  Fl_Light_Button *DisplayPolygonsButton;
 private:
-  void cb_DisplayPolygonsButton_i(Fl_Light_Button*, void*);
-  static void cb_DisplayPolygonsButton(Fl_Light_Button*, void*);
-public:
-  Fl_Light_Button *DisplayWireframeButton;
-private:
-  void cb_DisplayWireframeButton_i(Fl_Light_Button*, void*);
-  static void cb_DisplayWireframeButton(Fl_Light_Button*, void*);
-public:
-  Fl_Light_Button *DisplayNormalsButton;
-private:
-  void cb_DisplayNormalsButton_i(Fl_Light_Button*, void*);
-  static void cb_DisplayNormalsButton(Fl_Light_Button*, void*);
-public:
-  Fl_Light_Button *DisplayEndpointsButton;
-private:
-  void cb_DisplayEndpointsButton_i(Fl_Light_Button*, void*);
-  static void cb_DisplayEndpointsButton(Fl_Light_Button*, void*);
+  void cb_DisplaySTLButton_i(Fl_Light_Button*, void*);
+  static void cb_DisplaySTLButton(Fl_Light_Button*, void*);
 public:
   Fl_Light_Button *DisplayCuttingPlaneButton;
 private:

@@ -65,50 +65,125 @@ void GUI::cb_RotateZButton(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_RotateZButton_i(o,v);
 }
 
-void GUI::cb_ShrinkSlider_i(Fl_Value_Slider*, void*) {
-  MVC->redraw();
+void GUI::cb_PolygonOpasitySlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetPolygonOpasity(o->value());
+}
+void GUI::cb_PolygonOpasitySlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_PolygonOpasitySlider_i(o,v);
+}
+
+void GUI::cb_DisplayPolygonsButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetDisplayPolygons(o->value());
+}
+void GUI::cb_DisplayPolygonsButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayPolygonsButton_i(o,v);
+}
+
+void GUI::cb_DisplayWireframeButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetDisplayWireframe(o->value());
+}
+void GUI::cb_DisplayWireframeButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayWireframeButton_i(o,v);
+}
+
+void GUI::cb_DisplayNormalsButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetDisplayNormals(o->value());
+}
+void GUI::cb_DisplayNormalsButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayNormalsButton_i(o,v);
+}
+
+void GUI::cb_DisplayEndpointsButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetDisplayEndpoints(o->value());
+}
+void GUI::cb_DisplayEndpointsButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayEndpointsButton_i(o,v);
+}
+
+void GUI::cb_Save_i(Fl_Button*, void*) {
+  Fl_File_Chooser chooser("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose GCode");
+chooser.show();
+while (chooser.shown())
+	Fl::wait();
+if(chooser.value() == 0)
+	return;
+std::string dir(chooser.value());
+
+
+if(dir.length())
+{
+MVC->ReadStl(dir);
+MVC->redraw();
+};
+}
+void GUI::cb_Save(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Save_i(o,v);
+}
+
+void GUI::cb_Scale_i(Fl_Button*, void*) {
+  Fl_File_Chooser chooser("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose GCode");
+chooser.show();
+while (chooser.shown())
+	Fl::wait();
+if(chooser.value() == 0)
+	return;
+std::string dir(chooser.value());
+
+
+if(dir.length())
+{
+MVC->ReadStl(dir);
+MVC->redraw();
+};
+}
+void GUI::cb_Scale(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Scale_i(o,v);
+}
+
+void GUI::cb_ShrinkSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetShrinkValue(o->value());
 }
 void GUI::cb_ShrinkSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_ShrinkSlider_i(o,v);
 }
 
-void GUI::cb_CuttingPlaneSlider_i(Fl_Value_Slider*, void*) {
-  MVC->redraw();
+void GUI::cb_CuttingPlaneSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetCuttingPlaneValue(o->value());
 }
 void GUI::cb_CuttingPlaneSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_CuttingPlaneSlider_i(o,v);
 }
 
-void GUI::cb_RotationSlider_i(Fl_Value_Slider*, void*) {
-  MVC->redraw();
+void GUI::cb_RotationSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetInfillRotation(o->value());
 }
 void GUI::cb_RotationSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_RotationSlider_i(o,v);
 }
 
-void GUI::cb_InfillRotationPrLayerSlider_i(Fl_Value_Slider*, void*) {
-  MVC->redraw();
+void GUI::cb_InfillRotationPrLayerSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetInfillRotationPrLayer(o->value());
 }
 void GUI::cb_InfillRotationPrLayerSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_InfillRotationPrLayerSlider_i(o,v);
 }
 
-void GUI::cb_InfillDistanceSlider_i(Fl_Value_Slider*, void*) {
-  MVC->redraw();
+void GUI::cb_InfillDistanceSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetInfillDistance(o->value());
 }
 void GUI::cb_InfillDistanceSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_InfillDistanceSlider_i(o,v);
 }
 
-void GUI::cb_LayerThicknessSlider_i(Fl_Value_Slider*, void*) {
-  MVC->redraw();
+void GUI::cb_LayerThicknessSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetLayerThickness(o->value());
 }
 void GUI::cb_LayerThicknessSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_LayerThicknessSlider_i(o,v);
 }
 
-void GUI::cb_OptimizationSlider_i(Fl_Value_Slider*, void*) {
-  MVC->redraw();
+void GUI::cb_OptimizationSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetOptimization(o->value());
 }
 void GUI::cb_OptimizationSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_OptimizationSlider_i(o,v);
@@ -134,29 +209,29 @@ void GUI::cb_Load1(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load1_i(o,v);
 }
 
-void GUI::cb_GCodeDrawStartSlider_i(Fl_Value_Slider*, void*) {
-  MVC->redraw();
+void GUI::cb_GCodeDrawStartSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetGCodeDrawStart(o->value());
 }
 void GUI::cb_GCodeDrawStartSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_GCodeDrawStartSlider_i(o,v);
 }
 
-void GUI::cb_GCodeDrawEndSlider_i(Fl_Value_Slider*, void*) {
-  MVC->redraw();
+void GUI::cb_GCodeDrawEndSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetGCodeDrawEnd(o->value());
 }
 void GUI::cb_GCodeDrawEndSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_GCodeDrawEndSlider_i(o,v);
 }
 
-void GUI::cb_ExamineSlider_i(Fl_Value_Slider*, void*) {
-  MVC->redraw();
+void GUI::cb_ExamineSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetExamine(o->value());
 }
 void GUI::cb_ExamineSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_ExamineSlider_i(o,v);
 }
 
-void GUI::cb_DisplayDebuginFillButton_i(Fl_Light_Button*, void*) {
-  MVC->redraw();
+void GUI::cb_DisplayDebuginFillButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetDisplayDebuginFill(o->value());
 }
 void GUI::cb_DisplayDebuginFillButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayDebuginFillButton_i(o,v);
@@ -181,64 +256,50 @@ void GUI::cb_DisplayDebugButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayDebugButton_i(o,v);
 }
 
-void GUI::cb_DisplayPolygonsButton_i(Fl_Light_Button*, void*) {
-  MVC->redraw();
+void GUI::cb_DisplayGCodeButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetDisplayGCode(o->value());
 }
-void GUI::cb_DisplayPolygonsButton(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayPolygonsButton_i(o,v);
-}
-
-void GUI::cb_DisplayWireframeButton_i(Fl_Light_Button*, void*) {
-  MVC->redraw();
-}
-void GUI::cb_DisplayWireframeButton(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayWireframeButton_i(o,v);
+void GUI::cb_DisplayGCodeButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayGCodeButton_i(o,v);
 }
 
-void GUI::cb_DisplayNormalsButton_i(Fl_Light_Button*, void*) {
-  MVC->redraw();
+void GUI::cb_DisplaySTLButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetDisplaySTL(o->value());
 }
-void GUI::cb_DisplayNormalsButton(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayNormalsButton_i(o,v);
-}
-
-void GUI::cb_DisplayEndpointsButton_i(Fl_Light_Button*, void*) {
-  MVC->redraw();
-}
-void GUI::cb_DisplayEndpointsButton(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayEndpointsButton_i(o,v);
+void GUI::cb_DisplaySTLButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplaySTLButton_i(o,v);
 }
 
-void GUI::cb_DisplayCuttingPlaneButton_i(Fl_Light_Button*, void*) {
-  MVC->redraw();
+void GUI::cb_DisplayCuttingPlaneButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetDisplayCuttingPlane(o->value());
 }
 void GUI::cb_DisplayCuttingPlaneButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayCuttingPlaneButton_i(o,v);
 }
 
-void GUI::cb_DisplayinFillButton_i(Fl_Light_Button*, void*) {
-  MVC->redraw();
+void GUI::cb_DisplayinFillButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetDisplayinFill(o->value());
 }
 void GUI::cb_DisplayinFillButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayinFillButton_i(o,v);
 }
 
-void GUI::cb_DisplayAllLayers_i(Fl_Light_Button*, void*) {
-  MVC->redraw();
+void GUI::cb_DisplayAllLayers_i(Fl_Light_Button* o, void*) {
+  MVC->SetDisplayAllLayers(o->value());
 }
 void GUI::cb_DisplayAllLayers(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayAllLayers_i(o,v);
 }
 
-void GUI::cb_DrawVertexNumbersButton_i(Fl_Light_Button*, void*) {
-  MVC->redraw();
+void GUI::cb_DrawVertexNumbersButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetDrawVertexNumbers(o->value());
 }
 void GUI::cb_DrawVertexNumbersButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DrawVertexNumbersButton_i(o,v);
 }
 
-void GUI::cb_DrawLineNumbersButton_i(Fl_Light_Button*, void*) {
-  MVC->redraw();
+void GUI::cb_DrawLineNumbersButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetDrawLineNumbers(o->value());
 }
 void GUI::cb_DrawLineNumbersButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DrawLineNumbersButton_i(o,v);
@@ -264,44 +325,101 @@ GUI::GUI() {
       Tabs->align(FL_ALIGN_TOP_LEFT);
       { Fl_Group* o = new Fl_Group(810, 40, 540, 765, "Input file");
         o->hide();
-        { Fl_Button* o = new Fl_Button(815, 55, 145, 25, "Load STL");
+        { Fl_Button* o = new Fl_Button(815, 50, 145, 25, "Load STL");
           o->callback((Fl_Callback*)cb_Load);
         } // Fl_Button* o
-        { FixSTLerrorsButton = new Fl_Light_Button(965, 55, 135, 25, "Fix STL errors");
+        { FixSTLerrorsButton = new Fl_Light_Button(965, 50, 135, 25, "Fix STL errors");
           FixSTLerrorsButton->value(1);
           FixSTLerrorsButton->selection_color((Fl_Color)FL_GREEN);
           FixSTLerrorsButton->callback((Fl_Callback*)cb_FixSTLerrorsButton);
         } // Fl_Light_Button* FixSTLerrorsButton
-        { AutoRotateButton = new Fl_Button(815, 85, 90, 20, "Auto rotate");
+        { AutoRotateButton = new Fl_Button(815, 250, 90, 25, "Auto rotate");
           AutoRotateButton->callback((Fl_Callback*)cb_AutoRotateButton);
         } // Fl_Button* AutoRotateButton
-        { RotateXButton = new Fl_Button(910, 85, 90, 20, "Rotate X");
+        { RotateXButton = new Fl_Button(910, 250, 90, 25, "Rotate X");
           RotateXButton->callback((Fl_Callback*)cb_RotateXButton);
         } // Fl_Button* RotateXButton
-        { RotateYButton = new Fl_Button(1005, 85, 90, 20, "Rotate Y");
+        { RotateYButton = new Fl_Button(1005, 250, 90, 25, "Rotate Y");
           RotateYButton->callback((Fl_Callback*)cb_RotateYButton);
         } // Fl_Button* RotateYButton
-        { RotateZButton = new Fl_Button(1100, 85, 90, 20, "Rotate Z");
+        { RotateZButton = new Fl_Button(1100, 250, 90, 25, "Rotate Z");
           RotateZButton->callback((Fl_Callback*)cb_RotateZButton);
         } // Fl_Button* RotateZButton
+        { PolygonOpasitySlider = new Fl_Value_Slider(815, 360, 375, 20, "Polygon opasity");
+          PolygonOpasitySlider->type(1);
+          PolygonOpasitySlider->value(0.3);
+          PolygonOpasitySlider->textsize(14);
+          PolygonOpasitySlider->callback((Fl_Callback*)cb_PolygonOpasitySlider);
+          PolygonOpasitySlider->align(FL_ALIGN_TOP_LEFT);
+        } // Fl_Value_Slider* PolygonOpasitySlider
+        { DisplayPolygonsButton = new Fl_Light_Button(815, 280, 185, 25, "Display Polygons");
+          DisplayPolygonsButton->selection_color((Fl_Color)FL_GREEN);
+          DisplayPolygonsButton->callback((Fl_Callback*)cb_DisplayPolygonsButton);
+        } // Fl_Light_Button* DisplayPolygonsButton
+        { DisplayWireframeButton = new Fl_Light_Button(815, 310, 185, 25, "Display Wireframe");
+          DisplayWireframeButton->selection_color((Fl_Color)FL_GREEN);
+          DisplayWireframeButton->callback((Fl_Callback*)cb_DisplayWireframeButton);
+        } // Fl_Light_Button* DisplayWireframeButton
+        { DisplayNormalsButton = new Fl_Light_Button(1005, 280, 185, 25, "Display Normals");
+          DisplayNormalsButton->selection_color((Fl_Color)FL_GREEN);
+          DisplayNormalsButton->callback((Fl_Callback*)cb_DisplayNormalsButton);
+        } // Fl_Light_Button* DisplayNormalsButton
+        { DisplayEndpointsButton = new Fl_Light_Button(1005, 310, 185, 25, "Display Endpoints");
+          DisplayEndpointsButton->selection_color((Fl_Color)FL_GREEN);
+          DisplayEndpointsButton->callback((Fl_Callback*)cb_DisplayEndpointsButton);
+        } // Fl_Light_Button* DisplayEndpointsButton
+        { Fl_Button* o = new Fl_Button(815, 80, 145, 25, "Save STL");
+          o->callback((Fl_Callback*)cb_Save);
+          o->deactivate();
+        } // Fl_Button* o
+        { Fl_Button* o = new Fl_Button(815, 110, 145, 25, "Scale model");
+          o->callback((Fl_Callback*)cb_Scale);
+          o->deactivate();
+        } // Fl_Button* o
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(810, 40, 540, 765, "Printer definition");
         o->hide();
-        { ShrinkSlider = new Fl_Value_Slider(825, 270, 375, 20, "Extruded material width");
+        { ShrinkSlider = new Fl_Value_Slider(820, 245, 375, 20, "Extruded material width");
           ShrinkSlider->type(1);
           ShrinkSlider->value(0.7);
           ShrinkSlider->textsize(14);
           ShrinkSlider->callback((Fl_Callback*)cb_ShrinkSlider);
           ShrinkSlider->align(FL_ALIGN_TOP_LEFT);
         } // Fl_Value_Slider* ShrinkSlider
-        { Fl_Group* o = new Fl_Group(820, 60, 165, 35, "Build volume (mm)");
+        { Fl_Group* o = new Fl_Group(820, 165, 230, 40, "Build volume (mm)");
           o->box(FL_UP_BOX);
-          { new Fl_Value_Input(840, 66, 35, 24, "X");
+          o->deactivate();
+          { Fl_Value_Input* o = new Fl_Value_Input(840, 176, 45, 23, "X");
+            o->maximum(5000);
+            o->step(1);
+            o->value(200);
           } // Fl_Value_Input* o
-          { new Fl_Value_Input(895, 66, 35, 24, "Y");
+          { Fl_Value_Input* o = new Fl_Value_Input(915, 176, 45, 23, "Y");
+            o->maximum(5000);
+            o->value(200);
           } // Fl_Value_Input* o
-          { new Fl_Value_Input(950, 66, 25, 24, "Z");
+          { Fl_Value_Input* o = new Fl_Value_Input(990, 176, 45, 23, "Z");
+            o->maximum(5000);
+            o->value(140);
+          } // Fl_Value_Input* o
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(1065, 165, 230, 40, "Print margin  (mm)");
+          o->box(FL_UP_BOX);
+          o->deactivate();
+          { Fl_Value_Input* o = new Fl_Value_Input(1085, 176, 45, 23, "X");
+            o->maximum(5000);
+            o->step(1);
+            o->value(200);
+          } // Fl_Value_Input* o
+          { Fl_Value_Input* o = new Fl_Value_Input(1160, 176, 45, 23, "Y");
+            o->maximum(5000);
+            o->value(200);
+          } // Fl_Value_Input* o
+          { Fl_Value_Input* o = new Fl_Value_Input(1235, 176, 45, 23, "Z");
+            o->maximum(5000);
+            o->value(140);
           } // Fl_Value_Input* o
           o->end();
         } // Fl_Group* o
@@ -365,6 +483,7 @@ GUI::GUI() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(810, 40, 540, 765, "GCode");
+        o->hide();
         { Fl_Button* o = new Fl_Button(815, 220, 145, 25, "Load Gcode");
           o->callback((Fl_Callback*)cb_Load1);
         } // Fl_Button* o
@@ -391,7 +510,6 @@ GUI::GUI() {
         o->color((Fl_Color)FL_DARK1);
         o->labelfont(1);
         o->labelcolor((Fl_Color)1);
-        o->hide();
         { ExamineSlider = new Fl_Value_Slider(880, 760, 365, 20, "Examine");
           ExamineSlider->type(1);
           ExamineSlider->step(0.001);
@@ -411,26 +529,12 @@ GUI::GUI() {
         { DisplayGCodeButton = new Fl_Light_Button(880, 540, 155, 20, "Display GCode");
           DisplayGCodeButton->value(1);
           DisplayGCodeButton->selection_color((Fl_Color)FL_GREEN);
+          DisplayGCodeButton->callback((Fl_Callback*)cb_DisplayGCodeButton);
         } // Fl_Light_Button* DisplayGCodeButton
         { DisplaySTLButton = new Fl_Light_Button(880, 570, 155, 20, "Display STL objects");
           DisplaySTLButton->selection_color((Fl_Color)FL_GREEN);
+          DisplaySTLButton->callback((Fl_Callback*)cb_DisplaySTLButton);
         } // Fl_Light_Button* DisplaySTLButton
-        { DisplayPolygonsButton = new Fl_Light_Button(880, 595, 155, 20, "Display Polygons");
-          DisplayPolygonsButton->selection_color((Fl_Color)FL_GREEN);
-          DisplayPolygonsButton->callback((Fl_Callback*)cb_DisplayPolygonsButton);
-        } // Fl_Light_Button* DisplayPolygonsButton
-        { DisplayWireframeButton = new Fl_Light_Button(880, 620, 155, 20, "Display Wireframe");
-          DisplayWireframeButton->selection_color((Fl_Color)FL_GREEN);
-          DisplayWireframeButton->callback((Fl_Callback*)cb_DisplayWireframeButton);
-        } // Fl_Light_Button* DisplayWireframeButton
-        { DisplayNormalsButton = new Fl_Light_Button(1040, 620, 155, 20, "Display Normals");
-          DisplayNormalsButton->selection_color((Fl_Color)FL_GREEN);
-          DisplayNormalsButton->callback((Fl_Callback*)cb_DisplayNormalsButton);
-        } // Fl_Light_Button* DisplayNormalsButton
-        { DisplayEndpointsButton = new Fl_Light_Button(1040, 645, 155, 20, "Display Endpoints");
-          DisplayEndpointsButton->selection_color((Fl_Color)FL_GREEN);
-          DisplayEndpointsButton->callback((Fl_Callback*)cb_DisplayEndpointsButton);
-        } // Fl_Light_Button* DisplayEndpointsButton
         { DisplayCuttingPlaneButton = new Fl_Light_Button(880, 645, 155, 20, "Display CuttingPlane");
           DisplayCuttingPlaneButton->selection_color((Fl_Color)FL_GREEN);
           DisplayCuttingPlaneButton->callback((Fl_Callback*)cb_DisplayCuttingPlaneButton);

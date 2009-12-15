@@ -42,6 +42,7 @@ STL::STL()
 {
 	LayerThickness = 0.4f;
 	CuttingPlaneValue = 0.5f;
+	PolygonOpasity = 0.5f;
 
 	DisplayEndpoints = false;
 	DisplayNormals = false;
@@ -49,20 +50,24 @@ STL::STL()
 	DisplayPolygons = false;
 	DisplayAllLayers = false;
 	DisplayinFill = false;
+
+	Min.x = Min.y = Min.z = 0.0f;
+	Max.x = Max.y = Max.z = 200.0f;
+	
+	CalcBoundingBoxAndZoom();
+
 }
 
-void STL::Read(string filename)
+bool STL::Read(string filename, const Vector3f &PrintingMargin)
 {
 	triangles.clear();
 
 	unsigned int count;
 	ifstream infile;
-	Min.x = Min.y = Min.z = 99999999.0f;
-	Max.x = Max.y = Max.z = -99999999.0f;
 	try{
 		infile.open(filename.c_str(),  ios::in | ios::binary);
 		if(!infile.good())
-			return;
+			return false;
 			
 		// Ascii ot binary?
 		long header;
@@ -70,10 +75,14 @@ void STL::Read(string filename)
 		//Check if the header is "soli"
 		if(header == 0x696c6f73)
 		{
+		infile.close();
 //		ReadAsciiFile();
-		return;
+		return false;	// no can read ascii
 		}
 		
+		Min.x = Min.y = Min.z = 99999999.0f;
+		Max.x = Max.y = Max.z = -99999999.0f;
+
 		infile.seekg(80, ios_base::beg);
 		infile.read(reinterpret_cast < char * > (&count), sizeof(unsigned int));	// N_Triangles
 		triangles.reserve(count);
@@ -118,6 +127,9 @@ void STL::Read(string filename)
 	
 	OptimizeRotation();
 	CalcBoundingBoxAndZoom();
+	
+	MoveIntoPrintingArea(PrintingMargin);
+	return true;
 }
 
 void STL::CalcBoundingBoxAndZoom()
@@ -126,7 +138,7 @@ void STL::CalcBoundingBoxAndZoom()
 }
 
 
-void STL::draw(GUI* gui)
+void STL::draw()
 {
 	// polygons
 
@@ -142,13 +154,13 @@ void STL::draw(GUI* gui)
 		{
 			switch(triangles[i].axis)
 				{
-				case NEGX:	glColor4f(1,0,0,0.2f); break;
-				case POSX:	glColor4f(0.5f,0,0,0.2f); break;
-				case NEGY:	glColor4f(0,1,0,0.2f); break;
-				case POSY:	glColor4f(0,0.5f,0,0.2f); break;
-				case NEGZ:	glColor4f(0,0,1,0.2f); break;
-				case POSZ:	glColor4f(0,0,0.3f,0.2f); break;
-				default: glColor4f(0.2f,0.2f,0.2f,0.2f); break;
+				case NEGX:	glColor4f(1,0,0,PolygonOpasity); break;
+				case POSX:	glColor4f(0.5f,0,0,PolygonOpasity); break;
+				case NEGY:	glColor4f(0,1,0,PolygonOpasity); break;
+				case POSY:	glColor4f(0,0.5f,0,PolygonOpasity); break;
+				case NEGZ:	glColor4f(0,0,1,PolygonOpasity); break;
+				case POSZ:	glColor4f(0,0,0.3f,PolygonOpasity); break;
+				default: glColor4f(0.2f,0.2f,0.2f,PolygonOpasity); break;
 				}
 			glNormal3fv((GLfloat*)&triangles[i].N);
 			glVertex3fv((GLfloat*)&triangles[i].A);
@@ -1719,4 +1731,19 @@ void CuttingPlane::CleanupPolygons()
 				v++;
 		}
 	}
+}
+
+void STL::MoveIntoPrintingArea(const Vector3f &PrintingMargin)
+{
+	Vector3f dist = Min;
+	for(UINT i=0; i<triangles.size() ; i++)
+	{
+	triangles[i].A = triangles[i].A - Min + PrintingMargin;
+	triangles[i].B = triangles[i].B - Min + PrintingMargin;
+	triangles[i].C = triangles[i].C - Min + PrintingMargin;
+	}
+
+	Max = Max - Min + PrintingMargin;
+	Min = PrintingMargin;
+	CalcBoundingBoxAndZoom();
 }

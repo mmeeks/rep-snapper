@@ -86,13 +86,14 @@ public:
 	vector<Poly> offsetPolygons;	// Shrinked closed loops
 	vector<Vector2f> offsetVertices;// points for shrinked closed loops
 
-	// GUI values
+	// CuttingPlane GUI values
 	float InfillDistance;
 	float InfillRotation;
 	float InfillRotationPrLayer;
 	float Optimization;
 	float Examine;
 	float ShrinkValue;
+	float PolygonOpasity;
 
 	bool DisplayDebuginFill;
 	bool DisplayDebug;
@@ -106,8 +107,9 @@ class STL
 public:
 	STL();
 
-	void Read(string filename);
-	void draw(GUI* gui);
+	bool Read(string filename, const Vector3f &PrintingMargin);
+	void draw();
+	void MoveIntoPrintingArea(const Vector3f &PrintingMargin);
 	void CalcCuttingPlane(float where, CuttingPlane &plane);	// Extract a 2D polygonset from a 3D model
 	void OptimizeRotation();									// Auto-Rotate object to have the largest area surface down for printing
 	void CalcBoundingBoxAndZoom();
@@ -116,9 +118,10 @@ public:
 	vector<Triangle> triangles;
 	Vector3f Min, Max, Center;
 
-	// GUI Values
+	// STL GUI Values
 	float LayerThickness;
 	float CuttingPlaneValue;
+	float PolygonOpasity;
 
 	bool DisplayEndpoints;
 	bool DisplayNormals;

@@ -3,9 +3,11 @@
 
 ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) : Fl_Gl_Window(x,y,w,h,l)
 {
-	Min = Vector3f(99999, 99999, 99999);
-	Max = Vector3f(-99999,-99999,-99999);
-	Center.x = Center.y = Center.z = 0.0f;
+	Min = Vector3f(0, 0, 0);
+	Max = Vector3f(200,200,200);
+	Center.x = Center.y = 100.0f;
+	Center.z = 0.0f;
+	zoom = 100.0f;
 
 	glClearColor (0.0f, 0.0f, 0.0f, 0.5f);							// Black Background
 	glClearDepth (1.0f);											// Depth Buffer Setup
@@ -32,40 +34,43 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 	quadratic=gluNewQuadric();										// Create A Pointer To The Quadric Object
 	gluQuadricNormals(quadratic, GLU_SMOOTH);						// Create Smooth Normals
 	gluQuadricTexture(quadratic, GL_TRUE);							// Create Texture Coords
-
-
-	zoom = 10.0f;
 }
 
 void ModelViewController::CalcBoundingBoxAndZoom()
 {
-	stl.CalcBoundingBoxAndZoom();
+	ProcessControl.stl.CalcBoundingBoxAndZoom();
 	
-	Max = stl.Max;
-	Min = stl.Min;
-	Center = stl.Center;
+	Max = ProcessControl.stl.Max;
+	Min = ProcessControl.stl.Min;
+	Center = ProcessControl.stl.Center;
 
-	// Find zoom
-	float L=0;
-	if(Max.x - Min.x > L)	L = Max.x - Min.x;
-	if(Max.y - Min.y > L)	L = Max.y - Min.y;
-	if(Max.z - Min.z > L)	L = Max.z - Min.z;
+	if((Max-Min).length() > 0)
+		{
+		// Find zoom
+		float L=0;
+		if(Max.x - Min.x > L)	L = Max.x - Min.x;
+		if(Max.y - Min.y > L)	L = Max.y - Min.y;
+		if(Max.z - Min.z > L)	L = Max.z - Min.z;
 
-	zoom= L;
+		zoom= L;
+		}
+	else
+		zoom = 100.0f;
 }
 
 void ModelViewController::resize(int x,int y, int width, int height)					// Reshape The Window When It's Moved Or Resized
 {
 	Fl_Gl_Window::resize(x,y,width,height);
-	glViewport (0, 0, (GLsizei)(width), (GLsizei)(height));				// Reset The Current Viewport
+	glViewport ((GLsizei)x, (GLsizei)y, (GLsizei)width, (GLsizei)height);				// Reset The Current Viewport
 	glMatrixMode (GL_PROJECTION);										// Select The Projection Matrix
 	glLoadIdentity ();													// Reset The Projection Matrix
 	gluPerspective (45.0f, (GLfloat)(width)/(GLfloat)(height),			// Calculate The Aspect Ratio Of The Window
-					1.0f, 1000.0f);		
+					1.0f, 1000000.0f);						// Calculate The Aspect Ratio Of The Window
 	glMatrixMode (GL_MODELVIEW);										// Select The Modelview Matrix
 	glLoadIdentity ();													// Reset The Modelview Matrix
 
     ArcBall->setBounds((GLfloat)width, (GLfloat)height);                 //*NEW* Update mouse bounds for arcball
+    redraw();
 }
 
 void ModelViewController::CenterView()
@@ -81,7 +86,7 @@ void ModelViewController::draw()
 		glViewport (0, 0, w(),h());											// Reset The Current Viewport
 		glMatrixMode (GL_PROJECTION);										// Select The Projection Matrix
 		glLoadIdentity ();													// Reset The Projection Matrix
-		gluPerspective (45.0f, w()/h(),10.0f, 1000000.0f);						// Calculate The Aspect Ratio Of The Window
+		gluPerspective (45.0f, w()/h(),1.0f, 1000000.0f);						// Calculate The Aspect Ratio Of The Window
 		glMatrixMode (GL_MODELVIEW);										// Select The Modelview Matrix
 		glLoadIdentity ();													// Reset The Modelview Matrix
 		return;
@@ -100,16 +105,16 @@ void ModelViewController::draw()
 	glColor3f(0.75f,0.75f,1.0f);
 
 
-	/*--------------- Draw GCode ------------------*/
-	gcode.draw();
+	/*--------------- Draw Grid and Axis ---------------*/
 
-	/*--------------- Draw STL ------------------*/
-	stl.draw(gui);
+	DrawGridAndAxis();
+
+	/*--------------- Draw models ------------------*/
+	ProcessControl.Draw();
 
 	/*--------------- Exit -----------------*/
 	glPopMatrix();													// NEW: Unapply Dynamic Transform
 	glFlush ();														// Flush The GL Rendering Pipeline
-
 }
 
 
@@ -187,3 +192,7 @@ int ModelViewController::handle(int event)
 	}
 }
 
+void ModelViewController::DrawGridAndAxis()
+{
+	//Grid
+}
