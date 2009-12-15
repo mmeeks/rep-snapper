@@ -2,9 +2,11 @@
 version 1.0109 
 header_name {.h} 
 code_name {.cxx}
-class GUI {open
+decl {class ModelViewController;} {public global
+} 
+
+class GUI {selected
 } {
-  decl {class ModelViewController;} {}
   Function {GUI()} {open
   } {
     Fl_Window mainWindow {
@@ -161,7 +163,7 @@ if(dir.length())
 {
 MVC->ReadGCode(dir);
 MVC->redraw();
-};} selected
+};}
             xywh {815 220 145 25}
             code0 {\#include <FL/Fl_File_Chooser.H>}
           }

@@ -3,6 +3,7 @@
 #ifndef UI_h
 #define UI_h
 #include <FL/Fl.H>
+class ModelViewController;
 #include <FL/Fl_Double_Window.H>
 #include "StdAfx.h"
 #ifndef M_PI
@@ -16,8 +17,6 @@
 #include <FL/Fl_Value_Input.H>
 #include <FL/Fl_File_Chooser.H>
 #include <FL/Fl_Output.H>
-
-class ModelViewController;
 
 class GUI {
 public:
