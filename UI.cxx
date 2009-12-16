@@ -331,7 +331,6 @@ GUI::GUI() {
     { Tabs = new Fl_Tabs(810, 20, 535, 815, "Process:");
       Tabs->align(FL_ALIGN_TOP_LEFT);
       { Fl_Group* o = new Fl_Group(810, 40, 535, 765, "Input file");
-        o->hide();
         { Fl_Button* o = new Fl_Button(815, 50, 145, 25, "Load STL");
           o->callback((Fl_Callback*)cb_Load);
         } // Fl_Button* o
@@ -490,6 +489,7 @@ GUI::GUI() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(810, 40, 535, 795, "GCode");
+        o->hide();
         { Fl_Button* o = new Fl_Button(815, 80, 145, 25, "Load Gcode");
           o->callback((Fl_Callback*)cb_Load1);
         } // Fl_Button* o
