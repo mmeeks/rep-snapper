@@ -22,7 +22,7 @@ public:
 	// STL Functions
 	void ReadStl(string filename) {if(ProcessControl.stl.Read(filename, ProcessControl.printer.PrintMargin)) CalcBoundingBoxAndZoom();};
 	void OptimizeRotation() { ProcessControl.stl.OptimizeRotation();}
-	void RotateObject(float x, float y, float z, float a) {ProcessControl.stl.RotateObject(Vector3f(x,y,z),a);}
+	void RotateObject(float x, float y, float z, float a) {ProcessControl.stl.RotateObject(Vector3f(x,y,z),a); ProcessControl.stl.MoveIntoPrintingArea(ProcessControl.printer.PrintMargin);}
 
 	// GCode Functions
 	void ReadGCode(string filename) {ProcessControl.gcode.Read(filename);};

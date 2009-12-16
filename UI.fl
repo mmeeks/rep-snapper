@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0110 
+version 1.0109 
 header_name {.h} 
 code_name {.cxx}
 decl {class ModelViewController;} {public global
@@ -266,6 +266,8 @@ MVC->redraw();
           Fl_Text_Editor GCodeEditor {
             label {GCode:} selected
             xywh {815 205 530 595}
+            code0 {Fl_Text_Buffer *buff = new Fl_Text_Buffer();}
+            code1 {o->buffer(buff);}
           }
         }
         Fl_Group {} {

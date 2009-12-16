@@ -513,7 +513,9 @@ GUI::GUI() {
         { Fl_Button* o = new Fl_Button(815, 50, 145, 25, "Convert to GCode");
           o->callback((Fl_Callback*)cb_Convert);
         } // Fl_Button* o
-        { GCodeEditor = new Fl_Text_Editor(815, 205, 530, 595, "GCode:");
+        { Fl_Text_Editor* o = GCodeEditor = new Fl_Text_Editor(815, 205, 530, 595, "GCode:");
+          Fl_Text_Buffer *buff = new Fl_Text_Buffer();
+          o->buffer(buff);
         } // Fl_Text_Editor* GCodeEditor
         o->end();
       } // Fl_Group* o

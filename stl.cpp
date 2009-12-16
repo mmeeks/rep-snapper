@@ -373,7 +373,31 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	
 	static Vector3f LastPosition= Vector3f(0,0,z);
 	
-	LastPosition.z = z;
+	Command command;
+
+#define speed 1500;
+
+	// Select Extruder (Reset XY pos?)
+	command.Code = RESET_XY_AXIES;
+	command.where = Vector3f(0,0,LastPosition.z);
+	command.e = 0.0f;					// move
+	command.f = speed;					// Use Max Z speed
+	code.commands.push_back(command);
+	
+
+	// Move Z axis
+	command.Code = COORDINATEDMOTION;
+	command.where = Vector3f(0,0,z);
+	command.e = 0.0f;					// move
+	command.f = 50;					// Use Max Z speed
+	code.commands.push_back(command);
+
+/*
+	M107 ;cooler off
+	G4 P20 ;delay
+	G1 Z0.0 ;z move
+	T0; select new extruder
+*/
 
 	std::vector<Vector3f> lines;
 	
@@ -407,19 +431,21 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 		return;
 	used[thisPoint] = true;
 	
-	Command command;
 	while(thisPoint != -1)
 		{
 		// store thisPoint
 		command.Code = COORDINATEDMOTION;
 		command.where = lines[thisPoint];
 		command.e = 0.0f;					// move
+		command.f = speed;
 		code.commands.push_back(command);
 
 		// Find other end of line
 		thisPoint = findOtherEnd(thisPoint);
 		used[thisPoint] = true;
 		// store thisPoint
+
+		LastPosition = command.where;
 
 		//G1 X23.9 Y39.0 Z0.2526 E66.5 F3000.0 ;print segment
 		//G1 X23.9 Y39.7 Z0.2526 E67.2 F3000.0 ;print segment
@@ -432,6 +458,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 		command.where = lines[thisPoint];
 		float len = (LastPosition - command.where).length();
 		command.e = len;					// draw
+		command.f = speed;
 		code.commands.push_back(command);
 
 		LastPosition = lines[thisPoint];

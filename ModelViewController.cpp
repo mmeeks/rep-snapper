@@ -206,6 +206,26 @@ void ModelViewController::ConvertToGCode()
 	int length = GcodeTxt.length();
 	GcodeTxt = GcodeTxt + "\0";
 	int length2 = GcodeTxt.length();
-//	buffer->insert(0, GcodeTxt.c_str());
+	buffer->append( GcodeTxt.c_str() );
+	redraw();
 //	gui->GCodeEditor->value()
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
