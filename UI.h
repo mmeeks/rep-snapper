@@ -133,7 +133,10 @@ private:
   void cb_Convert_i(Fl_Button*, void*);
   static void cb_Convert(Fl_Button*, void*);
 public:
-  Fl_Text_Editor *GCodeEditor;
+  Fl_Text_Editor *GCodeStart;
+  Fl_Text_Editor *GCodeLayer;
+  Fl_Text_Editor *GCodeEnd;
+  Fl_Text_Editor *GCodeResult;
   Fl_Value_Slider *ExamineSlider;
 private:
   void cb_ExamineSlider_i(Fl_Value_Slider*, void*);

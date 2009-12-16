@@ -6,7 +6,8 @@
 class ProcessController
 {
 public:
-	ProcessController(){};
+	ProcessController(){
+};
 	
 	void Draw();
 	
@@ -15,14 +16,19 @@ public:
 	void OptimizeRotation() { stl.OptimizeRotation();}
 	void RotateObject(float x, float y, float z, float a) {stl.RotateObject(Vector3f(x,y,z),a);}
 
-	void ConvertToGCode(string &GcodeTxt);
+	void ConvertToGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd);
 
 	// GCode Functions
 	void ReadGCode(string filename) {gcode.Read(filename);};
 
 	// Process functions
 	
-		
+
+	// Start, layer, end GCode
+	string GCodeStartText;
+	string GCodeLayerText;
+	string GCodeEndText;
+
 	/*--------------Models-------------------*/
 	Printer printer;
 	STL stl;

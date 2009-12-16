@@ -2,7 +2,7 @@
 #include "ProcessController.h"
 
 
-void ProcessController::ConvertToGCode(string &GcodeTxt)
+void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd)
 {
 	// Make Layers
 	UINT LayerNr = 0;
@@ -27,7 +27,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt)
 			stl.CalcCuttingPlane(hackedZ, plane);	// output is alot of un-connected line segments with individual vertices
 			}
 
-		plane.Draw(z);
+//		plane.Draw(z);
 
 		// inFill
 		vector<Vector2f> infill;
@@ -41,7 +41,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt)
 	z+=zStep;
 	}
 
-	gcode.MakeText(GcodeTxt);
+	gcode.MakeText(GcodeTxt, GcodeStart, GcodeLayer, GcodeEnd);
 }
 
 void ProcessController::Draw()

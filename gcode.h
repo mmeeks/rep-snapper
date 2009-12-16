@@ -140,7 +140,7 @@ public:
 
 	void Read(string filename);
 	void draw();
-	void MakeText(string &GcodeTxt);
+	void MakeText(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd);
 
 
 	/*--------------GCode-------------------*/

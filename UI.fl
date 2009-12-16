@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109 
+version 1.0110 
 header_name {.h} 
 code_name {.cxx}
 decl {class ModelViewController;} {public global
@@ -11,7 +11,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label CubeView open
-      xywh {40 40 1354 809} type Double box UP_BOX labelsize 12 hide resizable
+      xywh {63 35 1347 809} type Double box UP_BOX labelsize 12 hide resizable
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -24,11 +24,11 @@ class GUI {open
       }
       Fl_Tabs Tabs {
         label {Process:} open
-        xywh {810 20 540 785} align 5
+        xywh {810 20 535 815} align 5
       } {
         Fl_Group {} {
           label {Input file}
-          xywh {810 40 540 765} hide
+          xywh {810 40 535 765} hide
         } {
           Fl_Button {} {
             label {Load STL}
@@ -145,7 +145,7 @@ MVC->redraw();
         }
         Fl_Group {} {
           label {Printer definition}
-          xywh {810 40 540 765} hide
+          xywh {810 40 535 765} hide
         } {
           Fl_Value_Slider ShrinkSlider {
             label {Extruded material width}
@@ -189,7 +189,7 @@ MVC->redraw();
         }
         Fl_Group {} {
           label Slicing
-          xywh {810 40 540 765} hide
+          xywh {810 40 535 765} hide
         } {
           Fl_Value_Slider CuttingPlaneSlider {
             label CuttingPlane
@@ -224,7 +224,7 @@ MVC->redraw();
         }
         Fl_Group {} {
           label GCode open
-          xywh {810 40 540 765}
+          xywh {810 40 535 795}
         } {
           Fl_Button {} {
             label {Load Gcode}
@@ -263,16 +263,38 @@ MVC->redraw();
             callback {MVC->ConvertToGCode();}
             xywh {815 50 145 25}
           }
-          Fl_Text_Editor GCodeEditor {
-            label {GCode:} selected
-            xywh {815 205 530 595}
-            code0 {Fl_Text_Buffer *buff = new Fl_Text_Buffer();}
-            code1 {o->buffer(buff);}
+          Fl_Tabs {} {open
+            xywh {810 190 535 615}
+          } {
+            Fl_Text_Editor GCodeStart {
+              label {Start code}
+              xywh {810 215 530 590} hide
+              code0 {Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();}
+              code1 {o->buffer(startbuff);}
+            }
+            Fl_Text_Editor GCodeLayer {
+              label {Next layer}
+              xywh {810 215 530 590} hide
+              code0 {Fl_Text_Buffer *layerbuff = new Fl_Text_Buffer();}
+              code1 {o->buffer(layerbuff);}
+            }
+            Fl_Text_Editor GCodeEnd {
+              label {End code}
+              xywh {810 215 530 590} hide
+              code0 {Fl_Text_Buffer *endbuff = new Fl_Text_Buffer();}
+              code1 {o->buffer(endbuff);}
+            }
+            Fl_Text_Editor GCodeResult {
+              label Result selected
+              xywh {810 215 530 590}
+              code0 {Fl_Text_Buffer *resultbuff = new Fl_Text_Buffer();}
+              code1 {o->buffer(resultbuff);}
+            }
           }
         }
         Fl_Group {} {
           label Debug
-          xywh {810 40 540 765} color 47 labelfont 1 labelcolor 1 hide
+          xywh {810 40 535 765} color 47 labelfont 1 labelcolor 1 hide
         } {
           Fl_Value_Slider ExamineSlider {
             label Examine
@@ -340,9 +362,11 @@ MVC->redraw();}
       }
     }
   }
-  Function {show(int argc, char **argv)} {} {
+  Function {show(int argc, char **argv)} {open
+  } {
     code {mainWindow->show(argc, argv);
 //MVC->ReadStl("C:/box.stl");
+MVC->init();
 MVC->ReadStl("C:/\#Downloads/Reprap Exchange/N_DSL-Stylus.stl");
 //MVC->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
 MVC->redraw();} {}

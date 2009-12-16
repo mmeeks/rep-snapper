@@ -313,7 +313,7 @@ void GUI::cb_DrawLineNumbersButton(Fl_Light_Button* o, void* v) {
 }
 
 GUI::GUI() {
-  { mainWindow = new Fl_Double_Window(1354, 809, "CubeView");
+  { mainWindow = new Fl_Double_Window(1347, 809, "CubeView");
     mainWindow->box(FL_UP_BOX);
     mainWindow->labelsize(12);
     mainWindow->user_data((void*)(this));
@@ -328,9 +328,9 @@ GUI::GUI() {
       MVC->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
       MVC->when(FL_WHEN_RELEASE);
     } // ModelViewController* MVC
-    { Tabs = new Fl_Tabs(810, 20, 540, 785, "Process:");
+    { Tabs = new Fl_Tabs(810, 20, 535, 815, "Process:");
       Tabs->align(FL_ALIGN_TOP_LEFT);
-      { Fl_Group* o = new Fl_Group(810, 40, 540, 765, "Input file");
+      { Fl_Group* o = new Fl_Group(810, 40, 535, 765, "Input file");
         o->hide();
         { Fl_Button* o = new Fl_Button(815, 50, 145, 25, "Load STL");
           o->callback((Fl_Callback*)cb_Load);
@@ -385,7 +385,7 @@ GUI::GUI() {
         } // Fl_Button* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(810, 40, 540, 765, "Printer definition");
+      { Fl_Group* o = new Fl_Group(810, 40, 535, 765, "Printer definition");
         o->hide();
         { ShrinkSlider = new Fl_Value_Slider(820, 245, 375, 20, "Extruded material width");
           ShrinkSlider->type(1);
@@ -432,7 +432,7 @@ GUI::GUI() {
         } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(810, 40, 540, 765, "Slicing");
+      { Fl_Group* o = new Fl_Group(810, 40, 535, 765, "Slicing");
         o->hide();
         { CuttingPlaneSlider = new Fl_Value_Slider(840, 450, 375, 20, "CuttingPlane");
           CuttingPlaneSlider->type(1);
@@ -489,7 +489,7 @@ GUI::GUI() {
         } // Fl_Value_Slider* OptimizationSlider
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(810, 40, 540, 765, "GCode");
+      { Fl_Group* o = new Fl_Group(810, 40, 535, 795, "GCode");
         { Fl_Button* o = new Fl_Button(815, 80, 145, 25, "Load Gcode");
           o->callback((Fl_Callback*)cb_Load1);
         } // Fl_Button* o
@@ -513,13 +513,31 @@ GUI::GUI() {
         { Fl_Button* o = new Fl_Button(815, 50, 145, 25, "Convert to GCode");
           o->callback((Fl_Callback*)cb_Convert);
         } // Fl_Button* o
-        { Fl_Text_Editor* o = GCodeEditor = new Fl_Text_Editor(815, 205, 530, 595, "GCode:");
-          Fl_Text_Buffer *buff = new Fl_Text_Buffer();
-          o->buffer(buff);
-        } // Fl_Text_Editor* GCodeEditor
+        { Fl_Tabs* o = new Fl_Tabs(810, 190, 535, 615);
+          { Fl_Text_Editor* o = GCodeStart = new Fl_Text_Editor(810, 215, 530, 590, "Start code");
+            GCodeStart->hide();
+            Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();
+            o->buffer(startbuff);
+          } // Fl_Text_Editor* GCodeStart
+          { Fl_Text_Editor* o = GCodeLayer = new Fl_Text_Editor(810, 215, 530, 590, "Next layer");
+            GCodeLayer->hide();
+            Fl_Text_Buffer *layerbuff = new Fl_Text_Buffer();
+            o->buffer(layerbuff);
+          } // Fl_Text_Editor* GCodeLayer
+          { Fl_Text_Editor* o = GCodeEnd = new Fl_Text_Editor(810, 215, 530, 590, "End code");
+            GCodeEnd->hide();
+            Fl_Text_Buffer *endbuff = new Fl_Text_Buffer();
+            o->buffer(endbuff);
+          } // Fl_Text_Editor* GCodeEnd
+          { Fl_Text_Editor* o = GCodeResult = new Fl_Text_Editor(810, 215, 530, 590, "Result");
+            Fl_Text_Buffer *resultbuff = new Fl_Text_Buffer();
+            o->buffer(resultbuff);
+          } // Fl_Text_Editor* GCodeResult
+          o->end();
+        } // Fl_Tabs* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(810, 40, 540, 765, "Debug");
+      { Fl_Group* o = new Fl_Group(810, 40, 535, 765, "Debug");
         o->color((Fl_Color)FL_DARK1);
         o->labelfont(1);
         o->labelcolor((Fl_Color)1);
@@ -581,6 +599,7 @@ GUI::GUI() {
 void GUI::show(int argc, char **argv) {
   mainWindow->show(argc, argv);
 //MVC->ReadStl("C:/box.stl");
+MVC->init();
 MVC->ReadStl("C:/#Downloads/Reprap Exchange/N_DSL-Stylus.stl");
 //MVC->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
 MVC->redraw();

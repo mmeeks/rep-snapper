@@ -27,7 +27,7 @@ public:
 	// GCode Functions
 	void ReadGCode(string filename) {ProcessControl.gcode.Read(filename);};
 	void ConvertToGCode();
-
+	void init();
 
 	// My own view functions
 	void draw();
