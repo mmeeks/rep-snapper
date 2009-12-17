@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0110 
+version 1.0109 
 header_name {.h} 
 code_name {.cxx}
 decl {class ModelViewController;} {public global
@@ -11,7 +11,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label CubeView open
-      xywh {63 35 1347 809} type Double box UP_BOX labelsize 12 hide resizable
+      xywh {180 289 1368 809} type Double box UP_BOX labelsize 12 hide resizable
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -24,11 +24,11 @@ class GUI {open
       }
       Fl_Tabs Tabs {
         label {Process:} open
-        xywh {810 20 535 815} align 5
+        xywh {810 20 555 815} align 5
       } {
         Fl_Group {} {
-          label {Input file}
-          xywh {810 40 535 765} hide
+          label {Input file} open
+          xywh {810 40 555 765}
         } {
           Fl_Button {} {
             label {Load STL}
@@ -46,65 +46,12 @@ if(dir.length())
 MVC->ReadStl(dir);
 MVC->redraw();
 };}
-            xywh {815 50 145 25}
+            xywh {825 50 145 25}
           }
           Fl_Light_Button FixSTLerrorsButton {
             label {Fix STL errors}
             callback {MVC->redraw()}
-            xywh {965 50 135 25} value 1 selection_color 63
-          }
-          Fl_Button AutoRotateButton {
-            label {Auto rotate}
-            callback {MVC->OptimizeRotation();
-MVC->CalcBoundingBoxAndZoom();
-MVC->redraw();}
-            xywh {815 250 90 25}
-          }
-          Fl_Button RotateXButton {
-            label {Rotate X}
-            callback {MVC->RotateObject(1,0,0, M_PI/4);
-MVC->CalcBoundingBoxAndZoom();
-MVC->redraw();}
-            xywh {910 250 90 25}
-          }
-          Fl_Button RotateYButton {
-            label {Rotate Y}
-            callback {MVC->RotateObject(0,1,0, M_PI/4);
-MVC->CalcBoundingBoxAndZoom();
-MVC->redraw();}
-            xywh {1005 250 90 25}
-          }
-          Fl_Button RotateZButton {
-            label {Rotate Z}
-            callback {MVC->RotateObject(0,0,1, M_PI/4);
-MVC->CalcBoundingBoxAndZoom();
-MVC->redraw();}
-            xywh {1100 250 90 25}
-          }
-          Fl_Value_Slider PolygonOpasitySlider {
-            label {Polygon opasity}
-            callback {MVC->SetPolygonOpasity(o->value());}
-            xywh {815 360 375 20} type Horizontal align 5 value 0.3 textsize 14
-          }
-          Fl_Light_Button DisplayPolygonsButton {
-            label {Display Polygons}
-            callback {MVC->SetDisplayPolygons(o->value());}
-            xywh {815 280 185 25} selection_color 63
-          }
-          Fl_Light_Button DisplayWireframeButton {
-            label {Display Wireframe}
-            callback {MVC->SetDisplayWireframe(o->value());}
-            xywh {815 310 185 25} selection_color 63
-          }
-          Fl_Light_Button DisplayNormalsButton {
-            label {Display Normals}
-            callback {MVC->SetDisplayNormals(o->value());}
-            xywh {1005 280 185 25} selection_color 63
-          }
-          Fl_Light_Button DisplayEndpointsButton {
-            label {Display Endpoints}
-            callback {MVC->SetDisplayEndpoints(o->value());}
-            xywh {1005 310 185 25} selection_color 63
+            xywh {975 50 135 25} value 1 selection_color 63
           }
           Fl_Button {} {
             label {Save STL}
@@ -122,7 +69,7 @@ if(dir.length())
 MVC->ReadStl(dir);
 MVC->redraw();
 };}
-            xywh {815 80 145 25} deactivate
+            xywh {825 80 145 25} deactivate
           }
           Fl_Button {} {
             label {Scale model}
@@ -140,91 +87,214 @@ if(dir.length())
 MVC->ReadStl(dir);
 MVC->redraw();
 };}
-            xywh {815 110 145 25} deactivate
+            xywh {825 110 145 25} deactivate
+          }
+          Fl_Group {} {
+            label Display open
+            xywh {820 660 535 145} box FLAT_BOX color 39
+          } {
+            Fl_Button AutoRotateButton {
+              label {Auto rotate}
+              callback {MVC->OptimizeRotation();
+MVC->CalcBoundingBoxAndZoom();
+MVC->redraw();}
+              xywh {830 670 125 25}
+            }
+            Fl_Button RotateXButton {
+              label {Rotate X}
+              callback {MVC->RotateObject(1,0,0, M_PI/4);
+MVC->CalcBoundingBoxAndZoom();
+MVC->redraw();}
+              xywh {960 670 125 25}
+            }
+            Fl_Button RotateYButton {
+              label {Rotate Y}
+              callback {MVC->RotateObject(0,1,0, M_PI/4);
+MVC->CalcBoundingBoxAndZoom();
+MVC->redraw();}
+              xywh {1090 670 125 25}
+            }
+            Fl_Button RotateZButton {
+              label {Rotate Z}
+              callback {MVC->RotateObject(0,0,1, M_PI/4);
+MVC->CalcBoundingBoxAndZoom();
+MVC->redraw();}
+              xywh {1220 670 125 25}
+            }
+            Fl_Value_Slider PolygonOpasitySlider {
+              label {Polygon opasity}
+              callback {MVC->SetPolygonOpasity(o->value());}
+              xywh {830 780 515 20} type Horizontal selection_color 2 align 5 value 0.3 textsize 14
+            }
+            Fl_Light_Button DisplayPolygonsButton {
+              label {Display Polygons}
+              callback {MVC->SetDisplayPolygons(o->value());}
+              xywh {830 700 255 25} value 1 selection_color 63
+            }
+            Fl_Light_Button DisplayWireframeButton {
+              label {Display Wireframe}
+              callback {MVC->SetDisplayWireframe(o->value());}
+              xywh {830 730 255 25} selection_color 63
+            }
+            Fl_Light_Button DisplayNormalsButton {
+              label {Display Normals}
+              callback {MVC->SetDisplayNormals(o->value());}
+              xywh {1090 700 255 25} selection_color 63
+            }
+            Fl_Light_Button DisplayEndpointsButton {
+              label {Display Endpoints}
+              callback {MVC->SetDisplayEndpoints(o->value());} selected
+              xywh {1090 730 255 25} value 1 selection_color 63
+            }
           }
         }
         Fl_Group {} {
-          label {Printer definition}
-          xywh {810 40 535 765} hide
+          label {Printer definition} open
+          xywh {815 40 550 765} hide
         } {
-          Fl_Value_Slider ShrinkSlider {
-            label {Extruded material width}
-            callback {MVC->SetShrinkValue(o->value());}
-            xywh {820 245 375 20} type Horizontal align 5 value 0.7 textsize 14
-          }
           Fl_Group {} {
             label {Build volume (mm)} open
-            xywh {820 165 230 40} box UP_BOX deactivate
+            xywh {820 350 230 40} box FLAT_BOX color 39
           } {
             Fl_Value_Input {} {
               label X
-              xywh {840 176 45 23} maximum 5000 step 1 value 200
+              xywh {840 361 45 23} maximum 5000 step 1 value 200
             }
             Fl_Value_Input {} {
               label Y
-              xywh {915 176 45 23} maximum 5000 value 200
+              xywh {915 361 45 23} maximum 5000 value 200
             }
             Fl_Value_Input {} {
               label Z
-              xywh {990 176 45 23} maximum 5000 value 140
+              xywh {990 361 45 23} maximum 5000 value 140
             }
           }
           Fl_Group {} {
             label {Print margin  (mm)} open
-            xywh {1065 165 230 40} box UP_BOX deactivate
+            xywh {1200 350 155 40} box FLAT_BOX color 39
           } {
             Fl_Value_Input {} {
               label X
-              xywh {1085 176 45 23} maximum 5000 step 1 value 200
+              xywh {1225 361 45 23} maximum 100 step 1 value 10
             }
             Fl_Value_Input {} {
               label Y
-              xywh {1160 176 45 23} maximum 5000 value 200
+              xywh {1300 361 45 23} maximum 100 step 1 value 10
             }
-            Fl_Value_Input {} {
-              label Z
-              xywh {1235 176 45 23} maximum 5000 value 140
+          }
+          Fl_Group {} {
+            label VariSpeed open
+            xywh {820 660 535 145} box FLAT_BOX color 39
+          } {
+            Fl_Value_Slider SlowDownFromSlider {
+              label {Slow down printing for segments shorter then (mm)}
+              callback {MVC->SetSlowDownFrom(o->value());}
+              xywh {830 685 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 10 step 0.1 value 10 textsize 14
+            }
+            Fl_Value_Slider SlowDownFactorSlider {
+              label {By a factor of}
+              callback {MVC->SetSlowDownFactor(o->value());}
+              xywh {830 730 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14
+            }
+            Fl_Value_Slider SlowDownSlowestSlider {
+              label {But never slower then  (mm/min)}
+              callback {MVC->SetSlowDownSlowest(o->value());}
+              xywh {830 775 515 20} type Horizontal selection_color 2 align 5 minimum 100 maximum 3000 step 10 value 1000 textsize 14
+            }
+          }
+          Fl_Group {} {
+            label {Print speeds} open
+            xywh {820 540 535 90} box FLAT_BOX color 39
+          } {
+            Fl_Value_Slider PrintSpeedXYSlider {
+              label {Max PrintSpeed XY (mm/minute)}
+              callback {MVC->SetPrintSpeedXY(o->value());}
+              xywh {830 560 515 20} type Horizontal selection_color 2 align 5 maximum 8000 step 100 value 4000 textsize 14
+            }
+            Fl_Value_Slider PrintSpeedZSlider {
+              label {Max PrintSpeed Z (mm/minute)}
+              callback {MVC->SetPrintSpeedZ(o->value());}
+              xywh {830 600 515 20} type Horizontal selection_color 2 align 5 maximum 1000 step 10 value 50 textsize 14
+            }
+          }
+          Fl_Group {} {
+            label Extruder open
+            xywh {815 420 535 90} box FLAT_BOX color 39
+          } {
+            Fl_Value_Slider ShrinkSlider {
+              label {Extruded material width}
+              callback {MVC->SetShrinkValue(o->value());}
+              xywh {825 440 515 20} type Horizontal selection_color 2 align 5 value 0.7 textsize 14
+            }
+            Fl_Value_Slider PlaceholderSlider {
+              label {Something else will come here}
+              xywh {825 480 515 20} type Horizontal selection_color 2 align 5 value 0.7 textsize 14 deactivate
             }
           }
         }
         Fl_Group {} {
-          label Slicing
-          xywh {810 40 535 765} hide
+          label Slicing open
+          xywh {810 40 545 765} hide
         } {
-          Fl_Value_Slider CuttingPlaneSlider {
-            label CuttingPlane
-            callback {MVC->SetCuttingPlaneValue(o->value());}
-            xywh {840 450 375 20} type Horizontal align 5 value 0.9 textsize 14
+          Fl_Group {} {
+            label Infill open
+            xywh {815 590 535 215} box FLAT_BOX color 39
+          } {
+            Fl_Value_Slider RotationSlider {
+              label Rotation
+              callback {MVC->SetInfillRotation(o->value());}
+              xywh {825 615 515 20} type Horizontal selection_color 2 align 5 maximum 360 step 1 value 45 textsize 14
+            }
+            Fl_Value_Slider InfillRotationPrLayerSlider {
+              label {InFill Rotation pr. Layer}
+              callback {MVC->SetInfillRotationPrLayer(o->value());}
+              xywh {825 655 515 20} type Horizontal selection_color 2 align 5 maximum 360 step 1 value 90 textsize 14
+            }
+            Fl_Value_Slider InfillDistanceSlider {
+              label {Infill Distance}
+              callback {MVC->SetInfillDistance(o->value());}
+              xywh {825 695 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14
+            }
+            Fl_Value_Slider LayerThicknessSlider {
+              label {Layer Thickness}
+              callback {MVC->SetLayerThickness(o->value());}
+              xywh {825 735 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 0.4 textsize 14
+            }
+            Fl_Value_Slider OptimizationSlider {
+              label Optimize
+              callback {MVC->SetOptimization(o->value());}
+              xywh {825 775 515 20} type Horizontal selection_color 2 align 5 step 0.001 value 0.001 textsize 14
+            }
           }
-          Fl_Value_Slider RotationSlider {
-            label Rotation
-            callback {MVC->SetInfillRotation(o->value());}
-            xywh {840 490 370 20} type Horizontal align 5 maximum 360 step 1 value 45 textsize 14
-          }
-          Fl_Value_Slider InfillRotationPrLayerSlider {
-            label {InFill Rotation pr. Layer}
-            callback {MVC->SetInfillRotationPrLayer(o->value());}
-            xywh {840 530 370 20} type Horizontal align 5 maximum 360 step 1 value 90 textsize 14
-          }
-          Fl_Value_Slider InfillDistanceSlider {
-            label {Infill Distance}
-            callback {MVC->SetInfillDistance(o->value());}
-            xywh {840 570 370 20} type Horizontal align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14
-          }
-          Fl_Value_Slider LayerThicknessSlider {
-            label {Layer Thickness}
-            callback {MVC->SetLayerThickness(o->value());}
-            xywh {840 610 370 20} type Horizontal align 5 minimum 0.1 maximum 3 step 0.1 value 0.4 textsize 14
-          }
-          Fl_Value_Slider OptimizationSlider {
-            label Optimize
-            callback {MVC->SetOptimization(o->value());}
-            xywh {840 650 370 20} type Horizontal align 5 step 0.001 value 0.001 textsize 14
+          Fl_Group {} {
+            label Preview open
+            xywh {810 470 535 90} box FLAT_BOX color 39
+          } {
+            Fl_Value_Slider CuttingPlaneSlider {
+              label CuttingPlane
+              callback {MVC->SetCuttingPlaneValue(o->value());}
+              xywh {820 490 515 20} type Horizontal align 5 value 0.9 textsize 14
+            }
+            Fl_Light_Button DisplayCuttingPlaneButton {
+              label {Display CuttingPlane}
+              callback {MVC->SetDisplayCuttingPlane(o->value());}
+              xywh {820 525 170 20} selection_color 63
+            }
+            Fl_Light_Button DisplayinFillButton {
+              label {Display inFill}
+              callback {MVC->SetDisplayinFill(o->value());}
+              xywh {995 525 165 20} selection_color 63
+            }
+            Fl_Light_Button DisplayAllLayers {
+              label {Display all layers}
+              callback {MVC->SetDisplayAllLayers(o->value());}
+              xywh {1165 525 170 20} selection_color 63
+            }
           }
         }
         Fl_Group {} {
           label GCode open
-          xywh {810 40 535 795}
+          xywh {820 40 535 795} hide
         } {
           Fl_Button {} {
             label {Load Gcode}
@@ -242,69 +312,103 @@ if(dir.length())
 MVC->ReadGCode(dir);
 MVC->redraw();
 };}
-            xywh {815 80 145 25}
+            xywh {825 80 145 25}
             code0 {\#include <FL/Fl_File_Chooser.H>}
           }
           Fl_Output GCodeLengthText {
-            xywh {965 81 225 24}
+            xywh {975 81 225 24}
           }
           Fl_Value_Slider GCodeDrawStartSlider {
             label {GCode draw start}
             callback {MVC->SetGCodeDrawStart(o->value());}
-            xywh {815 130 370 20} type Horizontal align 5 step 0 textsize 14
+            xywh {825 130 525 20} type Horizontal align 5 step 0 textsize 14
           }
           Fl_Value_Slider GCodeDrawEndSlider {
             label {GCode draw end}
             callback {MVC->SetGCodeDrawEnd(o->value());}
-            xywh {815 165 370 20} type Horizontal align 5 step 0 value 1 textsize 14
+            xywh {825 165 525 20} type Horizontal align 5 step 0 value 1 textsize 14
           }
           Fl_Button {} {
             label {Convert to GCode}
             callback {MVC->ConvertToGCode();}
-            xywh {815 50 145 25}
+            xywh {825 50 145 25}
           }
           Fl_Tabs {} {open
-            xywh {810 190 535 615}
+            xywh {820 190 535 615}
           } {
             Fl_Text_Editor GCodeStart {
               label {Start code}
-              xywh {810 215 530 590} hide
+              xywh {820 215 530 590} hide
               code0 {Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(startbuff);}
             }
             Fl_Text_Editor GCodeLayer {
               label {Next layer}
-              xywh {810 215 530 590} hide
+              xywh {820 215 530 590} hide
               code0 {Fl_Text_Buffer *layerbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(layerbuff);}
             }
             Fl_Text_Editor GCodeEnd {
               label {End code}
-              xywh {810 215 530 590} hide
+              xywh {820 215 530 590} hide
               code0 {Fl_Text_Buffer *endbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(endbuff);}
             }
             Fl_Text_Editor GCodeResult {
-              label Result selected
-              xywh {810 215 530 590}
+              label Result
+              xywh {820 215 530 590}
               code0 {Fl_Text_Buffer *resultbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(resultbuff);}
             }
           }
+          Fl_Button {} {
+            label {Save Gcode}
+            callback {Fl_File_Chooser chooser("\\\\", "*.gcode", Fl_File_Chooser::CREATE, "Choose filename");
+chooser.show();
+while (chooser.shown())
+	Fl::wait();
+if(chooser.value() == 0)
+	return;
+std::string dir(chooser.value());
+
+
+if(dir.length())
+{
+Fl_Text_Buffer *buffer = GCodeResult->buffer();
+
+int result = buffer->savefile(chooser.value());
+
+switch(result)
+{
+case 0:	// Succes
+break;
+case 1:	//Open for write failed
+fl_alert("Error saving GCode file, error creating file.", "OK");
+break;
+case 2: // Partially saved file
+fl_alert("Error saving GCode file, while writing file, is the disk full?.", "OK");
+break;
+}
+
+MVC->redraw();
+};}
+            xywh {1205 80 145 25}
+            code0 {\#include <FL/Fl_File_Chooser.H>}
+          }
         }
         Fl_Group {} {
-          label Debug
-          xywh {810 40 535 765} color 47 labelfont 1 labelcolor 1 hide
+          label Debug open
+          xywh {820 40 535 765} color 47 labelfont 1 labelcolor 1 hide
         } {
           Fl_Value_Slider ExamineSlider {
             label Examine
             callback {MVC->SetExamine(o->value());}
-            xywh {880 760 365 20} type Horizontal align 5 step 0.001 value 0.098 textsize 14
+            xywh {890 760 365 20} type Horizontal align 5 step 0.001 value 0.098 textsize 14
           }
           Fl_Light_Button DisplayDebuginFillButton {
             label {Display Debug inFill}
             callback {MVC->SetDisplayDebuginFill(o->value());}
-            xywh {1075 720 170 20} selection_color 63
+            xywh {1085 720 170 20} selection_color 63
           }
           Fl_Light_Button DisplayDebugButton {
             label Debug
@@ -321,42 +425,27 @@ ExamineSlider->hide();
 
 
 MVC->redraw();}
-            xywh {880 720 190 20} selection_color 63
+            xywh {890 720 190 20} selection_color 63
           }
           Fl_Light_Button DisplayGCodeButton {
             label {Display GCode}
             callback {MVC->SetDisplayGCode(o->value());}
-            xywh {880 540 155 20} value 1 selection_color 63
+            xywh {890 540 155 20} value 1 selection_color 63
           }
           Fl_Light_Button DisplaySTLButton {
             label {Display STL objects}
             callback {MVC->SetDisplaySTL(o->value());}
-            xywh {880 570 155 20} selection_color 63
-          }
-          Fl_Light_Button DisplayCuttingPlaneButton {
-            label {Display CuttingPlane}
-            callback {MVC->SetDisplayCuttingPlane(o->value());}
-            xywh {880 645 155 20} selection_color 63
-          }
-          Fl_Light_Button DisplayinFillButton {
-            label {Display inFill}
-            callback {MVC->SetDisplayinFill(o->value());}
-            xywh {880 670 155 20} selection_color 63
-          }
-          Fl_Light_Button DisplayAllLayers {
-            label {Display all layers}
-            callback {MVC->SetDisplayAllLayers(o->value());}
-            xywh {880 695 155 20} selection_color 63
+            xywh {890 570 155 20} selection_color 63
           }
           Fl_Light_Button DrawVertexNumbersButton {
             label {Draw vertex numbers}
             callback {MVC->SetDrawVertexNumbers(o->value());}
-            xywh {1040 670 155 20} selection_color 63
+            xywh {1050 670 155 20} selection_color 63
           }
           Fl_Light_Button DrawLineNumbersButton {
             label {Draw line numbers}
             callback {MVC->SetDrawLineNumbers(o->value());}
-            xywh {1040 695 155 20} selection_color 63
+            xywh {1050 695 155 20} selection_color 63
           }
         }
       }

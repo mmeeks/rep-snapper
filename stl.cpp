@@ -367,21 +367,19 @@ CuttingPlane::CuttingPlane()
 
 }
 
-void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float z)
+void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float z, float PrintSpeedXY, float PrintSpeedZ, float SlowDownFrom, float SlowDownFactor, float SlowDownSlowest)
 {
 	// Make an array with all lines, then link'em
 	
-	static Vector3f LastPosition= Vector3f(0,0,z);
+	Vector3f LastPosition= Vector3f(0,0,z);
 	
 	Command command;
-
-#define speed 1500;
 
 	// Select Extruder (Reset XY pos?)
 	command.Code = RESET_XY_AXIES;
 	command.where = Vector3f(0,0,LastPosition.z);
 	command.e = 0.0f;					// move
-	command.f = speed;					// Use Max Z speed
+	command.f = PrintSpeedXY;					// Use Max Z speed
 	code.commands.push_back(command);
 	
 
@@ -389,7 +387,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	command.Code = COORDINATEDMOTION;
 	command.where = Vector3f(0,0,z);
 	command.e = 0.0f;					// move
-	command.f = 50;					// Use Max Z speed
+	command.f = PrintSpeedZ;					// Use Max Z speed
 	code.commands.push_back(command);
 
 /*
@@ -437,7 +435,17 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 		command.Code = COORDINATEDMOTION;
 		command.where = lines[thisPoint];
 		command.e = 0.0f;					// move
-		command.f = speed;
+
+
+		float len = (LastPosition - command.where).length();
+		// SlowDown short segments
+		if(len < SlowDownFrom)
+		{
+			float factor = (len/SlowDownFrom)*SlowDownFactor; //Example: 10mm = full speed this is 5mm, so we want it at half speed
+			command.f = MIN(PrintSpeedXY, MAX(PrintSpeedXY*factor, SlowDownSlowest));
+		}
+		else
+			command.f = PrintSpeedXY;
 		code.commands.push_back(command);
 
 		// Find other end of line
@@ -456,12 +464,19 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 
 		command.Code = COORDINATEDMOTION;
 		command.where = lines[thisPoint];
-		float len = (LastPosition - command.where).length();
+		len = (LastPosition - command.where).length();
 		command.e = len;					// draw
-		command.f = speed;
+		// SlowDown short segments
+		if(len < SlowDownFrom)
+			{
+				float factor = (len/SlowDownFrom)*SlowDownFactor; //Example: 10mm = full speed this is 5mm, so we want it at half speed
+				command.f = MIN(PrintSpeedXY, MAX(PrintSpeedXY*factor, SlowDownSlowest));
+			}
+		else
+			command.f = PrintSpeedXY;
 		code.commands.push_back(command);
 
-		LastPosition = lines[thisPoint];
+		LastPosition = command.where;
 		thisPoint = findClosestUnused(lines, LastPosition, used);
 		if(thisPoint != -1)
 			used[thisPoint] = true;

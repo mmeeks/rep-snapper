@@ -201,7 +201,10 @@ void ModelViewController::ConvertToGCode()
 {
 	string GcodeTxt;
 	
-	Fl_Text_Buffer* buffer = gui->GCodeStart->buffer();
+	Fl_Text_Buffer* buffer = gui->GCodeResult->buffer();
+	buffer->remove(0, buffer->length());
+
+	buffer = gui->GCodeStart->buffer();
 	char* pText = buffer->text();
 	string GCodeStart(pText);
 	buffer = gui->GCodeLayer->buffer();

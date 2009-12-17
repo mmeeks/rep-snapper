@@ -35,7 +35,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 		plane.CalcInFill(infill, LayerNr, z);
 
 		// Make the GCode from the plane and the infill
-		plane.MakeGcode(infill, gcode, z);
+		plane.MakeGcode(infill, gcode, z, gcode.PrintSpeedXY, gcode.PrintSpeedZ, gcode.SlowDownFrom, gcode.SlowDownFactor, gcode.SlowDownSlowest);
 		LayerNr++;
 		}
 	z+=zStep;
@@ -51,4 +51,7 @@ void ProcessController::Draw()
 	previewCuttingPlane.Draw(0.5f);
 	gcode.draw();
 }
+void WriteGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, string filename)
+{
 
+}

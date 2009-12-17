@@ -25,13 +25,14 @@ public:
 	void RotateObject(float x, float y, float z, float a) {ProcessControl.stl.RotateObject(Vector3f(x,y,z),a); ProcessControl.stl.MoveIntoPrintingArea(ProcessControl.printer.PrintMargin);}
 
 	// GCode Functions
-	void ReadGCode(string filename) {ProcessControl.gcode.Read(filename);};
+	void ReadGCode(string filename) {ProcessControl.gcode.Read(filename);}
 	void ConvertToGCode();
 	void init();
 
 	// My own view functions
 	void draw();
 	void DrawGridAndAxis();
+	void WriteGCode(string filename) {/*ProcessControl.WriteGCode(filename);*/}
 
 	void CenterView();
 	int  handle(int);
@@ -47,7 +48,14 @@ public:
 	// GCode GUI Values
 	void SetGCodeDrawStart(float val){ProcessControl.gcode.GCodeDrawStart = val; redraw();}
 	void SetGCodeDrawEnd(float val){ProcessControl.gcode.GCodeDrawEnd = val; redraw();}
+	void SetPrintSpeedXY(float val) {ProcessControl.gcode.PrintSpeedXY = val;}
+	void SetPrintSpeedZ(float val) {ProcessControl.gcode.PrintSpeedZ = val;}
 
+	// Slowdown
+	void SetSlowDownFrom(float val) {ProcessControl.gcode.SlowDownFrom = val;}
+	void SetSlowDownFactor(float val) {ProcessControl.gcode.SlowDownFactor = val;}
+	void SetSlowDownSlowest(float val) {ProcessControl.gcode.SlowDownSlowest = val;}
+	
 	// STL GUI Values
 	void SetLayerThickness(float val){ProcessControl.stl.LayerThickness = val; redraw();}
 	void SetCuttingPlaneValue(float val){ProcessControl.stl.CuttingPlaneValue = val; redraw();}

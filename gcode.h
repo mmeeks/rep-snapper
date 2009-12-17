@@ -150,4 +150,12 @@ public:
 	// GUI Stuff
 	float GCodeDrawStart;
 	float GCodeDrawEnd;
+	float PrintSpeedXY;
+	float PrintSpeedZ;
+
+
+	// Slowdown
+	float SlowDownFrom;
+	float SlowDownFactor;
+	float SlowDownSlowest;
 };

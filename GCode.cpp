@@ -19,7 +19,13 @@ GCode::GCode()
 	
 	GCodeDrawStart = 0.0f;;
 	GCodeDrawEnd = 1.0f;
+
+	PrintSpeedXY = 4000.0f;
+	PrintSpeedZ = 50.0f;
 	
+	SlowDownFrom = 10.0f;
+	SlowDownFactor = 2.0f;
+	SlowDownSlowest = 1000.0f;
 }
 
 void GCode::Read(string filename)

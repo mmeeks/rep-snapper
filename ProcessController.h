@@ -20,6 +20,7 @@ public:
 
 	// GCode Functions
 	void ReadGCode(string filename) {gcode.Read(filename);};
+	void WriteGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, string filename);
 
 	// Process functions
 	
