@@ -367,6 +367,63 @@ CuttingPlane::CuttingPlane()
 
 }
 
+void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, GCode &code, float z, float minSpeedXY, float maxSpeedXY, float minSpeedZ, float maxSpeedZ)
+{
+	float len;
+	Vector3f LastPosition = start;
+	Command command;
+	// Make a accelerated line from LastPosition to lines[thisPoint]
+	if(end != start) //If we are going to somewhere else
+		{
+		float speed = minSpeedXY;
+		float deltaSpeed = (maxSpeedXY-minSpeedXY)/accelerationSteps;	// 1000-4000 = 3000/5 = 600
+
+		Vector3f direction = end-start;
+		direction.normalize();
+
+		Vector3f pos = start;
+		UINT currrentAccelerationLevel = accelerationSteps;
+		for(UINT i=0;i<accelerationSteps;i++)
+			{
+			pos = start+(direction*distanceBetweenSpeedSteps*(float)(i+1));	// Go somewhere else, if i==0 we goto same position as where we are
+			float speed = deltaSpeed*(float)i+minSpeedXY;
+
+			float distRemain = (end - pos).length();
+			float distTraveled = (pos-start).length();
+
+			if(distRemain < distTraveled)	// Start deacceleration?
+				{
+				currrentAccelerationLevel = i;
+				break;						// break loop, start deacceleration
+				}
+
+			// store thisPoint
+			command.Code = COORDINATEDMOTION;
+			command.where = pos;
+			float len = (LastPosition - command.where).length();
+			command.e = len*extrusionFactor;		// move or extrude?
+			command.f = speed;
+			code.commands.push_back(command);
+			LastPosition = pos;
+			}
+	// Deacceleration
+		for(int i=currrentAccelerationLevel;i>=0;i--)	// Don't use UINT, it needs to go below zero
+			{
+			pos = end-(direction*distanceBetweenSpeedSteps*(float)i);
+			float speed = deltaSpeed*(float)i+minSpeedXY;
+
+			// store thisPoint
+			command.Code = COORDINATEDMOTION;
+			command.where = pos;
+			float len = (LastPosition - command.where).length();
+			command.e = len*extrusionFactor;		// move or extrude?
+			command.f = speed;
+			code.commands.push_back(command);
+			LastPosition = pos;
+			}
+		}// If we are going to somewhere else
+}
+
 void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float z, float PrintSpeedXY, float PrintSpeedZ, float SlowDownFrom, float SlowDownFactor, float SlowDownSlowest)
 	{
 	// Make an array with all lines, then link'em
@@ -435,113 +492,19 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 		// Make a accelerated line from LastPosition to lines[thisPoint]
 		if(LastPosition != lines[thisPoint]) //If we are going to somewhere else
 			{
-#if 1
-			Vector3f start = LastPosition;
-			Vector3f end = lines[thisPoint];
-			UINT accelerationSteps = 5;
-			float minSpeed = SlowDownSlowest;
-			float maxSpeed = PrintSpeedXY;
-			float speed = minSpeed;
-			float deltaSpeed = (maxSpeed-minSpeed)/accelerationSteps;	// 1000-4000 = 3000/5 = 600
-			float distanceBetweenSpeedSteps = 0.1;	// move 0.1mm at each speed, then accelerate
-
-			Vector3f direction = end-start;
-			direction.normalize();
-
-			Vector3f pos = start;
-			UINT currrentAccelerationLevel = accelerationSteps;
-			for(UINT i=0;i<accelerationSteps;i++)
-				{
-				pos = start+(direction*distanceBetweenSpeedSteps*(float)(i+1));	// Go somewhere else, if i==0 we goto same position as where we are
-				float speed = deltaSpeed*(float)i+minSpeed;
-
-				float distRemain = (end - pos).length();
-				float distTraveled = (pos-start).length();
-
-				if(distRemain < distTraveled)	// Start deacceleration?
-					{
-					currrentAccelerationLevel = i;
-					break;						// break loop, start deacceleration
-					}
-
-				// store thisPoint
-				command.Code = COORDINATEDMOTION;
-				command.where = pos;
-				command.e = 0.0f;					// move, don't extrude
-				float len = (LastPosition - command.where).length();
-				command.f = speed;
-				code.commands.push_back(command);
-				LastPosition = pos;
-				}
-		// Deacceleration
-			for(int i=currrentAccelerationLevel;i>=0;i--)	// Don't use UINT, it needs to go below zero
-				{
-				pos = end-(direction*distanceBetweenSpeedSteps*(float)i);
-				float speed = deltaSpeed*(float)i+minSpeed;
-
-				// store thisPoint
-				command.Code = COORDINATEDMOTION;
-				command.where = pos;
-				command.e = 0.0f;					// move, don't extrude
-				float len = (LastPosition - command.where).length();
-				command.f = speed;
-				code.commands.push_back(command);
-				LastPosition = pos;
-				}
-#else
-			// store thisPoint
-			command.Code = COORDINATEDMOTION;
-			command.where = lines[thisPoint];
-			command.e = 0.0f;					// move
-
-
-			len = (LastPosition - command.where).length();
-			// SlowDown short segments
-			if(len < SlowDownFrom)
-				{
-				float factor = (len/SlowDownFrom)*SlowDownFactor; //Example: 10mm = full speed this is 5mm, so we want it at half speed
-				command.f = MIN(PrintSpeedXY, MAX(PrintSpeedXY*factor, SlowDownSlowest));
-				}
-			else
-				command.f = PrintSpeedXY;
-			code.commands.push_back(command);
-#endif
+			MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], 5, 0.5f, 0.0f, code, z, SlowDownSlowest, PrintSpeedXY, PrintSpeedZ, PrintSpeedZ);
 			}// If we are going to somewhere else
 			
-		
-			
-			
-			
-			
+		LastPosition = lines[thisPoint];
+		used[thisPoint] = true;
 		// Find other end of line
 		thisPoint = findOtherEnd(thisPoint);
 		used[thisPoint] = true;
 		// store thisPoint
 
-		LastPosition = command.where;
+		MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], 5, 0.5f, 1.0f, code, z, SlowDownSlowest, PrintSpeedXY, PrintSpeedZ, PrintSpeedZ);
 
-		//G1 X23.9 Y39.0 Z0.2526 E66.5 F3000.0 ;print segment
-		//G1 X23.9 Y39.7 Z0.2526 E67.2 F3000.0 ;print segment
-		// So, for example, the second line is saying move 0.7mm in Y from where you last were, extrude 0.7mm of filament during the move, and accelerate from 1500.0 mm/minute to 3000.0 mm/minute while doing so. To make a movement at constant speed, simply set the feedrate first:
-		//G1 F1500.0 ;set feedrate
-		//G1 X23.9 Y39.7 Z0.2526 E67.2;print segment
-		// This would do exactly the same movement and extrusion, but at a constant feedrate of 1500 mm/minute. 
-
-		command.Code = COORDINATEDMOTION;
-		command.where = lines[thisPoint];
-		len = (LastPosition - command.where).length();
-		command.e = len;					// draw
-		// SlowDown short segments
-		if(len < SlowDownFrom)
-			{
-			float factor = (len/SlowDownFrom)*SlowDownFactor; //Example: 10mm = full speed this is 5mm, so we want it at half speed
-			command.f = MIN(PrintSpeedXY, MAX(PrintSpeedXY*factor, SlowDownSlowest));
-			}
-		else
-			command.f = PrintSpeedXY;
-		code.commands.push_back(command);
-
-		LastPosition = command.where;
+		LastPosition = lines[thisPoint];
 		thisPoint = findClosestUnused(lines, LastPosition, used);
 		if(thisPoint != -1)
 			used[thisPoint] = true;

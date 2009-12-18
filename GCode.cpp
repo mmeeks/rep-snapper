@@ -227,12 +227,16 @@ void GCode::draw()
 			if(commands[i].e == 0)
 				{
 				glLineWidth(1);
-				glColor3f(0.75f,0.75f,1.0f);
+				float speed = commands[i].f;
+				float luma = speed/PrintSpeedXY*0.5f;
+				glColor3f(luma,luma,luma);
 				}
 			else
 				{
 				glLineWidth(3);
-				glColor3f(0,1,0);
+				float speed = commands[i].f;
+				float luma = speed/PrintSpeedXY;
+				glColor3f(0,luma,0);
 				}
 			glBegin(GL_LINES);
 			Distance += (commands[i].where-pos).length();
@@ -312,16 +316,11 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 			GcodeTxt = GcodeTxt + oss.str();
 			break;
 		case COORDINATEDMOTION:
-			if(commands[i].e == 0)
-				glColor3f(0.75f,0.75f,1.0f);
-			else
-				glColor3f(0,1,0);
 			Distance = (commands[i].where-pos).length();
 			oss  << "G1 X" << commands[i].where.x << " Y" << commands[i].where.y << " Z" << commands[i].where.z << " E" << commands[i].e << " F" << commands[i].f << "\n";
 			GcodeTxt = GcodeTxt + oss.str();
 			break;
 		case RAPIDMOTION:
-			glColor3f(0.75f,0.0f,0.0f);
 			Distance += (commands[i].where-pos).length();
 			oss  << "G0 X" << commands[i].where.x << " Y" << commands[i].where.y << " Z" << commands[i].where.z  << " E0\n";
 			GcodeTxt = GcodeTxt + oss.str();
