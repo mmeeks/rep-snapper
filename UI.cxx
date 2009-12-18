@@ -403,6 +403,7 @@ GUI::GUI() {
     { Tabs = new Fl_Tabs(810, 20, 555, 815, "Process:");
       Tabs->align(FL_ALIGN_TOP_LEFT);
       { Fl_Group* o = new Fl_Group(810, 40, 555, 765, "Input file");
+        o->hide();
         { Fl_Button* o = new Fl_Button(825, 50, 145, 25, "Load STL");
           o->callback((Fl_Callback*)cb_Load);
         } // Fl_Button* o
@@ -669,21 +670,20 @@ GUI::GUI() {
         } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(820, 40, 535, 795, "GCode");
-        o->hide();
+      { Fl_Group* o = new Fl_Group(820, 40, 540, 795, "GCode");
         { Fl_Button* o = new Fl_Button(825, 80, 145, 25, "Load Gcode");
           o->callback((Fl_Callback*)cb_Load1);
         } // Fl_Button* o
         { GCodeLengthText = new Fl_Output(975, 81, 225, 24);
         } // Fl_Output* GCodeLengthText
-        { GCodeDrawStartSlider = new Fl_Value_Slider(825, 130, 525, 20, "GCode draw start");
+        { GCodeDrawStartSlider = new Fl_Value_Slider(825, 130, 420, 20, "GCode draw start");
           GCodeDrawStartSlider->type(1);
           GCodeDrawStartSlider->step(0);
           GCodeDrawStartSlider->textsize(14);
           GCodeDrawStartSlider->callback((Fl_Callback*)cb_GCodeDrawStartSlider);
           GCodeDrawStartSlider->align(FL_ALIGN_TOP_LEFT);
         } // Fl_Value_Slider* GCodeDrawStartSlider
-        { GCodeDrawEndSlider = new Fl_Value_Slider(825, 165, 525, 20, "GCode draw end");
+        { GCodeDrawEndSlider = new Fl_Value_Slider(825, 165, 420, 20, "GCode draw end");
           GCodeDrawEndSlider->type(1);
           GCodeDrawEndSlider->step(0);
           GCodeDrawEndSlider->value(1);

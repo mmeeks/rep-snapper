@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109 
+version 1.0110 
 header_name {.h} 
 code_name {.cxx}
 decl {class ModelViewController;} {public global
@@ -11,7 +11,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {180 289 1368 809} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
+      xywh {68 53 1368 809} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -28,7 +28,7 @@ class GUI {open
       } {
         Fl_Group {} {
           label {Input file} open
-          xywh {810 40 555 765}
+          xywh {810 40 555 765} hide
         } {
           Fl_Button {} {
             label {Load STL}
@@ -294,7 +294,7 @@ MVC->redraw();}
         }
         Fl_Group {} {
           label GCode open
-          xywh {820 40 535 795} hide
+          xywh {820 40 540 795}
         } {
           Fl_Button {} {
             label {Load Gcode}
@@ -320,13 +320,13 @@ MVC->redraw();
           }
           Fl_Value_Slider GCodeDrawStartSlider {
             label {GCode draw start}
-            callback {MVC->SetGCodeDrawStart(o->value());}
-            xywh {825 130 525 20} type Horizontal align 5 step 0 textsize 14
+            callback {MVC->SetGCodeDrawStart(o->value());} selected
+            xywh {825 130 420 20} type Horizontal align 5 step 0 textsize 14
           }
           Fl_Value_Slider GCodeDrawEndSlider {
             label {GCode draw end}
             callback {MVC->SetGCodeDrawEnd(o->value());}
-            xywh {825 165 525 20} type Horizontal align 5 step 0 value 1 textsize 14
+            xywh {825 165 420 20} type Horizontal align 5 step 0 value 1 textsize 14
           }
           Fl_Button {} {
             label {Convert to GCode}
@@ -461,7 +461,6 @@ MVC->init();
 MVC->ReadStl("C:/\#Downloads/Reprap Exchange/N_DSL-Stylus.stl");
 //MVC->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
 MVC->draw();
-MVC->redraw();} {selected
-    }
+MVC->redraw();} {}
   }
 } 

@@ -301,7 +301,7 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 	float Distance = 0;
 	std::stringstream oss;
 
-	GcodeTxt = GcodeTxt + GcodeStart;
+	GcodeTxt += GcodeStart;
 
 	for(UINT i=0;i<commands.size() ;i++)
 	{
@@ -309,26 +309,26 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 		switch(commands[i].Code)
 		{
 		case RESET_XY_AXIES:
-			GcodeTxt = GcodeTxt + GcodeLayer;
+			GcodeTxt += GcodeLayer;
 			break;
 		case SELECTEXTRUDER:
 			oss  << "T0\n";
-			GcodeTxt = GcodeTxt + oss.str();
+			GcodeTxt += oss.str();
 			break;
 		case COORDINATEDMOTION:
 			Distance = (commands[i].where-pos).length();
 			oss  << "G1 X" << commands[i].where.x << " Y" << commands[i].where.y << " Z" << commands[i].where.z << " E" << commands[i].e << " F" << commands[i].f << "\n";
-			GcodeTxt = GcodeTxt + oss.str();
+			GcodeTxt += oss.str();
 			break;
 		case RAPIDMOTION:
 			Distance += (commands[i].where-pos).length();
 			oss  << "G0 X" << commands[i].where.x << " Y" << commands[i].where.y << " Z" << commands[i].where.z  << " E0\n";
-			GcodeTxt = GcodeTxt + oss.str();
+			GcodeTxt += oss.str();
 			break;
 		}
 		pos = commands[i].where;
 	}
 
-	GcodeTxt = GcodeTxt + GcodeEnd;
+	GcodeTxt += GcodeEnd;
 }
 
