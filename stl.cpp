@@ -435,10 +435,10 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 		// Make a accelerated line from LastPosition to lines[thisPoint]
 		if(LastPosition != lines[thisPoint]) //If we are going to somewhere else
 			{
-#if 0
+#if 1
 			Vector3f start = LastPosition;
 			Vector3f end = lines[thisPoint];
-			float accelerationSteps = 5;
+			UINT accelerationSteps = 5;
 			float minSpeed = SlowDownSlowest;
 			float maxSpeed = PrintSpeedXY;
 			float speed = minSpeed;
@@ -448,11 +448,11 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 			Vector3f direction = end-start;
 			direction.normalize();
 
-			bool moveAtMaxSpeed = true;
 			Vector3f pos = start;
+			UINT currrentAccelerationLevel = accelerationSteps;
 			for(UINT i=0;i<accelerationSteps;i++)
 				{
-				pos = start+(direction*distanceBetweenSpeedSteps*(float)i);
+				pos = start+(direction*distanceBetweenSpeedSteps*(float)(i+1));	// Go somewhere else, if i==0 we goto same position as where we are
 				float speed = deltaSpeed*(float)i+minSpeed;
 
 				float distRemain = (end - pos).length();
@@ -460,9 +460,24 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 
 				if(distRemain < distTraveled)	// Start deacceleration?
 					{
-					moveAtMaxSpeed = false;		// There shall be no full-speed move
-					break;						// break loop
+					currrentAccelerationLevel = i;
+					break;						// break loop, start deacceleration
 					}
+
+				// store thisPoint
+				command.Code = COORDINATEDMOTION;
+				command.where = pos;
+				command.e = 0.0f;					// move, don't extrude
+				float len = (LastPosition - command.where).length();
+				command.f = speed;
+				code.commands.push_back(command);
+				LastPosition = pos;
+				}
+		// Deacceleration
+			for(int i=currrentAccelerationLevel;i>=0;i--)	// Don't use UINT, it needs to go below zero
+				{
+				pos = end-(direction*distanceBetweenSpeedSteps*(float)i);
+				float speed = deltaSpeed*(float)i+minSpeed;
 
 				// store thisPoint
 				command.Code = COORDINATEDMOTION;
@@ -492,6 +507,12 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 			code.commands.push_back(command);
 #endif
 			}// If we are going to somewhere else
+			
+		
+			
+			
+			
+			
 		// Find other end of line
 		thisPoint = findOtherEnd(thisPoint);
 		used[thisPoint] = true;

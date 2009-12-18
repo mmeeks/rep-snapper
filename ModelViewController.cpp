@@ -115,7 +115,7 @@ void ModelViewController::draw()
 	/*--------------- Exit -----------------*/
 	glPopMatrix();													// NEW: Unapply Dynamic Transform
 	glFlush ();														// Flush The GL Rendering Pipeline
-	swap_buffers();
+//	swap_buffers();
 }
 
 
