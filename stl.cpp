@@ -431,6 +431,46 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	
 	while(thisPoint != -1)
 		{
+		// Make a accelerated line from LastPosition to lines[thisPoint]
+
+			Vector3f start = LastPosition;
+			Vector3f end = lines[thisPoint];
+			float accelerationSteps = 5;
+			float minSpeed = SlowDownSlowest;
+			float maxSpeed = PrintSpeedXY;
+			float speed = minSpeed;
+			float deltaSpeed = (maxSpeed-minSpeed)/accelerationSteps;	// 1000-4000 = 3000/5 = 600
+			float distanceBetweenSpeedSteps = 0.1;	// move 0.1mm at each speed, then accelerate
+
+			Vector3f direction = end-start;
+			direction.normalize();
+
+			bool moveAtMaxSpeed = true;
+			Vector3f pos = start;
+			for(UINT i=0;i<accelerationSteps;i++)
+			{
+				pos = start+(direction*distanceBetweenSpeedSteps*(float)i);
+				float speed = deltaSpeed*(float)i+minSpeed;
+
+				float distRemain = (end - pos).length();
+				float distTraveled = (pos-start).length();
+
+				if(distRemain < distTraveled)	// Start deacceleration?
+				{
+					moveAtMaxSpeed = false;		// There shall be no full-speed move
+					break;						// break loop
+				}
+
+				// store thisPoint
+				command.Code = COORDINATEDMOTION;
+				command.where = pos;
+				command.e = 0.0f;					// move, don't extrude
+				float len = (LastPosition - command.where).length();
+				command.f = speed;
+				code.commands.push_back(command);
+				LastPosition = pos;
+			}
+
 		// store thisPoint
 		command.Code = COORDINATEDMOTION;
 		command.where = lines[thisPoint];

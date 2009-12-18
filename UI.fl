@@ -10,8 +10,8 @@ class GUI {open
   Function {GUI()} {open
   } {
     Fl_Window mainWindow {
-      label CubeView open
-      xywh {180 289 1368 809} type Double box UP_BOX labelsize 12 hide resizable
+      label {RepSnapper by Kulitorum www.kulitorum.com} open
+      xywh {180 289 1368 809} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -143,7 +143,7 @@ MVC->redraw();}
             }
             Fl_Light_Button DisplayEndpointsButton {
               label {Display Endpoints}
-              callback {MVC->SetDisplayEndpoints(o->value());} selected
+              callback {MVC->SetDisplayEndpoints(o->value());}
               xywh {1090 730 255 25} value 1 selection_color 63
             }
           }
@@ -453,11 +453,15 @@ MVC->redraw();}
   }
   Function {show(int argc, char **argv)} {open
   } {
-    code {mainWindow->show(argc, argv);
+    code {Fl::visual( FL_DOUBLE | FL_RGB);
+Fl::scheme("plastic");
+mainWindow->show(argc, argv);
 //MVC->ReadStl("C:/box.stl");
 MVC->init();
 MVC->ReadStl("C:/\#Downloads/Reprap Exchange/N_DSL-Stylus.stl");
 //MVC->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
-MVC->redraw();} {}
+MVC->draw();
+MVC->redraw();} {selected
+    }
   }
 } 

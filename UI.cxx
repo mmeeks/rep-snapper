@@ -383,8 +383,10 @@ void GUI::cb_DrawLineNumbersButton(Fl_Light_Button* o, void* v) {
 }
 
 GUI::GUI() {
-  { mainWindow = new Fl_Double_Window(1368, 809, "CubeView");
+  { mainWindow = new Fl_Double_Window(1368, 809, "RepSnapper by Kulitorum www.kulitorum.com");
     mainWindow->box(FL_UP_BOX);
+    mainWindow->color((Fl_Color)FL_FOREGROUND_COLOR);
+    mainWindow->selection_color((Fl_Color)FL_FOREGROUND_COLOR);
     mainWindow->labelsize(12);
     mainWindow->user_data((void*)(this));
     { MVC = new ModelViewController(5, 5, 800, 800, "An instace of ModelViewController");
@@ -767,10 +769,13 @@ GUI::GUI() {
 }
 
 void GUI::show(int argc, char **argv) {
-  mainWindow->show(argc, argv);
+  Fl::visual( FL_DOUBLE | FL_RGB);
+Fl::scheme("plastic");
+mainWindow->show(argc, argv);
 //MVC->ReadStl("C:/box.stl");
 MVC->init();
 MVC->ReadStl("C:/#Downloads/Reprap Exchange/N_DSL-Stylus.stl");
 //MVC->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
+MVC->draw();
 MVC->redraw();
 }
