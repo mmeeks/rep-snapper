@@ -368,11 +368,11 @@ CuttingPlane::CuttingPlane()
 }
 
 void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float z, float PrintSpeedXY, float PrintSpeedZ, float SlowDownFrom, float SlowDownFactor, float SlowDownSlowest)
-{
+	{
 	// Make an array with all lines, then link'em
-	
+
 	Vector3f LastPosition= Vector3f(0,0,z);
-	
+
 	Command command;
 
 	// Select Extruder (Reset XY pos?)
@@ -381,7 +381,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	command.e = 0.0f;					// move
 	command.f = PrintSpeedXY;					// Use Max Z speed
 	code.commands.push_back(command);
-	
+
 
 	// Move Z axis
 	command.Code = COORDINATEDMOTION;
@@ -390,32 +390,32 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	command.f = PrintSpeedZ;					// Use Max Z speed
 	code.commands.push_back(command);
 
-/*
+	/*
 	M107 ;cooler off
 	G4 P20 ;delay
 	G1 Z0.0 ;z move
 	T0; select new extruder
-*/
+	*/
 
 	std::vector<Vector3f> lines;
-	
+
 	for(UINT i=0;i<infill.size();i++)
 		lines.push_back(Vector3f(infill[i].x, infill[i].y, z));
 
 	// Copy polygons
 	if(offsetPolygons.size() != 0)
-	{
-		for(UINT p=0;p<offsetPolygons.size();p++)
 		{
-			for(UINT i=0;i<offsetPolygons[p].points.size();i++)
+		for(UINT p=0;p<offsetPolygons.size();p++)
 			{
+			for(UINT i=0;i<offsetPolygons[p].points.size();i++)
+				{
 				Vector2f P3 = offsetVertices[offsetPolygons[p].points[i]];
 				Vector2f P4 = offsetVertices[offsetPolygons[p].points[(i+1)%offsetPolygons[p].points.size()]];
 				lines.push_back(Vector3f(P3.x, P3.y, z));
 				lines.push_back(Vector3f(P4.x, P4.y, z));
+				}
 			}
 		}
-	}
 	// Find closest point to last point
 
 	std::vector<bool> used;
@@ -428,11 +428,14 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	if(thisPoint == -1)	// No lines = no gcode
 		return;
 	used[thisPoint] = true;
-	
+
 	while(thisPoint != -1)
 		{
+		float len;
 		// Make a accelerated line from LastPosition to lines[thisPoint]
-
+		if(LastPosition != lines[thisPoint]) //If we are going to somewhere else
+			{
+#if 0
 			Vector3f start = LastPosition;
 			Vector3f end = lines[thisPoint];
 			float accelerationSteps = 5;
@@ -448,7 +451,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 			bool moveAtMaxSpeed = true;
 			Vector3f pos = start;
 			for(UINT i=0;i<accelerationSteps;i++)
-			{
+				{
 				pos = start+(direction*distanceBetweenSpeedSteps*(float)i);
 				float speed = deltaSpeed*(float)i+minSpeed;
 
@@ -456,10 +459,10 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 				float distTraveled = (pos-start).length();
 
 				if(distRemain < distTraveled)	// Start deacceleration?
-				{
+					{
 					moveAtMaxSpeed = false;		// There shall be no full-speed move
 					break;						// break loop
-				}
+					}
 
 				// store thisPoint
 				command.Code = COORDINATEDMOTION;
@@ -469,25 +472,26 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 				command.f = speed;
 				code.commands.push_back(command);
 				LastPosition = pos;
-			}
+				}
+#else
+			// store thisPoint
+			command.Code = COORDINATEDMOTION;
+			command.where = lines[thisPoint];
+			command.e = 0.0f;					// move
 
-		// store thisPoint
-		command.Code = COORDINATEDMOTION;
-		command.where = lines[thisPoint];
-		command.e = 0.0f;					// move
 
-
-		float len = (LastPosition - command.where).length();
-		// SlowDown short segments
-		if(len < SlowDownFrom)
-		{
-			float factor = (len/SlowDownFrom)*SlowDownFactor; //Example: 10mm = full speed this is 5mm, so we want it at half speed
-			command.f = MIN(PrintSpeedXY, MAX(PrintSpeedXY*factor, SlowDownSlowest));
-		}
-		else
-			command.f = PrintSpeedXY;
-		code.commands.push_back(command);
-
+			len = (LastPosition - command.where).length();
+			// SlowDown short segments
+			if(len < SlowDownFrom)
+				{
+				float factor = (len/SlowDownFrom)*SlowDownFactor; //Example: 10mm = full speed this is 5mm, so we want it at half speed
+				command.f = MIN(PrintSpeedXY, MAX(PrintSpeedXY*factor, SlowDownSlowest));
+				}
+			else
+				command.f = PrintSpeedXY;
+			code.commands.push_back(command);
+#endif
+			}// If we are going to somewhere else
 		// Find other end of line
 		thisPoint = findOtherEnd(thisPoint);
 		used[thisPoint] = true;
@@ -509,8 +513,8 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 		// SlowDown short segments
 		if(len < SlowDownFrom)
 			{
-				float factor = (len/SlowDownFrom)*SlowDownFactor; //Example: 10mm = full speed this is 5mm, so we want it at half speed
-				command.f = MIN(PrintSpeedXY, MAX(PrintSpeedXY*factor, SlowDownSlowest));
+			float factor = (len/SlowDownFrom)*SlowDownFactor; //Example: 10mm = full speed this is 5mm, so we want it at half speed
+			command.f = MIN(PrintSpeedXY, MAX(PrintSpeedXY*factor, SlowDownSlowest));
 			}
 		else
 			command.f = PrintSpeedXY;
@@ -521,7 +525,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 		if(thisPoint != -1)
 			used[thisPoint] = true;
 		}
-}
+	}
 
 
 void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
