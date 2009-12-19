@@ -1,3 +1,16 @@
+/* -------------------------------------------------------- *
+*
+* stl.cpp
+*
+* Copyright 2009+ Michael Holm - www.kulitorum.com
+*
+* This file is part of RepSnapper and is made available under
+* the terms of the GNU General Public License, version 2, or at your
+* option, any later version, incorporated herein by reference.
+*
+* ------------------------------------------------------------------------- */
+
+
 #include "stdafx.h"
 
 #include "stl.h"
