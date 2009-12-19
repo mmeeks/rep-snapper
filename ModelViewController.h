@@ -48,14 +48,17 @@ public:
 	// GCode GUI Values
 	void SetGCodeDrawStart(float val){ProcessControl.gcode.GCodeDrawStart = val; redraw();}
 	void SetGCodeDrawEnd(float val){ProcessControl.gcode.GCodeDrawEnd = val; redraw();}
-	void SetPrintSpeedXY(float val) {ProcessControl.gcode.PrintSpeedXY = val;}
-	void SetPrintSpeedZ(float val) {ProcessControl.gcode.PrintSpeedZ = val;}
-
-	// Slowdown
-	void SetSlowDownFrom(float val) {ProcessControl.gcode.SlowDownFrom = val;}
-	void SetSlowDownFactor(float val) {ProcessControl.gcode.SlowDownFactor = val;}
-	void SetSlowDownSlowest(float val) {ProcessControl.gcode.SlowDownSlowest = val;}
+	void SetMinPrintSpeedXY(float val) {ProcessControl.gcode.MinPrintSpeedXY = val;}
+	void SetMaxPrintSpeedXY(float val) {ProcessControl.gcode.MaxPrintSpeedXY = val;}
+	void SetMinPrintSpeedZ(float val) {ProcessControl.gcode.MinPrintSpeedZ = val;}
+	void SetMaxPrintSpeedZ(float val) {ProcessControl.gcode.MaxPrintSpeedZ = val;}
+	void NumAccelerationSteps(float val) {ProcessControl.gcode.accelerationSteps = val;}
+	void SetDistancePrAccelerationStep(float val) {ProcessControl.gcode.distanceBetweenSpeedSteps = val;}
+	void SetExtrusionFactor(float val) {ProcessControl.gcode.extrusionFactor = val;}
 	
+	
+	
+
 	// STL GUI Values
 	void SetLayerThickness(float val){ProcessControl.stl.LayerThickness = val; redraw();}
 	void SetCuttingPlaneValue(float val){ProcessControl.stl.CuttingPlaneValue = val; redraw();}

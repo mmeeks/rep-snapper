@@ -83,30 +83,35 @@ private:
   void cb_DisplayEndpointsButton_i(Fl_Light_Button*, void*);
   static void cb_DisplayEndpointsButton(Fl_Light_Button*, void*);
 public:
-  Fl_Value_Slider *SlowDownFromSlider;
+  Fl_Value_Slider *NumAccelerationStepsSlider;
 private:
-  void cb_SlowDownFromSlider_i(Fl_Value_Slider*, void*);
-  static void cb_SlowDownFromSlider(Fl_Value_Slider*, void*);
+  void cb_NumAccelerationStepsSlider_i(Fl_Value_Slider*, void*);
+  static void cb_NumAccelerationStepsSlider(Fl_Value_Slider*, void*);
 public:
-  Fl_Value_Slider *SlowDownFactorSlider;
+  Fl_Value_Slider *DistancePrAccelerationStep;
 private:
-  void cb_SlowDownFactorSlider_i(Fl_Value_Slider*, void*);
-  static void cb_SlowDownFactorSlider(Fl_Value_Slider*, void*);
+  void cb_DistancePrAccelerationStep_i(Fl_Value_Slider*, void*);
+  static void cb_DistancePrAccelerationStep(Fl_Value_Slider*, void*);
 public:
-  Fl_Value_Slider *SlowDownSlowestSlider;
+  Fl_Value_Slider *MaxPrintSpeedXYSlider;
 private:
-  void cb_SlowDownSlowestSlider_i(Fl_Value_Slider*, void*);
-  static void cb_SlowDownSlowestSlider(Fl_Value_Slider*, void*);
+  void cb_MaxPrintSpeedXYSlider_i(Fl_Value_Slider*, void*);
+  static void cb_MaxPrintSpeedXYSlider(Fl_Value_Slider*, void*);
 public:
-  Fl_Value_Slider *PrintSpeedXYSlider;
+  Fl_Value_Slider *MinPrintSpeedZSlider;
 private:
-  void cb_PrintSpeedXYSlider_i(Fl_Value_Slider*, void*);
-  static void cb_PrintSpeedXYSlider(Fl_Value_Slider*, void*);
+  void cb_MinPrintSpeedZSlider_i(Fl_Value_Slider*, void*);
+  static void cb_MinPrintSpeedZSlider(Fl_Value_Slider*, void*);
 public:
-  Fl_Value_Slider *PrintSpeedZSlider;
+  Fl_Value_Slider *MinPrintSpeedXYSlider;
 private:
-  void cb_PrintSpeedZSlider_i(Fl_Value_Slider*, void*);
-  static void cb_PrintSpeedZSlider(Fl_Value_Slider*, void*);
+  void cb_MinPrintSpeedXYSlider_i(Fl_Value_Slider*, void*);
+  static void cb_MinPrintSpeedXYSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *MaxPrintSpeedZSlider;
+private:
+  void cb_MaxPrintSpeedZSlider_i(Fl_Value_Slider*, void*);
+  static void cb_MaxPrintSpeedZSlider(Fl_Value_Slider*, void*);
 public:
   Fl_Value_Slider *ShrinkSlider;
 private:
@@ -114,6 +119,10 @@ private:
   static void cb_ShrinkSlider(Fl_Value_Slider*, void*);
 public:
   Fl_Value_Slider *PlaceholderSlider;
+private:
+  void cb_PlaceholderSlider_i(Fl_Value_Slider*, void*);
+  static void cb_PlaceholderSlider(Fl_Value_Slider*, void*);
+public:
   Fl_Value_Slider *RotationSlider;
 private:
   void cb_RotationSlider_i(Fl_Value_Slider*, void*);

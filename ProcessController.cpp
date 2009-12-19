@@ -35,7 +35,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 		plane.CalcInFill(infill, LayerNr, z);
 
 		// Make the GCode from the plane and the infill
-		plane.MakeGcode(infill, gcode, z, gcode.PrintSpeedXY, gcode.PrintSpeedZ, gcode.SlowDownFrom, gcode.SlowDownFactor, gcode.SlowDownSlowest);
+		plane.MakeGcode(infill, gcode, z, gcode.MinPrintSpeedXY, gcode.MaxPrintSpeedXY, gcode.MinPrintSpeedZ, gcode.MaxPrintSpeedZ, gcode.accelerationSteps, gcode.distanceBetweenSpeedSteps, gcode.extrusionFactor);
 		LayerNr++;
 		}
 	z+=zStep;

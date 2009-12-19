@@ -20,12 +20,15 @@ GCode::GCode()
 	GCodeDrawStart = 0.0f;;
 	GCodeDrawEnd = 1.0f;
 
-	PrintSpeedXY = 4000.0f;
-	PrintSpeedZ = 50.0f;
-	
-	SlowDownFrom = 10.0f;
-	SlowDownFactor = 2.0f;
-	SlowDownSlowest = 1000.0f;
+	MinPrintSpeedXY = 1000.0f;
+	MaxPrintSpeedXY = 4000.0f;
+	MinPrintSpeedZ = 50.0f;
+	MaxPrintSpeedZ = 150.0f;
+
+	accelerationSteps = 5;
+	distanceBetweenSpeedSteps= 0.5f;
+	extrusionFactor = 1.0f;
+
 }
 
 void GCode::Read(string filename)
@@ -228,14 +231,14 @@ void GCode::draw()
 				{
 				glLineWidth(1);
 				float speed = commands[i].f;
-				float luma = speed/PrintSpeedXY*0.5f;
+				float luma = speed/MaxPrintSpeedXY*0.5f;
 				glColor3f(luma,luma,luma);
 				}
 			else
 				{
 				glLineWidth(3);
 				float speed = commands[i].f;
-				float luma = speed/PrintSpeedXY;
+				float luma = speed/MaxPrintSpeedXY;
 				glColor3f(0,luma,0);
 				}
 			glBegin(GL_LINES);

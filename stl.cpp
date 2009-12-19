@@ -424,8 +424,8 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSte
 		}// If we are going to somewhere else
 }
 
-void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float z, float PrintSpeedXY, float PrintSpeedZ, float SlowDownFrom, float SlowDownFactor, float SlowDownSlowest)
-	{
+void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor)
+{
 	// Make an array with all lines, then link'em
 
 	Vector3f LastPosition= Vector3f(0,0,z);
@@ -436,7 +436,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	command.Code = RESET_XY_AXIES;
 	command.where = Vector3f(0,0,LastPosition.z);
 	command.e = 0.0f;					// move
-	command.f = PrintSpeedXY;					// Use Max Z speed
+	command.f = MaxPrintSpeedXY;					// Use Max Z speed
 	code.commands.push_back(command);
 
 
@@ -444,7 +444,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	command.Code = COORDINATEDMOTION;
 	command.where = Vector3f(0,0,z);
 	command.e = 0.0f;					// move
-	command.f = PrintSpeedZ;					// Use Max Z speed
+	command.f = MinPrintSpeedZ;					// Use Max Z speed
 	code.commands.push_back(command);
 
 	/*
@@ -492,7 +492,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 		// Make a accelerated line from LastPosition to lines[thisPoint]
 		if(LastPosition != lines[thisPoint]) //If we are going to somewhere else
 			{
-			MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], 5, 0.5f, 0.0f, code, z, SlowDownSlowest, PrintSpeedXY, PrintSpeedZ, PrintSpeedZ);
+			MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], accelerationSteps,distanceBetweenSpeedSteps, 0.0f, code, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ);
 			}// If we are going to somewhere else
 			
 		LastPosition = lines[thisPoint];
@@ -502,14 +502,14 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 		used[thisPoint] = true;
 		// store thisPoint
 
-		MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], 5, 0.5f, 1.0f, code, z, SlowDownSlowest, PrintSpeedXY, PrintSpeedZ, PrintSpeedZ);
+		MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], accelerationSteps, distanceBetweenSpeedSteps, extrusionFactor, code, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ);
 
 		LastPosition = lines[thisPoint];
 		thisPoint = findClosestUnused(lines, LastPosition, used);
 		if(thisPoint != -1)
 			used[thisPoint] = true;
 		}
-	}
+}
 
 
 void STL::CalcCuttingPlane(float where, CuttingPlane &plane)

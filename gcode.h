@@ -150,12 +150,12 @@ public:
 	// GUI Stuff
 	float GCodeDrawStart;
 	float GCodeDrawEnd;
-	float PrintSpeedXY;
-	float PrintSpeedZ;
+	float MinPrintSpeedXY;
+	float MaxPrintSpeedXY;
+	float MinPrintSpeedZ;
+	float MaxPrintSpeedZ;
 
-
-	// Slowdown
-	float SlowDownFrom;
-	float SlowDownFactor;
-	float SlowDownSlowest;
+	UINT accelerationSteps;
+	float distanceBetweenSpeedSteps;
+	float extrusionFactor;
 };
