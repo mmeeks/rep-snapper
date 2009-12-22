@@ -67,8 +67,20 @@ STL::STL()
 	Min.x = Min.y = Min.z = 0.0f;
 	Max.x = Max.y = Max.z = 200.0f;
 	
-	CalcBoundingBoxAndZoom();
+	InfillDistance = 2.0f;
+	InfillRotation = 45.0f;
+	InfillRotationPrLayer = 90.0f;
+	Optimization = 0.02f;
+	Examine = 0.5f;
+	ShrinkValue = 0.35f;
 
+	DisplayDebuginFill = false;
+	DisplayDebug = false;
+	DisplayCuttingPlane = true;
+	DrawVertexNumbers=false;
+	DrawLineNumbers=false;
+
+	CalcBoundingBoxAndZoom();
 }
 
 bool STL::Read(string filename, const Vector3f &PrintingMargin)
@@ -246,22 +258,31 @@ void STL::draw()
 		CalcCuttingPlane(z, plane);	// output is alot of un-connected line segments with individual vertices
 
 		float hackedZ = z;
-		while(plane.LinkSegments(hackedZ) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
+		while(plane.LinkSegments(hackedZ, ShrinkValue, Optimization, DisplayCuttingPlane) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
 			{										// This happens when there's triangles missing in the input STL
 			hackedZ+= 0.1f;
 			plane.polygons.clear();
 			CalcCuttingPlane(hackedZ, plane);	// output is alot of un-connected line segments with individual vertices
 			}
 
-		plane.Draw(z);
+		plane.Draw(z, DrawVertexNumbers, DrawLineNumbers);
 
 		// inFill
 		vector<Vector2f> infill;
 
-		plane.CalcInFill(infill, LayerNr, z);
-
 		if(DisplayinFill)
 			{
+			CuttingPlane infillCuttingPlane;
+			infillCuttingPlane = plane;
+			infillCuttingPlane.polygons = infillCuttingPlane.offsetPolygons;
+			infillCuttingPlane.vertices = infillCuttingPlane.offsetVertices;
+			infillCuttingPlane.offsetPolygons.clear();
+			infillCuttingPlane.offsetVertices.clear();
+			if(ShellOnly == false)
+				{
+				infillCuttingPlane.Shrink(ShrinkValue, Optimization, DisplayCuttingPlane);
+				infillCuttingPlane.CalcInFill(infill, LayerNr, z, InfillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
+				}
 			glColor4f(1,1,0,1);
 			glPointSize(5);
 			glBegin(GL_LINES);
@@ -363,21 +384,6 @@ UINT findOtherEnd(UINT p)
 
 CuttingPlane::CuttingPlane()
 {
-
-	// GUI values
-	InfillDistance = 2.0f;
-	InfillRotation = 45.0f;
-	InfillRotationPrLayer = 90.0f;
-	Optimization = 0.02f;
-	Examine = 0.5f;
-	ShrinkValue = 0.7f;
-
-	DisplayDebuginFill = false;
-	DisplayDebug = false;
-	DisplayCuttingPlane = false;
-	DrawVertexNumbers = false;
-	DrawLineNumbers = false;
-
 }
 
 void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, GCode &code, float z, float minSpeedXY, float maxSpeedXY, float minSpeedZ, float maxSpeedZ)
@@ -385,6 +391,7 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSte
 	float len;
 	Vector3f LastPosition = start;
 	Command command;
+	float accumulatedE = 0;
 	// Make a accelerated line from LastPosition to lines[thisPoint]
 	if(end != start) //If we are going to somewhere else
 		{
@@ -413,8 +420,18 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSte
 			// store thisPoint
 			command.Code = COORDINATEDMOTION;
 			command.where = pos;
-			float len = (LastPosition - command.where).length();
-			command.e = len*extrusionFactor;		// move or extrude?
+			float extrudedMaterial = (LastPosition - command.where).length()*extrusionFactor;
+			if(extrudedMaterial < 1.0f)
+				{
+				accumulatedE += extrudedMaterial;		// Gather untill we have a real amount
+				extrudedMaterial = 0.0f;				// and don't extrude anything this move (ooze takes care of it)
+				if(accumulatedE > 1.0f)					// Unless we are ready to extrude again
+					{
+					extrudedMaterial = (float)(int)accumulatedE;	// Extrude the int value of the collected material
+					accumulatedE -= extrudedMaterial;				// and remove it from the buffer
+					}
+				}
+			command.e = extrudedMaterial;		// move or extrude?
 			command.f = speed;
 			code.commands.push_back(command);
 			LastPosition = pos;
@@ -437,7 +454,7 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSte
 		}// If we are going to somewhere else
 }
 
-void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor)
+void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, bool UseAcceleration)
 {
 	// Make an array with all lines, then link'em
 
@@ -505,7 +522,17 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 		// Make a accelerated line from LastPosition to lines[thisPoint]
 		if(LastPosition != lines[thisPoint]) //If we are going to somewhere else
 			{
-			MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], accelerationSteps,distanceBetweenSpeedSteps, 0.0f, code, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ);
+			if(UseAcceleration)
+				MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], accelerationSteps,distanceBetweenSpeedSteps, 0.0f, code, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ);
+			else
+				{
+				command.Code = COORDINATEDMOTION;
+				command.where = lines[thisPoint];
+				//len = (LastPosition - command.where).length();
+				command.e = 0.0f;//len*extrusionFactor;		// move or extrude?
+				command.f = MinPrintSpeedXY;
+				code.commands.push_back(command);
+				}
 			}// If we are going to somewhere else
 			
 		LastPosition = lines[thisPoint];
@@ -515,8 +542,17 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 		used[thisPoint] = true;
 		// store thisPoint
 
-		MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], accelerationSteps, distanceBetweenSpeedSteps, extrusionFactor, code, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ);
-
+		if(UseAcceleration)
+			MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], accelerationSteps, distanceBetweenSpeedSteps, extrusionFactor, code, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ);
+		else
+			{
+			command.Code = COORDINATEDMOTION;
+			command.where = lines[thisPoint];
+			len = (LastPosition - command.where).length();
+			command.e = len*extrusionFactor;		// move or extrude?
+			command.f = MinPrintSpeedXY;
+			code.commands.push_back(command);
+			}
 		LastPosition = lines[thisPoint];
 		thisPoint = findClosestUnused(lines, LastPosition, used);
 		if(thisPoint != -1)
@@ -642,7 +678,7 @@ bool InFillHitCompareFunc(const InFillHit& d1, const InFillHit& d2)
 vector<InFillHit> HitsBuffer;
 
 
-void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z)
+void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill)
 {
 	int c=0;
 
@@ -650,7 +686,7 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z)
 
 	bool examine = false;
 
-	float Length = sqrtf(2)*(   ((Max.x)>(Max.y)? (Max.x):(Max.y))  -  ((Min.x)<(Min.y)? (Min.x):(Min.y))  )/2.0f;
+	float Length = sqrtf(2)*(   ((Max.x)>(Max.y)? (Max.x):(Max.y))  -  ((Min.x)<(Min.y)? (Min.x):(Min.y))  )/2.0f;	// bbox of lines to intersect the poly with
 
 	float rot = InfillRotation/180.0f*M_PI;
 	rot += (float)LayerNr*InfillRotationPrLayer/180.0f*M_PI;
@@ -676,7 +712,7 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z)
 			glEnd();
 			}
 
-		if(DisplayDebug)
+/*		if(DisplayDebuginFill)
 			if(!examine && ((Examine-0.5f)*2 * Length <= x))
 				{
 				examineThis = examine = true;
@@ -684,7 +720,7 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z)
 				glVertex3f(P1.x, P1.y, z);
 				glVertex3f(P2.x, P2.y, z);
 				}
-
+*/
 			if(offsetPolygons.size() != 0)
 				{
 				for(UINT p=0;p<offsetPolygons.size();p++)
@@ -1187,7 +1223,7 @@ public:
 };
 
 
-bool CuttingPlane::LinkSegments(float z)
+bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, bool DisplayCuttingPlane)
 {
 	if(vertices.size() == 0)
 		return true;
@@ -1355,8 +1391,8 @@ bool CuttingPlane::LinkSegments(float z)
 		}	// while startLine != -1
 
 	// Cleanup polygons
-	CleanupPolygons();
-	Shrink(ShrinkValue, z);
+	CleanupPolygons(Optimization);
+	Shrink(ShrinkValue, z, DisplayCuttingPlane);
 	// Draw resulting poly
 	glColor3f(1,1,0);
 	for(int p=0; p<polygons.size();p++)
@@ -1584,7 +1620,7 @@ bool CuttingPlane::LinkSegments(float z)
 
 */
 
-void CuttingPlane::Shrink(float distance, float z)
+void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane)
 {
 	glColor4f(1,1,1,1);
 	for(int p=0; p<polygons.size();p++)
@@ -1626,15 +1662,15 @@ void CuttingPlane::Shrink(float distance, float z)
 }
 
 
-void CuttingPlane::Draw(float z)
+void CuttingPlane::Draw(float z, bool DrawVertexNumbers, bool DrawLineNumbers)
 {
-	if(DisplayCuttingPlane)
+//	if(DisplayCuttingPlane)
 		{
 		glColor4f(1,0,0,1);
 		glBegin(GL_LINES);
 		for(UINT i=0;i<lines.size();i++)
 			{
-				if(DisplayDebug && (int)(Examine*((float)lines.size()-1)) == i)
+/*				if(DisplayDebug && (int)(Examine*((float)lines.size()-1)) == i)
 				{
 				glEnd();
 				glColor4f(1,1,0,1);
@@ -1647,7 +1683,7 @@ void CuttingPlane::Draw(float z)
 				glLineWidth(1);
 				glBegin(GL_LINES);
 				glColor4f(1,0,0,1);
-				}
+				}*/
 
 			glVertex3f(vertices[lines[i].start].x, vertices[lines[i].start].y, z);
 			glVertex3f(vertices[lines[i].end].x, vertices[lines[i].end].y, z);
@@ -1789,7 +1825,7 @@ float Triangle::area()
 	return ( ((C-A).cross(B-A)).length() );
 }
 
-void CuttingPlane::CleanupPolygons()
+void CuttingPlane::CleanupPolygons(float Optimization)
 {
 	float allowedError = Optimization;
 	for(int p=0;p<polygons.size();p++)

@@ -241,10 +241,10 @@ void GCode::draw()
 		case COORDINATEDMOTION:
 			if(commands[i].e == 0)
 				{
-				glLineWidth(1);
+				glLineWidth(3);
 				float speed = commands[i].f;
 				float luma = speed/MaxPrintSpeedXY*0.5f;
-				glColor3f(luma,luma,luma);
+				glColor3f(luma,0,luma);
 				}
 			else
 				{

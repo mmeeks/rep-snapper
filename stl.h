@@ -80,13 +80,13 @@ public:
 class  CuttingPlane{
 public:
 	CuttingPlane();
-	void Shrink(float distance, float z);		// Contracts polygons
-	void CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z=0);	// Collide a infill-line with the polygons
+	void Shrink(float distance, float z, bool DisplayCuttingPlane);		// Contracts polygons
+	void CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill);	// Collide a infill-line with the polygons
 	bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, InFillHit &hit);	// Utilityfunction for CalcInFill
-	void Draw(float z);
-	bool LinkSegments(float z);		// Link Segments to form polygons
-	void CleanupPolygons();			// remove redudant points
-	void MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor);	// Convert Cuttingplane to GCode
+	void Draw(float z, bool DrawVertexNumbers, bool DrawLineNumbers);
+	bool LinkSegments(float z, float shrinkValue, float Optimization, bool DisplayCuttingPlane);		// Link Segments to form polygons
+	void CleanupPolygons(float Optimization);			// remove redudant points
+	void MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, bool UseAcceleration);	// Convert Cuttingplane to GCode
 
 	Vector2f Min, Max;				// Bounding box
 	vector<Segment> lines;			// Segments - 2 points pr. line-segment
@@ -97,20 +97,6 @@ public:
 	vector<Poly> offsetPolygons;	// Shrinked closed loops
 	vector<Vector2f> offsetVertices;// points for shrinked closed loops
 
-	// CuttingPlane GUI values
-	float InfillDistance;
-	float InfillRotation;
-	float InfillRotationPrLayer;
-	float Optimization;
-	float Examine;
-	float ShrinkValue;
-	float PolygonOpasity;
-
-	bool DisplayDebuginFill;
-	bool DisplayDebug;
-	bool DisplayCuttingPlane;
-	bool DrawVertexNumbers;
-	bool DrawLineNumbers;
 };
 
 class STL
@@ -134,11 +120,32 @@ public:
 	float CuttingPlaneValue;
 	float PolygonOpasity;
 
+	// CuttingPlane GUI values
+	float InfillDistance;
+	float InfillRotation;
+	float InfillRotationPrLayer;
+	float Optimization;
+	float Examine;
+	float ShrinkValue;
+
 	bool DisplayEndpoints;
 	bool DisplayNormals;
 	bool DisplayWireframe;
 	bool DisplayPolygons;
 	bool DisplayAllLayers;
 	bool DisplayinFill;
+
+
+	bool DisplayDebuginFill;
+	bool DisplayDebug;
+	bool DisplayCuttingPlane;
+	bool DrawVertexNumbers;
+	bool DrawLineNumbers;
+
+	bool ShellOnly;
+	UINT ShellCount;
+
+	bool EnableAcceleration;
+
 };
 

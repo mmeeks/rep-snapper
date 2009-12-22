@@ -154,6 +154,23 @@ void GUI::cb_DistancePrAccelerationStep(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_DistancePrAccelerationStep_i(o,v);
 }
 
+void GUI::cb_EnableAccelerationButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetEnableAcceleration(o->value());
+if(o->value())
+{
+NumAccelerationStepsSlider->activate();
+DistancePrAccelerationStep->activate();
+}
+else
+{
+NumAccelerationStepsSlider->deactivate();
+DistancePrAccelerationStep->deactivate();
+};
+}
+void GUI::cb_EnableAccelerationButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_EnableAccelerationButton_i(o,v);
+}
+
 void GUI::cb_MaxPrintSpeedXYSlider_i(Fl_Value_Slider* o, void*) {
   MVC->SetMaxPrintSpeedXY(o->value());
 }
@@ -229,6 +246,20 @@ void GUI::cb_OptimizationSlider_i(Fl_Value_Slider* o, void*) {
 }
 void GUI::cb_OptimizationSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_OptimizationSlider_i(o,v);
+}
+
+void GUI::cb_ShellOnlyButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetShellOnly(o->value());
+}
+void GUI::cb_ShellOnlyButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ShellOnlyButton_i(o,v);
+}
+
+void GUI::cb_ShellCountSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetShellCount(o->value());
+}
+void GUI::cb_ShellCountSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ShellCountSlider_i(o,v);
 }
 
 void GUI::cb_CuttingPlaneSlider_i(Fl_Value_Slider* o, void*) {
@@ -458,7 +489,6 @@ GUI::GUI() {
             PolygonOpasitySlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* PolygonOpasitySlider
           { DisplayPolygonsButton = new Fl_Light_Button(835, 700, 255, 25, "Display Polygons");
-            DisplayPolygonsButton->value(1);
             DisplayPolygonsButton->selection_color((Fl_Color)FL_GREEN);
             DisplayPolygonsButton->callback((Fl_Callback*)cb_DisplayPolygonsButton);
           } // Fl_Light_Button* DisplayPolygonsButton
@@ -480,44 +510,43 @@ GUI::GUI() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(820, 40, 550, 765, "Printer definition");
-        o->hide();
-        { Fl_Group* o = new Fl_Group(830, 320, 230, 40, "Build volume (mm)");
+        { Fl_Group* o = new Fl_Group(825, 65, 230, 40, "Build volume (mm)");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { Fl_Value_Input* o = new Fl_Value_Input(850, 331, 45, 23, "X");
+          { Fl_Value_Input* o = new Fl_Value_Input(845, 76, 45, 23, "X");
             o->maximum(5000);
             o->step(1);
             o->value(200);
           } // Fl_Value_Input* o
-          { Fl_Value_Input* o = new Fl_Value_Input(925, 331, 45, 23, "Y");
+          { Fl_Value_Input* o = new Fl_Value_Input(920, 76, 45, 23, "Y");
             o->maximum(5000);
             o->value(200);
           } // Fl_Value_Input* o
-          { Fl_Value_Input* o = new Fl_Value_Input(1000, 331, 45, 23, "Z");
+          { Fl_Value_Input* o = new Fl_Value_Input(995, 76, 45, 23, "Z");
             o->maximum(5000);
             o->value(140);
           } // Fl_Value_Input* o
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(1210, 320, 155, 40, "Print margin  (mm)");
+        { Fl_Group* o = new Fl_Group(1205, 65, 155, 40, "Print margin  (mm)");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { Fl_Value_Input* o = new Fl_Value_Input(1235, 331, 45, 23, "X");
+          { Fl_Value_Input* o = new Fl_Value_Input(1230, 76, 45, 23, "X");
             o->maximum(100);
             o->step(1);
             o->value(10);
           } // Fl_Value_Input* o
-          { Fl_Value_Input* o = new Fl_Value_Input(1310, 331, 45, 23, "Y");
+          { Fl_Value_Input* o = new Fl_Value_Input(1305, 76, 45, 23, "Y");
             o->maximum(100);
             o->step(1);
             o->value(10);
           } // Fl_Value_Input* o
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(825, 710, 535, 95, "Acceleration");
+        { Fl_Group* o = new Fl_Group(825, 455, 535, 120, "Acceleration");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { NumAccelerationStepsSlider = new Fl_Value_Slider(835, 735, 515, 20, "Number of acceleration steps");
+          { NumAccelerationStepsSlider = new Fl_Value_Slider(835, 505, 515, 20, "Number of acceleration steps");
             NumAccelerationStepsSlider->type(1);
             NumAccelerationStepsSlider->selection_color((Fl_Color)2);
             NumAccelerationStepsSlider->maximum(10);
@@ -527,7 +556,7 @@ GUI::GUI() {
             NumAccelerationStepsSlider->callback((Fl_Callback*)cb_NumAccelerationStepsSlider);
             NumAccelerationStepsSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* NumAccelerationStepsSlider
-          { DistancePrAccelerationStep = new Fl_Value_Slider(835, 775, 515, 20, "Distance Pr Acceleration Step (mm)");
+          { DistancePrAccelerationStep = new Fl_Value_Slider(835, 545, 515, 20, "Distance Pr Acceleration Step (mm)");
             DistancePrAccelerationStep->type(1);
             DistancePrAccelerationStep->selection_color((Fl_Color)2);
             DistancePrAccelerationStep->maximum(2);
@@ -536,12 +565,16 @@ GUI::GUI() {
             DistancePrAccelerationStep->callback((Fl_Callback*)cb_DistancePrAccelerationStep);
             DistancePrAccelerationStep->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* DistancePrAccelerationStep
+          { EnableAccelerationButton = new Fl_Light_Button(835, 465, 255, 20, "Enable Acceleration");
+            EnableAccelerationButton->selection_color((Fl_Color)FL_GREEN);
+            EnableAccelerationButton->callback((Fl_Callback*)cb_EnableAccelerationButton);
+          } // Fl_Light_Button* EnableAccelerationButton
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(830, 510, 535, 170, "Print speeds");
+        { Fl_Group* o = new Fl_Group(825, 255, 535, 170, "Print speeds");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { MaxPrintSpeedXYSlider = new Fl_Value_Slider(840, 570, 515, 20, "Max PrintSpeed XY (mm/minute)");
+          { MaxPrintSpeedXYSlider = new Fl_Value_Slider(835, 315, 515, 20, "Max PrintSpeed XY (mm/minute)");
             MaxPrintSpeedXYSlider->type(1);
             MaxPrintSpeedXYSlider->selection_color((Fl_Color)2);
             MaxPrintSpeedXYSlider->maximum(8000);
@@ -551,7 +584,7 @@ GUI::GUI() {
             MaxPrintSpeedXYSlider->callback((Fl_Callback*)cb_MaxPrintSpeedXYSlider);
             MaxPrintSpeedXYSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* MaxPrintSpeedXYSlider
-          { MinPrintSpeedZSlider = new Fl_Value_Slider(840, 610, 515, 20, "Min PrintSpeed Z (mm/minute)");
+          { MinPrintSpeedZSlider = new Fl_Value_Slider(835, 355, 515, 20, "Min PrintSpeed Z (mm/minute)");
             MinPrintSpeedZSlider->type(1);
             MinPrintSpeedZSlider->selection_color((Fl_Color)2);
             MinPrintSpeedZSlider->minimum(1);
@@ -562,7 +595,7 @@ GUI::GUI() {
             MinPrintSpeedZSlider->callback((Fl_Callback*)cb_MinPrintSpeedZSlider);
             MinPrintSpeedZSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* MinPrintSpeedZSlider
-          { MinPrintSpeedXYSlider = new Fl_Value_Slider(840, 530, 515, 20, "Min PrintSpeed XY (mm/minute)");
+          { MinPrintSpeedXYSlider = new Fl_Value_Slider(835, 275, 515, 20, "Min PrintSpeed XY (mm/minute)");
             MinPrintSpeedXYSlider->type(1);
             MinPrintSpeedXYSlider->selection_color((Fl_Color)2);
             MinPrintSpeedXYSlider->maximum(8000);
@@ -572,7 +605,7 @@ GUI::GUI() {
             MinPrintSpeedXYSlider->callback((Fl_Callback*)cb_MinPrintSpeedXYSlider);
             MinPrintSpeedXYSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* MinPrintSpeedXYSlider
-          { MaxPrintSpeedZSlider = new Fl_Value_Slider(840, 650, 515, 20, "Max PrintSpeed Z (mm/minute)");
+          { MaxPrintSpeedZSlider = new Fl_Value_Slider(835, 395, 515, 20, "Max PrintSpeed Z (mm/minute)");
             MaxPrintSpeedZSlider->type(1);
             MaxPrintSpeedZSlider->selection_color((Fl_Color)2);
             MaxPrintSpeedZSlider->maximum(2500);
@@ -584,10 +617,10 @@ GUI::GUI() {
           } // Fl_Value_Slider* MaxPrintSpeedZSlider
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(825, 390, 535, 90, "Extruder");
+        { Fl_Group* o = new Fl_Group(825, 135, 535, 90, "Extruder");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { ShrinkSlider = new Fl_Value_Slider(835, 410, 515, 20, "Extruded material width");
+          { ShrinkSlider = new Fl_Value_Slider(835, 155, 515, 20, "Extruded material width");
             ShrinkSlider->type(1);
             ShrinkSlider->selection_color((Fl_Color)2);
             ShrinkSlider->value(0.7);
@@ -595,7 +628,7 @@ GUI::GUI() {
             ShrinkSlider->callback((Fl_Callback*)cb_ShrinkSlider);
             ShrinkSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* ShrinkSlider
-          { PlaceholderSlider = new Fl_Value_Slider(835, 450, 515, 20, "Extrusion multiplier");
+          { PlaceholderSlider = new Fl_Value_Slider(835, 195, 515, 20, "Extrusion multiplier");
             PlaceholderSlider->type(1);
             PlaceholderSlider->selection_color((Fl_Color)2);
             PlaceholderSlider->maximum(2);
@@ -608,11 +641,12 @@ GUI::GUI() {
         } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(815, 40, 545, 765, "Slicing");
-        { Fl_Group* o = new Fl_Group(825, 595, 535, 215, "Infill");
+      { Fl_Group* o = new Fl_Group(815, 40, 545, 770, "Slicing");
+        o->hide();
+        { Fl_Group* o = new Fl_Group(825, 65, 535, 250, "Infill");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { RotationSlider = new Fl_Value_Slider(835, 620, 515, 20, "Rotation");
+          { RotationSlider = new Fl_Value_Slider(835, 125, 515, 20, "Rotation");
             RotationSlider->type(1);
             RotationSlider->selection_color((Fl_Color)2);
             RotationSlider->maximum(360);
@@ -622,7 +656,7 @@ GUI::GUI() {
             RotationSlider->callback((Fl_Callback*)cb_RotationSlider);
             RotationSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* RotationSlider
-          { InfillRotationPrLayerSlider = new Fl_Value_Slider(835, 660, 515, 20, "InFill Rotation pr. Layer");
+          { InfillRotationPrLayerSlider = new Fl_Value_Slider(835, 165, 515, 20, "InFill Rotation pr. Layer");
             InfillRotationPrLayerSlider->type(1);
             InfillRotationPrLayerSlider->selection_color((Fl_Color)2);
             InfillRotationPrLayerSlider->maximum(360);
@@ -632,7 +666,7 @@ GUI::GUI() {
             InfillRotationPrLayerSlider->callback((Fl_Callback*)cb_InfillRotationPrLayerSlider);
             InfillRotationPrLayerSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* InfillRotationPrLayerSlider
-          { InfillDistanceSlider = new Fl_Value_Slider(835, 700, 515, 20, "Infill Distance");
+          { InfillDistanceSlider = new Fl_Value_Slider(835, 205, 515, 20, "Infill Distance");
             InfillDistanceSlider->type(1);
             InfillDistanceSlider->selection_color((Fl_Color)2);
             InfillDistanceSlider->minimum(0.1);
@@ -643,7 +677,7 @@ GUI::GUI() {
             InfillDistanceSlider->callback((Fl_Callback*)cb_InfillDistanceSlider);
             InfillDistanceSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* InfillDistanceSlider
-          { LayerThicknessSlider = new Fl_Value_Slider(835, 740, 515, 20, "Layer Thickness");
+          { LayerThicknessSlider = new Fl_Value_Slider(835, 245, 515, 20, "Layer Thickness");
             LayerThicknessSlider->type(1);
             LayerThicknessSlider->selection_color((Fl_Color)2);
             LayerThicknessSlider->minimum(0.1);
@@ -654,7 +688,7 @@ GUI::GUI() {
             LayerThicknessSlider->callback((Fl_Callback*)cb_LayerThicknessSlider);
             LayerThicknessSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* LayerThicknessSlider
-          { OptimizationSlider = new Fl_Value_Slider(835, 780, 515, 20, "Optimize");
+          { OptimizationSlider = new Fl_Value_Slider(835, 285, 515, 20, "Optimize");
             OptimizationSlider->type(1);
             OptimizationSlider->selection_color((Fl_Color)2);
             OptimizationSlider->step(0.001);
@@ -663,27 +697,42 @@ GUI::GUI() {
             OptimizationSlider->callback((Fl_Callback*)cb_OptimizationSlider);
             OptimizationSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* OptimizationSlider
+          { ShellOnlyButton = new Fl_Light_Button(835, 85, 255, 20, "Shell Only - no infill");
+            ShellOnlyButton->selection_color((Fl_Color)FL_GREEN);
+            ShellOnlyButton->callback((Fl_Callback*)cb_ShellOnlyButton);
+          } // Fl_Light_Button* ShellOnlyButton
+          { ShellCountSlider = new Fl_Value_Slider(1095, 85, 255, 20, "Shell count");
+            ShellCountSlider->type(1);
+            ShellCountSlider->selection_color((Fl_Color)2);
+            ShellCountSlider->minimum(1);
+            ShellCountSlider->maximum(10);
+            ShellCountSlider->step(1);
+            ShellCountSlider->value(1);
+            ShellCountSlider->textsize(14);
+            ShellCountSlider->callback((Fl_Callback*)cb_ShellCountSlider);
+            ShellCountSlider->align(FL_ALIGN_TOP_LEFT);
+          } // Fl_Value_Slider* ShellCountSlider
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(820, 475, 535, 90, "Preview");
+        { Fl_Group* o = new Fl_Group(825, 350, 535, 90, "Preview");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { CuttingPlaneSlider = new Fl_Value_Slider(830, 495, 515, 20, "CuttingPlane");
+          { CuttingPlaneSlider = new Fl_Value_Slider(835, 370, 515, 20, "CuttingPlane");
             CuttingPlaneSlider->type(1);
             CuttingPlaneSlider->value(0.5);
             CuttingPlaneSlider->textsize(14);
             CuttingPlaneSlider->callback((Fl_Callback*)cb_CuttingPlaneSlider);
             CuttingPlaneSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* CuttingPlaneSlider
-          { DisplayCuttingPlaneButton = new Fl_Light_Button(830, 530, 170, 20, "Display CuttingPlane");
+          { DisplayCuttingPlaneButton = new Fl_Light_Button(835, 405, 170, 20, "Display CuttingPlane");
             DisplayCuttingPlaneButton->selection_color((Fl_Color)FL_GREEN);
             DisplayCuttingPlaneButton->callback((Fl_Callback*)cb_DisplayCuttingPlaneButton);
           } // Fl_Light_Button* DisplayCuttingPlaneButton
-          { DisplayinFillButton = new Fl_Light_Button(1005, 530, 165, 20, "Display inFill");
+          { DisplayinFillButton = new Fl_Light_Button(1010, 405, 165, 20, "Display inFill");
             DisplayinFillButton->selection_color((Fl_Color)FL_GREEN);
             DisplayinFillButton->callback((Fl_Callback*)cb_DisplayinFillButton);
           } // Fl_Light_Button* DisplayinFillButton
-          { DisplayAllLayers = new Fl_Light_Button(1175, 530, 170, 20, "Display all layers");
+          { DisplayAllLayers = new Fl_Light_Button(1180, 405, 170, 20, "Display all layers");
             DisplayAllLayers->selection_color((Fl_Color)FL_GREEN);
             DisplayAllLayers->callback((Fl_Callback*)cb_DisplayAllLayers);
           } // Fl_Light_Button* DisplayAllLayers

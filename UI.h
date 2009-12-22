@@ -93,6 +93,11 @@ private:
   void cb_DistancePrAccelerationStep_i(Fl_Value_Slider*, void*);
   static void cb_DistancePrAccelerationStep(Fl_Value_Slider*, void*);
 public:
+  Fl_Light_Button *EnableAccelerationButton;
+private:
+  void cb_EnableAccelerationButton_i(Fl_Light_Button*, void*);
+  static void cb_EnableAccelerationButton(Fl_Light_Button*, void*);
+public:
   Fl_Value_Slider *MaxPrintSpeedXYSlider;
 private:
   void cb_MaxPrintSpeedXYSlider_i(Fl_Value_Slider*, void*);
@@ -147,6 +152,16 @@ public:
 private:
   void cb_OptimizationSlider_i(Fl_Value_Slider*, void*);
   static void cb_OptimizationSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Light_Button *ShellOnlyButton;
+private:
+  void cb_ShellOnlyButton_i(Fl_Light_Button*, void*);
+  static void cb_ShellOnlyButton(Fl_Light_Button*, void*);
+public:
+  Fl_Value_Slider *ShellCountSlider;
+private:
+  void cb_ShellCountSlider_i(Fl_Value_Slider*, void*);
+  static void cb_ShellCountSlider(Fl_Value_Slider*, void*);
 public:
   Fl_Value_Slider *CuttingPlaneSlider;
 private:

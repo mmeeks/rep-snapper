@@ -129,7 +129,7 @@ MVC->redraw();}
             Fl_Light_Button DisplayPolygonsButton {
               label {Display Polygons}
               callback {MVC->SetDisplayPolygons(o->value());}
-              xywh {835 700 255 25} value 1 selection_color 63
+              xywh {835 700 255 25} selection_color 63
             }
             Fl_Light_Button DisplayWireframeButton {
               label {Display Wireframe}
@@ -150,151 +150,176 @@ MVC->redraw();}
         }
         Fl_Group {} {
           label {Printer definition} open
-          xywh {820 40 550 765} hide
+          xywh {820 40 550 765}
         } {
           Fl_Group {} {
             label {Build volume (mm)} open
-            xywh {830 320 230 40} box FLAT_BOX color 39
+            xywh {825 65 230 40} box FLAT_BOX color 39
           } {
             Fl_Value_Input {} {
               label X
-              xywh {850 331 45 23} maximum 5000 step 1 value 200
+              xywh {845 76 45 23} maximum 5000 step 1 value 200
             }
             Fl_Value_Input {} {
               label Y
-              xywh {925 331 45 23} maximum 5000 value 200
+              xywh {920 76 45 23} maximum 5000 value 200
             }
             Fl_Value_Input {} {
               label Z
-              xywh {1000 331 45 23} maximum 5000 value 140
+              xywh {995 76 45 23} maximum 5000 value 140
             }
           }
           Fl_Group {} {
             label {Print margin  (mm)} open
-            xywh {1210 320 155 40} box FLAT_BOX color 39
+            xywh {1205 65 155 40} box FLAT_BOX color 39
           } {
             Fl_Value_Input {} {
               label X
-              xywh {1235 331 45 23} maximum 100 step 1 value 10
+              xywh {1230 76 45 23} maximum 100 step 1 value 10
             }
             Fl_Value_Input {} {
               label Y
-              xywh {1310 331 45 23} maximum 100 step 1 value 10
+              xywh {1305 76 45 23} maximum 100 step 1 value 10
             }
           }
           Fl_Group {} {
             label Acceleration open
-            xywh {825 710 535 95} box FLAT_BOX color 39
+            xywh {825 455 535 120} box FLAT_BOX color 39
           } {
             Fl_Value_Slider NumAccelerationStepsSlider {
               label {Number of acceleration steps}
               callback {MVC->NumAccelerationSteps(o->value());}
-              xywh {835 735 515 20} type Horizontal selection_color 2 align 5 maximum 10 step 1 value 5 textsize 14
+              xywh {835 505 515 20} type Horizontal selection_color 2 align 5 maximum 10 step 1 value 5 textsize 14
             }
             Fl_Value_Slider DistancePrAccelerationStep {
               label {Distance Pr Acceleration Step (mm)}
               callback {MVC->SetDistancePrAccelerationStep(o->value());}
-              xywh {835 775 515 20} type Horizontal selection_color 2 align 5 maximum 2 value 0.1 textsize 14
+              xywh {835 545 515 20} type Horizontal selection_color 2 align 5 maximum 2 value 0.1 textsize 14
+            }
+            Fl_Light_Button EnableAccelerationButton {
+              label {Enable Acceleration}
+              callback {MVC->SetEnableAcceleration(o->value());
+if(o->value())
+{
+NumAccelerationStepsSlider->activate();
+DistancePrAccelerationStep->activate();
+}
+else
+{
+NumAccelerationStepsSlider->deactivate();
+DistancePrAccelerationStep->deactivate();
+}} selected
+              xywh {835 465 255 20} selection_color 63
             }
           }
           Fl_Group {} {
             label {Print speeds} open
-            xywh {830 510 535 170} box FLAT_BOX color 39
+            xywh {825 255 535 170} box FLAT_BOX color 39
           } {
             Fl_Value_Slider MaxPrintSpeedXYSlider {
               label {Max PrintSpeed XY (mm/minute)}
               callback {MVC->SetMaxPrintSpeedXY(o->value());}
-              xywh {840 570 515 20} type Horizontal selection_color 2 align 5 maximum 8000 step 100 value 4000 textsize 14
+              xywh {835 315 515 20} type Horizontal selection_color 2 align 5 maximum 8000 step 100 value 4000 textsize 14
             }
             Fl_Value_Slider MinPrintSpeedZSlider {
               label {Min PrintSpeed Z (mm/minute)}
               callback {MVC->SetMinPrintSpeedZ(o->value());}
-              xywh {840 610 515 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 2500 step 10 value 50 textsize 14
+              xywh {835 355 515 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 2500 step 10 value 50 textsize 14
             }
             Fl_Value_Slider MinPrintSpeedXYSlider {
               label {Min PrintSpeed XY (mm/minute)}
               callback {MVC->SetMinPrintSpeedXY(o->value());}
-              xywh {840 530 515 20} type Horizontal selection_color 2 align 5 maximum 8000 step 100 value 1000 textsize 14
+              xywh {835 275 515 20} type Horizontal selection_color 2 align 5 maximum 8000 step 100 value 1000 textsize 14
             }
             Fl_Value_Slider MaxPrintSpeedZSlider {
               label {Max PrintSpeed Z (mm/minute)}
               callback {MVC->SetMaxPrintSpeedZ(o->value());}
-              xywh {840 650 515 20} type Horizontal selection_color 2 align 5 maximum 2500 step 10 value 150 textsize 14
+              xywh {835 395 515 20} type Horizontal selection_color 2 align 5 maximum 2500 step 10 value 150 textsize 14
             }
           }
           Fl_Group {} {
             label Extruder open
-            xywh {825 390 535 90} box FLAT_BOX color 39
+            xywh {825 135 535 90} box FLAT_BOX color 39
           } {
             Fl_Value_Slider ShrinkSlider {
               label {Extruded material width}
               callback {MVC->SetShrinkValue(o->value());}
-              xywh {835 410 515 20} type Horizontal selection_color 2 align 5 value 0.7 textsize 14
+              xywh {835 155 515 20} type Horizontal selection_color 2 align 5 value 0.7 textsize 14
             }
             Fl_Value_Slider PlaceholderSlider {
               label {Extrusion multiplier}
               callback {MVC->SetExtrusionFactor(o->value());}
-              xywh {835 450 515 20} type Horizontal selection_color 2 align 5 maximum 2 value 1 textsize 14
+              xywh {835 195 515 20} type Horizontal selection_color 2 align 5 maximum 2 value 1 textsize 14
             }
           }
         }
         Fl_Group {} {
           label Slicing open
-          xywh {815 40 545 765}
+          xywh {815 40 545 770} hide
         } {
           Fl_Group {} {
             label Infill open
-            xywh {825 595 535 215} box FLAT_BOX color 39
+            xywh {825 65 535 250} box FLAT_BOX color 39
           } {
             Fl_Value_Slider RotationSlider {
               label Rotation
               callback {MVC->SetInfillRotation(o->value());}
-              xywh {835 620 515 20} type Horizontal selection_color 2 align 5 maximum 360 step 1 value 45 textsize 14
+              xywh {835 125 515 20} type Horizontal selection_color 2 align 5 maximum 360 step 1 value 45 textsize 14
             }
             Fl_Value_Slider InfillRotationPrLayerSlider {
               label {InFill Rotation pr. Layer}
               callback {MVC->SetInfillRotationPrLayer(o->value());}
-              xywh {835 660 515 20} type Horizontal selection_color 2 align 5 maximum 360 step 1 value 90 textsize 14
+              xywh {835 165 515 20} type Horizontal selection_color 2 align 5 maximum 360 step 1 value 90 textsize 14
             }
             Fl_Value_Slider InfillDistanceSlider {
               label {Infill Distance}
               callback {MVC->SetInfillDistance(o->value());}
-              xywh {835 700 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14
+              xywh {835 205 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14
             }
             Fl_Value_Slider LayerThicknessSlider {
               label {Layer Thickness}
               callback {MVC->SetLayerThickness(o->value());}
-              xywh {835 740 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 0.4 textsize 14
+              xywh {835 245 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 0.4 textsize 14
             }
             Fl_Value_Slider OptimizationSlider {
               label Optimize
-              callback {MVC->SetOptimization(o->value());} selected
-              xywh {835 780 515 20} type Horizontal selection_color 2 align 5 step 0.001 value 0.001 textsize 14
+              callback {MVC->SetOptimization(o->value());}
+              xywh {835 285 515 20} type Horizontal selection_color 2 align 5 step 0.001 value 0.001 textsize 14
+            }
+            Fl_Light_Button ShellOnlyButton {
+              label {Shell Only - no infill}
+              callback {MVC->SetShellOnly(o->value());}
+              xywh {835 85 255 20} selection_color 63
+            }
+            Fl_Value_Slider ShellCountSlider {
+              label {Shell count}
+              callback {MVC->SetShellCount(o->value());}
+              xywh {1095 85 255 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 10 step 1 value 1 textsize 14
             }
           }
           Fl_Group {} {
             label Preview open
-            xywh {820 475 535 90} box FLAT_BOX color 39
+            xywh {825 350 535 90} box FLAT_BOX color 39
           } {
             Fl_Value_Slider CuttingPlaneSlider {
               label CuttingPlane
               callback {MVC->SetCuttingPlaneValue(o->value());}
-              xywh {830 495 515 20} type Horizontal align 5 value 0.5 textsize 14
+              xywh {835 370 515 20} type Horizontal align 5 value 0.5 textsize 14
             }
             Fl_Light_Button DisplayCuttingPlaneButton {
               label {Display CuttingPlane}
               callback {MVC->SetDisplayCuttingPlane(o->value());}
-              xywh {830 530 170 20} selection_color 63
+              xywh {835 405 170 20} selection_color 63
             }
             Fl_Light_Button DisplayinFillButton {
               label {Display inFill}
               callback {MVC->SetDisplayinFill(o->value());}
-              xywh {1005 530 165 20} selection_color 63
+              xywh {1010 405 165 20} selection_color 63
             }
             Fl_Light_Button DisplayAllLayers {
               label {Display all layers}
               callback {MVC->SetDisplayAllLayers(o->value());}
-              xywh {1175 530 170 20} selection_color 63
+              xywh {1180 405 170 20} selection_color 63
             }
           }
         }

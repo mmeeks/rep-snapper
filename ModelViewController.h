@@ -82,18 +82,24 @@ public:
 	void SetPolygonOpasity(float val){ProcessControl.stl.PolygonOpasity = val; redraw();}
 
 	// CuttingPlane GUI values
-	void SetInfillDistance(float val){}
-	void SetInfillRotation(float val){}
-	void SetInfillRotationPrLayer(float val){}
-	void SetOptimization(float val){}
-	void SetExamine(float val){}
-	void SetShrinkValue(float val){}
+	void SetInfillDistance(float val){ProcessControl.stl.InfillDistance = val; redraw();}
+	void SetInfillRotation(float val){ProcessControl.stl.InfillRotation = val; redraw();}
+	void SetInfillRotationPrLayer(float val){ProcessControl.stl.InfillRotationPrLayer = val; redraw();}
+	void SetOptimization(float val){ProcessControl.stl.Optimization = val; redraw();}
+	void SetExamine(float val){ProcessControl.stl.Examine = val; redraw();}
+	void SetShrinkValue(float val){ProcessControl.stl.ShrinkValue = val; redraw();}
 
-	void SetDisplayDebuginFill(bool val){}
-	void SetDisplayDebug(bool val){}
-	void SetDisplayCuttingPlane(bool val){}
-	void SetDrawVertexNumbers(bool val){}
-	void SetDrawLineNumbers(bool val){}
+	void SetDisplayDebuginFill(bool val){ProcessControl.stl.DisplayDebuginFill = val; redraw();}
+	void SetDisplayDebug(bool val){ProcessControl.stl.DisplayDebug = val; redraw();}
+	void SetDisplayCuttingPlane(bool val){ProcessControl.stl.DisplayCuttingPlane = val; redraw();}
+	void SetDrawVertexNumbers(bool val){ProcessControl.stl.DrawVertexNumbers = val; redraw();}
+	void SetDrawLineNumbers(bool val){ProcessControl.stl.DrawLineNumbers = val; redraw();}
+
+	void SetShellOnly(bool val) {ProcessControl.stl.ShellOnly = val; redraw();}
+	void SetShellCount(UINT val) {ProcessControl.stl.ShellCount = val; redraw();}
+
+	void SetEnableAcceleration(bool val) {ProcessControl.stl.EnableAcceleration = val; redraw();}
+	
 
 	/*--------------ArcBall-------------------*/
 

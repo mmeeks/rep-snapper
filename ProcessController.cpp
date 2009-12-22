@@ -31,7 +31,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 		stl.CalcCuttingPlane(z, plane);	// output is alot of un-connected line segments with individual vertices
 
 		float hackedZ = z;
-		while(plane.LinkSegments(hackedZ) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
+		while(plane.LinkSegments(hackedZ, stl.ShrinkValue, stl.Optimization, stl.DisplayCuttingPlane) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
 			{										// This happens when there's triangles missing in the input STL
 			hackedZ+= 0.1f;
 			plane.polygons.clear();
@@ -43,10 +43,18 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 		// inFill
 		vector<Vector2f> infill;
 
-		plane.CalcInFill(infill, LayerNr, z);
-
+		CuttingPlane infillCuttingPlane = plane;
+		infillCuttingPlane.polygons = infillCuttingPlane.offsetPolygons;
+		infillCuttingPlane.vertices = infillCuttingPlane.offsetVertices;
+		infillCuttingPlane.offsetPolygons.clear();
+		infillCuttingPlane.offsetVertices.clear();
+		if(stl.ShellOnly == false)
+			{
+			infillCuttingPlane.Shrink(stl.ShrinkValue, stl.Optimization, stl.DisplayCuttingPlane);
+			infillCuttingPlane.CalcInFill(infill, LayerNr, z, stl.InfillDistance, stl.InfillRotation, stl.InfillRotationPrLayer, stl.DisplayDebuginFill);
+			}
 		// Make the GCode from the plane and the infill
-		plane.MakeGcode(infill, gcode, z, gcode.MinPrintSpeedXY, gcode.MaxPrintSpeedXY, gcode.MinPrintSpeedZ, gcode.MaxPrintSpeedZ, gcode.accelerationSteps, gcode.distanceBetweenSpeedSteps, gcode.extrusionFactor);
+		plane.MakeGcode(infill, gcode, z, gcode.MinPrintSpeedXY, gcode.MaxPrintSpeedXY, gcode.MinPrintSpeedZ, gcode.MaxPrintSpeedZ, gcode.accelerationSteps, gcode.distanceBetweenSpeedSteps, gcode.extrusionFactor, stl.EnableAcceleration);
 		LayerNr++;
 		}
 	z+=zStep;
@@ -59,7 +67,7 @@ void ProcessController::Draw()
 {
 	printer.Draw();
 	stl.draw();
-	previewCuttingPlane.Draw(0.5f);
+	previewCuttingPlane.Draw(0.5f, stl.DrawVertexNumbers, stl.DrawLineNumbers);
 	gcode.draw();
 }
 void WriteGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, string filename)
