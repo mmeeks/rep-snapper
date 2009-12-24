@@ -72,7 +72,7 @@ STL::STL()
 	InfillRotationPrLayer = 90.0f;
 	Optimization = 0.02f;
 	Examine = 0.5f;
-	ShrinkValue = 0.35f;
+	ShrinkValue = 0.7f;
 
 	DisplayDebuginFill = false;
 	DisplayDebug = false;
@@ -80,6 +80,12 @@ STL::STL()
 	DrawVertexNumbers=false;
 	DrawLineNumbers=false;
 
+	ShellOnly = false;
+	ShellCount = 1;
+
+	EnableAcceleration = true;
+	DisplayDebuginFill = true;
+	DisplayCuttingPlane = true;
 	CalcBoundingBoxAndZoom();
 }
 

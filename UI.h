@@ -182,6 +182,71 @@ public:
 private:
   void cb_DisplayAllLayers_i(Fl_Light_Button*, void*);
   static void cb_DisplayAllLayers(Fl_Light_Button*, void*);
+public:
+  Fl_Value_Slider *RaftMaterialPrDistanceRatioSlider;
+private:
+  void cb_RaftMaterialPrDistanceRatioSlider_i(Fl_Value_Slider*, void*);
+  static void cb_RaftMaterialPrDistanceRatioSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *RaftRotationSlider;
+private:
+  void cb_RaftRotationSlider_i(Fl_Value_Slider*, void*);
+  static void cb_RaftRotationSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *RaftBaseDistanceSlider;
+private:
+  void cb_RaftBaseDistanceSlider_i(Fl_Value_Slider*, void*);
+  static void cb_RaftBaseDistanceSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *RaftBaseThicknessSlider;
+private:
+  void cb_RaftBaseThicknessSlider_i(Fl_Value_Slider*, void*);
+  static void cb_RaftBaseThicknessSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *RaftBaseLayerCountSlider;
+private:
+  void cb_RaftBaseLayerCountSlider_i(Fl_Value_Slider*, void*);
+  static void cb_RaftBaseLayerCountSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *RaftBaseTemperatureSlider;
+private:
+  void cb_RaftBaseTemperatureSlider_i(Fl_Value_Slider*, void*);
+  static void cb_RaftBaseTemperatureSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *RaftSizeSlider;
+private:
+  void cb_RaftSizeSlider_i(Fl_Value_Slider*, void*);
+  static void cb_RaftSizeSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *RaftInterfaceMaterialPrDistanceRatioSlider;
+private:
+  void cb_RaftInterfaceMaterialPrDistanceRatioSlider_i(Fl_Value_Slider*, void*);
+  static void cb_RaftInterfaceMaterialPrDistanceRatioSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *RaftRotationPrLayerSlider;
+private:
+  void cb_RaftRotationPrLayerSlider_i(Fl_Value_Slider*, void*);
+  static void cb_RaftRotationPrLayerSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *RaftInterfaceDistanceSlider;
+private:
+  void cb_RaftInterfaceDistanceSlider_i(Fl_Value_Slider*, void*);
+  static void cb_RaftInterfaceDistanceSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *RaftInterfaceThicknessSlider;
+private:
+  void cb_RaftInterfaceThicknessSlider_i(Fl_Value_Slider*, void*);
+  static void cb_RaftInterfaceThicknessSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *RaftInterfaceLayerCountSlider;
+private:
+  void cb_RaftInterfaceLayerCountSlider_i(Fl_Value_Slider*, void*);
+  static void cb_RaftInterfaceLayerCountSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *RaftInterfaceTemperatureSlider;
+private:
+  void cb_RaftInterfaceTemperatureSlider_i(Fl_Value_Slider*, void*);
+  static void cb_RaftInterfaceTemperatureSlider(Fl_Value_Slider*, void*);
   void cb_Load1_i(Fl_Button*, void*);
   static void cb_Load1(Fl_Button*, void*);
 public:

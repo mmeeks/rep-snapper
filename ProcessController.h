@@ -18,6 +18,19 @@ class ProcessController
 {
 public:
 	ProcessController(){
+		RaftSize = 1.33f;
+		RaftBaseLayerCount = 1;
+		RaftMaterialPrDistanceRatio = 1.8f;
+		RaftRotation = 90.0f;
+		RaftBaseDistance = 2.0f;
+		RaftBaseThickness = 1.0f;
+		RaftBaseTemperature = 1.10f;
+		RaftInterfaceLayerCount = 1;
+		RaftInterfaceMaterialPrDistanceRatio = 1.0f;
+		RaftRotationPrLayer = 90.0f;
+		RaftInterfaceDistance = 2.0f;
+		RaftInterfaceThickness = 1.0f;
+		RaftInterfaceTemperature = 1.0f;
 };
 	
 	void Draw();
@@ -33,6 +46,9 @@ public:
 	void ReadGCode(string filename) {gcode.Read(filename);};
 	void WriteGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, string filename);
 
+	void MakeRaft();
+
+
 	// Process functions
 	
 
@@ -47,4 +63,20 @@ public:
 	CuttingPlane previewCuttingPlane;
 	GCode gcode;
 	string GcodeTxt;
+
+
+	// Raft
+	float RaftSize;
+	int RaftBaseLayerCount;
+	float RaftMaterialPrDistanceRatio;
+	float RaftRotation;
+	float RaftBaseDistance;
+	float RaftBaseThickness;
+	float RaftBaseTemperature;
+	int RaftInterfaceLayerCount;
+	float RaftInterfaceMaterialPrDistanceRatio;
+	float RaftRotationPrLayer;
+	float RaftInterfaceDistance;
+	float RaftInterfaceThickness;
+	float RaftInterfaceTemperature;
 };

@@ -312,7 +312,6 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 {
 	Vector3f pos(0,0,0);
 	
-	GcodeTxt.clear();
 	float Distance = 0;
 	std::stringstream oss;
 

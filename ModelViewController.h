@@ -66,9 +66,6 @@ public:
 	void SetDistancePrAccelerationStep(float val) {ProcessControl.gcode.distanceBetweenSpeedSteps = val;}
 	void SetExtrusionFactor(float val) {ProcessControl.gcode.extrusionFactor = val;}
 	
-	
-	
-
 	// STL GUI Values
 	void SetLayerThickness(float val){ProcessControl.stl.LayerThickness = val; redraw();}
 	void SetCuttingPlaneValue(float val){ProcessControl.stl.CuttingPlaneValue = val; redraw();}
@@ -100,6 +97,20 @@ public:
 
 	void SetEnableAcceleration(bool val) {ProcessControl.stl.EnableAcceleration = val; redraw();}
 	
+	// Raft GUI values
+	void SetRaftSize(float val){ProcessControl.RaftSize=val;}
+	void SetRaftBaseLayerCount(int val){ProcessControl.RaftBaseLayerCount=val;}
+	void SetRaftMaterialPrDistanceRatio(float val){ProcessControl.RaftMaterialPrDistanceRatio=val;}
+	void SetRaftRotation(float val){ProcessControl.RaftRotation=val;}
+	void SetRaftBaseDistance(float val){ProcessControl.RaftBaseDistance=val;}
+	void SetRaftBaseThickness(float val){ProcessControl.RaftBaseThickness=val;}
+	void SetRaftBaseTemperature(float val){ProcessControl.RaftBaseTemperature=val;}
+	void SeRaftInterfaceLayerCount(int val){ProcessControl.RaftInterfaceLayerCount=val;}
+	void SetRaftInterfaceMaterialPrDistanceRatio(float val){ProcessControl.RaftInterfaceMaterialPrDistanceRatio=val;}
+	void SetRaftRotationPrLayer(float val){ProcessControl.RaftRotationPrLayer=val;}
+	void SetRaftInterfaceDistance(float val){ProcessControl.RaftInterfaceDistance=val;}
+	void SetRaftInterfaceThickness(float val){ProcessControl.RaftInterfaceThickness=val;}
+	void SetRaftInterfaceTemperature(float val){ProcessControl.RaftInterfaceTemperature=val;}
 
 	/*--------------ArcBall-------------------*/
 
