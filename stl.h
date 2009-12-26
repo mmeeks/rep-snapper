@@ -82,7 +82,6 @@ public:
 	CuttingPlane();
 	void Shrink(float distance, float z, bool DisplayCuttingPlane);		// Contracts polygons
 	void CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill);	// Collide a infill-line with the polygons
-	bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, InFillHit &hit);	// Utilityfunction for CalcInFill
 	void Draw(float z, bool DrawVertexNumbers, bool DrawLineNumbers);
 	bool LinkSegments(float z, float shrinkValue, float Optimization, bool DisplayCuttingPlane);		// Link Segments to form polygons
 	void CleanupPolygons(float Optimization);			// remove redudant points

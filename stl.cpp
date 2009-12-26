@@ -92,6 +92,8 @@ STL::STL()
 bool STL::Read(string filename, const Vector3f &PrintingMargin)
 {
 	triangles.clear();
+	Min.x = Min.y = Min.z = 0.0f;
+	Max.x = Max.y = Max.z = 200.0f;
 
 	unsigned int count;
 	ifstream infile;
@@ -355,6 +357,33 @@ void STL::draw()
 		}
 	z+=zStep;
 	}
+
+	// Draw bbox
+
+	glColor3f(1,0,0);
+	glBegin(GL_LINE_LOOP);
+	glVertex3f(Min.x, Min.y, Min.z);
+	glVertex3f(Min.x, Max.y, Min.z);
+	glVertex3f(Max.x, Max.y, Min.z);
+	glVertex3f(Max.x, Min.y, Min.z);
+	glEnd();
+	glBegin(GL_LINE_LOOP);
+	glVertex3f(Min.x, Min.y, Max.z);
+	glVertex3f(Min.x, Max.y, Max.z);
+	glVertex3f(Max.x, Max.y, Max.z);
+	glVertex3f(Max.x, Min.y, Max.z);
+	glEnd();
+	glBegin(GL_LINES);
+	glVertex3f(Min.x, Min.y, Min.z);
+	glVertex3f(Min.x, Min.y, Max.z);
+	glVertex3f(Min.x, Max.y, Min.z);
+	glVertex3f(Min.x, Max.y, Max.z);
+	glVertex3f(Max.x, Max.y, Min.z);
+	glVertex3f(Max.x, Max.y, Max.z);
+	glVertex3f(Max.x, Max.y, Min.z);
+	glVertex3f(Max.x, Max.y, Max.z);
+	glEnd();
+
 }
 
 UINT findClosestUnused(std::vector<Vector3f> lines, Vector3f point, std::vector<bool> &used)
@@ -676,11 +705,6 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 
 }
 
-bool InFillHitCompareFunc(const InFillHit& d1, const InFillHit& d2)
-{
-  return d1.d < d2.d;
-}
-
 vector<InFillHit> HitsBuffer;
 
 
@@ -959,7 +983,7 @@ int intersect2D_Segments( const Vector2f &p1, const Vector2f &p2, const Vector2f
 // calculates intersection and checks for parallel lines.  
 // also checks that the intersection point is actually on  
 // the line segment p1-p2
-bool CuttingPlane::IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, InFillHit &hit)
+bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, InFillHit &hit)
 {
 
 	if(abs(p1.x-p3.x) < 0.01 && abs(p1.y - p3.y) < 0.01)

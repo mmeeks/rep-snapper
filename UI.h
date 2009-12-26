@@ -183,6 +183,40 @@ private:
   void cb_DisplayAllLayers_i(Fl_Light_Button*, void*);
   static void cb_DisplayAllLayers(Fl_Light_Button*, void*);
 public:
+  Fl_Value_Slider *ApronSizeSlider;
+private:
+  void cb_ApronSizeSlider_i(Fl_Value_Slider*, void*);
+  static void cb_ApronSizeSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *ApronCoverageXSlider;
+private:
+  void cb_ApronCoverageXSlider_i(Fl_Value_Slider*, void*);
+  static void cb_ApronCoverageXSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *ApronBaseLayerCountSlider;
+private:
+  void cb_ApronBaseLayerCountSlider_i(Fl_Value_Slider*, void*);
+  static void cb_ApronBaseLayerCountSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *ApronCoverageYSlider;
+private:
+  void cb_ApronCoverageYSlider_i(Fl_Value_Slider*, void*);
+  static void cb_ApronCoverageYSlider(Fl_Value_Slider*, void*);
+  void cb_Enable_i(Fl_Light_Button*, void*);
+  static void cb_Enable(Fl_Light_Button*, void*);
+public:
+  Fl_Value_Slider *ApronDistanceToObjectSlider;
+private:
+  void cb_ApronDistanceToObjectSlider_i(Fl_Value_Slider*, void*);
+  static void cb_ApronDistanceToObjectSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *ApronInfillDistanceSlider;
+private:
+  void cb_ApronInfillDistanceSlider_i(Fl_Value_Slider*, void*);
+  static void cb_ApronInfillDistanceSlider(Fl_Value_Slider*, void*);
+  void cb_Preview_i(Fl_Light_Button*, void*);
+  static void cb_Preview(Fl_Light_Button*, void*);
+public:
   Fl_Value_Slider *RaftMaterialPrDistanceRatioSlider;
 private:
   void cb_RaftMaterialPrDistanceRatioSlider_i(Fl_Value_Slider*, void*);
@@ -247,6 +281,10 @@ public:
 private:
   void cb_RaftInterfaceTemperatureSlider_i(Fl_Value_Slider*, void*);
   static void cb_RaftInterfaceTemperatureSlider(Fl_Value_Slider*, void*);
+  void cb_Enable1_i(Fl_Light_Button*, void*);
+  static void cb_Enable1(Fl_Light_Button*, void*);
+  void cb_Preview1_i(Fl_Light_Button*, void*);
+  static void cb_Preview1(Fl_Light_Button*, void*);
   void cb_Load1_i(Fl_Button*, void*);
   static void cb_Load1(Fl_Button*, void*);
 public:

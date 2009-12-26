@@ -112,6 +112,17 @@ public:
 	void SetRaftInterfaceThickness(float val){ProcessControl.RaftInterfaceThickness=val;}
 	void SetRaftInterfaceTemperature(float val){ProcessControl.RaftInterfaceTemperature=val;}
 
+	// Apron
+	void SetApronEnable(bool val){};
+	void SetApronPreview(bool val){};
+	void SetApronSize(float val){};
+	void SetApronHeight(float val){};
+	void SetApronCoverageX(float val){};
+	void SetApronCoverageY(float val){};
+	void SetApronApronDistanceToObject(float val){};
+	void SetApronInfillDistance(float val){};
+
+
 	/*--------------ArcBall-------------------*/
 
 	GLUquadricObj *quadratic;											// Used For Our Quadric

@@ -25,7 +25,7 @@ public:
 		RaftBaseDistance = 2.0f;
 		RaftBaseThickness = 1.0f;
 		RaftBaseTemperature = 1.10f;
-		RaftInterfaceLayerCount = 1;
+		RaftInterfaceLayerCount = 2;
 		RaftInterfaceMaterialPrDistanceRatio = 1.0f;
 		RaftRotationPrLayer = 90.0f;
 		RaftInterfaceDistance = 2.0f;
@@ -46,7 +46,7 @@ public:
 	void ReadGCode(string filename) {gcode.Read(filename);};
 	void WriteGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, string filename);
 
-	void MakeRaft();
+	void MakeRaft(float &z, Vector3f &PrintMargin);
 
 
 	// Process functions

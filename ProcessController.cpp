@@ -25,7 +25,12 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 
 	gcode.commands.clear();
 
-	MakeRaft();
+	float destinationZ=0.0f;
+
+	Vector3f RaftPrintingMargin;
+	MakeRaft(destinationZ, RaftPrintingMargin);
+	stl.MoveIntoPrintingArea(RaftPrintingMargin);
+
 
 	while(z<stl.Max.z)
 	{
@@ -57,8 +62,9 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 			infillCuttingPlane.CalcInFill(infill, LayerNr, z, stl.InfillDistance, stl.InfillRotation, stl.InfillRotationPrLayer, stl.DisplayDebuginFill);
 			}
 		// Make the GCode from the plane and the infill
-		plane.MakeGcode(infill, gcode, z, gcode.MinPrintSpeedXY, gcode.MaxPrintSpeedXY, gcode.MinPrintSpeedZ, gcode.MaxPrintSpeedZ, gcode.accelerationSteps, gcode.distanceBetweenSpeedSteps, gcode.extrusionFactor, stl.EnableAcceleration);
+		plane.MakeGcode(infill, gcode, destinationZ, gcode.MinPrintSpeedXY, gcode.MaxPrintSpeedXY, gcode.MinPrintSpeedZ, gcode.MaxPrintSpeedZ, gcode.accelerationSteps, gcode.distanceBetweenSpeedSteps, gcode.extrusionFactor, stl.EnableAcceleration);
 		LayerNr++;
+		destinationZ += stl.LayerThickness;
 		}
 	z+=zStep;
 	}
@@ -67,86 +73,100 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 	gcode.MakeText(GcodeTxt, GcodeStart, GcodeLayer, GcodeEnd);
 }
 
-void ProcessController::MakeRaft()
-{
-/*
-float RaftSize;
-int RaftBaseLayerCount;
-float RaftMaterialPrDistanceRatio;
-float RaftRotation;
-float RaftBaseDistance;
-float RaftBaseThickness;
-float RaftBaseTemperature;
-int RaftInterfaceLayerCount;
-float RaftInterfaceMaterialPrDistanceRatio;
-float RaftRotationPrLayer;
-float RaftInterfaceDistance;
-float RaftInterfaceThickness;
-float RaftInterfaceTemperature;
-*/
 
-	// Do the base(s)
+void ProcessController::MakeRaft(float &z, Vector3f &PrintMargin)
+{
+	vector<InFillHit> HitsBuffer;
 
 	UINT LayerNr = 0;
 
-	float step = RaftBaseDistance;
+	float step;
 
-	Vector2f Min = Vector2f(stl.Min.x*RaftSize, stl.Min.y*RaftSize);
-	Vector2f Max = Vector2f(stl.Max.x*RaftSize, stl.Max.y*RaftSize);
+	Vector2f StlCenter( (stl.Min.x+stl.Max.x)/2.0f, (stl.Min.y+stl.Max.y)/2.0f);
+	Vector2f stlSize( (stl.Max.x-stl.Min.x)/2.0f, (stl.Max.y-stl.Min.y)/2.0f);
+
+	Vector2f Min = StlCenter-stlSize*RaftSize;
+	Vector2f Max = StlCenter+stlSize*RaftSize;
+
+	Max = Max - Min + Vector2f(printer.PrintMargin.x, printer.PrintMargin.y);
+	Min = Vector2f(printer.PrintMargin.x, printer.PrintMargin.y);
+	Vector2f Center = (Max+Min)*0.5f;
+
+	Vector2f newMargin = Center-Vector2f(stl.Center.x, stl.Center.y);
+	PrintMargin = Vector3f(newMargin.x, newMargin.y, 0)+printer.PrintMargin;
 
 	float Length = sqrtf(2)*(   ((Max.x)>(Max.y)? (Max.x):(Max.y))  -  ((Min.x)<(Min.y)? (Min.x):(Min.y))  )/2.0f;	// bbox of object
 
 	float rot = RaftRotation/180.0f*M_PI;
-	rot += (float)LayerNr*RaftInterfaceMaterialPrDistanceRatio/180.0f*M_PI;
-	Vector2f InfillDirX(cosf(rot), sinf(rot));
-	Vector2f InfillDirY(-InfillDirX.y, InfillDirX.x);
-	Vector2f Center = (Max+Min)/2.0f;
 
-	Vector3f LastPosition;
-	float z = 0.0f;
-	bool reverseLines = false;
-	for(float x = -Length ; x < Length ; x+=step)
+	while(LayerNr < RaftBaseLayerCount+RaftInterfaceLayerCount)
+	{
+		rot = (RaftRotation+(float)LayerNr*RaftRotationPrLayer)/180.0f*M_PI;
+		Vector2f InfillDirX(cosf(rot), sinf(rot));
+		Vector2f InfillDirY(-InfillDirX.y, InfillDirX.x);
+
+		Vector3f LastPosition;
+		bool reverseLines = false;
+
+		if(LayerNr < RaftBaseLayerCount)
+			step = RaftBaseDistance;
+		else
+			step = RaftInterfaceDistance;
+
+		for(float x = -Length ; x < Length ; x+=step)
 		{
-		Vector2f P1 = (InfillDirX * Length)+(InfillDirY*x)+ Center;
-		Vector2f P2 = (InfillDirX * -Length)+(InfillDirY*x) + Center;
+			Vector2f P1 = (InfillDirX * Length)+(InfillDirY*x)+ Center;
+			Vector2f P2 = (InfillDirX * -Length)+(InfillDirY*x) + Center;
 
-		if(reverseLines)
-		{
-		Vector2f tmp = P1;
-		P1 = P2;
-		P2 = tmp;
+			if(reverseLines)
+			{
+				Vector2f tmp = P1;
+				P1 = P2;
+				P2 = tmp;
+			}
+
+			// Crop lines to bbox*size
+			Vector3f point;
+			InFillHit hit;
+			HitsBuffer.clear();
+			Vector2f P3(Min.x, Min.y);
+			Vector2f P4(Min.x, Max.y);
+			if(IntersectXY(P1,P2,P3,P4,hit))	//Intersect edges of bbox
+				HitsBuffer.push_back(hit);
+			P3 = Vector2f(Max.x,Max.y);
+			if(IntersectXY(P1,P2,P3,P4,hit))
+				HitsBuffer.push_back(hit);
+			P4 = Vector2f(Max.x,Min.y);
+			if(IntersectXY(P1,P2,P3,P4,hit))
+				HitsBuffer.push_back(hit);
+			P3 = Vector2f(Min.x,Min.y);
+			if(IntersectXY(P1,P2,P3,P4,hit))
+				HitsBuffer.push_back(hit);
+			if(HitsBuffer.size() == 0)	// it can only be 2 or zero
+				continue;
+
+
+			std::sort(HitsBuffer.begin(), HitsBuffer.end(), InFillHitCompareFunc);
+
+			P1 = HitsBuffer[0].p;
+			P2 = HitsBuffer[1].p;
+
+			float materialRatio;
+			if(LayerNr < RaftBaseLayerCount)
+				materialRatio = RaftMaterialPrDistanceRatio;		// move or extrude?
+			else
+				materialRatio = RaftInterfaceMaterialPrDistanceRatio;		// move or extrude?
+
+			MakeAcceleratedGCodeLine(Vector3f(P1.x,P1.y,z), Vector3f(P2.x,P2.y,z), gcode.accelerationSteps, gcode.distanceBetweenSpeedSteps, materialRatio, gcode, z, gcode.MinPrintSpeedXY, gcode.MaxPrintSpeedXY, gcode.MinPrintSpeedZ, gcode.MaxPrintSpeedZ);
+
+			reverseLines = !reverseLines;
 		}
-
-		Command command;
-
-		command.Code = COORDINATEDMOTION;
-		command.where = Vector3f(P1.x, P1.y, z);
-		float len = (P2 - P1).length();
-		command.e = 0;		// move or extrude?
-		command.f = 500.0f;
-		gcode.commands.push_back(command);
-		LastPosition = command.where;
-
-		command.Code = COORDINATEDMOTION;
-		command.where = Vector3f(P2.x, P2.y, z);
-		len = (P2 - P1).length();
-		command.e = len*RaftMaterialPrDistanceRatio;		// move or extrude?
-		command.f = 500.0f;
-		gcode.commands.push_back(command);
-		LastPosition = command.where;
-
-
-		// Crop lines to bbox*size
-		{
-			glBegin(GL_LINES);
-			glColor3f(1.0f,1.0f,0);
-			glVertex3f(P1.x, P1.y, 0);
-			glVertex3f(P2.x, P2.y, 0);
-			glEnd();
-		}
-
-		reverseLines = !reverseLines;
-		}
+		if(LayerNr < RaftBaseLayerCount)
+			z+=RaftBaseThickness*stl.LayerThickness;
+		else
+			z+=RaftInterfaceThickness*stl.LayerThickness;
+		LayerNr++;
+	}
 }
 
 

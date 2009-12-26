@@ -18,3 +18,8 @@
 
 // TODO: reference any additional headers you need in STDAFX.H
 // and not in this file
+
+bool InFillHitCompareFunc(const InFillHit& d1, const InFillHit& d2)
+{
+	return d1.d < d2.d;
+}

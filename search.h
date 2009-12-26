@@ -9,6 +9,8 @@
 * option, any later version, incorporated herein by reference.
 *
 * ------------------------------------------------------------------------- */
+#pragma once
+
 #include <vmmlib/vmmlib.h>
 #include <vector>
 

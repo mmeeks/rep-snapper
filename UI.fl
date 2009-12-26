@@ -11,7 +11,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {503 218 1380 820} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
+      xywh {279 182 1380 820} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -24,7 +24,7 @@ class GUI {open
       }
       Fl_Tabs Tabs {
         label {Process:} open
-        xywh {815 20 595 790} align 5
+        xywh {815 20 605 795} align 5
       } {
         Fl_Group {} {
           label {Input file}
@@ -154,47 +154,47 @@ MVC->redraw();}
         } {
           Fl_Group {} {
             label {Build volume (mm)}
-            xywh {820 65 230 40} box FLAT_BOX color 39
+            xywh {825 65 230 40} box FLAT_BOX color 39
           } {
             Fl_Value_Input {} {
               label X
-              xywh {840 76 45 23} maximum 5000 step 1 value 200
+              xywh {845 76 45 23} maximum 5000 step 1 value 200
             }
             Fl_Value_Input {} {
               label Y
-              xywh {915 76 45 23} maximum 5000 value 200
+              xywh {920 76 45 23} maximum 5000 value 200
             }
             Fl_Value_Input {} {
               label Z
-              xywh {990 76 45 23} maximum 5000 value 140
+              xywh {995 76 45 23} maximum 5000 value 140
             }
           }
           Fl_Group {} {
             label {Print margin  (mm)}
-            xywh {1200 65 155 40} box FLAT_BOX color 39
+            xywh {1205 65 155 40} box FLAT_BOX color 39
           } {
             Fl_Value_Input {} {
               label X
-              xywh {1225 76 45 23} maximum 100 step 1 value 10
+              xywh {1230 76 45 23} maximum 100 step 1 value 10
             }
             Fl_Value_Input {} {
               label Y
-              xywh {1300 76 45 23} maximum 100 step 1 value 10
+              xywh {1305 76 45 23} maximum 100 step 1 value 10
             }
           }
           Fl_Group {} {
             label Acceleration
-            xywh {820 455 535 120} box FLAT_BOX color 39
+            xywh {825 455 535 120} box FLAT_BOX color 39
           } {
             Fl_Value_Slider NumAccelerationStepsSlider {
               label {Number of acceleration steps}
               callback {MVC->NumAccelerationSteps(o->value());}
-              xywh {830 505 515 20} type Horizontal selection_color 2 align 5 maximum 10 step 1 value 5 textsize 14
+              xywh {835 505 515 20} type Horizontal selection_color 2 align 5 maximum 10 step 1 value 5 textsize 14
             }
             Fl_Value_Slider DistancePrAccelerationStep {
               label {Distance Pr Acceleration Step (mm)}
               callback {MVC->SetDistancePrAccelerationStep(o->value());}
-              xywh {830 545 515 20} type Horizontal selection_color 2 align 5 maximum 2 value 0.1 textsize 14
+              xywh {835 545 515 20} type Horizontal selection_color 2 align 5 maximum 2 value 0.1 textsize 14
             }
             Fl_Light_Button EnableAccelerationButton {
               label {Enable Acceleration}
@@ -209,57 +209,57 @@ else
 NumAccelerationStepsSlider->deactivate();
 DistancePrAccelerationStep->deactivate();
 }}
-              xywh {830 465 255 20} selection_color 63
+              xywh {835 465 255 20} selection_color 63
             }
           }
           Fl_Group {} {
             label {Print speeds}
-            xywh {820 255 535 170} box FLAT_BOX color 39
+            xywh {825 255 535 170} box FLAT_BOX color 39
           } {
             Fl_Value_Slider MaxPrintSpeedXYSlider {
               label {Max PrintSpeed XY (mm/minute)}
               callback {MVC->SetMaxPrintSpeedXY(o->value());}
-              xywh {830 315 515 20} type Horizontal selection_color 2 align 5 maximum 8000 step 100 value 4000 textsize 14
+              xywh {835 315 515 20} type Horizontal selection_color 2 align 5 maximum 8000 step 100 value 4000 textsize 14
             }
             Fl_Value_Slider MinPrintSpeedZSlider {
               label {Min PrintSpeed Z (mm/minute)}
               callback {MVC->SetMinPrintSpeedZ(o->value());}
-              xywh {830 355 515 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 2500 step 10 value 50 textsize 14
+              xywh {835 355 515 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 2500 step 10 value 50 textsize 14
             }
             Fl_Value_Slider MinPrintSpeedXYSlider {
               label {Min PrintSpeed XY (mm/minute)}
               callback {MVC->SetMinPrintSpeedXY(o->value());}
-              xywh {830 275 515 20} type Horizontal selection_color 2 align 5 maximum 8000 step 100 value 1000 textsize 14
+              xywh {835 275 515 20} type Horizontal selection_color 2 align 5 maximum 8000 step 100 value 1000 textsize 14
             }
             Fl_Value_Slider MaxPrintSpeedZSlider {
               label {Max PrintSpeed Z (mm/minute)}
               callback {MVC->SetMaxPrintSpeedZ(o->value());}
-              xywh {830 395 515 20} type Horizontal selection_color 2 align 5 maximum 2500 step 10 value 150 textsize 14
+              xywh {835 395 515 20} type Horizontal selection_color 2 align 5 maximum 2500 step 10 value 150 textsize 14
             }
           }
           Fl_Group {} {
             label Extruder
-            xywh {820 135 535 90} box FLAT_BOX color 39
+            xywh {825 135 535 90} box FLAT_BOX color 39
           } {
             Fl_Value_Slider ShrinkSlider {
               label {Extruded material width}
               callback {MVC->SetShrinkValue(o->value());}
-              xywh {830 155 515 20} type Horizontal selection_color 2 align 5 value 0.7 textsize 14
+              xywh {835 155 515 20} type Horizontal selection_color 2 align 5 value 0.7 textsize 14
             }
             Fl_Value_Slider PlaceholderSlider {
               label {Extrusion multiplier}
               callback {MVC->SetExtrusionFactor(o->value());}
-              xywh {830 195 515 20} type Horizontal selection_color 2 align 5 maximum 2 value 1 textsize 14
+              xywh {835 195 515 20} type Horizontal selection_color 2 align 5 maximum 2 value 1 textsize 14
             }
           }
         }
         Fl_Group {} {
           label Slicing
-          xywh {815 40 545 770} hide
+          xywh {815 40 550 770} hide
         } {
           Fl_Group {} {
             label Infill
-            xywh {825 65 535 250} box FLAT_BOX color 39
+            xywh {825 65 540 250} box FLAT_BOX color 39
           } {
             Fl_Value_Slider RotationSlider {
               label Rotation
@@ -299,7 +299,7 @@ DistancePrAccelerationStep->deactivate();
           }
           Fl_Group {} {
             label Preview
-            xywh {825 350 535 90} box FLAT_BOX color 39
+            xywh {825 350 540 90} box FLAT_BOX color 39
           } {
             Fl_Value_Slider CuttingPlaneSlider {
               label CuttingPlane
@@ -324,52 +324,102 @@ DistancePrAccelerationStep->deactivate();
           }
         }
         Fl_Group {} {
+          label Apron
+          xywh {815 40 595 765} color 47 hide
+        } {
+          Fl_Group {} {
+            label Size open
+            xywh {825 65 535 305} box FLAT_BOX color 39
+          } {
+            Fl_Value_Slider ApronSizeSlider {
+              label Size
+              callback {MVC->SetApronSize(o->value());}
+              tooltip {How much larget then the print should the Raft be.} xywh {835 120 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 2 step 0.1 value 1.3 textsize 14 deactivate
+            }
+            Fl_Value_Slider ApronCoverageXSlider {
+              label {Coverage X axis}
+              callback {MVC->SetApronCoverageX(o->value());}
+              xywh {835 210 515 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 100 step 1 value 30 textsize 14 deactivate
+            }
+            Fl_Value_Slider ApronBaseLayerCountSlider {
+              label Height
+              callback {MVC->SetApronHeight(o->value());}
+              xywh {835 165 515 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 30 step 1 value 8 textsize 14 deactivate
+            }
+            Fl_Value_Slider ApronCoverageYSlider {
+              label {Coverage Y axis}
+              callback {MVC->SetApronCoverageY(o->value());}
+              xywh {835 255 515 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 100 step 1 value 30 textsize 14 deactivate
+            }
+            Fl_Light_Button {} {
+              label Enable
+              callback {MVC->SetApronEnable(o->value());}
+              xywh {835 75 255 25}
+            }
+            Fl_Value_Slider ApronDistanceToObjectSlider {
+              label {Distance to object}
+              callback {MVC->SetApronApronDistanceToObject(o->value());}
+              xywh {835 300 515 20} type Horizontal selection_color 2 align 5 minimum -1 maximum 3 step 0.1 value 0.5 textsize 14 deactivate
+            }
+            Fl_Value_Slider ApronInfillDistanceSlider {
+              label {Infill Distance}
+              callback {MVC->SetApronInfillDistance(o->value());}
+              xywh {835 340 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14 deactivate
+            }
+            Fl_Light_Button {} {
+              label Preview
+              callback {MVC->SetApronPreview(o->value());}
+              xywh {1095 75 255 25} deactivate
+            }
+          }
+        }
+        Fl_Group {} {
           label Raft open
           xywh {815 40 595 765} color 47
         } {
           Fl_Group {} {
             label Base open
-            xywh {820 190 535 270} box FLAT_BOX color 39
+            xywh {820 220 535 270} box FLAT_BOX color 39
           } {
             Fl_Value_Slider RaftMaterialPrDistanceRatioSlider {
               label {Material pr. distance ratio}
               callback {MVC->SetRaftMaterialPrDistanceRatio(o->value());}
-              xywh {830 255 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 1.75 textsize 14
+              xywh {830 285 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 1.75 textsize 14
             }
             Fl_Value_Slider RaftRotationSlider {
               label Rotation
               callback {MVC->SetRaftRotation(o->value());}
-              xywh {830 295 515 20} type Horizontal selection_color 2 align 5 maximum 360 step 1 value 90 textsize 14
+              xywh {830 325 515 20} type Horizontal selection_color 2 align 5 maximum 360 step 1 value 90 textsize 14
             }
             Fl_Value_Slider RaftBaseDistanceSlider {
               label {Distance between lines}
               callback {MVC->SetRaftBaseDistance(o->value());}
-              tooltip {Distance between the base layer's lines} xywh {830 340 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14
+              tooltip {Distance between the base layer's lines} xywh {830 370 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14
             }
             Fl_Value_Slider RaftBaseThicknessSlider {
               label {Thinkness ratio}
               callback {MVC->SetRaftBaseThickness(o->value());}
-              tooltip {How much thicker or thinner then a normal layer should the raft base be.} xywh {830 385 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 1 textsize 14
+              tooltip {How much thicker or thinner then a normal layer should the raft base be.} xywh {830 415 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 1 textsize 14
             }
             Fl_Value_Slider RaftBaseLayerCountSlider {
               label {Number of Base layers}
-              callback {MVC->SetRaftBaseLayerCount(o->value());} selected
-              xywh {830 215 515 20} type Horizontal selection_color 2 align 5 maximum 5 step 1 value 1 textsize 14
+              callback {MVC->SetRaftBaseLayerCount(o->value());}
+              xywh {830 245 515 20} type Horizontal selection_color 2 align 5 maximum 5 step 1 value 1 textsize 14
             }
             Fl_Value_Slider RaftBaseTemperatureSlider {
               label {Temperature ratio}
               callback {MVC->SetRaftBaseTemperature(o->value());}
-              tooltip {To make the flow better, you may want to print the base layers hotter then the rest of the print.} xywh {830 430 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 3 value 1.1 textsize 14
+              tooltip {To make the flow better, you may want to print the base layers hotter then the rest of the print.} xywh {830 460 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 3 value 1.1 textsize 14
             }
           }
           Fl_Group {} {
             label Size open
-            xywh {820 60 535 55} box FLAT_BOX color 39
+            xywh {820 145 535 55} box FLAT_BOX color 39
           } {
             Fl_Value_Slider RaftSizeSlider {
               label Size
-              callback {MVC->SetRaftSize(o->value());}
-              tooltip {How much larget then the print should the Raft be.} xywh {830 85 515 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 2 value 1.33 textsize 14
+              callback {MVC->SetRaftSize(o->value());} selected
+              tooltip {How much larget then the print should the Raft be.} xywh {830 170 515 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 3 value 1.33 textsize 14
             }
           }
           Fl_Group {} {
@@ -394,17 +444,32 @@ DistancePrAccelerationStep->deactivate();
             Fl_Value_Slider RaftInterfaceThicknessSlider {
               label {Thinkness ratio}
               callback {MVC->SetRaftBaseThickness(o->value());}
-              tooltip {How much thicker or thinner then a normal layer should the raft base be.} xywh {830 730 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 0.4 textsize 14
+              tooltip {How much thicker or thinner then a normal layer should the raft base be.} xywh {830 730 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 1 textsize 14
             }
             Fl_Value_Slider RaftInterfaceLayerCountSlider {
               label {Number of interface layers}
               callback {MVC->SeRaftInterfaceLayerCount(o->value());}
-              xywh {830 550 515 20} type Horizontal selection_color 2 align 5 maximum 5 step 1 value 1 textsize 14
+              xywh {830 550 515 20} type Horizontal selection_color 2 align 5 maximum 5 step 1 value 2 textsize 14
             }
             Fl_Value_Slider RaftInterfaceTemperatureSlider {
               label {Temperature ratio}
               callback {MVC->SetRaftInterfaceTemperature(o->value());}
               tooltip {To make the flow better, you may want to print the base layers hotter then the rest of the print.} xywh {830 775 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 3 value 1.1 textsize 14
+            }
+          }
+          Fl_Group {} {
+            label Size open
+            xywh {820 60 535 55} box FLAT_BOX color 39
+          } {
+            Fl_Light_Button {} {
+              label Enable
+              callback {MVC->SetApronEnable(o->value());}
+              xywh {825 80 255 25}
+            }
+            Fl_Light_Button {} {
+              label Preview
+              callback {MVC->SetApronPreview(o->value());}
+              xywh {1085 80 255 25} deactivate
             }
           }
         }

@@ -290,6 +290,62 @@ void GUI::cb_DisplayAllLayers(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_DisplayAllLayers_i(o,v);
 }
 
+void GUI::cb_ApronSizeSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetApronSize(o->value());
+}
+void GUI::cb_ApronSizeSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ApronSizeSlider_i(o,v);
+}
+
+void GUI::cb_ApronCoverageXSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetApronCoverageX(o->value());
+}
+void GUI::cb_ApronCoverageXSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ApronCoverageXSlider_i(o,v);
+}
+
+void GUI::cb_ApronBaseLayerCountSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetApronHeight(o->value());
+}
+void GUI::cb_ApronBaseLayerCountSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ApronBaseLayerCountSlider_i(o,v);
+}
+
+void GUI::cb_ApronCoverageYSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetApronCoverageY(o->value());
+}
+void GUI::cb_ApronCoverageYSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ApronCoverageYSlider_i(o,v);
+}
+
+void GUI::cb_Enable_i(Fl_Light_Button* o, void*) {
+  MVC->SetApronEnable(o->value());
+}
+void GUI::cb_Enable(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Enable_i(o,v);
+}
+
+void GUI::cb_ApronDistanceToObjectSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetApronApronDistanceToObject(o->value());
+}
+void GUI::cb_ApronDistanceToObjectSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ApronDistanceToObjectSlider_i(o,v);
+}
+
+void GUI::cb_ApronInfillDistanceSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetApronInfillDistance(o->value());
+}
+void GUI::cb_ApronInfillDistanceSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ApronInfillDistanceSlider_i(o,v);
+}
+
+void GUI::cb_Preview_i(Fl_Light_Button* o, void*) {
+  MVC->SetApronPreview(o->value());
+}
+void GUI::cb_Preview(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Preview_i(o,v);
+}
+
 void GUI::cb_RaftMaterialPrDistanceRatioSlider_i(Fl_Value_Slider* o, void*) {
   MVC->SetRaftMaterialPrDistanceRatio(o->value());
 }
@@ -379,6 +435,20 @@ void GUI::cb_RaftInterfaceTemperatureSlider_i(Fl_Value_Slider* o, void*) {
 }
 void GUI::cb_RaftInterfaceTemperatureSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_RaftInterfaceTemperatureSlider_i(o,v);
+}
+
+void GUI::cb_Enable1_i(Fl_Light_Button* o, void*) {
+  MVC->SetApronEnable(o->value());
+}
+void GUI::cb_Enable1(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Enable1_i(o,v);
+}
+
+void GUI::cb_Preview1_i(Fl_Light_Button* o, void*) {
+  MVC->SetApronPreview(o->value());
+}
+void GUI::cb_Preview1(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Preview1_i(o,v);
 }
 
 void GUI::cb_Load1_i(Fl_Button*, void*) {
@@ -536,7 +606,7 @@ GUI::GUI() {
       MVC->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
       MVC->when(FL_WHEN_RELEASE);
     } // ModelViewController* MVC
-    { Tabs = new Fl_Tabs(815, 20, 595, 790, "Process:");
+    { Tabs = new Fl_Tabs(815, 20, 605, 795, "Process:");
       Tabs->align(FL_ALIGN_TOP_LEFT);
       { Fl_Group* o = new Fl_Group(815, 40, 555, 765, "Input file");
         o->hide();
@@ -602,43 +672,43 @@ GUI::GUI() {
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(815, 40, 550, 765, "Printer definition");
         o->hide();
-        { Fl_Group* o = new Fl_Group(820, 65, 230, 40, "Build volume (mm)");
+        { Fl_Group* o = new Fl_Group(825, 65, 230, 40, "Build volume (mm)");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { Fl_Value_Input* o = new Fl_Value_Input(840, 76, 45, 23, "X");
+          { Fl_Value_Input* o = new Fl_Value_Input(845, 76, 45, 23, "X");
             o->maximum(5000);
             o->step(1);
             o->value(200);
           } // Fl_Value_Input* o
-          { Fl_Value_Input* o = new Fl_Value_Input(915, 76, 45, 23, "Y");
+          { Fl_Value_Input* o = new Fl_Value_Input(920, 76, 45, 23, "Y");
             o->maximum(5000);
             o->value(200);
           } // Fl_Value_Input* o
-          { Fl_Value_Input* o = new Fl_Value_Input(990, 76, 45, 23, "Z");
+          { Fl_Value_Input* o = new Fl_Value_Input(995, 76, 45, 23, "Z");
             o->maximum(5000);
             o->value(140);
           } // Fl_Value_Input* o
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(1200, 65, 155, 40, "Print margin  (mm)");
+        { Fl_Group* o = new Fl_Group(1205, 65, 155, 40, "Print margin  (mm)");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { Fl_Value_Input* o = new Fl_Value_Input(1225, 76, 45, 23, "X");
+          { Fl_Value_Input* o = new Fl_Value_Input(1230, 76, 45, 23, "X");
             o->maximum(100);
             o->step(1);
             o->value(10);
           } // Fl_Value_Input* o
-          { Fl_Value_Input* o = new Fl_Value_Input(1300, 76, 45, 23, "Y");
+          { Fl_Value_Input* o = new Fl_Value_Input(1305, 76, 45, 23, "Y");
             o->maximum(100);
             o->step(1);
             o->value(10);
           } // Fl_Value_Input* o
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(820, 455, 535, 120, "Acceleration");
+        { Fl_Group* o = new Fl_Group(825, 455, 535, 120, "Acceleration");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { NumAccelerationStepsSlider = new Fl_Value_Slider(830, 505, 515, 20, "Number of acceleration steps");
+          { NumAccelerationStepsSlider = new Fl_Value_Slider(835, 505, 515, 20, "Number of acceleration steps");
             NumAccelerationStepsSlider->type(1);
             NumAccelerationStepsSlider->selection_color((Fl_Color)2);
             NumAccelerationStepsSlider->maximum(10);
@@ -648,7 +718,7 @@ GUI::GUI() {
             NumAccelerationStepsSlider->callback((Fl_Callback*)cb_NumAccelerationStepsSlider);
             NumAccelerationStepsSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* NumAccelerationStepsSlider
-          { DistancePrAccelerationStep = new Fl_Value_Slider(830, 545, 515, 20, "Distance Pr Acceleration Step (mm)");
+          { DistancePrAccelerationStep = new Fl_Value_Slider(835, 545, 515, 20, "Distance Pr Acceleration Step (mm)");
             DistancePrAccelerationStep->type(1);
             DistancePrAccelerationStep->selection_color((Fl_Color)2);
             DistancePrAccelerationStep->maximum(2);
@@ -657,16 +727,16 @@ GUI::GUI() {
             DistancePrAccelerationStep->callback((Fl_Callback*)cb_DistancePrAccelerationStep);
             DistancePrAccelerationStep->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* DistancePrAccelerationStep
-          { EnableAccelerationButton = new Fl_Light_Button(830, 465, 255, 20, "Enable Acceleration");
+          { EnableAccelerationButton = new Fl_Light_Button(835, 465, 255, 20, "Enable Acceleration");
             EnableAccelerationButton->selection_color((Fl_Color)FL_GREEN);
             EnableAccelerationButton->callback((Fl_Callback*)cb_EnableAccelerationButton);
           } // Fl_Light_Button* EnableAccelerationButton
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(820, 255, 535, 170, "Print speeds");
+        { Fl_Group* o = new Fl_Group(825, 255, 535, 170, "Print speeds");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { MaxPrintSpeedXYSlider = new Fl_Value_Slider(830, 315, 515, 20, "Max PrintSpeed XY (mm/minute)");
+          { MaxPrintSpeedXYSlider = new Fl_Value_Slider(835, 315, 515, 20, "Max PrintSpeed XY (mm/minute)");
             MaxPrintSpeedXYSlider->type(1);
             MaxPrintSpeedXYSlider->selection_color((Fl_Color)2);
             MaxPrintSpeedXYSlider->maximum(8000);
@@ -676,7 +746,7 @@ GUI::GUI() {
             MaxPrintSpeedXYSlider->callback((Fl_Callback*)cb_MaxPrintSpeedXYSlider);
             MaxPrintSpeedXYSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* MaxPrintSpeedXYSlider
-          { MinPrintSpeedZSlider = new Fl_Value_Slider(830, 355, 515, 20, "Min PrintSpeed Z (mm/minute)");
+          { MinPrintSpeedZSlider = new Fl_Value_Slider(835, 355, 515, 20, "Min PrintSpeed Z (mm/minute)");
             MinPrintSpeedZSlider->type(1);
             MinPrintSpeedZSlider->selection_color((Fl_Color)2);
             MinPrintSpeedZSlider->minimum(1);
@@ -687,7 +757,7 @@ GUI::GUI() {
             MinPrintSpeedZSlider->callback((Fl_Callback*)cb_MinPrintSpeedZSlider);
             MinPrintSpeedZSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* MinPrintSpeedZSlider
-          { MinPrintSpeedXYSlider = new Fl_Value_Slider(830, 275, 515, 20, "Min PrintSpeed XY (mm/minute)");
+          { MinPrintSpeedXYSlider = new Fl_Value_Slider(835, 275, 515, 20, "Min PrintSpeed XY (mm/minute)");
             MinPrintSpeedXYSlider->type(1);
             MinPrintSpeedXYSlider->selection_color((Fl_Color)2);
             MinPrintSpeedXYSlider->maximum(8000);
@@ -697,7 +767,7 @@ GUI::GUI() {
             MinPrintSpeedXYSlider->callback((Fl_Callback*)cb_MinPrintSpeedXYSlider);
             MinPrintSpeedXYSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* MinPrintSpeedXYSlider
-          { MaxPrintSpeedZSlider = new Fl_Value_Slider(830, 395, 515, 20, "Max PrintSpeed Z (mm/minute)");
+          { MaxPrintSpeedZSlider = new Fl_Value_Slider(835, 395, 515, 20, "Max PrintSpeed Z (mm/minute)");
             MaxPrintSpeedZSlider->type(1);
             MaxPrintSpeedZSlider->selection_color((Fl_Color)2);
             MaxPrintSpeedZSlider->maximum(2500);
@@ -709,10 +779,10 @@ GUI::GUI() {
           } // Fl_Value_Slider* MaxPrintSpeedZSlider
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(820, 135, 535, 90, "Extruder");
+        { Fl_Group* o = new Fl_Group(825, 135, 535, 90, "Extruder");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { ShrinkSlider = new Fl_Value_Slider(830, 155, 515, 20, "Extruded material width");
+          { ShrinkSlider = new Fl_Value_Slider(835, 155, 515, 20, "Extruded material width");
             ShrinkSlider->type(1);
             ShrinkSlider->selection_color((Fl_Color)2);
             ShrinkSlider->value(0.7);
@@ -720,7 +790,7 @@ GUI::GUI() {
             ShrinkSlider->callback((Fl_Callback*)cb_ShrinkSlider);
             ShrinkSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* ShrinkSlider
-          { PlaceholderSlider = new Fl_Value_Slider(830, 195, 515, 20, "Extrusion multiplier");
+          { PlaceholderSlider = new Fl_Value_Slider(835, 195, 515, 20, "Extrusion multiplier");
             PlaceholderSlider->type(1);
             PlaceholderSlider->selection_color((Fl_Color)2);
             PlaceholderSlider->maximum(2);
@@ -733,9 +803,9 @@ GUI::GUI() {
         } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(815, 40, 545, 770, "Slicing");
+      { Fl_Group* o = new Fl_Group(815, 40, 550, 770, "Slicing");
         o->hide();
-        { Fl_Group* o = new Fl_Group(825, 65, 535, 250, "Infill");
+        { Fl_Group* o = new Fl_Group(825, 65, 540, 250, "Infill");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
           { RotationSlider = new Fl_Value_Slider(835, 125, 515, 20, "Rotation");
@@ -806,7 +876,7 @@ GUI::GUI() {
           } // Fl_Value_Slider* ShellCountSlider
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(825, 350, 535, 90, "Preview");
+        { Fl_Group* o = new Fl_Group(825, 350, 540, 90, "Preview");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
           { CuttingPlaneSlider = new Fl_Value_Slider(835, 370, 515, 20, "CuttingPlane");
@@ -832,12 +902,102 @@ GUI::GUI() {
         } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(815, 40, 595, 765, "Raft");
+      { Fl_Group* o = new Fl_Group(815, 40, 595, 765, "Apron");
         o->color((Fl_Color)FL_DARK1);
-        { Fl_Group* o = new Fl_Group(820, 190, 535, 270, "Base");
+        o->hide();
+        { Fl_Group* o = new Fl_Group(825, 65, 535, 305, "Size");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { RaftMaterialPrDistanceRatioSlider = new Fl_Value_Slider(830, 255, 515, 20, "Material pr. distance ratio");
+          { ApronSizeSlider = new Fl_Value_Slider(835, 120, 515, 20, "Size");
+            ApronSizeSlider->tooltip("How much larget then the print should the Raft be.");
+            ApronSizeSlider->type(1);
+            ApronSizeSlider->selection_color((Fl_Color)2);
+            ApronSizeSlider->minimum(0.1);
+            ApronSizeSlider->maximum(2);
+            ApronSizeSlider->step(0.1);
+            ApronSizeSlider->value(1.3);
+            ApronSizeSlider->textsize(14);
+            ApronSizeSlider->callback((Fl_Callback*)cb_ApronSizeSlider);
+            ApronSizeSlider->align(FL_ALIGN_TOP_LEFT);
+            ApronSizeSlider->deactivate();
+          } // Fl_Value_Slider* ApronSizeSlider
+          { ApronCoverageXSlider = new Fl_Value_Slider(835, 210, 515, 20, "Coverage X axis");
+            ApronCoverageXSlider->type(1);
+            ApronCoverageXSlider->selection_color((Fl_Color)2);
+            ApronCoverageXSlider->minimum(1);
+            ApronCoverageXSlider->maximum(100);
+            ApronCoverageXSlider->step(1);
+            ApronCoverageXSlider->value(30);
+            ApronCoverageXSlider->textsize(14);
+            ApronCoverageXSlider->callback((Fl_Callback*)cb_ApronCoverageXSlider);
+            ApronCoverageXSlider->align(FL_ALIGN_TOP_LEFT);
+            ApronCoverageXSlider->deactivate();
+          } // Fl_Value_Slider* ApronCoverageXSlider
+          { ApronBaseLayerCountSlider = new Fl_Value_Slider(835, 165, 515, 20, "Height");
+            ApronBaseLayerCountSlider->type(1);
+            ApronBaseLayerCountSlider->selection_color((Fl_Color)2);
+            ApronBaseLayerCountSlider->minimum(1);
+            ApronBaseLayerCountSlider->maximum(30);
+            ApronBaseLayerCountSlider->step(1);
+            ApronBaseLayerCountSlider->value(8);
+            ApronBaseLayerCountSlider->textsize(14);
+            ApronBaseLayerCountSlider->callback((Fl_Callback*)cb_ApronBaseLayerCountSlider);
+            ApronBaseLayerCountSlider->align(FL_ALIGN_TOP_LEFT);
+            ApronBaseLayerCountSlider->deactivate();
+          } // Fl_Value_Slider* ApronBaseLayerCountSlider
+          { ApronCoverageYSlider = new Fl_Value_Slider(835, 255, 515, 20, "Coverage Y axis");
+            ApronCoverageYSlider->type(1);
+            ApronCoverageYSlider->selection_color((Fl_Color)2);
+            ApronCoverageYSlider->minimum(1);
+            ApronCoverageYSlider->maximum(100);
+            ApronCoverageYSlider->step(1);
+            ApronCoverageYSlider->value(30);
+            ApronCoverageYSlider->textsize(14);
+            ApronCoverageYSlider->callback((Fl_Callback*)cb_ApronCoverageYSlider);
+            ApronCoverageYSlider->align(FL_ALIGN_TOP_LEFT);
+            ApronCoverageYSlider->deactivate();
+          } // Fl_Value_Slider* ApronCoverageYSlider
+          { Fl_Light_Button* o = new Fl_Light_Button(835, 75, 255, 25, "Enable");
+            o->callback((Fl_Callback*)cb_Enable);
+          } // Fl_Light_Button* o
+          { ApronDistanceToObjectSlider = new Fl_Value_Slider(835, 300, 515, 20, "Distance to object");
+            ApronDistanceToObjectSlider->type(1);
+            ApronDistanceToObjectSlider->selection_color((Fl_Color)2);
+            ApronDistanceToObjectSlider->minimum(-1);
+            ApronDistanceToObjectSlider->maximum(3);
+            ApronDistanceToObjectSlider->step(0.1);
+            ApronDistanceToObjectSlider->value(0.5);
+            ApronDistanceToObjectSlider->textsize(14);
+            ApronDistanceToObjectSlider->callback((Fl_Callback*)cb_ApronDistanceToObjectSlider);
+            ApronDistanceToObjectSlider->align(FL_ALIGN_TOP_LEFT);
+            ApronDistanceToObjectSlider->deactivate();
+          } // Fl_Value_Slider* ApronDistanceToObjectSlider
+          { ApronInfillDistanceSlider = new Fl_Value_Slider(835, 340, 515, 20, "Infill Distance");
+            ApronInfillDistanceSlider->type(1);
+            ApronInfillDistanceSlider->selection_color((Fl_Color)2);
+            ApronInfillDistanceSlider->minimum(0.1);
+            ApronInfillDistanceSlider->maximum(10);
+            ApronInfillDistanceSlider->step(0.1);
+            ApronInfillDistanceSlider->value(2);
+            ApronInfillDistanceSlider->textsize(14);
+            ApronInfillDistanceSlider->callback((Fl_Callback*)cb_ApronInfillDistanceSlider);
+            ApronInfillDistanceSlider->align(FL_ALIGN_TOP_LEFT);
+            ApronInfillDistanceSlider->deactivate();
+          } // Fl_Value_Slider* ApronInfillDistanceSlider
+          { Fl_Light_Button* o = new Fl_Light_Button(1095, 75, 255, 25, "Preview");
+            o->callback((Fl_Callback*)cb_Preview);
+            o->deactivate();
+          } // Fl_Light_Button* o
+          o->end();
+        } // Fl_Group* o
+        o->end();
+      } // Fl_Group* o
+      { Fl_Group* o = new Fl_Group(815, 40, 595, 765, "Raft");
+        o->color((Fl_Color)FL_DARK1);
+        { Fl_Group* o = new Fl_Group(820, 220, 535, 270, "Base");
+          o->box(FL_FLAT_BOX);
+          o->color((Fl_Color)FL_DARK3);
+          { RaftMaterialPrDistanceRatioSlider = new Fl_Value_Slider(830, 285, 515, 20, "Material pr. distance ratio");
             RaftMaterialPrDistanceRatioSlider->type(1);
             RaftMaterialPrDistanceRatioSlider->selection_color((Fl_Color)2);
             RaftMaterialPrDistanceRatioSlider->minimum(0.1);
@@ -848,7 +1008,7 @@ GUI::GUI() {
             RaftMaterialPrDistanceRatioSlider->callback((Fl_Callback*)cb_RaftMaterialPrDistanceRatioSlider);
             RaftMaterialPrDistanceRatioSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* RaftMaterialPrDistanceRatioSlider
-          { RaftRotationSlider = new Fl_Value_Slider(830, 295, 515, 20, "Rotation");
+          { RaftRotationSlider = new Fl_Value_Slider(830, 325, 515, 20, "Rotation");
             RaftRotationSlider->type(1);
             RaftRotationSlider->selection_color((Fl_Color)2);
             RaftRotationSlider->maximum(360);
@@ -858,7 +1018,7 @@ GUI::GUI() {
             RaftRotationSlider->callback((Fl_Callback*)cb_RaftRotationSlider);
             RaftRotationSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* RaftRotationSlider
-          { RaftBaseDistanceSlider = new Fl_Value_Slider(830, 340, 515, 20, "Distance between lines");
+          { RaftBaseDistanceSlider = new Fl_Value_Slider(830, 370, 515, 20, "Distance between lines");
             RaftBaseDistanceSlider->tooltip("Distance between the base layer\'s lines");
             RaftBaseDistanceSlider->type(1);
             RaftBaseDistanceSlider->selection_color((Fl_Color)2);
@@ -870,7 +1030,7 @@ GUI::GUI() {
             RaftBaseDistanceSlider->callback((Fl_Callback*)cb_RaftBaseDistanceSlider);
             RaftBaseDistanceSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* RaftBaseDistanceSlider
-          { RaftBaseThicknessSlider = new Fl_Value_Slider(830, 385, 515, 20, "Thinkness ratio");
+          { RaftBaseThicknessSlider = new Fl_Value_Slider(830, 415, 515, 20, "Thinkness ratio");
             RaftBaseThicknessSlider->tooltip("How much thicker or thinner then a normal layer should the raft base be.");
             RaftBaseThicknessSlider->type(1);
             RaftBaseThicknessSlider->selection_color((Fl_Color)2);
@@ -882,7 +1042,7 @@ GUI::GUI() {
             RaftBaseThicknessSlider->callback((Fl_Callback*)cb_RaftBaseThicknessSlider);
             RaftBaseThicknessSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* RaftBaseThicknessSlider
-          { RaftBaseLayerCountSlider = new Fl_Value_Slider(830, 215, 515, 20, "Number of Base layers");
+          { RaftBaseLayerCountSlider = new Fl_Value_Slider(830, 245, 515, 20, "Number of Base layers");
             RaftBaseLayerCountSlider->type(1);
             RaftBaseLayerCountSlider->selection_color((Fl_Color)2);
             RaftBaseLayerCountSlider->maximum(5);
@@ -892,7 +1052,7 @@ GUI::GUI() {
             RaftBaseLayerCountSlider->callback((Fl_Callback*)cb_RaftBaseLayerCountSlider);
             RaftBaseLayerCountSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* RaftBaseLayerCountSlider
-          { RaftBaseTemperatureSlider = new Fl_Value_Slider(830, 430, 515, 20, "Temperature ratio");
+          { RaftBaseTemperatureSlider = new Fl_Value_Slider(830, 460, 515, 20, "Temperature ratio");
             RaftBaseTemperatureSlider->tooltip("To make the flow better, you may want to print the base layers hotter then th\
 e rest of the print.");
             RaftBaseTemperatureSlider->type(1);
@@ -906,15 +1066,15 @@ e rest of the print.");
           } // Fl_Value_Slider* RaftBaseTemperatureSlider
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(820, 60, 535, 55, "Size");
+        { Fl_Group* o = new Fl_Group(820, 145, 535, 55, "Size");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { RaftSizeSlider = new Fl_Value_Slider(830, 85, 515, 20, "Size");
+          { RaftSizeSlider = new Fl_Value_Slider(830, 170, 515, 20, "Size");
             RaftSizeSlider->tooltip("How much larget then the print should the Raft be.");
             RaftSizeSlider->type(1);
             RaftSizeSlider->selection_color((Fl_Color)2);
             RaftSizeSlider->minimum(1);
-            RaftSizeSlider->maximum(2);
+            RaftSizeSlider->maximum(3);
             RaftSizeSlider->value(1.33);
             RaftSizeSlider->textsize(14);
             RaftSizeSlider->callback((Fl_Callback*)cb_RaftSizeSlider);
@@ -967,7 +1127,7 @@ hey should be \"nice\" and with a normal extrusion ratio.");
             RaftInterfaceThicknessSlider->minimum(0.1);
             RaftInterfaceThicknessSlider->maximum(3);
             RaftInterfaceThicknessSlider->step(0.1);
-            RaftInterfaceThicknessSlider->value(0.4);
+            RaftInterfaceThicknessSlider->value(1);
             RaftInterfaceThicknessSlider->textsize(14);
             RaftInterfaceThicknessSlider->callback((Fl_Callback*)cb_RaftInterfaceThicknessSlider);
             RaftInterfaceThicknessSlider->align(FL_ALIGN_TOP_LEFT);
@@ -977,7 +1137,7 @@ hey should be \"nice\" and with a normal extrusion ratio.");
             RaftInterfaceLayerCountSlider->selection_color((Fl_Color)2);
             RaftInterfaceLayerCountSlider->maximum(5);
             RaftInterfaceLayerCountSlider->step(1);
-            RaftInterfaceLayerCountSlider->value(1);
+            RaftInterfaceLayerCountSlider->value(2);
             RaftInterfaceLayerCountSlider->textsize(14);
             RaftInterfaceLayerCountSlider->callback((Fl_Callback*)cb_RaftInterfaceLayerCountSlider);
             RaftInterfaceLayerCountSlider->align(FL_ALIGN_TOP_LEFT);
@@ -994,6 +1154,18 @@ e rest of the print.");
             RaftInterfaceTemperatureSlider->callback((Fl_Callback*)cb_RaftInterfaceTemperatureSlider);
             RaftInterfaceTemperatureSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* RaftInterfaceTemperatureSlider
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(820, 60, 535, 55, "Size");
+          o->box(FL_FLAT_BOX);
+          o->color((Fl_Color)FL_DARK3);
+          { Fl_Light_Button* o = new Fl_Light_Button(825, 80, 255, 25, "Enable");
+            o->callback((Fl_Callback*)cb_Enable1);
+          } // Fl_Light_Button* o
+          { Fl_Light_Button* o = new Fl_Light_Button(1085, 80, 255, 25, "Preview");
+            o->callback((Fl_Callback*)cb_Preview1);
+            o->deactivate();
+          } // Fl_Light_Button* o
           o->end();
         } // Fl_Group* o
         o->end();
