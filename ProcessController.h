@@ -40,7 +40,7 @@ public:
 		RaftInterfaceDistance = 2.0f;
 		RaftInterfaceThickness = 1.0f;
 		RaftInterfaceTemperature = 1.0f;
-		m_Filename = "d:/repsnapper";
+		m_Filename = "./repsnapper";
 
 		// Printer
 		m_fVolume = Vector3f(200,200,140);
