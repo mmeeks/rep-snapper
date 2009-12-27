@@ -59,6 +59,7 @@ public:
 		accelerationSteps = 5;
 		distanceBetweenSpeedSteps= 0.5f;
 		extrusionFactor = 1.0f;
+		UseIncrementalEcode = false;
 
 		LayerThickness = 0.4f;
 		CuttingPlaneValue = 0.5f;
@@ -164,6 +165,7 @@ public:
 	Vector3f	m_fVolume;				// Max print volume
 	Vector3f	PrintMargin;
 	float		ExtrudedMaterialWidth;	// Width of extruded material
+	bool		UseIncrementalEcode;
 
 	// STL 
 	float LayerThickness;

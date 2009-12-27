@@ -39,6 +39,7 @@ public:
 	void ReadGCode(string filename) {ProcessControl.gcode.Read(filename);}
 	void ConvertToGCode();
 	void init();
+	void SetUseIncrementalEcode(bool val) {ProcessControl.UseIncrementalEcode = val;}
 
 	// My own view functions
 	void draw();

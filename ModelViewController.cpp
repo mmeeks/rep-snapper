@@ -292,6 +292,7 @@ void ModelViewController::CopySettingsToGUI()
 	gui->accelerationStepsSlider->value(ProcessControl.accelerationSteps);
 	gui->distanceBetweenSpeedStepsSlider->value(ProcessControl.distanceBetweenSpeedSteps);
 	gui->extrusionFactorSlider->value(ProcessControl.extrusionFactor);
+	gui->UseIncrementalEcodeButton->value(ProcessControl.UseIncrementalEcode);
 
 	// Printer
 	gui->VolumeX->value(ProcessControl.m_fVolume.x);

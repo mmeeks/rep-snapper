@@ -390,12 +390,20 @@ CuttingPlane::CuttingPlane()
 {
 }
 
-void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, GCode &code, float z, float minSpeedXY, float maxSpeedXY, float minSpeedZ, float maxSpeedZ)
+void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, GCode &code, float z, float minSpeedXY, float maxSpeedXY, float minSpeedZ, float maxSpeedZ, bool UseIncrementalEcode, float &E)
 {
 	float len;
 	Vector3f LastPosition = start;
 	Command command;
 	float accumulatedE = 0;
+
+	// TODO: Check if the line piece is smaller then 3xdistanceBetweenSpeedSteps - if so, it's one line
+/*	if((end-start).length() < distanceBetweenSpeedSteps*2)
+	{
+
+	}
+*/
+
 	// Make a accelerated line from LastPosition to lines[thisPoint]
 	if(end != start) //If we are going to somewhere else
 		{
@@ -415,17 +423,11 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSte
 			float distRemain = (end - pos).length();
 			float distTraveled = (pos-start).length();
 
-			if(distRemain < distTraveled)	// Start deacceleration?
-				{
-				currrentAccelerationLevel = i;
-				break;						// break loop, start deacceleration
-				}
-
 			// store thisPoint
 			command.Code = COORDINATEDMOTION;
 			command.where = pos;
 			float extrudedMaterial = (LastPosition - command.where).length()*extrusionFactor;
-			if(extrudedMaterial < 1.0f)
+/*			if(extrudedMaterial < 1.0f)
 				{
 				accumulatedE += extrudedMaterial;		// Gather untill we have a real amount
 				extrudedMaterial = 0.0f;				// and don't extrude anything this move (ooze takes care of it)
@@ -434,11 +436,20 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSte
 					extrudedMaterial = (float)(int)accumulatedE;	// Extrude the int value of the collected material
 					accumulatedE -= extrudedMaterial;				// and remove it from the buffer
 					}
-				}
-			command.e = extrudedMaterial;		// move or extrude?
+				}*/
+			if(UseIncrementalEcode)
+				E+=extrudedMaterial;
+			else
+				E = extrudedMaterial;
+			command.e = E;		// move or extrude?
 			command.f = speed;
 			code.commands.push_back(command);
 			LastPosition = pos;
+			if(distRemain < distTraveled)	// Start deacceleration?
+				{
+				currrentAccelerationLevel = i;
+				break;						// break loop, start deacceleration
+				}
 			}
 	// Deacceleration
 		for(int i=currrentAccelerationLevel;i>=0;i--)	// Don't use UINT, it needs to go below zero
@@ -450,7 +461,12 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSte
 			command.Code = COORDINATEDMOTION;
 			command.where = pos;
 			float len = (LastPosition - command.where).length();
-			command.e = len*extrusionFactor;		// move or extrude?
+			float extrudedMaterial = len*extrusionFactor;
+			if(UseIncrementalEcode)
+				E+=extrudedMaterial;
+			else
+				E = extrudedMaterial;
+			command.e = E;		// move or extrude?
 			command.f = speed;
 			code.commands.push_back(command);
 			LastPosition = pos;
@@ -458,9 +474,11 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSte
 		}// If we are going to somewhere else
 }
 
-void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, bool UseAcceleration)
+void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, bool UseAcceleration, bool UseIncrementalEcode)
 {
 	// Make an array with all lines, then link'em
+
+	float E = 0.0f;
 
 	Vector3f LastPosition= Vector3f(0,0,z);
 
@@ -527,7 +545,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 		if(LastPosition != lines[thisPoint]) //If we are going to somewhere else
 			{
 			if(UseAcceleration)
-				MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], accelerationSteps,distanceBetweenSpeedSteps, 0.0f, code, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ);
+				MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], accelerationSteps,distanceBetweenSpeedSteps, 0.0f, code, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, UseIncrementalEcode, E);
 			else
 				{
 				command.Code = COORDINATEDMOTION;
@@ -547,13 +565,17 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 		// store thisPoint
 
 		if(UseAcceleration)
-			MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], accelerationSteps, distanceBetweenSpeedSteps, extrusionFactor, code, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ);
+			MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], accelerationSteps, distanceBetweenSpeedSteps, extrusionFactor, code, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, UseIncrementalEcode, E);
 		else
 			{
 			command.Code = COORDINATEDMOTION;
 			command.where = lines[thisPoint];
 			len = (LastPosition - command.where).length();
-			command.e = len*extrusionFactor;		// move or extrude?
+			if(UseIncrementalEcode)
+				E+=len*extrusionFactor;
+			else
+				E = len*extrusionFactor;
+			command.e = E;		// move or extrude?
 			command.f = MinPrintSpeedXY;
 			code.commands.push_back(command);
 			}

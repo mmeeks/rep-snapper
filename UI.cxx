@@ -213,6 +213,13 @@ void GUI::cb_extrusionFactorSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_extrusionFactorSlider_i(o,v);
 }
 
+void GUI::cb_UseIncrementalEcodeButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetUseIncrementalEcode(o->value());
+}
+void GUI::cb_UseIncrementalEcodeButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_UseIncrementalEcodeButton_i(o,v);
+}
+
 void GUI::cb_InfillRotationSlider_i(Fl_Value_Slider* o, void*) {
   MVC->SetInfillRotation(o->value());
 }
@@ -687,7 +694,6 @@ GUI::GUI() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(815, 40, 550, 765, "Printer definition");
-        o->hide();
         { Fl_Group* o = new Fl_Group(825, 65, 230, 40, "Build volume (mm)");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
@@ -721,10 +727,10 @@ GUI::GUI() {
           } // Fl_Value_Input* MarginY
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(825, 455, 535, 120, "Acceleration");
+        { Fl_Group* o = new Fl_Group(825, 500, 535, 120, "Acceleration");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { accelerationStepsSlider = new Fl_Value_Slider(835, 505, 515, 20, "Number of acceleration steps");
+          { accelerationStepsSlider = new Fl_Value_Slider(835, 550, 515, 20, "Number of acceleration steps");
             accelerationStepsSlider->type(1);
             accelerationStepsSlider->selection_color((Fl_Color)2);
             accelerationStepsSlider->maximum(10);
@@ -734,7 +740,7 @@ GUI::GUI() {
             accelerationStepsSlider->callback((Fl_Callback*)cb_accelerationStepsSlider);
             accelerationStepsSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* accelerationStepsSlider
-          { distanceBetweenSpeedStepsSlider = new Fl_Value_Slider(835, 545, 515, 20, "Distance Pr Acceleration Step (mm)");
+          { distanceBetweenSpeedStepsSlider = new Fl_Value_Slider(835, 590, 515, 20, "Distance Pr Acceleration Step (mm)");
             distanceBetweenSpeedStepsSlider->type(1);
             distanceBetweenSpeedStepsSlider->selection_color((Fl_Color)2);
             distanceBetweenSpeedStepsSlider->maximum(2);
@@ -743,16 +749,16 @@ GUI::GUI() {
             distanceBetweenSpeedStepsSlider->callback((Fl_Callback*)cb_distanceBetweenSpeedStepsSlider);
             distanceBetweenSpeedStepsSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* distanceBetweenSpeedStepsSlider
-          { EnableAccelerationButton = new Fl_Light_Button(835, 465, 255, 20, "Enable Acceleration");
+          { EnableAccelerationButton = new Fl_Light_Button(835, 510, 255, 20, "Enable Acceleration");
             EnableAccelerationButton->selection_color((Fl_Color)FL_GREEN);
             EnableAccelerationButton->callback((Fl_Callback*)cb_EnableAccelerationButton);
           } // Fl_Light_Button* EnableAccelerationButton
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(825, 255, 535, 170, "Print speeds");
+        { Fl_Group* o = new Fl_Group(825, 300, 535, 170, "Print speeds");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { MaxPrintSpeedXYSlider = new Fl_Value_Slider(835, 315, 515, 20, "Max PrintSpeed XY (mm/minute)");
+          { MaxPrintSpeedXYSlider = new Fl_Value_Slider(835, 360, 515, 20, "Max PrintSpeed XY (mm/minute)");
             MaxPrintSpeedXYSlider->type(1);
             MaxPrintSpeedXYSlider->selection_color((Fl_Color)2);
             MaxPrintSpeedXYSlider->maximum(8000);
@@ -762,7 +768,7 @@ GUI::GUI() {
             MaxPrintSpeedXYSlider->callback((Fl_Callback*)cb_MaxPrintSpeedXYSlider);
             MaxPrintSpeedXYSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* MaxPrintSpeedXYSlider
-          { MinPrintSpeedZSlider = new Fl_Value_Slider(835, 355, 515, 20, "Min PrintSpeed Z (mm/minute)");
+          { MinPrintSpeedZSlider = new Fl_Value_Slider(835, 400, 515, 20, "Min PrintSpeed Z (mm/minute)");
             MinPrintSpeedZSlider->type(1);
             MinPrintSpeedZSlider->selection_color((Fl_Color)2);
             MinPrintSpeedZSlider->minimum(1);
@@ -773,7 +779,7 @@ GUI::GUI() {
             MinPrintSpeedZSlider->callback((Fl_Callback*)cb_MinPrintSpeedZSlider);
             MinPrintSpeedZSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* MinPrintSpeedZSlider
-          { MinPrintSpeedXYSlider = new Fl_Value_Slider(835, 275, 515, 20, "Min PrintSpeed XY (mm/minute)");
+          { MinPrintSpeedXYSlider = new Fl_Value_Slider(835, 320, 515, 20, "Min PrintSpeed XY (mm/minute)");
             MinPrintSpeedXYSlider->type(1);
             MinPrintSpeedXYSlider->selection_color((Fl_Color)2);
             MinPrintSpeedXYSlider->maximum(8000);
@@ -783,7 +789,7 @@ GUI::GUI() {
             MinPrintSpeedXYSlider->callback((Fl_Callback*)cb_MinPrintSpeedXYSlider);
             MinPrintSpeedXYSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* MinPrintSpeedXYSlider
-          { MaxPrintSpeedZSlider = new Fl_Value_Slider(835, 395, 515, 20, "Max PrintSpeed Z (mm/minute)");
+          { MaxPrintSpeedZSlider = new Fl_Value_Slider(835, 440, 515, 20, "Max PrintSpeed Z (mm/minute)");
             MaxPrintSpeedZSlider->type(1);
             MaxPrintSpeedZSlider->selection_color((Fl_Color)2);
             MaxPrintSpeedZSlider->maximum(2500);
@@ -795,10 +801,10 @@ GUI::GUI() {
           } // Fl_Value_Slider* MaxPrintSpeedZSlider
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(825, 135, 535, 90, "Extruder");
+        { Fl_Group* o = new Fl_Group(825, 135, 535, 120, "Extruder");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { ExtrudedMaterialWidthSlider = new Fl_Value_Slider(835, 155, 515, 20, "Extruded material width");
+          { ExtrudedMaterialWidthSlider = new Fl_Value_Slider(835, 190, 515, 20, "Extruded material width");
             ExtrudedMaterialWidthSlider->type(1);
             ExtrudedMaterialWidthSlider->selection_color((Fl_Color)2);
             ExtrudedMaterialWidthSlider->value(0.7);
@@ -806,7 +812,7 @@ GUI::GUI() {
             ExtrudedMaterialWidthSlider->callback((Fl_Callback*)cb_ExtrudedMaterialWidthSlider);
             ExtrudedMaterialWidthSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* ExtrudedMaterialWidthSlider
-          { extrusionFactorSlider = new Fl_Value_Slider(835, 195, 515, 20, "Extrusion multiplier");
+          { extrusionFactorSlider = new Fl_Value_Slider(835, 230, 515, 20, "Extrusion multiplier");
             extrusionFactorSlider->type(1);
             extrusionFactorSlider->selection_color((Fl_Color)2);
             extrusionFactorSlider->maximum(2);
@@ -815,6 +821,10 @@ GUI::GUI() {
             extrusionFactorSlider->callback((Fl_Callback*)cb_extrusionFactorSlider);
             extrusionFactorSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* extrusionFactorSlider
+          { UseIncrementalEcodeButton = new Fl_Light_Button(835, 145, 255, 20, "Use incremental ecode");
+            UseIncrementalEcodeButton->selection_color((Fl_Color)FL_GREEN);
+            UseIncrementalEcodeButton->callback((Fl_Callback*)cb_UseIncrementalEcodeButton);
+          } // Fl_Light_Button* UseIncrementalEcodeButton
           o->end();
         } // Fl_Group* o
         o->end();
@@ -1188,6 +1198,7 @@ e rest of the print.");
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(815, 40, 540, 770, "GCode");
+        o->hide();
         { Fl_Button* o = new Fl_Button(820, 80, 145, 25, "Load Gcode");
           o->callback((Fl_Callback*)cb_Load1);
         } // Fl_Button* o

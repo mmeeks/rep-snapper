@@ -133,6 +133,11 @@ private:
   void cb_extrusionFactorSlider_i(Fl_Value_Slider*, void*);
   static void cb_extrusionFactorSlider(Fl_Value_Slider*, void*);
 public:
+  Fl_Light_Button *UseIncrementalEcodeButton;
+private:
+  void cb_UseIncrementalEcodeButton_i(Fl_Light_Button*, void*);
+  static void cb_UseIncrementalEcodeButton(Fl_Light_Button*, void*);
+public:
   Fl_Value_Slider *InfillRotationSlider;
 private:
   void cb_InfillRotationSlider_i(Fl_Value_Slider*, void*);

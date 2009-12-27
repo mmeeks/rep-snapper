@@ -61,7 +61,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 			infillCuttingPlane.CalcInFill(infill, LayerNr, destinationZ, InfillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
 			}
 		// Make the GCode from the plane and the infill
-		plane.MakeGcode(infill, gcode, destinationZ, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, accelerationSteps, distanceBetweenSpeedSteps, extrusionFactor, EnableAcceleration);
+		plane.MakeGcode(infill, gcode, destinationZ, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, accelerationSteps, distanceBetweenSpeedSteps, extrusionFactor, EnableAcceleration, UseIncrementalEcode);
 		LayerNr++;
 		destinationZ += LayerThickness;
 		}
@@ -92,6 +92,8 @@ Vector3f ProcessController::MakeRaft(float &z)
 	Vector2f Center = (Max+Min)*0.5f;
 
 	float Length = sqrtf(2)*(   ((Max.x)>(Max.y)? (Max.x):(Max.y))  -  ((Min.x)<(Min.y)? (Min.x):(Min.y))  )/2.0f;	// bbox of object
+
+	float E = 0.0f;
 
 	float rot = RaftRotation/180.0f*M_PI;
 
@@ -153,7 +155,7 @@ Vector3f ProcessController::MakeRaft(float &z)
 			else
 				materialRatio = RaftInterfaceMaterialPrDistanceRatio;		// move or extrude?
 
-			MakeAcceleratedGCodeLine(Vector3f(P1.x,P1.y,z), Vector3f(P2.x,P2.y,z), accelerationSteps, distanceBetweenSpeedSteps, materialRatio, gcode, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ);
+			MakeAcceleratedGCodeLine(Vector3f(P1.x,P1.y,z), Vector3f(P2.x,P2.y,z), accelerationSteps, distanceBetweenSpeedSteps, materialRatio, gcode, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, UseIncrementalEcode, E);
 
 			reverseLines = !reverseLines;
 		}
@@ -229,6 +231,7 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("distanceBetweenSpeedSteps", true, "5")->SetValueFloat(distanceBetweenSpeedSteps);
 	x->FindVariableZ("extrusionFactor", true, "0.66")->SetValueFloat(extrusionFactor);
 	x->FindVariableZ("EnableAcceleration", true, "0.66")->SetValueInt((int)EnableAcceleration);
+	x->FindVariableZ("UseIncrementalEcode", true, "0.66")->SetValueInt((int)UseIncrementalEcode);
 
 	x->FindVariableZ("m_fVolume.x", true, "0.66")->SetValueFloat(m_fVolume.x);
 	x->FindVariableZ("m_fVolume.y", true, "0.66")->SetValueFloat(m_fVolume.y);
@@ -409,6 +412,8 @@ void ProcessController::LoadXML(XMLElement *e)
 	if(y)	ShellCount = y->GetValueFloat();
 	y=x->FindVariableZ("EnableAcceleration", false, "0");
 	if(y)	EnableAcceleration = (bool)y->GetValueInt();
+	y=x->FindVariableZ("UseIncrementalEcode", false, "0");
+	if(y)	UseIncrementalEcode= (bool)y->GetValueInt();
 
 	// GUI... ?
 	y=x->FindVariableZ("DisplayEndpoints", false, "0");

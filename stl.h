@@ -85,7 +85,7 @@ public:
 	void Draw(float z, bool DrawVertexNumbers, bool DrawLineNumbers);
 	bool LinkSegments(float z, float shrinkValue, float Optimization, bool DisplayCuttingPlane);		// Link Segments to form polygons
 	void CleanupPolygons(float Optimization);			// remove redudant points
-	void MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, bool UseAcceleration);	// Convert Cuttingplane to GCode
+	void MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, bool UseAcceleration, bool UseIncrementalEcode);	// Convert Cuttingplane to GCode
 
 	Vector2f Min, Max;				// Bounding box
 	vector<Segment> lines;			// Segments - 2 points pr. line-segment

@@ -150,7 +150,7 @@ MVC->redraw();}
         }
         Fl_Group {} {
           label {Printer definition} open
-          xywh {815 40 550 765} hide
+          xywh {815 40 550 765}
         } {
           Fl_Group {} {
             label {Build volume (mm)} open
@@ -184,17 +184,17 @@ MVC->redraw();}
           }
           Fl_Group {} {
             label Acceleration open
-            xywh {825 455 535 120} box FLAT_BOX color 39
+            xywh {825 500 535 120} box FLAT_BOX color 39
           } {
             Fl_Value_Slider accelerationStepsSlider {
               label {Number of acceleration steps}
               callback {MVC->NumAccelerationSteps(o->value());}
-              xywh {835 505 515 20} type Horizontal selection_color 2 align 5 maximum 10 step 1 value 5 textsize 14
+              xywh {835 550 515 20} type Horizontal selection_color 2 align 5 maximum 10 step 1 value 5 textsize 14
             }
             Fl_Value_Slider distanceBetweenSpeedStepsSlider {
               label {Distance Pr Acceleration Step (mm)}
               callback {MVC->SetDistancePrAccelerationStep(o->value());}
-              xywh {835 545 515 20} type Horizontal selection_color 2 align 5 maximum 2 value 0.1 textsize 14
+              xywh {835 590 515 20} type Horizontal selection_color 2 align 5 maximum 2 value 0.1 textsize 14
             }
             Fl_Light_Button EnableAccelerationButton {
               label {Enable Acceleration}
@@ -209,47 +209,52 @@ else
 accelerationStepsSlider->deactivate();
 distanceBetweenSpeedStepsSlider->deactivate();
 }}
-              xywh {835 465 255 20} selection_color 63
+              xywh {835 510 255 20} selection_color 63
             }
           }
           Fl_Group {} {
             label {Print speeds}
-            xywh {825 255 535 170} box FLAT_BOX color 39
+            xywh {825 300 535 170} box FLAT_BOX color 39
           } {
             Fl_Value_Slider MaxPrintSpeedXYSlider {
               label {Max PrintSpeed XY (mm/minute)}
               callback {MVC->SetMaxPrintSpeedXY(o->value());}
-              xywh {835 315 515 20} type Horizontal selection_color 2 align 5 maximum 8000 step 100 value 4000 textsize 14
+              xywh {835 360 515 20} type Horizontal selection_color 2 align 5 maximum 8000 step 100 value 4000 textsize 14
             }
             Fl_Value_Slider MinPrintSpeedZSlider {
               label {Min PrintSpeed Z (mm/minute)}
               callback {MVC->SetMinPrintSpeedZ(o->value());}
-              xywh {835 355 515 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 2500 step 10 value 50 textsize 14
+              xywh {835 400 515 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 2500 step 10 value 50 textsize 14
             }
             Fl_Value_Slider MinPrintSpeedXYSlider {
               label {Min PrintSpeed XY (mm/minute)}
               callback {MVC->SetMinPrintSpeedXY(o->value());}
-              xywh {835 275 515 20} type Horizontal selection_color 2 align 5 maximum 8000 step 100 value 1000 textsize 14
+              xywh {835 320 515 20} type Horizontal selection_color 2 align 5 maximum 8000 step 100 value 1000 textsize 14
             }
             Fl_Value_Slider MaxPrintSpeedZSlider {
               label {Max PrintSpeed Z (mm/minute)}
               callback {MVC->SetMaxPrintSpeedZ(o->value());}
-              xywh {835 395 515 20} type Horizontal selection_color 2 align 5 maximum 2500 step 10 value 150 textsize 14
+              xywh {835 440 515 20} type Horizontal selection_color 2 align 5 maximum 2500 step 10 value 150 textsize 14
             }
           }
           Fl_Group {} {
             label Extruder open
-            xywh {825 135 535 90} box FLAT_BOX color 39
+            xywh {825 135 535 120} box FLAT_BOX color 39
           } {
             Fl_Value_Slider ExtrudedMaterialWidthSlider {
               label {Extruded material width}
               callback {MVC->SetExtrudedMaterialWidth(o->value());}
-              xywh {835 155 515 20} type Horizontal selection_color 2 align 5 value 0.7 textsize 14
+              xywh {835 190 515 20} type Horizontal selection_color 2 align 5 value 0.7 textsize 14
             }
             Fl_Value_Slider extrusionFactorSlider {
               label {Extrusion multiplier}
               callback {MVC->SetExtrusionFactor(o->value());}
-              xywh {835 195 515 20} type Horizontal selection_color 2 align 5 maximum 2 value 1 textsize 14
+              xywh {835 230 515 20} type Horizontal selection_color 2 align 5 maximum 2 value 1 textsize 14
+            }
+            Fl_Light_Button UseIncrementalEcodeButton {
+              label {Use incremental ecode}
+              callback {MVC->SetUseIncrementalEcode(o->value());} selected
+              xywh {835 145 255 20} selection_color 63
             }
           }
         }
@@ -475,7 +480,7 @@ distanceBetweenSpeedStepsSlider->deactivate();
         }
         Fl_Group {} {
           label GCode open
-          xywh {815 40 540 770}
+          xywh {815 40 540 770} hide
         } {
           Fl_Button {} {
             label {Load Gcode}
@@ -572,7 +577,7 @@ break;
 }
 
 MVC->redraw();
-};} selected
+};}
             xywh {1200 80 145 25}
             code0 {\#include <FL/Fl_File_Chooser.H>}
           }

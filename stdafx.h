@@ -39,7 +39,7 @@
 #include "UI.h"
 #include "xml/XML.h"
 
-void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, GCode &code, float z, float minSpeedXY, float maxSpeedXY, float minSpeedZ, float maxSpeedZ);
+void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, GCode &code, float z, float minSpeedXY, float maxSpeedXY, float minSpeedZ, float maxSpeedZ, bool UseIncrementalECode, float &E);
 bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, InFillHit &hit);	// Utilityfunction for CalcInFill
 bool InFillHitCompareFunc(const InFillHit& d1, const InFillHit& d2);
 
