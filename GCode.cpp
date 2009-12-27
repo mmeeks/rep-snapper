@@ -28,19 +28,6 @@ GCode::GCode()
 	Min.x = Min.y = Min.z = 99999999.0f;
 	Max.x = Max.y = Max.z = -99999999.0f;
 	Center.x = Center.y = Center.z = 0.0f;
-	
-	GCodeDrawStart = 0.0f;;
-	GCodeDrawEnd = 1.0f;
-
-	MinPrintSpeedXY = 1000.0f;
-	MaxPrintSpeedXY = 4000.0f;
-	MinPrintSpeedZ = 50.0f;
-	MaxPrintSpeedZ = 150.0f;
-
-	accelerationSteps = 5;
-	distanceBetweenSpeedSteps= 0.5f;
-	extrusionFactor = 1.0f;
-
 }
 
 void GCode::Read(string filename)
@@ -224,7 +211,7 @@ void CubeView::draw() {
     glPopMatrix();
 }*/
 
-void GCode::draw()
+void GCode::draw(const ProcessController &PC)
 {
 	/*--------------- Drawing -----------------*/
 
@@ -232,8 +219,8 @@ void GCode::draw()
 
 	float	Distance = 0.0f;
 	Vector3f pos(0,0,0);
-	UINT start = (UINT)(GCodeDrawStart*(float)(commands.size()));
-	UINT end = (UINT)(GCodeDrawEnd*(float)(commands.size()));
+	UINT start = (UINT)(PC.GCodeDrawStart*(float)(commands.size()));
+	UINT end = (UINT)(PC.GCodeDrawEnd*(float)(commands.size()));
 	for(UINT i=start;i<commands.size() && i < end ;i++)
 	{
 		switch(commands[i].Code)
@@ -243,14 +230,14 @@ void GCode::draw()
 				{
 				glLineWidth(3);
 				float speed = commands[i].f;
-				float luma = speed/MaxPrintSpeedXY*0.5f;
+				float luma = speed/PC.MaxPrintSpeedXY*0.5f;
 				glColor3f(luma,0,luma);
 				}
 			else
 				{
 				glLineWidth(3);
 				float speed = commands[i].f;
-				float luma = speed/MaxPrintSpeedXY;
+				float luma = speed/PC.MaxPrintSpeedXY;
 				glColor3f(0,luma,0);
 				}
 			glBegin(GL_LINES);

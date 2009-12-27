@@ -28,11 +28,12 @@ class ModelViewController : public Fl_Gl_Window
 {
 public:
 	ModelViewController(int x,int y,int w,int h,const char *l);
+	~ModelViewController();
 
 	// STL Functions
-	void ReadStl(string filename) {if(ProcessControl.stl.Read(filename, ProcessControl.printer.PrintMargin)) CalcBoundingBoxAndZoom();};
+	void ReadStl(string filename) {if(ProcessControl.stl.Read(filename, ProcessControl.PrintMargin)) CalcBoundingBoxAndZoom();};
 	void OptimizeRotation() { ProcessControl.stl.OptimizeRotation();}
-	void RotateObject(float x, float y, float z, float a) {ProcessControl.stl.RotateObject(Vector3f(x,y,z),a); ProcessControl.stl.MoveIntoPrintingArea(ProcessControl.printer.PrintMargin);}
+	void RotateObject(float x, float y, float z, float a) {ProcessControl.stl.RotateObject(Vector3f(x,y,z),a); ProcessControl.stl.MoveIntoPrintingArea(ProcessControl.PrintMargin);}
 
 	// GCode Functions
 	void ReadGCode(string filename) {ProcessControl.gcode.Read(filename);}
@@ -43,6 +44,7 @@ public:
 	void draw();
 	void DrawGridAndAxis();
 	void WriteGCode(string filename) {/*ProcessControl.WriteGCode(filename);*/}
+	void CopySettingsToGUI();
 
 	void CenterView();
 	int  handle(int);
@@ -56,46 +58,46 @@ public:
 	void SetDisplayGCode(bool value){}
 
 	// GCode GUI Values
-	void SetGCodeDrawStart(float val){ProcessControl.gcode.GCodeDrawStart = val; redraw();}
-	void SetGCodeDrawEnd(float val){ProcessControl.gcode.GCodeDrawEnd = val; redraw();}
-	void SetMinPrintSpeedXY(float val) {ProcessControl.gcode.MinPrintSpeedXY = val;}
-	void SetMaxPrintSpeedXY(float val) {ProcessControl.gcode.MaxPrintSpeedXY = val;}
-	void SetMinPrintSpeedZ(float val) {ProcessControl.gcode.MinPrintSpeedZ = val;}
-	void SetMaxPrintSpeedZ(float val) {ProcessControl.gcode.MaxPrintSpeedZ = val;}
-	void NumAccelerationSteps(float val) {ProcessControl.gcode.accelerationSteps = val;}
-	void SetDistancePrAccelerationStep(float val) {ProcessControl.gcode.distanceBetweenSpeedSteps = val;}
-	void SetExtrusionFactor(float val) {ProcessControl.gcode.extrusionFactor = val;}
+	void SetGCodeDrawStart(float val){ProcessControl.GCodeDrawStart = val; redraw();}
+	void SetGCodeDrawEnd(float val){ProcessControl.GCodeDrawEnd = val; redraw();}
+	void SetMinPrintSpeedXY(float val) {ProcessControl.MinPrintSpeedXY = val;}
+	void SetMaxPrintSpeedXY(float val) {ProcessControl.MaxPrintSpeedXY = val;}
+	void SetMinPrintSpeedZ(float val) {ProcessControl.MinPrintSpeedZ = val;}
+	void SetMaxPrintSpeedZ(float val) {ProcessControl.MaxPrintSpeedZ = val;}
+	void NumAccelerationSteps(float val) {ProcessControl.accelerationSteps = val;}
+	void SetDistancePrAccelerationStep(float val) {ProcessControl.distanceBetweenSpeedSteps = val;}
+	void SetExtrusionFactor(float val) {ProcessControl.extrusionFactor = val;}
 	
 	// STL GUI Values
-	void SetLayerThickness(float val){ProcessControl.stl.LayerThickness = val; redraw();}
-	void SetCuttingPlaneValue(float val){ProcessControl.stl.CuttingPlaneValue = val; redraw();}
+	void SetLayerThickness(float val){ProcessControl.LayerThickness = val; redraw();}
+	void SetCuttingPlaneValue(float val){ProcessControl.CuttingPlaneValue = val; redraw();}
 
-	void SetDisplayEndpoints(bool val){ProcessControl.stl.DisplayEndpoints = val; redraw();}
-	void SetDisplayNormals(bool val){ProcessControl.stl.DisplayNormals = val; redraw();}
-	void SetDisplayWireframe(bool val){ProcessControl.stl.DisplayWireframe = val; redraw();}
-	void SetDisplayPolygons(bool val){ProcessControl.stl.DisplayPolygons = val; redraw();}
-	void SetDisplayAllLayers(bool val){ProcessControl.stl.DisplayAllLayers = val; redraw();}
-	void SetDisplayinFill(bool val){ProcessControl.stl.DisplayinFill = val; redraw();}
-	void SetPolygonOpasity(float val){ProcessControl.stl.PolygonOpasity = val; redraw();}
+	void SetDisplayEndpoints(bool val){ProcessControl.DisplayEndpoints = val; redraw();}
+	void SetDisplayNormals(bool val){ProcessControl.DisplayNormals = val; redraw();}
+	void SetDisplayWireframe(bool val){ProcessControl.DisplayWireframe = val; redraw();}
+	void SetDisplayPolygons(bool val){ProcessControl.DisplayPolygons = val; redraw();}
+	void SetDisplayAllLayers(bool val){ProcessControl.DisplayAllLayers = val; redraw();}
+	void SetDisplayinFill(bool val){ProcessControl.DisplayinFill = val; redraw();}
+	void SetPolygonOpasity(float val){ProcessControl.PolygonOpasity = val; redraw();}
 
 	// CuttingPlane GUI values
-	void SetInfillDistance(float val){ProcessControl.stl.InfillDistance = val; redraw();}
-	void SetInfillRotation(float val){ProcessControl.stl.InfillRotation = val; redraw();}
-	void SetInfillRotationPrLayer(float val){ProcessControl.stl.InfillRotationPrLayer = val; redraw();}
-	void SetOptimization(float val){ProcessControl.stl.Optimization = val; redraw();}
-	void SetExamine(float val){ProcessControl.stl.Examine = val; redraw();}
-	void SetShrinkValue(float val){ProcessControl.stl.ShrinkValue = val; redraw();}
+	void SetInfillDistance(float val){ProcessControl.InfillDistance = val; redraw();}
+	void SetInfillRotation(float val){ProcessControl.InfillRotation = val; redraw();}
+	void SetInfillRotationPrLayer(float val){ProcessControl.InfillRotationPrLayer = val; redraw();}
+	void SetOptimization(float val){ProcessControl.Optimization = val; redraw();}
+	void SetExamine(float val){ProcessControl.Examine = val; redraw();}
+	void SetExtrudedMaterialWidth(float val){ProcessControl.ExtrudedMaterialWidth = val; redraw();}
 
-	void SetDisplayDebuginFill(bool val){ProcessControl.stl.DisplayDebuginFill = val; redraw();}
-	void SetDisplayDebug(bool val){ProcessControl.stl.DisplayDebug = val; redraw();}
-	void SetDisplayCuttingPlane(bool val){ProcessControl.stl.DisplayCuttingPlane = val; redraw();}
-	void SetDrawVertexNumbers(bool val){ProcessControl.stl.DrawVertexNumbers = val; redraw();}
-	void SetDrawLineNumbers(bool val){ProcessControl.stl.DrawLineNumbers = val; redraw();}
+	void SetDisplayDebuginFill(bool val){ProcessControl.DisplayDebuginFill = val; redraw();}
+	void SetDisplayDebug(bool val){ProcessControl.DisplayDebug = val; redraw();}
+	void SetDisplayCuttingPlane(bool val){ProcessControl.DisplayCuttingPlane = val; redraw();}
+	void SetDrawVertexNumbers(bool val){ProcessControl.DrawVertexNumbers = val; redraw();}
+	void SetDrawLineNumbers(bool val){ProcessControl.DrawLineNumbers = val; redraw();}
 
-	void SetShellOnly(bool val) {ProcessControl.stl.ShellOnly = val; redraw();}
-	void SetShellCount(UINT val) {ProcessControl.stl.ShellCount = val; redraw();}
+	void SetShellOnly(bool val) {ProcessControl.ShellOnly = val; redraw();}
+	void SetShellCount(UINT val) {ProcessControl.ShellCount = val; redraw();}
 
-	void SetEnableAcceleration(bool val) {ProcessControl.stl.EnableAcceleration = val; redraw();}
+	void SetEnableAcceleration(bool val) {ProcessControl.EnableAcceleration = val; redraw();}
 	
 	// Raft GUI values
 	void SetRaftSize(float val){ProcessControl.RaftSize=val;}

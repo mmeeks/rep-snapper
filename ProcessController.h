@@ -13,6 +13,15 @@
 
 #include "StdAfx.h"
 #include "Printer.h"
+#include "xml/xml.h"
+#include <vmmlib/vmmlib.h>
+
+#include "stl.h"
+#include "gcode.h"
+
+class GCode;
+
+using namespace std;
 
 class ProcessController
 {
@@ -31,8 +40,60 @@ public:
 		RaftInterfaceDistance = 2.0f;
 		RaftInterfaceThickness = 1.0f;
 		RaftInterfaceTemperature = 1.0f;
+		m_Filename = "d:/repsnapper";
+
+		// Printer
+		m_fVolume = Vector3f(200,200,140);
+		PrintMargin = Vector3f(10,10,0);
+		ExtrudedMaterialWidth = 0.7f;	// 0.7
+
+		//GCode
+		GCodeDrawStart = 0.0f;;
+		GCodeDrawEnd = 1.0f;
+
+		MinPrintSpeedXY = 1000.0f;
+		MaxPrintSpeedXY = 4000.0f;
+		MinPrintSpeedZ = 50.0f;
+		MaxPrintSpeedZ = 150.0f;
+
+		accelerationSteps = 5;
+		distanceBetweenSpeedSteps= 0.5f;
+		extrusionFactor = 1.0f;
+
+		LayerThickness = 0.4f;
+		CuttingPlaneValue = 0.5f;
+		PolygonOpasity = 0.5f;
+
+		DisplayEndpoints = false;
+		DisplayNormals = false;
+		DisplayWireframe = false;
+		DisplayPolygons = false;
+		DisplayAllLayers = false;
+		DisplayinFill = false;
+
+		InfillDistance = 2.0f;
+		InfillRotation = 45.0f;
+		InfillRotationPrLayer = 90.0f;
+		Optimization = 0.02f;
+		Examine = 0.5f;
+
+		DisplayDebuginFill = false;
+		DisplayDebug = false;
+		DisplayCuttingPlane = true;
+		DrawVertexNumbers=false;
+		DrawLineNumbers=false;
+
+		ShellOnly = false;
+		ShellCount = 1;
+
+		EnableAcceleration = true;
+		DisplayDebuginFill = true;
+		DisplayCuttingPlane = true;
+
 };
-	
+
+	ProcessController::~ProcessController();
+
 	void Draw();
 	
 	// STL Functions
@@ -46,11 +107,18 @@ public:
 	void ReadGCode(string filename) {gcode.Read(filename);};
 	void WriteGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, string filename);
 
-	void MakeRaft(float &z, Vector3f &PrintMargin);
+	Vector3f MakeRaft(float &z);	// Returns center of raft
+	//Printer
+	void SetVolume(float x, float y, float z) { m_fVolume = Vector3f(x,y,z);}
 
+	// Load and save settings
+	void LoadXML();
+	void SaveXML();
+	void LoadXML(XMLElement *e);
+	void SaveXML(XMLElement *e);
 
 	// Process functions
-	
+	string m_Filename;
 
 	// Start, layer, end GCode
 	string GCodeStartText;
@@ -58,12 +126,11 @@ public:
 	string GCodeEndText;
 
 	/*--------------Models-------------------*/
-	Printer printer;
-	STL stl;
-	CuttingPlane previewCuttingPlane;
-	GCode gcode;
-	string GcodeTxt;
-
+	Printer printer;					// Printer settings and functions
+	STL stl;							// A STL file
+	CuttingPlane previewCuttingPlane;	//The cuttingplane that's drawn as a live preview
+	GCode gcode;						// Gcode as binary data
+	string GcodeTxt;					// Final GCode as text
 
 	// Raft
 	float RaftSize;
@@ -79,4 +146,52 @@ public:
 	float RaftInterfaceDistance;
 	float RaftInterfaceThickness;
 	float RaftInterfaceTemperature;
+
+	// GCode
+	float GCodeDrawStart;
+	float GCodeDrawEnd;
+	float MinPrintSpeedXY;
+	float MaxPrintSpeedXY;
+	float MinPrintSpeedZ;
+	float MaxPrintSpeedZ;
+
+	UINT accelerationSteps;
+	float distanceBetweenSpeedSteps;
+	float extrusionFactor;
+
+	// Printer
+	Vector3f	m_fVolume;				// Max print volume
+	Vector3f	PrintMargin;
+	float		ExtrudedMaterialWidth;	// Width of extruded material
+
+	// STL 
+	float LayerThickness;
+	float CuttingPlaneValue;
+	float PolygonOpasity;
+
+	// CuttingPlane
+	float InfillDistance;
+	float InfillRotation;
+	float InfillRotationPrLayer;
+	float Optimization;
+	float Examine;
+
+	bool ShellOnly;
+	UINT ShellCount;
+
+	bool EnableAcceleration;
+
+	// GUI... ?
+	bool DisplayEndpoints;
+	bool DisplayNormals;
+	bool DisplayWireframe;
+	bool DisplayPolygons;
+	bool DisplayAllLayers;
+	bool DisplayinFill;
+	bool DisplayDebuginFill;
+	bool DisplayDebug;
+	bool DisplayCuttingPlane;
+	bool DrawVertexNumbers;
+	bool DrawLineNumbers;
+
 };

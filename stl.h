@@ -29,7 +29,7 @@
 #include <vmmlib/vmmlib.h>
 
 class GUI;
-
+class GCode;
 /*
 Vector3f position, normal;
 // fill vertices
@@ -104,8 +104,9 @@ public:
 	STL();
 
 	bool Read(string filename, const Vector3f &PrintingMargin);
-	void draw();
+	void draw(const ProcessController &PC);
 	void MoveIntoPrintingArea(const Vector3f &PrintingMargin);
+	void CenterAroundXY(const Vector3f &Point);
 	void CalcCuttingPlane(float where, CuttingPlane &plane);	// Extract a 2D polygonset from a 3D model
 	void OptimizeRotation();									// Auto-Rotate object to have the largest area surface down for printing
 	void CalcBoundingBoxAndZoom();
@@ -113,38 +114,5 @@ public:
 
 	vector<Triangle> triangles;
 	Vector3f Min, Max, Center;
-
-	// STL GUI Values
-	float LayerThickness;
-	float CuttingPlaneValue;
-	float PolygonOpasity;
-
-	// CuttingPlane GUI values
-	float InfillDistance;
-	float InfillRotation;
-	float InfillRotationPrLayer;
-	float Optimization;
-	float Examine;
-	float ShrinkValue;
-
-	bool DisplayEndpoints;
-	bool DisplayNormals;
-	bool DisplayWireframe;
-	bool DisplayPolygons;
-	bool DisplayAllLayers;
-	bool DisplayinFill;
-
-
-	bool DisplayDebuginFill;
-	bool DisplayDebug;
-	bool DisplayCuttingPlane;
-	bool DrawVertexNumbers;
-	bool DrawLineNumbers;
-
-	bool ShellOnly;
-	UINT ShellCount;
-
-	bool EnableAcceleration;
-
 };
 

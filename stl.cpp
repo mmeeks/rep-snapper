@@ -53,39 +53,9 @@ void renderBitmapString(Vector3f pos, void* font, string text)
 // STL constructor
 STL::STL()
 {
-	LayerThickness = 0.4f;
-	CuttingPlaneValue = 0.5f;
-	PolygonOpasity = 0.5f;
-
-	DisplayEndpoints = false;
-	DisplayNormals = false;
-	DisplayWireframe = false;
-	DisplayPolygons = false;
-	DisplayAllLayers = false;
-	DisplayinFill = false;
-
 	Min.x = Min.y = Min.z = 0.0f;
 	Max.x = Max.y = Max.z = 200.0f;
-	
-	InfillDistance = 2.0f;
-	InfillRotation = 45.0f;
-	InfillRotationPrLayer = 90.0f;
-	Optimization = 0.02f;
-	Examine = 0.5f;
-	ShrinkValue = 0.7f;
 
-	DisplayDebuginFill = false;
-	DisplayDebug = false;
-	DisplayCuttingPlane = true;
-	DrawVertexNumbers=false;
-	DrawLineNumbers=false;
-
-	ShellOnly = false;
-	ShellCount = 1;
-
-	EnableAcceleration = true;
-	DisplayDebuginFill = true;
-	DisplayCuttingPlane = true;
 	CalcBoundingBoxAndZoom();
 }
 
@@ -160,7 +130,6 @@ bool STL::Read(string filename, const Vector3f &PrintingMargin)
 	
 	OptimizeRotation();
 	CalcBoundingBoxAndZoom();
-	
 	MoveIntoPrintingArea(PrintingMargin);
 	return true;
 }
@@ -171,11 +140,11 @@ void STL::CalcBoundingBoxAndZoom()
 }
 
 
-void STL::draw()
+void STL::draw(const ProcessController &PC)
 {
 	// polygons
 
-	if(DisplayPolygons)
+	if(PC.DisplayPolygons)
 	{
 		glEnable(GL_CULL_FACE);
 //		glEnable(GL_DEPTH_TEST);
@@ -187,13 +156,13 @@ void STL::draw()
 		{
 			switch(triangles[i].axis)
 				{
-				case NEGX:	glColor4f(1,0,0,PolygonOpasity); break;
-				case POSX:	glColor4f(0.5f,0,0,PolygonOpasity); break;
-				case NEGY:	glColor4f(0,1,0,PolygonOpasity); break;
-				case POSY:	glColor4f(0,0.5f,0,PolygonOpasity); break;
-				case NEGZ:	glColor4f(0,0,1,PolygonOpasity); break;
-				case POSZ:	glColor4f(0,0,0.3f,PolygonOpasity); break;
-				default: glColor4f(0.2f,0.2f,0.2f,PolygonOpasity); break;
+				case NEGX:	glColor4f(1,0,0,PC.PolygonOpasity); break;
+				case POSX:	glColor4f(0.5f,0,0,PC.PolygonOpasity); break;
+				case NEGY:	glColor4f(0,1,0,PC.PolygonOpasity); break;
+				case POSY:	glColor4f(0,0.5f,0,PC.PolygonOpasity); break;
+				case NEGZ:	glColor4f(0,0,1,PC.PolygonOpasity); break;
+				case POSZ:	glColor4f(0,0,0.3f,PC.PolygonOpasity); break;
+				default: glColor4f(0.2f,0.2f,0.2f,PC.PolygonOpasity); break;
 				}
 			glNormal3fv((GLfloat*)&triangles[i].N);
 			glVertex3fv((GLfloat*)&triangles[i].A);
@@ -205,7 +174,7 @@ void STL::draw()
 	}
 
 	// WireFrame
-	if(DisplayWireframe)
+	if(PC.DisplayWireframe)
 	{
 		glColor4f(0,1,0,1);
 		for(UINT i=0;i<triangles.size();i++)
@@ -218,7 +187,7 @@ void STL::draw()
 		}
 	}
 	// normals
-	if(DisplayNormals)
+	if(PC.DisplayNormals)
 	{
 		glColor4f(0,0,1,1);
 		glBegin(GL_LINES);
@@ -233,7 +202,7 @@ void STL::draw()
 	}
 
 	// Endpoints
-	if(DisplayEndpoints)
+	if(PC.DisplayEndpoints)
 	{
 		glColor4f(1,0,0,1);
 		glPointSize(2);
@@ -251,34 +220,34 @@ void STL::draw()
 	UINT LayerNr = 0;
 
 	float zSize = (Max.z-Min.z);
-	float z=CuttingPlaneValue*zSize+Min.z;
+	float z=PC.CuttingPlaneValue*zSize+Min.z;
 	float zStep = zSize;
 
-	if(DisplayAllLayers)
+	if(PC.DisplayAllLayers)
 		{
 		z=Min.z;
-		zStep = LayerThickness;
+		zStep = PC.LayerThickness;
 		}
 	while(z<Max.z)
 	{
 		{
 		CuttingPlane plane;
-		CalcCuttingPlane(z, plane);	// output is alot of un-connected line segments with individual vertices
+		CalcCuttingPlane(z, plane);	// output is a lot of unconnected line segments with individual vertices
 
 		float hackedZ = z;
-		while(plane.LinkSegments(hackedZ, ShrinkValue, Optimization, DisplayCuttingPlane) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
+		while(plane.LinkSegments(hackedZ, PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
 			{										// This happens when there's triangles missing in the input STL
 			hackedZ+= 0.1f;
 			plane.polygons.clear();
 			CalcCuttingPlane(hackedZ, plane);	// output is alot of un-connected line segments with individual vertices
 			}
 
-		plane.Draw(z, DrawVertexNumbers, DrawLineNumbers);
+		plane.Draw(z, PC.DrawVertexNumbers, PC.DrawLineNumbers);
 
 		// inFill
 		vector<Vector2f> infill;
 
-		if(DisplayinFill)
+		if(PC.DisplayinFill)
 			{
 			CuttingPlane infillCuttingPlane;
 			infillCuttingPlane = plane;
@@ -286,10 +255,10 @@ void STL::draw()
 			infillCuttingPlane.vertices = infillCuttingPlane.offsetVertices;
 			infillCuttingPlane.offsetPolygons.clear();
 			infillCuttingPlane.offsetVertices.clear();
-			if(ShellOnly == false)
+			if(PC.ShellOnly == false)
 				{
-				infillCuttingPlane.Shrink(ShrinkValue, Optimization, DisplayCuttingPlane);
-				infillCuttingPlane.CalcInFill(infill, LayerNr, z, InfillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
+				infillCuttingPlane.Shrink(PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane);
+				infillCuttingPlane.CalcInFill(infill, LayerNr, z, PC.InfillDistance, PC.InfillRotation, PC.InfillRotationPrLayer, PC.DisplayDebuginFill);
 				}
 			glColor4f(1,1,0,1);
 			glPointSize(5);
@@ -380,8 +349,8 @@ void STL::draw()
 	glVertex3f(Min.x, Max.y, Max.z);
 	glVertex3f(Max.x, Max.y, Min.z);
 	glVertex3f(Max.x, Max.y, Max.z);
-	glVertex3f(Max.x, Max.y, Min.z);
-	glVertex3f(Max.x, Max.y, Max.z);
+	glVertex3f(Max.x, Min.y, Min.z);
+	glVertex3f(Max.x, Min.y, Max.z);
 	glEnd();
 
 }
@@ -1884,15 +1853,34 @@ void CuttingPlane::CleanupPolygons(float Optimization)
 
 void STL::MoveIntoPrintingArea(const Vector3f &PrintingMargin)
 {
-	Vector3f dist = Min;
+
 	for(UINT i=0; i<triangles.size() ; i++)
 	{
-	triangles[i].A = triangles[i].A - Min + PrintingMargin;
-	triangles[i].B = triangles[i].B - Min + PrintingMargin;
-	triangles[i].C = triangles[i].C - Min + PrintingMargin;
+		triangles[i].A = triangles[i].A - Min + PrintingMargin;
+		triangles[i].B = triangles[i].B - Min + PrintingMargin;
+		triangles[i].C = triangles[i].C - Min + PrintingMargin;
 	}
 
 	Max = Max - Min + PrintingMargin;
 	Min = PrintingMargin;
+	CalcBoundingBoxAndZoom();
+}
+
+void STL::CenterAroundXY(const Vector3f &Point)
+{
+	Vector3f MyCenter((Max+Min)*0.5f);
+
+	Vector3f displacement = Point - MyCenter;
+	displacement.z = 0.0f;
+
+	for(UINT i=0; i<triangles.size() ; i++)
+	{
+		triangles[i].A = triangles[i].A + displacement;
+		triangles[i].B = triangles[i].B + displacement;
+		triangles[i].C = triangles[i].C + displacement;
+	}
+
+	Max += displacement;
+	Min += displacement;
 	CalcBoundingBoxAndZoom();
 }

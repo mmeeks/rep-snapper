@@ -83,15 +83,20 @@ private:
   void cb_DisplayEndpointsButton_i(Fl_Light_Button*, void*);
   static void cb_DisplayEndpointsButton(Fl_Light_Button*, void*);
 public:
-  Fl_Value_Slider *NumAccelerationStepsSlider;
+  Fl_Value_Input *VolumeX;
+  Fl_Value_Input *VolumeY;
+  Fl_Value_Input *VolumeZ;
+  Fl_Value_Input *MarginX;
+  Fl_Value_Input *MarginY;
+  Fl_Value_Slider *accelerationStepsSlider;
 private:
-  void cb_NumAccelerationStepsSlider_i(Fl_Value_Slider*, void*);
-  static void cb_NumAccelerationStepsSlider(Fl_Value_Slider*, void*);
+  void cb_accelerationStepsSlider_i(Fl_Value_Slider*, void*);
+  static void cb_accelerationStepsSlider(Fl_Value_Slider*, void*);
 public:
-  Fl_Value_Slider *DistancePrAccelerationStep;
+  Fl_Value_Slider *distanceBetweenSpeedStepsSlider;
 private:
-  void cb_DistancePrAccelerationStep_i(Fl_Value_Slider*, void*);
-  static void cb_DistancePrAccelerationStep(Fl_Value_Slider*, void*);
+  void cb_distanceBetweenSpeedStepsSlider_i(Fl_Value_Slider*, void*);
+  static void cb_distanceBetweenSpeedStepsSlider(Fl_Value_Slider*, void*);
 public:
   Fl_Light_Button *EnableAccelerationButton;
 private:
@@ -118,20 +123,20 @@ private:
   void cb_MaxPrintSpeedZSlider_i(Fl_Value_Slider*, void*);
   static void cb_MaxPrintSpeedZSlider(Fl_Value_Slider*, void*);
 public:
-  Fl_Value_Slider *ShrinkSlider;
+  Fl_Value_Slider *ExtrudedMaterialWidthSlider;
 private:
-  void cb_ShrinkSlider_i(Fl_Value_Slider*, void*);
-  static void cb_ShrinkSlider(Fl_Value_Slider*, void*);
+  void cb_ExtrudedMaterialWidthSlider_i(Fl_Value_Slider*, void*);
+  static void cb_ExtrudedMaterialWidthSlider(Fl_Value_Slider*, void*);
 public:
-  Fl_Value_Slider *PlaceholderSlider;
+  Fl_Value_Slider *extrusionFactorSlider;
 private:
-  void cb_PlaceholderSlider_i(Fl_Value_Slider*, void*);
-  static void cb_PlaceholderSlider(Fl_Value_Slider*, void*);
+  void cb_extrusionFactorSlider_i(Fl_Value_Slider*, void*);
+  static void cb_extrusionFactorSlider(Fl_Value_Slider*, void*);
 public:
-  Fl_Value_Slider *RotationSlider;
+  Fl_Value_Slider *InfillRotationSlider;
 private:
-  void cb_RotationSlider_i(Fl_Value_Slider*, void*);
-  static void cb_RotationSlider(Fl_Value_Slider*, void*);
+  void cb_InfillRotationSlider_i(Fl_Value_Slider*, void*);
+  static void cb_InfillRotationSlider(Fl_Value_Slider*, void*);
 public:
   Fl_Value_Slider *InfillRotationPrLayerSlider;
 private:
@@ -163,10 +168,10 @@ private:
   void cb_ShellCountSlider_i(Fl_Value_Slider*, void*);
   static void cb_ShellCountSlider(Fl_Value_Slider*, void*);
 public:
-  Fl_Value_Slider *CuttingPlaneSlider;
+  Fl_Value_Slider *CuttingPlaneValueSlider;
 private:
-  void cb_CuttingPlaneSlider_i(Fl_Value_Slider*, void*);
-  static void cb_CuttingPlaneSlider(Fl_Value_Slider*, void*);
+  void cb_CuttingPlaneValueSlider_i(Fl_Value_Slider*, void*);
+  static void cb_CuttingPlaneValueSlider(Fl_Value_Slider*, void*);
 public:
   Fl_Light_Button *DisplayCuttingPlaneButton;
 private:
@@ -178,10 +183,10 @@ private:
   void cb_DisplayinFillButton_i(Fl_Light_Button*, void*);
   static void cb_DisplayinFillButton(Fl_Light_Button*, void*);
 public:
-  Fl_Light_Button *DisplayAllLayers;
+  Fl_Light_Button *DisplayAllLayersButton;
 private:
-  void cb_DisplayAllLayers_i(Fl_Light_Button*, void*);
-  static void cb_DisplayAllLayers(Fl_Light_Button*, void*);
+  void cb_DisplayAllLayersButton_i(Fl_Light_Button*, void*);
+  static void cb_DisplayAllLayersButton(Fl_Light_Button*, void*);
 public:
   Fl_Value_Slider *ApronSizeSlider;
 private:
@@ -343,6 +348,8 @@ public:
 private:
   void cb_DrawLineNumbersButton_i(Fl_Light_Button*, void*);
   static void cb_DrawLineNumbersButton(Fl_Light_Button*, void*);
+  void cb_Save2_i(Fl_Button*, void*);
+  static void cb_Save2(Fl_Button*, void*);
 public:
   void show(int argc, char **argv);
 };

@@ -27,6 +27,8 @@
 
 using namespace std;
 using namespace vmml;
+
+class ProcessController;
 /*
 
 Movement Codes
@@ -150,23 +152,11 @@ public:
     GCode();
 
 	void Read(string filename);
-	void draw();
+	void draw(const ProcessController &PC);
 	void MakeText(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd);
 
 
 	/*--------------GCode-------------------*/
 	std::vector<Command> commands;
 	Vector3f Min,Max,Center;			// Boundingbox
-
-	// GUI Stuff
-	float GCodeDrawStart;
-	float GCodeDrawEnd;
-	float MinPrintSpeedXY;
-	float MaxPrintSpeedXY;
-	float MinPrintSpeedZ;
-	float MaxPrintSpeedZ;
-
-	UINT accelerationSteps;
-	float distanceBetweenSpeedSteps;
-	float extrusionFactor;
 };

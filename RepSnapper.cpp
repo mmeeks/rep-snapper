@@ -32,8 +32,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	char* W = &WindowTitle[0];
 	gui->MVC->gui = gui;
 	gui->show(1,&W);
-	//	gui->code->Read("c:/ViewMe.gcode");
-
 	return Fl::run();
 }
 

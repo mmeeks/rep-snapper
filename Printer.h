@@ -13,13 +13,12 @@
 
 #include "StdAfx.h"
 
+class ProcessController;
+
 class Printer
 {
 public:
 	Printer(){
-		m_fVolume = Vector3f(200,200,140);
-		PrintMargin = Vector3f(10,10,0);
-		ExtrudedMaterialWidth = 0.7f;	// 0.7
 		ExtrudeRatio = 1.0f;			// 1:1
 		ExtrusionBroadWidth = 2.0f;		// 2.0mm
 		ExtrusionDelayForLayer = 0.0f;	// 1000 ms
@@ -36,14 +35,8 @@ public:
 		UpperFineLayers = 2;			// # top layers with fine infill pattern
 		}
 	
-	void Draw();
+	void Draw(const ProcessController &PC);
 	
-	void SetVolume(float x, float y, float z) { m_fVolume = Vector3f(x,y,z);}
-	
-	Vector3f	m_fVolume;				// Max print volume
-	Vector3f	PrintMargin;
-	float		ExtrudedMaterialWidth;	// Width of extruded material
-
 	float ExtrudeRatio;	//If you are using the 4D firmware in the Arduino, this decides how much extrudate actually to lay down for a given movement. Thus if you set this to 0.7 and the head moves 100mm, then 70mm of extrudate will be deposited in that move. You can use this to control how fat or thin the extrudate trail is, though the machine should be set up so that this factor is 1.0.
 	float ExtrusionBroadWidth;//The gap between the infill zig-zag pattern used to fill the interior of an object when coarse infill is being used. Set this negative to suppress coarse infill.
 	float ExtrusionDelayForLayer;//For the first use of the extruder in a layer the time delay between turning on the extruder motor and starting to move the extruder to lay down material. See also ValveDelayForLayer (below).
