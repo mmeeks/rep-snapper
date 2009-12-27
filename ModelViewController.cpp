@@ -80,16 +80,18 @@ void ModelViewController::CalcBoundingBoxAndZoom()
 void ModelViewController::resize(int x,int y, int width, int height)					// Reshape The Window When It's Moved Or Resized
 {
 	Fl_Gl_Window::resize(x,y,width,height);
+	return;
 	glViewport ((GLsizei)x, (GLsizei)y, (GLsizei)width, (GLsizei)height);				// Reset The Current Viewport
 	glMatrixMode (GL_PROJECTION);										// Select The Projection Matrix
 	glLoadIdentity ();													// Reset The Projection Matrix
-	gluPerspective (45.0f, (GLfloat)(width)/(GLfloat)(height),			// Calculate The Aspect Ratio Of The Window
-					1.0f, 1000000.0f);						// Calculate The Aspect Ratio Of The Window
+	float aspect = (float)(width)/(float)(height);						// Calculate The Aspect Ratio Of The Window
+	cout << aspect << "\n";
+	gluPerspective (45.0f, 0.5f,	1.0f, 1000000.0f);			// Near, far
 	glMatrixMode (GL_MODELVIEW);										// Select The Modelview Matrix
 	glLoadIdentity ();													// Reset The Modelview Matrix
 
     ArcBall->setBounds((GLfloat)width, (GLfloat)height);                 //*NEW* Update mouse bounds for arcball
-//	redraw();
+	redraw();
 }
 
 void ModelViewController::CenterView()
@@ -105,10 +107,10 @@ void ModelViewController::draw()
 		glViewport (0, 0, w(),h());											// Reset The Current Viewport
 		glMatrixMode (GL_PROJECTION);										// Select The Projection Matrix
 		glLoadIdentity ();													// Reset The Projection Matrix
-		gluPerspective (45.0f, w()/h(),1.0f, 1000000.0f);						// Calculate The Aspect Ratio Of The Window
+		gluPerspective (45.0f, (float)w()/(float)h(),1.0f, 1000000.0f);						// Calculate The Aspect Ratio Of The Window
 		glMatrixMode (GL_MODELVIEW);										// Select The Modelview Matrix
 		glLoadIdentity ();													// Reset The Modelview Matrix
-//		return;
+		ArcBall->setBounds((GLfloat)w(), (GLfloat)h());                 //*NEW* Update mouse bounds for arcball
 		}
 
     glEnable(GL_BLEND);
