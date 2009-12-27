@@ -80,18 +80,6 @@ void ModelViewController::CalcBoundingBoxAndZoom()
 void ModelViewController::resize(int x,int y, int width, int height)					// Reshape The Window When It's Moved Or Resized
 {
 	Fl_Gl_Window::resize(x,y,width,height);
-	return;
-	glViewport ((GLsizei)x, (GLsizei)y, (GLsizei)width, (GLsizei)height);				// Reset The Current Viewport
-	glMatrixMode (GL_PROJECTION);										// Select The Projection Matrix
-	glLoadIdentity ();													// Reset The Projection Matrix
-	float aspect = (float)(width)/(float)(height);						// Calculate The Aspect Ratio Of The Window
-	cout << aspect << "\n";
-	gluPerspective (45.0f, 0.5f,	1.0f, 1000000.0f);			// Near, far
-	glMatrixMode (GL_MODELVIEW);										// Select The Modelview Matrix
-	glLoadIdentity ();													// Reset The Modelview Matrix
-
-    ArcBall->setBounds((GLfloat)width, (GLfloat)height);                 //*NEW* Update mouse bounds for arcball
-	redraw();
 }
 
 void ModelViewController::CenterView()
@@ -211,13 +199,15 @@ int ModelViewController::handle(int event)
 		case FL_CLOSE:
 			if(fl_ask("Save settings?"))
 			{
-				ProcessControl.SaveXML();
+				int a=0;
+//				ProcessControl.SaveXML();
 			}
 			break;
 		default:
-			// pass other events to the base class...
-			return Fl_Gl_Window::handle(event);
+			break;
 	}
+	// pass other events to the base class...
+	return Fl_Gl_Window::handle(event);
 }
 
 void ModelViewController::DrawGridAndAxis()
@@ -241,7 +231,7 @@ void ModelViewController::ConvertToGCode()
 	buffer = gui->GCodeEnd->buffer();
 	pText = buffer->text();
 	string GCodeEnd(pText);
-	
+
 	ProcessControl.ConvertToGCode(GcodeTxt, GCodeStart, GCodeLayer, GCodeEnd);
 	buffer = gui->GCodeResult->buffer();
 	

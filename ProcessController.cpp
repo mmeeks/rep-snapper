@@ -179,6 +179,18 @@ void WriteGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeL
 
 }
 
+void ProcessController::SaveXML(string filename)
+{
+	filename = filename+".xml";
+
+	XML* xml = new XML(filename.c_str()); 
+	XMLElement* e = xml->GetRootElement();
+	SaveXML(e);
+	if (xml->IntegrityTest())
+		xml->Save(); // Saves back to file
+	delete xml;
+}
+
 void ProcessController::SaveXML(XMLElement *e)
 {
 	XMLElement *x = e->FindElementZ("ProcessController", true);

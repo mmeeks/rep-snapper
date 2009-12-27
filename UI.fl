@@ -11,7 +11,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {279 182 1380 820} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
+      xywh {243 187 1380 820} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -474,8 +474,8 @@ distanceBetweenSpeedStepsSlider->deactivate();
           }
         }
         Fl_Group {} {
-          label GCode
-          xywh {815 40 540 770} hide
+          label GCode open
+          xywh {815 40 540 770}
         } {
           Fl_Button {} {
             label {Load Gcode}
@@ -572,14 +572,14 @@ break;
 }
 
 MVC->redraw();
-};}
+};} selected
             xywh {1200 80 145 25}
             code0 {\#include <FL/Fl_File_Chooser.H>}
           }
         }
         Fl_Group {} {
           label Debug open
-          xywh {815 40 535 765} color 47 labelfont 1 labelcolor 1
+          xywh {815 40 535 765} color 47 labelfont 1 labelcolor 1 hide
         } {
           Fl_Value_Slider ExamineSlider {
             label Examine
@@ -639,7 +639,7 @@ MVC->ProcessControl.GCodeLayerText = string(pText);
 buffer = GCodeEnd->buffer();
 pText = buffer->text();
 MVC->ProcessControl.GCodeEndText = string(pText);
-MVC->ProcessControl.SaveXML();} selected
+MVC->ProcessControl.SaveXML();}
             xywh {840 65 185 30}
           }
         }

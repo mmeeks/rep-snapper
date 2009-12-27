@@ -1188,7 +1188,6 @@ e rest of the print.");
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(815, 40, 540, 770, "GCode");
-        o->hide();
         { Fl_Button* o = new Fl_Button(820, 80, 145, 25, "Load Gcode");
           o->callback((Fl_Callback*)cb_Load1);
         } // Fl_Button* o
@@ -1243,6 +1242,7 @@ e rest of the print.");
         o->color((Fl_Color)FL_DARK1);
         o->labelfont(1);
         o->labelcolor((Fl_Color)1);
+        o->hide();
         { ExamineSlider = new Fl_Value_Slider(885, 760, 365, 20, "Examine");
           ExamineSlider->type(1);
           ExamineSlider->step(0.001);

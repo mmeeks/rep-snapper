@@ -114,6 +114,7 @@ public:
 	// Load and save settings
 	void LoadXML();
 	void SaveXML();
+	void SaveXML(string filename);
 	void LoadXML(XMLElement *e);
 	void SaveXML(XMLElement *e);
 
