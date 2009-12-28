@@ -615,7 +615,7 @@ MVC->ProcessControl.GCodeEndText = string(pText);
 MVC->ProcessControl.SaveXML();
 }
 void GUI::cb_Save2(Fl_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Save2_i(o,v);
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Save2_i(o,v);
 }
 
 GUI::GUI() {
@@ -639,7 +639,6 @@ GUI::GUI() {
     { Tabs = new Fl_Tabs(815, 20, 605, 795, "Process:");
       Tabs->align(FL_ALIGN_TOP_LEFT);
       { Fl_Group* o = new Fl_Group(815, 40, 555, 765, "Input file");
-        o->hide();
         { Fl_Button* o = new Fl_Button(830, 50, 145, 25, "Load STL");
           o->callback((Fl_Callback*)cb_Load);
         } // Fl_Button* o
@@ -701,6 +700,7 @@ GUI::GUI() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(815, 40, 550, 765, "Printer definition");
+        o->hide();
         { Fl_Group* o = new Fl_Group(825, 65, 230, 40, "Build volume (mm)");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
@@ -1260,7 +1260,7 @@ e rest of the print.");
         } // Fl_Button* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(815, 40, 535, 765, "Debug");
+      { Fl_Group* o = new Fl_Group(815, 40, 550, 765, "Debug");
         o->color((Fl_Color)FL_DARK1);
         o->labelfont(1);
         o->labelcolor((Fl_Color)1);
@@ -1298,9 +1298,14 @@ e rest of the print.");
           DrawLineNumbersButton->selection_color((Fl_Color)FL_GREEN);
           DrawLineNumbersButton->callback((Fl_Callback*)cb_DrawLineNumbersButton);
         } // Fl_Light_Button* DrawLineNumbersButton
-        { Fl_Button* o = new Fl_Button(840, 65, 185, 30, "Save settings");
-          o->callback((Fl_Callback*)cb_Save2);
-        } // Fl_Button* o
+        { Fl_Group* o = new Fl_Group(820, 70, 535, 55, "Size");
+          o->box(FL_FLAT_BOX);
+          o->color((Fl_Color)FL_DARK3);
+          { Fl_Button* o = new Fl_Button(835, 80, 185, 30, "Save settings");
+            o->callback((Fl_Callback*)cb_Save2);
+          } // Fl_Button* o
+          o->end();
+        } // Fl_Group* o
         o->end();
       } // Fl_Group* o
       Tabs->end();

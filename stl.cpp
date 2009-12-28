@@ -639,7 +639,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 				command.Code = COORDINATEDMOTION;
 				command.where = lines[thisPoint];
 				//len = (LastPosition - command.where).length();
-				command.e = 0.0f;//len*extrusionFactor;		// move or extrude?
+				command.e = E;//len*extrusionFactor;		// move or extrude?
 				command.f = MinPrintSpeedXY;
 				code.commands.push_back(command);
 				}

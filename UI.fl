@@ -27,8 +27,8 @@ class GUI {open
         xywh {815 20 605 795} align 5
       } {
         Fl_Group {} {
-          label {Input file}
-          xywh {815 40 555 765} hide
+          label {Input file} selected
+          xywh {815 40 555 765}
         } {
           Fl_Button {} {
             label {Load STL}
@@ -150,7 +150,7 @@ MVC->redraw();}
         }
         Fl_Group {} {
           label {Printer definition} open
-          xywh {815 40 550 765}
+          xywh {815 40 550 765} hide
         } {
           Fl_Group {} {
             label {Build volume (mm)} open
@@ -213,7 +213,7 @@ distanceBetweenSpeedStepsSlider->deactivate();
             }
             Fl_Light_Button UseFirmwareAccelerationButton {
               label {Use Firmware Acceleration}
-              callback {MVC->SetUseFirmwareAcceleration(o->value());} selected
+              callback {MVC->SetUseFirmwareAcceleration(o->value());}
               xywh {1095 510 255 20} selection_color 63
             }
           }
@@ -589,7 +589,7 @@ MVC->redraw();
         }
         Fl_Group {} {
           label Debug open
-          xywh {815 40 535 765} color 47 labelfont 1 labelcolor 1 hide
+          xywh {815 40 550 765} color 47 labelfont 1 labelcolor 1 hide
         } {
           Fl_Value_Slider ExamineSlider {
             label Examine
@@ -638,9 +638,13 @@ MVC->redraw();}
             callback {MVC->SetDrawLineNumbers(o->value());}
             xywh {1045 695 155 20} selection_color 63
           }
-          Fl_Button {} {
-            label {Save settings}
-            callback {Fl_Text_Buffer* buffer = GCodeStart->buffer();
+          Fl_Group {} {
+            label Size open
+            xywh {820 70 535 55} box FLAT_BOX color 39
+          } {
+            Fl_Button {} {
+              label {Save settings}
+              callback {Fl_Text_Buffer* buffer = GCodeStart->buffer();
 char* pText = buffer->text();
 MVC->ProcessControl.GCodeStartText = string(pText);
 buffer = GCodeLayer->buffer();
@@ -650,7 +654,8 @@ buffer = GCodeEnd->buffer();
 pText = buffer->text();
 MVC->ProcessControl.GCodeEndText = string(pText);
 MVC->ProcessControl.SaveXML();}
-            xywh {840 65 185 30}
+              xywh {835 80 185 30}
+            }
           }
         }
       }
