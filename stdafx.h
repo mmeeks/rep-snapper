@@ -27,7 +27,7 @@
 #include <vmmlib/vmmlib.h>
 #include <gl\gl.h>												// Header File For The OpenGL32 Library
 #include <gl\glu.h>												// Header File For The GLu32 Library
-#include <gl\glaux.h>											// Header File For The GLaux Library
+//#include <gl\glaux.h>											// Header File For The GLaux Library
 #include "math.h"                                               // Needed for sqrtf
 #include "ArcBall.h"
 #include "gcode.h"
