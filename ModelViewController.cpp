@@ -291,6 +291,7 @@ void ModelViewController::CopySettingsToGUI()
 
 	gui->accelerationStepsSlider->value(ProcessControl.accelerationSteps);
 	gui->distanceBetweenSpeedStepsSlider->value(ProcessControl.distanceBetweenSpeedSteps);
+	gui->UseFirmwareAccelerationButton->value(ProcessControl.UseFirmwareAcceleration);
 	gui->extrusionFactorSlider->value(ProcessControl.extrusionFactor);
 	gui->UseIncrementalEcodeButton->value(ProcessControl.UseIncrementalEcode);
 

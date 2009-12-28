@@ -60,6 +60,7 @@ public:
 		distanceBetweenSpeedSteps= 0.5f;
 		extrusionFactor = 1.0f;
 		UseIncrementalEcode = false;
+		UseFirmwareAcceleration = true;
 
 		LayerThickness = 0.4f;
 		CuttingPlaneValue = 0.5f;
@@ -160,6 +161,7 @@ public:
 	UINT accelerationSteps;
 	float distanceBetweenSpeedSteps;
 	float extrusionFactor;
+	bool UseFirmwareAcceleration;
 
 	// Printer
 	Vector3f	m_fVolume;				// Max print volume

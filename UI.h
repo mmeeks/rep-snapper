@@ -103,6 +103,11 @@ private:
   void cb_EnableAccelerationButton_i(Fl_Light_Button*, void*);
   static void cb_EnableAccelerationButton(Fl_Light_Button*, void*);
 public:
+  Fl_Light_Button *UseFirmwareAccelerationButton;
+private:
+  void cb_UseFirmwareAccelerationButton_i(Fl_Light_Button*, void*);
+  static void cb_UseFirmwareAccelerationButton(Fl_Light_Button*, void*);
+public:
   Fl_Value_Slider *MaxPrintSpeedXYSlider;
 private:
   void cb_MaxPrintSpeedXYSlider_i(Fl_Value_Slider*, void*);

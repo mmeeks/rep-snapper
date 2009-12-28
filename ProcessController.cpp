@@ -61,7 +61,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 			infillCuttingPlane.CalcInFill(infill, LayerNr, destinationZ, InfillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
 			}
 		// Make the GCode from the plane and the infill
-		plane.MakeGcode(infill, gcode, destinationZ, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, accelerationSteps, distanceBetweenSpeedSteps, extrusionFactor, EnableAcceleration, UseIncrementalEcode);
+		plane.MakeGcode(infill, gcode, destinationZ, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, accelerationSteps, distanceBetweenSpeedSteps, extrusionFactor, EnableAcceleration, UseIncrementalEcode, UseFirmwareAcceleration);
 		LayerNr++;
 		destinationZ += LayerThickness;
 		}
@@ -69,7 +69,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 	}
 
 	GcodeTxt.clear();
-	gcode.MakeText(GcodeTxt, GcodeStart, GcodeLayer, GcodeEnd);
+	gcode.MakeText(GcodeTxt, GcodeStart, GcodeLayer, GcodeEnd, UseIncrementalEcode);
 }
 
 
@@ -155,7 +155,7 @@ Vector3f ProcessController::MakeRaft(float &z)
 			else
 				materialRatio = RaftInterfaceMaterialPrDistanceRatio;		// move or extrude?
 
-			MakeAcceleratedGCodeLine(Vector3f(P1.x,P1.y,z), Vector3f(P2.x,P2.y,z), accelerationSteps, distanceBetweenSpeedSteps, materialRatio, gcode, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, UseIncrementalEcode, E);
+			MakeAcceleratedGCodeLine(Vector3f(P1.x,P1.y,z), Vector3f(P2.x,P2.y,z), accelerationSteps, distanceBetweenSpeedSteps, materialRatio, gcode, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, UseIncrementalEcode, E, UseFirmwareAcceleration);
 
 			reverseLines = !reverseLines;
 		}
@@ -229,6 +229,7 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("MaxPrintSpeedZ", true, "150")->SetValueFloat(MaxPrintSpeedZ);
 	x->FindVariableZ("accelerationSteps", true, "3")->SetValueInt(accelerationSteps);
 	x->FindVariableZ("distanceBetweenSpeedSteps", true, "5")->SetValueFloat(distanceBetweenSpeedSteps);
+	x->FindVariableZ("UseFirmwareAcceleration", true, "5")->SetValueInt(UseFirmwareAcceleration);
 	x->FindVariableZ("extrusionFactor", true, "0.66")->SetValueFloat(extrusionFactor);
 	x->FindVariableZ("EnableAcceleration", true, "0.66")->SetValueInt((int)EnableAcceleration);
 	x->FindVariableZ("UseIncrementalEcode", true, "0.66")->SetValueInt((int)UseIncrementalEcode);
@@ -371,6 +372,8 @@ void ProcessController::LoadXML(XMLElement *e)
 	if(y)	accelerationSteps = y->GetValueInt();
 	y=x->FindVariableZ("distanceBetweenSpeedSteps", false, "0");
 	if(y)	distanceBetweenSpeedSteps = y->GetValueFloat();
+	y=x->FindVariableZ("UseFirmwareAcceleration", false, "0");
+	if(y)	UseFirmwareAcceleration = y->GetValueInt();
 	y=x->FindVariableZ("extrusionFactor", false, "0");
 	if(y)	extrusionFactor = y->GetValueFloat();
 

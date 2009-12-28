@@ -295,12 +295,15 @@ void GCode::draw(const ProcessController &PC)
 
 }
 
-void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd)
+void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, bool UseIncrementalEcode)
 {
 	Vector3f pos(0,0,0);
 	
 	float Distance = 0;
 	std::stringstream oss;
+
+	Vector3f LastPos(-10,-10,-10);
+	float lastE = -10;
 
 	GcodeTxt += GcodeStart;
 
@@ -317,14 +320,33 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 			GcodeTxt += oss.str();
 			break;
 		case COORDINATEDMOTION:
-			Distance = (commands[i].where-pos).length();
-			oss  << "G1 X" << commands[i].where.x << " Y" << commands[i].where.y << " Z" << commands[i].where.z << " E" << commands[i].e << " F" << commands[i].f << "\n";
+			oss  << "G1 ";
+			if(commands[i].where.x != LastPos.x)
+				oss << "X" << commands[i].where.x << " ";
+			if(commands[i].where.y != LastPos.y)
+				oss << "Y" << commands[i].where.y << " ";
+			if(commands[i].where.z != LastPos.z)
+				oss << "Z" << commands[i].where.z << " ";
+			if(UseIncrementalEcode)	// in incremental mode, the same is nothing
+				{
+				if(commands[i].e != lastE)
+					oss << "E" << commands[i].e << " ";
+				}
+			else
+				{
+				if(commands[i].e != 0.0f)
+					oss << "E" << commands[i].e << " ";
+				}
+			oss << " F" << commands[i].f << "\n";
 			GcodeTxt += oss.str();
+			LastPos = commands[i].where;
+			lastE = commands[i].e;
 			break;
 		case RAPIDMOTION:
-			Distance += (commands[i].where-pos).length();
 			oss  << "G0 X" << commands[i].where.x << " Y" << commands[i].where.y << " Z" << commands[i].where.z  << " E0\n";
 			GcodeTxt += oss.str();
+			LastPos = commands[i].where;
+			lastE = commands[i].e;
 			break;
 		}
 		pos = commands[i].where;

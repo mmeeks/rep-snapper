@@ -68,7 +68,8 @@ public:
 	void NumAccelerationSteps(float val) {ProcessControl.accelerationSteps = val;}
 	void SetDistancePrAccelerationStep(float val) {ProcessControl.distanceBetweenSpeedSteps = val;}
 	void SetExtrusionFactor(float val) {ProcessControl.extrusionFactor = val;}
-	
+	void SetUseFirmwareAcceleration(bool val){ ProcessControl.UseFirmwareAcceleration = val;}
+
 	// STL GUI Values
 	void SetLayerThickness(float val){ProcessControl.LayerThickness = val; redraw();}
 	void SetCuttingPlaneValue(float val){ProcessControl.CuttingPlaneValue = val; redraw();}

@@ -171,6 +171,13 @@ void GUI::cb_EnableAccelerationButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_EnableAccelerationButton_i(o,v);
 }
 
+void GUI::cb_UseFirmwareAccelerationButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetUseFirmwareAcceleration(o->value());
+}
+void GUI::cb_UseFirmwareAccelerationButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_UseFirmwareAccelerationButton_i(o,v);
+}
+
 void GUI::cb_MaxPrintSpeedXYSlider_i(Fl_Value_Slider* o, void*) {
   MVC->SetMaxPrintSpeedXY(o->value());
 }
@@ -743,7 +750,7 @@ GUI::GUI() {
           { distanceBetweenSpeedStepsSlider = new Fl_Value_Slider(835, 590, 515, 20, "Distance Pr Acceleration Step (mm)");
             distanceBetweenSpeedStepsSlider->type(1);
             distanceBetweenSpeedStepsSlider->selection_color((Fl_Color)2);
-            distanceBetweenSpeedStepsSlider->maximum(2);
+            distanceBetweenSpeedStepsSlider->maximum(10);
             distanceBetweenSpeedStepsSlider->value(0.1);
             distanceBetweenSpeedStepsSlider->textsize(14);
             distanceBetweenSpeedStepsSlider->callback((Fl_Callback*)cb_distanceBetweenSpeedStepsSlider);
@@ -753,6 +760,10 @@ GUI::GUI() {
             EnableAccelerationButton->selection_color((Fl_Color)FL_GREEN);
             EnableAccelerationButton->callback((Fl_Callback*)cb_EnableAccelerationButton);
           } // Fl_Light_Button* EnableAccelerationButton
+          { UseFirmwareAccelerationButton = new Fl_Light_Button(1095, 510, 255, 20, "Use Firmware Acceleration");
+            UseFirmwareAccelerationButton->selection_color((Fl_Color)FL_GREEN);
+            UseFirmwareAccelerationButton->callback((Fl_Callback*)cb_UseFirmwareAccelerationButton);
+          } // Fl_Light_Button* UseFirmwareAccelerationButton
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(825, 300, 535, 170, "Print speeds");

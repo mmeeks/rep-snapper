@@ -194,7 +194,7 @@ MVC->redraw();}
             Fl_Value_Slider distanceBetweenSpeedStepsSlider {
               label {Distance Pr Acceleration Step (mm)}
               callback {MVC->SetDistancePrAccelerationStep(o->value());}
-              xywh {835 590 515 20} type Horizontal selection_color 2 align 5 maximum 2 value 0.1 textsize 14
+              xywh {835 590 515 20} type Horizontal selection_color 2 align 5 maximum 10 value 0.1 textsize 14
             }
             Fl_Light_Button EnableAccelerationButton {
               label {Enable Acceleration}
@@ -210,6 +210,11 @@ accelerationStepsSlider->deactivate();
 distanceBetweenSpeedStepsSlider->deactivate();
 }}
               xywh {835 510 255 20} selection_color 63
+            }
+            Fl_Light_Button UseFirmwareAccelerationButton {
+              label {Use Firmware Acceleration}
+              callback {MVC->SetUseFirmwareAcceleration(o->value());} selected
+              xywh {1095 510 255 20} selection_color 63
             }
           }
           Fl_Group {} {
@@ -253,7 +258,7 @@ distanceBetweenSpeedStepsSlider->deactivate();
             }
             Fl_Light_Button UseIncrementalEcodeButton {
               label {Use incremental ecode}
-              callback {MVC->SetUseIncrementalEcode(o->value());} selected
+              callback {MVC->SetUseIncrementalEcode(o->value());}
               xywh {835 145 255 20} selection_color 63
             }
           }
