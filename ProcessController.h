@@ -68,6 +68,7 @@ public:
 
 		DisplayEndpoints = false;
 		DisplayNormals = false;
+		DisplayBBox = false;
 		DisplayWireframe = false;
 		DisplayPolygons = false;
 		DisplayAllLayers = false;
@@ -189,6 +190,7 @@ public:
 	// GUI... ?
 	bool DisplayEndpoints;
 	bool DisplayNormals;
+	bool DisplayBBox;
 	bool DisplayWireframe;
 	bool DisplayPolygons;
 	bool DisplayAllLayers;
@@ -199,4 +201,29 @@ public:
 	bool DrawVertexNumbers;
 	bool DrawLineNumbers;
 
+	// Rendering
+	float PolygonVal;
+	float PolygonSat;
+	float PolygonHue;
+	float WireframeVal;
+	float WireframeSat;
+	float WireframeHue;
+	float NormalsSat;
+	float NormalsVal;
+	float NormalsHue;
+	float EndpointsSat;
+	float EndpointsVal;
+	float EndpointsHue;
+	float GCodeExtrudeHue;
+	float GCodeExtrudeSat;
+	float GCodeExtrudeVal;
+	float GCodeMoveHue;
+	float GCodeMoveSat;
+	float GCodeMoveVal;
+	float Highlight;
+	float NormalsLength;
+	float EndPointSize;
+
+	bool LuminanceShowsSpeed;
+	bool DisplayGCode;
 };

@@ -187,40 +187,23 @@ void GCode::Read(string filename)
 
 }
 
-/*
-
-void CubeView::draw() {
-    if (!valid()) {
-        glLoadIdentity();
-        glViewport(0,0,w(),h());
-        glOrtho(-10,10,-10,10,-20050,10000);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    }
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glPushMatrix();
-
-    glTranslatef(xshift, yshift, 0);
-    glRotatef(hAng,0,1,0); glRotatef(vAng,1,0,0);
-    glScalef(float(size),float(size),float(size));
-
-    drawCube();
-    
-    glPopMatrix();
-}*/
-
 void GCode::draw(const ProcessController &PC)
 {
 	/*--------------- Drawing -----------------*/
 
 	Vector3f thisPos(0,0,0);
-
+	Vector3f LastColor = Vector3f(0.0f,0.0f,0.0f);
+	Vector3f Color = Vector3f(0.0f,0.0f,0.0f);
 	float	Distance = 0.0f;
 	Vector3f pos(0,0,0);
 	UINT start = (UINT)(PC.GCodeDrawStart*(float)(commands.size()));
 	UINT end = (UINT)(PC.GCodeDrawEnd*(float)(commands.size()));
+
+	float Er,Eg,Eb;
+	HSVtoRGB(PC.GCodeExtrudeHue, PC.GCodeExtrudeSat, PC.GCodeExtrudeVal, Er,Eg,Eb);
+	float Mr,Mg,Mb;
+	HSVtoRGB(PC.GCodeMoveHue, PC.GCodeMoveSat, PC.GCodeMoveVal, Mr,Mg,Mb);
+
 	for(UINT i=start;i<commands.size() && i < end ;i++)
 	{
 		switch(commands[i].Code)
@@ -231,20 +214,29 @@ void GCode::draw(const ProcessController &PC)
 				glLineWidth(3);
 				float speed = commands[i].f;
 				float luma = speed/PC.MaxPrintSpeedXY*0.5f;
-				glColor3f(luma,0,luma);
+				if(PC.LuminanceShowsSpeed == false)
+					luma = 1.0f;
+				Color=Vector3f(luma*Mr,luma*Mg,luma*Mb);
 				}
 			else
 				{
 				glLineWidth(3);
 				float speed = commands[i].f;
 				float luma = speed/PC.MaxPrintSpeedXY;
-				glColor3f(0,luma,0);
+				if(PC.LuminanceShowsSpeed == false)
+					luma = 1.0f;
+				Color=Vector3f(luma*Er,luma*Eg,luma*Eb);
 				}
-			glBegin(GL_LINES);
+			if(PC.LuminanceShowsSpeed == false)
+				LastColor = Color;
 			Distance += (commands[i].where-pos).length();
+			glBegin(GL_LINES);
+			glColor3fv(&LastColor[0]);
 			glVertex3fv((GLfloat*)&pos);
+			glColor3fv(&Color[0]);
 			glVertex3fv((GLfloat*)&commands[i].where);
 			glEnd();
+			LastColor = Color;
 			break;
 		case RAPIDMOTION:
 			glLineWidth(1);

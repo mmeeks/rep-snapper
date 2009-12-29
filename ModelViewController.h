@@ -57,8 +57,8 @@ public:
 
 	void CalcBoundingBoxAndZoom();
 
-	void SetDisplaySTL(bool value){}
-	void SetDisplayGCode(bool value){}
+	void SetDisplayGCode(bool val){ProcessControl.DisplayGCode = val;}
+	void SetLuminanceShowsSpeed(bool val){ProcessControl.LuminanceShowsSpeed = val;}
 
 	// GCode GUI Values
 	void SetGCodeDrawStart(float val){ProcessControl.GCodeDrawStart = val; redraw();}
@@ -78,6 +78,7 @@ public:
 
 	void SetDisplayEndpoints(bool val){ProcessControl.DisplayEndpoints = val; redraw();}
 	void SetDisplayNormals(bool val){ProcessControl.DisplayNormals = val; redraw();}
+	void SetDisplayBBox(bool val){ProcessControl.DisplayBBox = val; redraw();}
 	void SetDisplayWireframe(bool val){ProcessControl.DisplayWireframe = val; redraw();}
 	void SetDisplayPolygons(bool val){ProcessControl.DisplayPolygons = val; redraw();}
 	void SetDisplayAllLayers(bool val){ProcessControl.DisplayAllLayers = val; redraw();}
@@ -128,6 +129,28 @@ public:
 	void SetApronApronDistanceToObject(float val){};
 	void SetApronInfillDistance(float val){};
 
+	// Rendering
+	void SetPolygonVal(float val) {ProcessControl.PolygonVal=val;}
+	void SetPolygonSat(float val) {ProcessControl.PolygonSat=val;}
+	void SetPolygonHue(float val) {ProcessControl.PolygonHue=val;}
+	void SetWireframeVal(float val) {ProcessControl.WireframeVal=val;}
+	void SetWireframeSat(float val) {ProcessControl.WireframeSat=val;}
+	void SetWireframeHue(float val) {ProcessControl.WireframeHue=val;}
+	void SetNormalsSat(float val) {ProcessControl.NormalsSat=val;}
+	void SetNormalsVal(float val) {ProcessControl.NormalsVal=val;}
+	void SetNormalsHue(float val) {ProcessControl.NormalsHue=val;}
+	void SetEndpointsSat(float val) {ProcessControl.EndpointsSat=val;}
+	void SetEndpointsVal(float val) {ProcessControl.EndpointsVal=val;}
+	void SetEndpointsHue(float val) {ProcessControl.EndpointsHue=val;}
+	void SetGCodeExtrudeHue(float val) {ProcessControl.GCodeExtrudeHue=val;}
+	void SetGCodeExtrudeSat(float val) {ProcessControl.GCodeExtrudeSat=val;}
+	void SetGCodeExtrudeVal(float val) {ProcessControl.GCodeExtrudeVal=val;}
+	void SetGCodeMoveHue(float val) {ProcessControl.GCodeMoveHue=val;}
+	void SetGCodeMoveSat(float val) {ProcessControl.GCodeMoveSat=val;}
+	void SetGCodeMoveVal(float val) {ProcessControl.GCodeMoveVal=val;}
+	void SetHighlight(float val) {ProcessControl.Highlight = val;}
+	void SetNormalsLength(float val){ProcessControl.NormalsLength = val;}
+	void SetEndPointSize(float val){ProcessControl.EndPointSize = val;}
 
 	/*--------------ArcBall-------------------*/
 
@@ -144,8 +167,8 @@ public:
 	Vector3f Min;
 	Vector3f Max;
 	float zoom;
-	void EnableLight(int lightNr, bool on){ if(on) lights[lightNr].TurnOn(); else lights[lightNr].TurnOff(); redraw(); }
-	CGL_Light3D lights[8];
+	void SetEnableLight(int lightNr, bool on){ if(on) lights[lightNr].TurnOn(); else lights[lightNr].TurnOff(); redraw(); }
+	CGL_Light3D lights[4];
 	
 	/*--------------User interface (View)-------------------*/
 	GUI *gui;

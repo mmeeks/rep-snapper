@@ -18,6 +18,7 @@ class ModelViewController;
 #include <FL/Fl_File_Chooser.H>
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Text_Editor.H>
+#include <FL/Fl_Slider.H>
 
 class GUI {
 public:
@@ -292,36 +293,139 @@ private:
   static void cb_DisplayEndpointsButton(Fl_Light_Button*, void*);
 public:
   Fl_Value_Slider *PolygonValSlider;
+private:
+  void cb_PolygonValSlider_i(Fl_Value_Slider*, void*);
+  static void cb_PolygonValSlider(Fl_Value_Slider*, void*);
+public:
   Fl_Value_Slider *PolygonSatSlider;
+private:
+  void cb_PolygonSatSlider_i(Fl_Value_Slider*, void*);
+  static void cb_PolygonSatSlider(Fl_Value_Slider*, void*);
+public:
   Fl_Value_Slider *PolygonHueSlider;
+private:
+  void cb_PolygonHueSlider_i(Fl_Value_Slider*, void*);
+  static void cb_PolygonHueSlider(Fl_Value_Slider*, void*);
+public:
   Fl_Value_Slider *WireframeValSlider;
+private:
+  void cb_WireframeValSlider_i(Fl_Value_Slider*, void*);
+  static void cb_WireframeValSlider(Fl_Value_Slider*, void*);
+public:
   Fl_Value_Slider *WireframeSatSlider;
+private:
+  void cb_WireframeSatSlider_i(Fl_Value_Slider*, void*);
+  static void cb_WireframeSatSlider(Fl_Value_Slider*, void*);
+public:
   Fl_Value_Slider *WireframeHueSlider;
+private:
+  void cb_WireframeHueSlider_i(Fl_Value_Slider*, void*);
+  static void cb_WireframeHueSlider(Fl_Value_Slider*, void*);
+public:
   Fl_Value_Slider *NormalValSlider;
+private:
+  void cb_NormalValSlider_i(Fl_Value_Slider*, void*);
+  static void cb_NormalValSlider(Fl_Value_Slider*, void*);
+public:
   Fl_Value_Slider *NormalSatSlider;
+private:
+  void cb_NormalSatSlider_i(Fl_Value_Slider*, void*);
+  static void cb_NormalSatSlider(Fl_Value_Slider*, void*);
+public:
   Fl_Value_Slider *NormalHueSlider;
+private:
+  void cb_NormalHueSlider_i(Fl_Value_Slider*, void*);
+  static void cb_NormalHueSlider(Fl_Value_Slider*, void*);
+public:
   Fl_Value_Slider *EndpointValSlider;
+private:
+  void cb_EndpointValSlider_i(Fl_Value_Slider*, void*);
+  static void cb_EndpointValSlider(Fl_Value_Slider*, void*);
+public:
   Fl_Value_Slider *EndpointSatSlider;
+private:
+  void cb_EndpointSatSlider_i(Fl_Value_Slider*, void*);
+  static void cb_EndpointSatSlider(Fl_Value_Slider*, void*);
+public:
   Fl_Value_Slider *EndpointHueSlider;
+private:
+  void cb_EndpointHueSlider_i(Fl_Value_Slider*, void*);
+  static void cb_EndpointHueSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Light_Button *DisplayBBoxButton;
+private:
+  void cb_DisplayBBoxButton_i(Fl_Light_Button*, void*);
+  static void cb_DisplayBBoxButton(Fl_Light_Button*, void*);
+public:
+  Fl_Value_Slider *HighlightSlider;
+private:
+  void cb_HighlightSlider_i(Fl_Value_Slider*, void*);
+  static void cb_HighlightSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *NormalLengthSlider;
+private:
+  void cb_NormalLengthSlider_i(Fl_Value_Slider*, void*);
+  static void cb_NormalLengthSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *EndpointSizeSlider;
+private:
+  void cb_EndpointSizeSlider_i(Fl_Value_Slider*, void*);
+  static void cb_EndpointSizeSlider(Fl_Value_Slider*, void*);
+public:
   Fl_Light_Button *DisplayGCodeButton;
 private:
   void cb_DisplayGCodeButton_i(Fl_Light_Button*, void*);
   static void cb_DisplayGCodeButton(Fl_Light_Button*, void*);
 public:
-  Fl_Value_Slider *GCodeValSlider;
-  Fl_Value_Slider *GCodeSatSlider;
-  Fl_Value_Slider *GCodeHueSlider;
-  Fl_Value_Slider *GCodeDrawStartSlider;
+  Fl_Value_Slider *GCodeExtrudeValSlider;
 private:
-  void cb_GCodeDrawStartSlider_i(Fl_Value_Slider*, void*);
-  static void cb_GCodeDrawStartSlider(Fl_Value_Slider*, void*);
+  void cb_GCodeExtrudeValSlider_i(Fl_Value_Slider*, void*);
+  static void cb_GCodeExtrudeValSlider(Fl_Value_Slider*, void*);
 public:
-  Fl_Value_Slider *GCodeDrawEndSlider;
+  Fl_Value_Slider *GCodeExtrudeSatSlider;
 private:
-  void cb_GCodeDrawEndSlider_i(Fl_Value_Slider*, void*);
-  static void cb_GCodeDrawEndSlider(Fl_Value_Slider*, void*);
+  void cb_GCodeExtrudeSatSlider_i(Fl_Value_Slider*, void*);
+  static void cb_GCodeExtrudeSatSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *GCodeExtrudeHueSlider;
+private:
+  void cb_GCodeExtrudeHueSlider_i(Fl_Value_Slider*, void*);
+  static void cb_GCodeExtrudeHueSlider(Fl_Value_Slider*, void*);
 public:
   Fl_Light_Button *LuminanceShowsSpeedButton;
+private:
+  void cb_LuminanceShowsSpeedButton_i(Fl_Light_Button*, void*);
+  static void cb_LuminanceShowsSpeedButton(Fl_Light_Button*, void*);
+  void cb_Crop_i(Fl_Button*, void*);
+  static void cb_Crop(Fl_Button*, void*);
+  void cb_Reset_i(Fl_Button*, void*);
+  static void cb_Reset(Fl_Button*, void*);
+public:
+  Fl_Slider *GCodeDrawStartSlider;
+private:
+  void cb_GCodeDrawStartSlider_i(Fl_Slider*, void*);
+  static void cb_GCodeDrawStartSlider(Fl_Slider*, void*);
+public:
+  Fl_Slider *GCodeDrawEndSlider;
+private:
+  void cb_GCodeDrawEndSlider_i(Fl_Slider*, void*);
+  static void cb_GCodeDrawEndSlider(Fl_Slider*, void*);
+public:
+  Fl_Value_Slider *GCodeMoveValSlider;
+private:
+  void cb_GCodeMoveValSlider_i(Fl_Value_Slider*, void*);
+  static void cb_GCodeMoveValSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *GCodeMoveSatSlider;
+private:
+  void cb_GCodeMoveSatSlider_i(Fl_Value_Slider*, void*);
+  static void cb_GCodeMoveSatSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Value_Slider *GCodeMoveHueSlider;
+private:
+  void cb_GCodeMoveHueSlider_i(Fl_Value_Slider*, void*);
+  static void cb_GCodeMoveHueSlider(Fl_Value_Slider*, void*);
+public:
   Fl_Value_Slider *CuttingPlaneValueSlider;
 private:
   void cb_CuttingPlaneValueSlider_i(Fl_Value_Slider*, void*);
@@ -349,14 +453,6 @@ private:
   static void cb_Enable4(Fl_Light_Button*, void*);
   void cb_Enable5_i(Fl_Light_Button*, void*);
   static void cb_Enable5(Fl_Light_Button*, void*);
-  void cb_Enable6_i(Fl_Light_Button*, void*);
-  static void cb_Enable6(Fl_Light_Button*, void*);
-  void cb_Enable7_i(Fl_Light_Button*, void*);
-  static void cb_Enable7(Fl_Light_Button*, void*);
-  void cb_Enable8_i(Fl_Light_Button*, void*);
-  static void cb_Enable8(Fl_Light_Button*, void*);
-  void cb_Enable9_i(Fl_Light_Button*, void*);
-  static void cb_Enable9(Fl_Light_Button*, void*);
 public:
   Fl_Value_Slider *ExamineSlider;
 private:

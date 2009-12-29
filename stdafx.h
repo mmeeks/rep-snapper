@@ -43,6 +43,13 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSte
 bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, InFillHit &hit);	// Utilityfunction for CalcInFill
 bool InFillHitCompareFunc(const InFillHit& d1, const InFillHit& d2);
 
+extern void HSVtoRGB 	(const float &h, const float &s, const float &v, float &r,float &g,float &b);			
+extern void RGBtoHSV 	(const float &r, const float &g, const float &b, float &h, float &s, float &v);
+extern void RGBTOHSL	(float red, float green, float blue, float &hue, float &sat, FLOAT &lightness);
+extern void	RGBTOYUV	(float r, float g, float b, float &y, float &u, float &v);
+extern void YUVTORGB	(float y, float u, float v, float &r, float &g, float &b);
+
+
 #include "ModelViewController.h"
 
 // TODO: reference additional headers your program requires here

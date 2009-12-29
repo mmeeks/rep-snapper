@@ -144,10 +144,6 @@ void STL::draw(const ProcessController &PC)
 {
 	// polygons
 	glEnable(GL_LIGHTING);
-	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
-
-	glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHTING);
 
 	float no_mat[] = {0.0f, 0.0f, 0.0f, 1.0f};
 	float mat_ambient[] = {0.7f, 0.7f, 0.7f, 1.0f};
@@ -159,12 +155,16 @@ void STL::draw(const ProcessController &PC)
 	float high_shininess = 100.0f;
 	float mat_emission[] = {0.3f, 0.2f, 0.2f, 0.0f};
 
+	HSVtoRGB(PC.PolygonHue, PC.PolygonSat, PC.PolygonVal, mat_diffuse[0], mat_diffuse[1], mat_diffuse[2]);
+
+	mat_specular[0] = mat_specular[1] = mat_specular[2] = PC.Highlight;
+
 	/* draw sphere in first row, first column
 	* diffuse reflection only; no ambient or specular
 	*/
 	glMaterialfv(GL_FRONT, GL_AMBIENT, no_mat);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 	glMaterialf(GL_FRONT, GL_SHININESS, high_shininess);
 	glMaterialfv(GL_FRONT, GL_EMISSION, no_mat);
 
@@ -176,7 +176,7 @@ void STL::draw(const ProcessController &PC)
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
-		glDepthMask(GL_TRUE);
+//		glDepthMask(GL_TRUE);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  //define blending factors
 		glBegin(GL_TRIANGLES);
 		for(UINT i=0;i<triangles.size();i++)
@@ -197,15 +197,18 @@ void STL::draw(const ProcessController &PC)
 			glVertex3fv((GLfloat*)&triangles[i].C);
 		}
 		glEnd();
-		glDisable(GL_BLEND);
 	}
 
+	glDisable (GL_POLYGON_OFFSET_FILL);
+	glDisable(GL_BLEND);
 	glDisable(GL_LIGHTING);
 
 	// WireFrame
 	if(PC.DisplayWireframe)
 	{
-		glColor4f(0,1,0,1);
+		float r,g,b;
+		HSVtoRGB(PC.WireframeHue, PC.WireframeSat, PC.WireframeVal, r,g,b);
+		glColor3f(r,g,b);
 		for(UINT i=0;i<triangles.size();i++)
 		{
 			glBegin(GL_LINE_LOOP);
@@ -218,13 +221,15 @@ void STL::draw(const ProcessController &PC)
 	// normals
 	if(PC.DisplayNormals)
 	{
-		glColor4f(0,0,1,1);
+		float r,g,b;
+		HSVtoRGB(PC.NormalsHue, PC.NormalsSat, PC.NormalsVal, r,g,b);
+		glColor3f(r,g,b);
 		glBegin(GL_LINES);
 		for(UINT i=0;i<triangles.size();i++)
 		{
 			Vector3f center = (triangles[i].A+triangles[i].B+triangles[i].C)/3.0f;
 			glVertex3fv((GLfloat*)&center);
-			Vector3f N = center + (triangles[i].N*10);
+			Vector3f N = center + (triangles[i].N*PC.NormalsLength);
 			glVertex3fv((GLfloat*)&N);
 		}
 		glEnd();
@@ -233,8 +238,11 @@ void STL::draw(const ProcessController &PC)
 	// Endpoints
 	if(PC.DisplayEndpoints)
 	{
-		glColor4f(1,0,0,1);
-		glPointSize(2);
+		float r,g,b;
+		HSVtoRGB(PC.EndpointsHue, PC.EndpointsSat, PC.EndpointsVal, r,g,b);
+		glColor3f(r,g,b);
+		glPointSize(PC.EndPointSize);
+		glEnable(GL_POINT_SMOOTH);
 		glBegin(GL_POINTS);
 		for(UINT i=0;i<triangles.size();i++)
 		{
@@ -258,130 +266,88 @@ void STL::draw(const ProcessController &PC)
 		z=Min.z;
 		zStep = PC.LayerThickness;
 		}
-	while(z<Max.z)
+	if(PC.DisplayCuttingPlane)
 	{
+	while(z<Max.z)
 		{
-		CuttingPlane plane;
-		CalcCuttingPlane(z, plane);	// output is a lot of unconnected line segments with individual vertices
-
-		float hackedZ = z;
-		while(plane.LinkSegments(hackedZ, PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
-			{										// This happens when there's triangles missing in the input STL
-			hackedZ+= 0.1f;
-			plane.polygons.clear();
-			CalcCuttingPlane(hackedZ, plane);	// output is alot of un-connected line segments with individual vertices
-			}
-
-		plane.Draw(z, PC.DrawVertexNumbers, PC.DrawLineNumbers);
-
-		// inFill
-		vector<Vector2f> infill;
-
-		if(PC.DisplayinFill)
 			{
-			CuttingPlane infillCuttingPlane;
-			infillCuttingPlane = plane;
-			infillCuttingPlane.polygons = infillCuttingPlane.offsetPolygons;
-			infillCuttingPlane.vertices = infillCuttingPlane.offsetVertices;
-			infillCuttingPlane.offsetPolygons.clear();
-			infillCuttingPlane.offsetVertices.clear();
-			if(PC.ShellOnly == false)
-				{
-				infillCuttingPlane.Shrink(PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane);
-				infillCuttingPlane.CalcInFill(infill, LayerNr, z, PC.InfillDistance, PC.InfillRotation, PC.InfillRotationPrLayer, PC.DisplayDebuginFill);
+			CuttingPlane plane;
+			CalcCuttingPlane(z, plane);	// output is a lot of unconnected line segments with individual vertices
+
+			float hackedZ = z;
+			while(plane.LinkSegments(hackedZ, PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
+				{										// This happens when there's triangles missing in the input STL
+				hackedZ+= 0.1f;
+				plane.polygons.clear();
+				CalcCuttingPlane(hackedZ, plane);	// output is alot of un-connected line segments with individual vertices
 				}
-			glColor4f(1,1,0,1);
-			glPointSize(5);
-			glBegin(GL_LINES);
-			for(UINT i=0;i<infill.size();i+=2)
-			{
-				if(infill.size() > i+1)
+
+			plane.Draw(z, PC.DrawVertexNumbers, PC.DrawLineNumbers);
+
+			// inFill
+			vector<Vector2f> infill;
+
+			if(PC.DisplayinFill)
 				{
-				glVertex3f(infill[i  ].x, infill[i  ].y, z);
-				glVertex3f(infill[i+1].x, infill[i+1].y, z);
-				}
-			}
-			glEnd();
-			}
-		
-		// Make the GCode from the plane and the infill
-		/*
-		GCode *code = gui->code;
-		code->commands.clear();
-		if(code != 0)
-			{
-			plane.MakeGcode(infill, code, z);
-
-			// Draw GCode
-
-			//--------------- Drawing -----------------
-
-			glLineWidth(4);
-			glBegin(GL_LINES);
-			Vector3f thisPos(0,0,0);
-
-			float	Distance = 0.0f;
-			Vector3f pos(0,0,0);
-			UINT start = (UINT)(gui->GCodeDrawStartSlider->value()*(float)(code->commands.size()));
-			UINT end = (UINT)(gui->GCodeDrawEndSlider->value()*(float)(code->commands.size()));
-			for(UINT i=start;i<code->commands.size() && i < end ;i++)
-			{
-				switch(code->commands[i].Code)
+				CuttingPlane infillCuttingPlane;
+				infillCuttingPlane = plane;
+				infillCuttingPlane.polygons = infillCuttingPlane.offsetPolygons;
+				infillCuttingPlane.vertices = infillCuttingPlane.offsetVertices;
+				infillCuttingPlane.offsetPolygons.clear();
+				infillCuttingPlane.offsetVertices.clear();
+				if(PC.ShellOnly == false)
+					{
+					infillCuttingPlane.Shrink(PC.ExtrudedMaterialWidth*0.5f, z, PC.DisplayCuttingPlane);
+					infillCuttingPlane.CalcInFill(infill, LayerNr, z, PC.InfillDistance, PC.InfillRotation, PC.InfillRotationPrLayer, PC.DisplayDebuginFill);
+					}
+				glColor4f(1,1,0,1);
+				glPointSize(5);
+				glBegin(GL_LINES);
+				for(UINT i=0;i<infill.size();i+=2)
 				{
-				case COORDINATEDMOTION:
-					if(code->commands[i].f == 0 && code->commands[i].e == 0)
-						glColor3f(0.55f,0.55f,0.55f);
-					else
-						glColor3f(1,1,0);
-					Distance += (code->commands[i].where-thisPos).length();
-					glVertex3fv((GLfloat*)&pos);
-					glVertex3fv((GLfloat*)&code->commands[i].where);
-					break;
-				case RAPIDMOTION:
-					glColor3f(0.75f,0.0f,0.0f);
-					Distance += (code->commands[i].where-thisPos).length();
-					glVertex3fv((GLfloat*)&pos);
-					glVertex3fv((GLfloat*)&code->commands[i].where);
-					break;
+					if(infill.size() > i+1)
+					{
+					glVertex3f(infill[i  ].x, infill[i  ].y, z);
+					glVertex3f(infill[i+1].x, infill[i+1].y, z);
+					}
 				}
-				pos = code->commands[i].where;
+				glEnd();
+				}
+			
+			LayerNr++;
 			}
-			glEnd();
-			glLineWidth(1);
-			// Draw GCode end
-			}			
-		glPointSize(1);
-		*/
-		LayerNr++;
+		z+=zStep;
 		}
-	z+=zStep;
-	}
+	}// If display cuttingplane
 
-	// Draw bbox
 
-	glColor3f(1,0,0);
-	glBegin(GL_LINE_LOOP);
-	glVertex3f(Min.x, Min.y, Min.z);
-	glVertex3f(Min.x, Max.y, Min.z);
-	glVertex3f(Max.x, Max.y, Min.z);
-	glVertex3f(Max.x, Min.y, Min.z);
-	glEnd();
-	glBegin(GL_LINE_LOOP);
-	glVertex3f(Min.x, Min.y, Max.z);
-	glVertex3f(Min.x, Max.y, Max.z);
-	glVertex3f(Max.x, Max.y, Max.z);
-	glVertex3f(Max.x, Min.y, Max.z);
-	glEnd();
-	glBegin(GL_LINES);
-	glVertex3f(Min.x, Min.y, Min.z);
-	glVertex3f(Min.x, Min.y, Max.z);
-	glVertex3f(Min.x, Max.y, Min.z);
-	glVertex3f(Min.x, Max.y, Max.z);
-	glVertex3f(Max.x, Max.y, Min.z);
-	glVertex3f(Max.x, Max.y, Max.z);
-	glVertex3f(Max.x, Min.y, Min.z);
-	glVertex3f(Max.x, Min.y, Max.z);
-	glEnd();
+	if(PC.DisplayBBox)
+		{
+		// Draw bbox
+		glColor3f(1,0,0);
+		glBegin(GL_LINE_LOOP);
+		glVertex3f(Min.x, Min.y, Min.z);
+		glVertex3f(Min.x, Max.y, Min.z);
+		glVertex3f(Max.x, Max.y, Min.z);
+		glVertex3f(Max.x, Min.y, Min.z);
+		glEnd();
+		glBegin(GL_LINE_LOOP);
+		glVertex3f(Min.x, Min.y, Max.z);
+		glVertex3f(Min.x, Max.y, Max.z);
+		glVertex3f(Max.x, Max.y, Max.z);
+		glVertex3f(Max.x, Min.y, Max.z);
+		glEnd();
+		glBegin(GL_LINES);
+		glVertex3f(Min.x, Min.y, Min.z);
+		glVertex3f(Min.x, Min.y, Max.z);
+		glVertex3f(Min.x, Max.y, Min.z);
+		glVertex3f(Min.x, Max.y, Max.z);
+		glVertex3f(Max.x, Max.y, Min.z);
+		glVertex3f(Max.x, Max.y, Max.z);
+		glVertex3f(Max.x, Min.y, Min.z);
+		glVertex3f(Max.x, Min.y, Max.z);
+		glEnd();
+		}
 
 }
 

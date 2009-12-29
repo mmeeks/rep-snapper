@@ -173,8 +173,10 @@ void ProcessController::Draw()
 {
 	printer.Draw(*this);
 	stl.draw(*this);
-	previewCuttingPlane.Draw(0.5f, DrawVertexNumbers, DrawLineNumbers);
-	gcode.draw(*this);
+	if(DisplayCuttingPlane)
+		previewCuttingPlane.Draw(CuttingPlaneValue, DrawVertexNumbers, DrawLineNumbers);
+	if(DisplayGCode)
+		gcode.draw(*this);
 }
 void WriteGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, string filename)
 {
@@ -202,7 +204,7 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("RaftBaseLayerCount", true, "1")->SetValueInt(RaftSize);
 	x->FindVariableZ("RaftMaterialPrDistanceRatio", true, "1.7")->SetValueFloat(RaftMaterialPrDistanceRatio);
 	x->FindVariableZ("RaftRotation", true, "90")->SetValueFloat(RaftRotation);
-	x->FindVariableZ("RaftBaseDistance", true, "2")->SetValueFloat(RaftBaseDistance);
+	x->FindVariableZ("RaftBaseDistance", true, "2.5")->SetValueFloat(RaftBaseDistance);
 	x->FindVariableZ("RaftBaseThickness", true, "1.7")->SetValueFloat(RaftBaseThickness);
 	x->FindVariableZ("RaftBaseTemperature", true, "190")->SetValueFloat(RaftBaseTemperature);
 	x->FindVariableZ("RaftInterfaceLayerCount", true, "1")->SetValueInt(RaftInterfaceLayerCount);
@@ -234,21 +236,21 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("EnableAcceleration", true, "0.66")->SetValueInt((int)EnableAcceleration);
 	x->FindVariableZ("UseIncrementalEcode", true, "0.66")->SetValueInt((int)UseIncrementalEcode);
 
-	x->FindVariableZ("m_fVolume.x", true, "0.66")->SetValueFloat(m_fVolume.x);
-	x->FindVariableZ("m_fVolume.y", true, "0.66")->SetValueFloat(m_fVolume.y);
-	x->FindVariableZ("m_fVolume.z", true, "0.66")->SetValueFloat(m_fVolume.z);
-	x->FindVariableZ("PrintMargin.x", true, "0.66")->SetValueFloat(PrintMargin.x);
-	x->FindVariableZ("PrintMargin.y", true, "0.66")->SetValueFloat(PrintMargin.y);
+	x->FindVariableZ("m_fVolume.x", true, "200")->SetValueFloat(m_fVolume.x);
+	x->FindVariableZ("m_fVolume.y", true, "200")->SetValueFloat(m_fVolume.y);
+	x->FindVariableZ("m_fVolume.z", true, "140")->SetValueFloat(m_fVolume.z);
+	x->FindVariableZ("PrintMargin.x", true, "10")->SetValueFloat(PrintMargin.x);
+	x->FindVariableZ("PrintMargin.y", true, "10")->SetValueFloat(PrintMargin.y);
 	PrintMargin.z = 0.0f;
-	x->FindVariableZ("extrusionFactor", true, "0.66")->SetValueFloat(extrusionFactor);
+	x->FindVariableZ("extrusionFactor", true, "1")->SetValueFloat(extrusionFactor);
 	x->FindVariableZ("ExtrudedMaterialWidth", true, "0.66")->SetValueFloat(ExtrudedMaterialWidth);
-	x->FindVariableZ("LayerThickness", true, "0.66")->SetValueFloat(LayerThickness);
+	x->FindVariableZ("LayerThickness", true, "0.4")->SetValueFloat(LayerThickness);
 
 	// CuttingPlane parameters
-	x->FindVariableZ("InfillDistance", true, "0.66")->SetValueFloat(InfillDistance);
-	x->FindVariableZ("InfillRotation", true, "0.66")->SetValueFloat(InfillRotation);
-	x->FindVariableZ("InfillRotationPrLayer", true, "0.66")->SetValueFloat(InfillRotationPrLayer);
-	x->FindVariableZ("Optimization", true, "0.66")->SetValueFloat(Optimization);
+	x->FindVariableZ("InfillDistance", true, "2")->SetValueFloat(InfillDistance);
+	x->FindVariableZ("InfillRotation", true, "90")->SetValueFloat(InfillRotation);
+	x->FindVariableZ("InfillRotationPrLayer", true, "90")->SetValueFloat(InfillRotationPrLayer);
+	x->FindVariableZ("Optimization", true, "0.05")->SetValueFloat(Optimization);
 //	x->FindVariableZ("PolygonOpasity", true, "0.66")->SetValueFloat(PolygonOpasity);
 
 
@@ -256,18 +258,43 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("CuttingPlaneValue", true, "0.66")->SetValueFloat(CuttingPlaneValue);
 	x->FindVariableZ("Examine", true, "0.66")->SetValueFloat(Examine);
 
-	x->FindVariableZ("DisplayEndpoints", true, "0.66")->SetValueInt((int)DisplayEndpoints);
-	x->FindVariableZ("DisplayNormals", true, "0.66")->SetValueInt((int)DisplayNormals);
+	x->FindVariableZ("DisplayEndpoints", true, "0")->SetValueInt((int)DisplayEndpoints);
+	x->FindVariableZ("DisplayNormals", true, "0")->SetValueInt((int)DisplayNormals);
 	x->FindVariableZ("DisplayWireframe", true, "0.66")->SetValueInt((int)DisplayWireframe);
-	x->FindVariableZ("DisplayPolygons", true, "0.66")->SetValueInt((int)DisplayPolygons);
-	x->FindVariableZ("DisplayAllLayers", true, "0.66")->SetValueInt((int)DisplayAllLayers);
-	x->FindVariableZ("DisplayinFill", true, "0.66")->SetValueInt((int)DisplayinFill);
-	x->FindVariableZ("DisplayDebuginFill", true, "0.66")->SetValueInt((int)DisplayDebuginFill);
-	x->FindVariableZ("DisplayDebug", true, "0.66")->SetValueInt((int)DisplayDebug);
-	x->FindVariableZ("DisplayCuttingPlane", true, "0.66")->SetValueInt((int)DisplayCuttingPlane);
-	x->FindVariableZ("DrawVertexNumbers", true, "0.66")->SetValueInt((int)DrawVertexNumbers);
-	x->FindVariableZ("DrawLineNumbers", true, "0.66")->SetValueInt((int)DrawLineNumbers);
+	x->FindVariableZ("DisplayPolygons", true, "1")->SetValueInt((int)DisplayPolygons);
+	x->FindVariableZ("DisplayAllLayers", true, "0")->SetValueInt((int)DisplayAllLayers);
+	x->FindVariableZ("DisplayinFill", true, "1")->SetValueInt((int)DisplayinFill);
+	x->FindVariableZ("DisplayDebuginFill", true, "0")->SetValueInt((int)DisplayDebuginFill);
+	x->FindVariableZ("DisplayDebug", true, "0")->SetValueInt((int)DisplayDebug);
+	x->FindVariableZ("DisplayCuttingPlane", true, "0")->SetValueInt((int)DisplayCuttingPlane);
+	x->FindVariableZ("DrawVertexNumbers", true, "0")->SetValueInt((int)DrawVertexNumbers);
+	x->FindVariableZ("DrawLineNumbers", true, "0")->SetValueInt((int)DrawLineNumbers);
 	
+	x->FindVariableZ("PolygonVal", true, "0.5")->SetValueFloat(PolygonVal);
+	x->FindVariableZ("PolygonSat", true, "1")->SetValueFloat(PolygonSat);
+	x->FindVariableZ("PolygonHue", true, "0.2")->SetValueFloat(PolygonHue);
+	x->FindVariableZ("WireframeVal", true, "0.5")->SetValueFloat(WireframeVal);
+	x->FindVariableZ("WireframeSat", true, "1")->SetValueFloat(WireframeSat);
+	x->FindVariableZ("WireframeHue", true, "0.3")->SetValueFloat(WireframeHue);
+	x->FindVariableZ("NormalsSat", true, "0.5")->SetValueFloat(NormalsSat);
+	x->FindVariableZ("NormalsVal", true, "1")->SetValueFloat(NormalsVal);
+	x->FindVariableZ("NormalsHue", true, "0.4")->SetValueFloat(NormalsHue);
+	x->FindVariableZ("EndpointsSat", true, "1")->SetValueFloat(EndpointsSat);
+	x->FindVariableZ("EndpointsVal", true, "0.5")->SetValueFloat(EndpointsVal);
+	x->FindVariableZ("EndpointsHue", true, "0.5")->SetValueFloat(EndpointsHue);
+	x->FindVariableZ("GCodeExtrudeHue", true, "0.6")->SetValueFloat(GCodeExtrudeHue);
+	x->FindVariableZ("GCodeExtrudeSat", true, "1")->SetValueFloat(GCodeExtrudeSat);
+	x->FindVariableZ("GCodeExtrudeVal", true, "0.5")->SetValueFloat(GCodeExtrudeVal);
+	x->FindVariableZ("GCodeMoveHue", true, "0.7")->SetValueFloat(GCodeMoveHue);
+	x->FindVariableZ("GCodeMoveSat", true, "1")->SetValueFloat(GCodeMoveSat);
+	x->FindVariableZ("GCodeMoveVal", true, "0.5")->SetValueFloat(GCodeMoveVal);
+	x->FindVariableZ("Highlight", true, "0.4")->SetValueFloat(Highlight);
+	x->FindVariableZ("NormalsLength", true, "10")->SetValueFloat(NormalsLength);
+	x->FindVariableZ("EndPointSize", true, "8")->SetValueFloat(EndPointSize);
+
+	x->FindVariableZ("DisplayGCode", true, "1")->SetValueFloat(DisplayGCode);
+	x->FindVariableZ("LuminanceShowsSpeed", true, "1")->SetValueFloat(LuminanceShowsSpeed);
+
 	/*
 
 	XMLElement *x = e->FindElementZ("RED_ProcessingSettings", true);
@@ -310,31 +337,31 @@ void ProcessController::LoadXML(XMLElement *e)
 
 	XMLVariable* y;
 
-	y=x->FindVariableZ("RaftSize", false, "1.33");
+	y=x->FindVariableZ("RaftSize", true, "1.33");
 	if(y)	RaftSize = y->GetValueFloat();
-	y=x->FindVariableZ("RaftBaseLayerCount", false, "1");
+	y=x->FindVariableZ("RaftBaseLayerCount", true, "1");
 	if(y)	RaftBaseLayerCount = y->GetValueInt();
-	y=x->FindVariableZ("RaftMaterialPrDistanceRatio", false, "1.7");
+	y=x->FindVariableZ("RaftMaterialPrDistanceRatio", true, "1.7");
 	if(y)	RaftMaterialPrDistanceRatio = y->GetValueFloat();
-	y=x->FindVariableZ("RaftRotation", false, "90");
+	y=x->FindVariableZ("RaftRotation", true, "90");
 	if(y)	RaftRotation = y->GetValueFloat();
-	y=x->FindVariableZ("RaftBaseDistance", false, "2");
+	y=x->FindVariableZ("RaftBaseDistance", true, "2.5");
 	if(y)	RaftBaseDistance = y->GetValueFloat();
-	y=x->FindVariableZ("RaftBaseThickness", false, "1");
+	y=x->FindVariableZ("RaftBaseThickness", true, "1");
 	if(y)	RaftBaseThickness = y->GetValueFloat();
-	y=x->FindVariableZ("RaftBaseTemperature", false, "190");
+	y=x->FindVariableZ("RaftBaseTemperature", true, "190");
 	if(y)	RaftBaseTemperature = y->GetValueFloat();
-	y=x->FindVariableZ("RaftInterfaceLayerCount", false, "2");
+	y=x->FindVariableZ("RaftInterfaceLayerCount", true, "2");
 	if(y)	RaftInterfaceLayerCount = y->GetValueInt();
-	y=x->FindVariableZ("RaftInterfaceMaterialPrDistanceRatio", false, "1");
+	y=x->FindVariableZ("RaftInterfaceMaterialPrDistanceRatio", true, "1");
 	if(y)	RaftInterfaceMaterialPrDistanceRatio = y->GetValueFloat();
-	y=x->FindVariableZ("RaftRotationPrLayer", false, "90");
+	y=x->FindVariableZ("RaftRotationPrLayer", true, "90");
 	if(y)	RaftRotationPrLayer = y->GetValueFloat();
-	y=x->FindVariableZ("RaftInterfaceDistance", false, "1");
+	y=x->FindVariableZ("RaftInterfaceDistance", true, "2");
 	if(y)	RaftInterfaceDistance = y->GetValueFloat();
-	y=x->FindVariableZ("RaftInterfaceThickness", false, "1");
+	y=x->FindVariableZ("RaftInterfaceThickness", true, "1");
 	if(y)	RaftInterfaceThickness = y->GetValueFloat();
-	y=x->FindVariableZ("RaftInterfaceTemperature", false, "190");
+	y=x->FindVariableZ("RaftInterfaceTemperature", true, "190");
 	if(y)	RaftInterfaceTemperature = y->GetValueFloat();
 
 	// GCode parameters
@@ -345,101 +372,148 @@ void ProcessController::LoadXML(XMLElement *e)
 
 	char buffer[10000];
 	memset(buffer,0,10000);
-	x->FindVariableZ("GCodeStartText", true, "[Empty]")->GetValue(buffer);
+	x->FindVariableZ("GCodeStartText", true, "; GCode generated by RepSnapper by Kulitorum\nG21                              ;metric is good!\nG90                              ;absolute positioning\nT0                                 ;select new extruder\nG28                               ;go home\nG92 E0                          ;set extruder home\nM104 S73.0                   ;set temperature\nG1 X20 Y20 F500            ;Move away from 0.0, so we use the same reset (in the layer code) for each layer\n\n")->GetValue(buffer);
 	GCodeStartText = string(buffer);
 	memset(buffer,0,10000);
-	x->FindVariableZ("GCodeLayerText", true, "[Empty]")->GetValue(buffer);
+	x->FindVariableZ("GCodeLayerText", true, "M106                            ;cooler on \nG1 X-250 E0 F2000.0       ;horizontal move\nG1 X-249.9                  ;horizontal move\nG1 X-250.0 E0 F50.0        ;horizontal move\nG92 X0                         ;set x 0\nG1 Y-250 E0 F2000.0       ;horizontal move\nG1 Y-249.9  E0 F200          ;horizontal move\nG1 Y-250.0 F50.0        ;horizontal move\nG92 Y0                         ;set y 0\nG1 X20 E20 F500       ;Shield\nG1 X0 E20 F500         ;Shield\nT0                                 ;select new extruder\nG92 E0                         ;zero the extruded length\n")->GetValue(buffer);
 	GCodeLayerText = string(buffer);
 	memset(buffer,0,10000);
-	x->FindVariableZ("GCodeEndText", true, "[Empty]")->GetValue(buffer);
+	x->FindVariableZ("GCodeEndText", true, "M107                            ;cooler off\nG1 X0 Y0 E0 F2000.0       ;feed for start of next move\nM104 S0.0                    ;Heater off\n")->GetValue(buffer);
 	GCodeEndText = string(buffer);
 
-	y=x->FindVariableZ("GCodeDrawStart", false, "0");
+	y=x->FindVariableZ("GCodeDrawStart", true, "0");
 	if(y)	GCodeDrawStart = y->GetValueFloat();
-	y=x->FindVariableZ("GCodeDrawEnd", false, "0");
+	y=x->FindVariableZ("GCodeDrawEnd", true, "1");
 	if(y)	GCodeDrawEnd = y->GetValueFloat();
-	y=x->FindVariableZ("MinPrintSpeedXY", false, "0");
+	y=x->FindVariableZ("MinPrintSpeedXY", true, "400");
 	if(y)	MinPrintSpeedXY = y->GetValueFloat();
-	y=x->FindVariableZ("MaxPrintSpeedXY", false, "0");
+	y=x->FindVariableZ("MaxPrintSpeedXY", true, "1500");
 	if(y)	MaxPrintSpeedXY = y->GetValueFloat();
-	y=x->FindVariableZ("MinPrintSpeedZ", false, "0");
+	y=x->FindVariableZ("MinPrintSpeedZ", true, "50");
 	if(y)	MinPrintSpeedZ = y->GetValueFloat();
-	y=x->FindVariableZ("MaxPrintSpeedZ", false, "0");
+	y=x->FindVariableZ("MaxPrintSpeedZ", true, "150");
 	if(y)	MaxPrintSpeedZ = y->GetValueFloat();
 
-	y=x->FindVariableZ("accelerationSteps", false, "0");
+	y=x->FindVariableZ("accelerationSteps", true, "2");
 	if(y)	accelerationSteps = y->GetValueInt();
-	y=x->FindVariableZ("distanceBetweenSpeedSteps", false, "0");
+	y=x->FindVariableZ("distanceBetweenSpeedSteps", true, "3");
 	if(y)	distanceBetweenSpeedSteps = y->GetValueFloat();
-	y=x->FindVariableZ("UseFirmwareAcceleration", false, "0");
+	y=x->FindVariableZ("UseFirmwareAcceleration", true, "1");
 	if(y)	UseFirmwareAcceleration = y->GetValueInt();
-	y=x->FindVariableZ("extrusionFactor", false, "0");
+	y=x->FindVariableZ("extrusionFactor", true, "1");
 	if(y)	extrusionFactor = y->GetValueFloat();
 
 	// Printer parameters
-	y=x->FindVariableZ("m_fVolume.x", false, "0");
+	y=x->FindVariableZ("m_fVolume.x", true, "200");
 	if(y)	m_fVolume.x = y->GetValueFloat();
-	y=x->FindVariableZ("m_fVolume.y", false, "0");
+	y=x->FindVariableZ("m_fVolume.y", true, "200");
 	if(y)	m_fVolume.y = y->GetValueFloat();
-	y=x->FindVariableZ("m_fVolume.z", false, "0");
+	y=x->FindVariableZ("m_fVolume.z", true, "140");
 	if(y)	m_fVolume.z = y->GetValueFloat();
-	y=x->FindVariableZ("PrintMargin.x", false, "0");
+	y=x->FindVariableZ("PrintMargin.x", true, "10");
 	if(y)	PrintMargin.x = y->GetValueFloat();
-	y=x->FindVariableZ("PrintMargin.y", false, "0");
+	y=x->FindVariableZ("PrintMargin.y", true, "10");
 	if(y)	PrintMargin.y = y->GetValueFloat();
-	y=x->FindVariableZ("ExtrudedMaterialWidth", false, "0");
+	y=x->FindVariableZ("ExtrudedMaterialWidth", true, "0.7");
 	if(y)	ExtrudedMaterialWidth = y->GetValueFloat();
 
 
 	// STL parameters
-	y=x->FindVariableZ("LayerThickness", false, "0");
+	y=x->FindVariableZ("LayerThickness", true, "0.4");
 	if(y)	LayerThickness = y->GetValueFloat();
-	y=x->FindVariableZ("CuttingPlaneValue", false, "0");
+	y=x->FindVariableZ("CuttingPlaneValue", true, "0.5");
 	if(y)	CuttingPlaneValue = y->GetValueFloat();
-//	y=x->FindVariableZ("PolygonOpasity", false, "0");
-//	if(y)	PolygonOpasity = y->GetValueFloat();
 
 	// CuttingPlane
-	y=x->FindVariableZ("InfillDistance", false, "0");
+	y=x->FindVariableZ("InfillDistance", true, "2");
 	if(y)	InfillDistance = y->GetValueFloat();
-	y=x->FindVariableZ("InfillRotation", false, "0");
+	y=x->FindVariableZ("InfillRotation", true, "90");
 	if(y)	InfillRotation = y->GetValueFloat();
-	y=x->FindVariableZ("InfillRotationPrLayer", false, "0");
+	y=x->FindVariableZ("InfillRotationPrLayer", true, "90");
 	if(y)	InfillRotationPrLayer = y->GetValueFloat();
-	y=x->FindVariableZ("Optimization", false, "0");
+	y=x->FindVariableZ("Optimization", true, "0.05");
 	if(y)	Optimization = y->GetValueFloat();
-	y=x->FindVariableZ("ShellOnly", false, "0");
+	y=x->FindVariableZ("ShellOnly", true, "0");
 	if(y)	ShellOnly = y->GetValueFloat();
-	y=x->FindVariableZ("ShellCount", false, "0");
+	y=x->FindVariableZ("ShellCount", true, "1");
 	if(y)	ShellCount = y->GetValueFloat();
-	y=x->FindVariableZ("EnableAcceleration", false, "0");
+	y=x->FindVariableZ("EnableAcceleration", true, "1");
 	if(y)	EnableAcceleration = (bool)y->GetValueInt();
-	y=x->FindVariableZ("UseIncrementalEcode", false, "0");
+	y=x->FindVariableZ("UseIncrementalEcode", true, "0");
 	if(y)	UseIncrementalEcode= (bool)y->GetValueInt();
 
 	// GUI... ?
-	y=x->FindVariableZ("DisplayEndpoints", false, "0");
+	y=x->FindVariableZ("DisplayEndpoints", true, "0");
 	if(y)	DisplayEndpoints = (bool)y->GetValueInt();
-	y=x->FindVariableZ("DisplayNormals", false, "0");
+	y=x->FindVariableZ("DisplayNormals", true, "0");
 	if(y)	DisplayNormals = (bool)y->GetValueInt();
-	y=x->FindVariableZ("DisplayWireframe", false, "0");
+	y=x->FindVariableZ("DisplayWireframe", true, "0");
 	if(y)	DisplayWireframe = (bool)y->GetValueInt();
-	y=x->FindVariableZ("DisplayPolygons", false, "0");
+	y=x->FindVariableZ("DisplayPolygons", true, "1");
 	if(y)	DisplayPolygons = (bool)y->GetValueInt();
-	y=x->FindVariableZ("DisplayAllLayers", false, "0");
+	y=x->FindVariableZ("DisplayAllLayers", true, "0");
 	if(y)	DisplayAllLayers = (bool)y->GetValueInt();
-	y=x->FindVariableZ("DisplayinFill", false, "0");
+	y=x->FindVariableZ("DisplayinFill", true, "1");
 	if(y)	DisplayinFill = (bool)y->GetValueInt();
-	y=x->FindVariableZ("DisplayDebuginFill", false, "0");
+	y=x->FindVariableZ("DisplayDebuginFill", true, "0");
 	if(y)	DisplayDebuginFill = (bool)y->GetValueInt();
-	y=x->FindVariableZ("DisplayDebug", false, "0");
+	y=x->FindVariableZ("DisplayDebug", true, "0");
 	if(y)	DisplayDebug = (bool)y->GetValueInt();
-	y=x->FindVariableZ("DisplayCuttingPlane", false, "0");
+	y=x->FindVariableZ("DisplayCuttingPlane", true, "0");
 	if(y)	DisplayCuttingPlane =(bool)y->GetValueInt();
-	y=x->FindVariableZ("DrawVertexNumbers", false, "0");
+	y=x->FindVariableZ("DrawVertexNumbers", true, "0");
 	if(y)	DrawVertexNumbers = (bool)y->GetValueInt();
-	y=x->FindVariableZ("DrawLineNumbers", false, "0");
+	y=x->FindVariableZ("DrawLineNumbers", true, "0");
 	if(y)	DrawLineNumbers = (bool)y->GetValueInt();
+
+	y=x->FindVariableZ("PolygonVal", true, "0.5");
+	if(y)	PolygonVal = y->GetValueFloat();
+	y=x->FindVariableZ("PolygonSat", true, "1");
+	if(y)	PolygonSat = y->GetValueFloat();
+	y=x->FindVariableZ("PolygonHue", true, "0.54");
+	if(y)	PolygonHue = y->GetValueFloat();
+	y=x->FindVariableZ("WireframeVal", true, "1");
+	if(y)	WireframeVal = y->GetValueFloat();
+	y=x->FindVariableZ("WireframeSat", true, "1");
+	if(y)	WireframeSat = y->GetValueFloat();
+	y=x->FindVariableZ("WireframeHue", true, "0.08");
+	if(y)	WireframeHue = y->GetValueFloat();
+	y=x->FindVariableZ("NormalsSat", true, "1");
+	if(y)	NormalsSat = y->GetValueFloat();
+	y=x->FindVariableZ("NormalsVal", true, "1");
+	if(y)	NormalsVal = y->GetValueFloat();
+	y=x->FindVariableZ("NormalsHue", true, "0.23");
+	if(y)	NormalsHue = y->GetValueFloat();
+	y=x->FindVariableZ("EndpointsSat", true, "1");
+	if(y)	EndpointsSat = y->GetValueFloat();
+	y=x->FindVariableZ("EndpointsVal", true, "1");
+	if(y)	EndpointsVal = y->GetValueFloat();
+	y=x->FindVariableZ("EndpointsHue", true, "0.45");
+	if(y)	EndpointsHue = y->GetValueFloat();
+	y=x->FindVariableZ("GCodeExtrudeHue", true, "0.18");
+	if(y)	GCodeExtrudeHue = y->GetValueFloat();
+	y=x->FindVariableZ("GCodeExtrudeSat", true, "1");
+	if(y)	GCodeExtrudeSat = y->GetValueFloat();
+	y=x->FindVariableZ("GCodeExtrudeVal", true, "1");
+	if(y)	GCodeExtrudeVal = y->GetValueFloat();
+	y=x->FindVariableZ("GCodeMoveHue", true, "1");
+	if(y)	GCodeMoveHue = y->GetValueFloat();
+	y=x->FindVariableZ("GCodeMoveSat", true, "0.95");
+	if(y)	GCodeMoveSat = y->GetValueFloat();
+	y=x->FindVariableZ("GCodeMoveVal", true, "1");
+	if(y)	GCodeMoveVal = y->GetValueFloat();
+	y=x->FindVariableZ("Highlight", true, "0.7");
+	if(y)	Highlight = y->GetValueFloat();
+	y=x->FindVariableZ("NormalsLength", true, "10");
+	if(y)	NormalsLength = y->GetValueFloat();
+	y=x->FindVariableZ("EndPointSize", true, "8");
+	if(y)	EndPointSize = y->GetValueFloat();
+
+	y=x->FindVariableZ("DisplayGCode", true, "1");
+	if(y)	DisplayGCode = (bool)y->GetValueInt();
+	y=x->FindVariableZ("LuminanceShowsSpeed", true, "1");
+	if(y)	LuminanceShowsSpeed = (bool)y->GetValueInt();
+
 /*
 	ImageProcessingSettings();
 	UserCurve[0] = UserCurve[1] = 0.0f;

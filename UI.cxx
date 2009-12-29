@@ -492,25 +492,231 @@ void GUI::cb_DisplayEndpointsButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_DisplayEndpointsButton_i(o,v);
 }
 
+void GUI::cb_PolygonValSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetPolygonVal(o->value());
+MVC->redraw();
+}
+void GUI::cb_PolygonValSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_PolygonValSlider_i(o,v);
+}
+
+void GUI::cb_PolygonSatSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetPolygonSat(o->value());
+MVC->redraw();
+}
+void GUI::cb_PolygonSatSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_PolygonSatSlider_i(o,v);
+}
+
+void GUI::cb_PolygonHueSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetPolygonHue(o->value());
+MVC->redraw();
+}
+void GUI::cb_PolygonHueSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_PolygonHueSlider_i(o,v);
+}
+
+void GUI::cb_WireframeValSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetWireframeVal(o->value());
+MVC->redraw();
+}
+void GUI::cb_WireframeValSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_WireframeValSlider_i(o,v);
+}
+
+void GUI::cb_WireframeSatSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetWireframeSat(o->value());
+MVC->redraw();
+}
+void GUI::cb_WireframeSatSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_WireframeSatSlider_i(o,v);
+}
+
+void GUI::cb_WireframeHueSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetWireframeHue(o->value());
+MVC->redraw();
+}
+void GUI::cb_WireframeHueSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_WireframeHueSlider_i(o,v);
+}
+
+void GUI::cb_NormalValSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetNormalsVal(o->value());
+MVC->redraw();
+}
+void GUI::cb_NormalValSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_NormalValSlider_i(o,v);
+}
+
+void GUI::cb_NormalSatSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetNormalsSat(o->value());
+MVC->redraw();
+}
+void GUI::cb_NormalSatSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_NormalSatSlider_i(o,v);
+}
+
+void GUI::cb_NormalHueSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetNormalsHue(o->value());
+MVC->redraw();
+}
+void GUI::cb_NormalHueSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_NormalHueSlider_i(o,v);
+}
+
+void GUI::cb_EndpointValSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetEndpointsVal(o->value());
+MVC->redraw();
+}
+void GUI::cb_EndpointValSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_EndpointValSlider_i(o,v);
+}
+
+void GUI::cb_EndpointSatSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetEndpointsSat(o->value());
+MVC->redraw();
+}
+void GUI::cb_EndpointSatSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_EndpointSatSlider_i(o,v);
+}
+
+void GUI::cb_EndpointHueSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetEndpointsHue(o->value());
+MVC->redraw();
+}
+void GUI::cb_EndpointHueSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_EndpointHueSlider_i(o,v);
+}
+
+void GUI::cb_DisplayBBoxButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetDisplayBBox(o->value());
+}
+void GUI::cb_DisplayBBoxButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_DisplayBBoxButton_i(o,v);
+}
+
+void GUI::cb_HighlightSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetHighlight(o->value());
+MVC->redraw();
+}
+void GUI::cb_HighlightSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_HighlightSlider_i(o,v);
+}
+
+void GUI::cb_NormalLengthSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetNormalsLength(o->value());
+MVC->redraw();
+}
+void GUI::cb_NormalLengthSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_NormalLengthSlider_i(o,v);
+}
+
+void GUI::cb_EndpointSizeSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetEndPointSize(o->value());
+MVC->redraw();
+}
+void GUI::cb_EndpointSizeSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_EndpointSizeSlider_i(o,v);
+}
+
 void GUI::cb_DisplayGCodeButton_i(Fl_Light_Button* o, void*) {
   MVC->SetDisplayGCode(o->value());
+MVC->redraw();
 }
 void GUI::cb_DisplayGCodeButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_DisplayGCodeButton_i(o,v);
 }
 
-void GUI::cb_GCodeDrawStartSlider_i(Fl_Value_Slider* o, void*) {
+void GUI::cb_GCodeExtrudeValSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetGCodeExtrudeVal(o->value());
+MVC->redraw();
+}
+void GUI::cb_GCodeExtrudeValSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_GCodeExtrudeValSlider_i(o,v);
+}
+
+void GUI::cb_GCodeExtrudeSatSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetGCodeExtrudeSat(o->value());
+MVC->redraw();
+}
+void GUI::cb_GCodeExtrudeSatSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_GCodeExtrudeSatSlider_i(o,v);
+}
+
+void GUI::cb_GCodeExtrudeHueSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetGCodeExtrudeHue(o->value());
+MVC->redraw();
+}
+void GUI::cb_GCodeExtrudeHueSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_GCodeExtrudeHueSlider_i(o,v);
+}
+
+void GUI::cb_LuminanceShowsSpeedButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetLuminanceShowsSpeed(o->value());
+MVC->redraw();
+}
+void GUI::cb_LuminanceShowsSpeedButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_LuminanceShowsSpeedButton_i(o,v);
+}
+
+void GUI::cb_Crop_i(Fl_Button*, void*) {
+  float start = GCodeDrawStartSlider->value();
+float end = GCodeDrawEndSlider->value();
+GCodeDrawStartSlider->range(start,end);
+GCodeDrawEndSlider->range(start,end);
+GCodeDrawStartSlider->redraw();
+GCodeDrawEndSlider->redraw();
+}
+void GUI::cb_Crop(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Crop_i(o,v);
+}
+
+void GUI::cb_Reset_i(Fl_Button*, void*) {
+  GCodeDrawStartSlider->range(0,1);
+GCodeDrawEndSlider->range(0,1);
+GCodeDrawStartSlider->redraw();
+GCodeDrawEndSlider->redraw();
+}
+void GUI::cb_Reset(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Reset_i(o,v);
+}
+
+void GUI::cb_GCodeDrawStartSlider_i(Fl_Slider* o, void*) {
   MVC->SetGCodeDrawStart(o->value());
 }
-void GUI::cb_GCodeDrawStartSlider(Fl_Value_Slider* o, void* v) {
+void GUI::cb_GCodeDrawStartSlider(Fl_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_GCodeDrawStartSlider_i(o,v);
 }
 
-void GUI::cb_GCodeDrawEndSlider_i(Fl_Value_Slider* o, void*) {
+void GUI::cb_GCodeDrawEndSlider_i(Fl_Slider* o, void*) {
   MVC->SetGCodeDrawEnd(o->value());
 }
-void GUI::cb_GCodeDrawEndSlider(Fl_Value_Slider* o, void* v) {
+void GUI::cb_GCodeDrawEndSlider(Fl_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_GCodeDrawEndSlider_i(o,v);
+}
+
+void GUI::cb_GCodeMoveValSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetGCodeMoveVal(o->value());
+MVC->redraw();
+}
+void GUI::cb_GCodeMoveValSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_GCodeMoveValSlider_i(o,v);
+}
+
+void GUI::cb_GCodeMoveSatSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetGCodeMoveSat(o->value());
+MVC->redraw();
+}
+void GUI::cb_GCodeMoveSatSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_GCodeMoveSatSlider_i(o,v);
+}
+
+void GUI::cb_GCodeMoveHueSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetGCodeMoveHue(o->value());
+MVC->redraw();
+}
+void GUI::cb_GCodeMoveHueSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_GCodeMoveHueSlider_i(o,v);
 }
 
 void GUI::cb_CuttingPlaneValueSlider_i(Fl_Value_Slider* o, void*) {
@@ -542,59 +748,31 @@ void GUI::cb_DisplayAllLayersButton(Fl_Light_Button* o, void* v) {
 }
 
 void GUI::cb_Enable2_i(Fl_Light_Button* o, void*) {
-  MVC->EnableLight(0, o->value());
+  MVC->SetEnableLight(0, o->value());
 }
 void GUI::cb_Enable2(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Enable2_i(o,v);
 }
 
 void GUI::cb_Enable3_i(Fl_Light_Button* o, void*) {
-  MVC->EnableLight(1, o->value());
+  MVC->SetEnableLight(1, o->value());
 }
 void GUI::cb_Enable3(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Enable3_i(o,v);
 }
 
 void GUI::cb_Enable4_i(Fl_Light_Button* o, void*) {
-  MVC->EnableLight(2, o->value());
+  MVC->SetEnableLight(2, o->value());
 }
 void GUI::cb_Enable4(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Enable4_i(o,v);
 }
 
 void GUI::cb_Enable5_i(Fl_Light_Button* o, void*) {
-  MVC->EnableLight(3, o->value());
+  MVC->SetEnableLight(3, o->value());
 }
 void GUI::cb_Enable5(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Enable5_i(o,v);
-}
-
-void GUI::cb_Enable6_i(Fl_Light_Button* o, void*) {
-  MVC->EnableLight(4, o->value());
-}
-void GUI::cb_Enable6(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Enable6_i(o,v);
-}
-
-void GUI::cb_Enable7_i(Fl_Light_Button* o, void*) {
-  MVC->EnableLight(5, o->value());
-}
-void GUI::cb_Enable7(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Enable7_i(o,v);
-}
-
-void GUI::cb_Enable8_i(Fl_Light_Button* o, void*) {
-  MVC->EnableLight(6, o->value());
-}
-void GUI::cb_Enable8(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Enable8_i(o,v);
-}
-
-void GUI::cb_Enable9_i(Fl_Light_Button* o, void*) {
-  MVC->EnableLight(7, o->value());
-}
-void GUI::cb_Enable9(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Enable9_i(o,v);
 }
 
 void GUI::cb_ExamineSlider_i(Fl_Value_Slider* o, void*) {
@@ -681,7 +859,6 @@ GUI::GUI() {
     { Tabs = new Fl_Tabs(820, 10, 550, 805);
       Tabs->align(FL_ALIGN_TOP_LEFT);
       { Fl_Group* o = new Fl_Group(820, 30, 550, 785, "Input file");
-        o->hide();
         { Fl_Button* o = new Fl_Button(835, 40, 145, 25, "Load STL");
           o->callback((Fl_Callback*)cb_Load);
         } // Fl_Button* o
@@ -1240,230 +1417,299 @@ e rest of the print.");
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(820, 30, 550, 780, "Rendering");
         o->color((Fl_Color)FL_DARK1);
-        { Fl_Group* o = new Fl_Group(825, 50, 535, 255, "STL rendering");
+        o->hide();
+        { Fl_Group* o = new Fl_Group(825, 60, 535, 280, "STL rendering");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { DisplayPolygonsButton = new Fl_Light_Button(860, 60, 220, 25, "Display Polygons");
+          { DisplayPolygonsButton = new Fl_Light_Button(860, 70, 220, 20, "Display Polygons");
             DisplayPolygonsButton->value(1);
             DisplayPolygonsButton->selection_color((Fl_Color)FL_GREEN);
             DisplayPolygonsButton->callback((Fl_Callback*)cb_DisplayPolygonsButton);
           } // Fl_Light_Button* DisplayPolygonsButton
-          { DisplayWireframeButton = new Fl_Light_Button(1125, 60, 220, 25, "Display Wireframe");
+          { DisplayWireframeButton = new Fl_Light_Button(1125, 70, 220, 20, "Display Wireframe");
             DisplayWireframeButton->selection_color((Fl_Color)FL_GREEN);
             DisplayWireframeButton->callback((Fl_Callback*)cb_DisplayWireframeButton);
           } // Fl_Light_Button* DisplayWireframeButton
-          { DisplayNormalsButton = new Fl_Light_Button(860, 185, 220, 25, "Display Normals");
+          { DisplayNormalsButton = new Fl_Light_Button(860, 170, 220, 20, "Display Normals");
             DisplayNormalsButton->selection_color((Fl_Color)FL_GREEN);
             DisplayNormalsButton->callback((Fl_Callback*)cb_DisplayNormalsButton);
           } // Fl_Light_Button* DisplayNormalsButton
-          { DisplayEndpointsButton = new Fl_Light_Button(1125, 185, 220, 25, "Display Endpoints");
+          { DisplayEndpointsButton = new Fl_Light_Button(1125, 170, 220, 20, "Display Endpoints");
             DisplayEndpointsButton->selection_color((Fl_Color)FL_GREEN);
             DisplayEndpointsButton->callback((Fl_Callback*)cb_DisplayEndpointsButton);
           } // Fl_Light_Button* DisplayEndpointsButton
-          { PolygonValSlider = new Fl_Value_Slider(860, 140, 220, 25, "Val");
+          { PolygonValSlider = new Fl_Value_Slider(860, 135, 220, 20, "Val");
             PolygonValSlider->type(5);
             PolygonValSlider->selection_color((Fl_Color)2);
             PolygonValSlider->value(0.5);
             PolygonValSlider->textsize(14);
+            PolygonValSlider->callback((Fl_Callback*)cb_PolygonValSlider);
             PolygonValSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* PolygonValSlider
-          { PolygonSatSlider = new Fl_Value_Slider(860, 115, 220, 25, "Sat");
+          { PolygonSatSlider = new Fl_Value_Slider(860, 115, 220, 20, "Sat");
             PolygonSatSlider->type(5);
             PolygonSatSlider->selection_color((Fl_Color)2);
             PolygonSatSlider->value(0.5);
             PolygonSatSlider->textsize(14);
+            PolygonSatSlider->callback((Fl_Callback*)cb_PolygonSatSlider);
             PolygonSatSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* PolygonSatSlider
-          { PolygonHueSlider = new Fl_Value_Slider(860, 90, 220, 25, "Hue");
+          { PolygonHueSlider = new Fl_Value_Slider(860, 95, 220, 20, "Hue");
             PolygonHueSlider->type(5);
             PolygonHueSlider->selection_color((Fl_Color)2);
             PolygonHueSlider->value(0.5);
             PolygonHueSlider->textsize(14);
+            PolygonHueSlider->callback((Fl_Callback*)cb_PolygonHueSlider);
             PolygonHueSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* PolygonHueSlider
-          { WireframeValSlider = new Fl_Value_Slider(1125, 140, 220, 25, "Val");
+          { WireframeValSlider = new Fl_Value_Slider(1125, 135, 220, 20, "Val");
             WireframeValSlider->type(5);
             WireframeValSlider->selection_color((Fl_Color)2);
             WireframeValSlider->value(0.5);
             WireframeValSlider->textsize(14);
+            WireframeValSlider->callback((Fl_Callback*)cb_WireframeValSlider);
             WireframeValSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* WireframeValSlider
-          { WireframeSatSlider = new Fl_Value_Slider(1125, 115, 220, 25, "Sat");
+          { WireframeSatSlider = new Fl_Value_Slider(1125, 115, 220, 20, "Sat");
             WireframeSatSlider->type(5);
             WireframeSatSlider->selection_color((Fl_Color)2);
             WireframeSatSlider->value(0.5);
             WireframeSatSlider->textsize(14);
+            WireframeSatSlider->callback((Fl_Callback*)cb_WireframeSatSlider);
             WireframeSatSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* WireframeSatSlider
-          { WireframeHueSlider = new Fl_Value_Slider(1125, 90, 220, 25, "Hue");
+          { WireframeHueSlider = new Fl_Value_Slider(1125, 95, 220, 20, "Hue");
             WireframeHueSlider->type(5);
             WireframeHueSlider->selection_color((Fl_Color)2);
             WireframeHueSlider->value(0.5);
             WireframeHueSlider->textsize(14);
+            WireframeHueSlider->callback((Fl_Callback*)cb_WireframeHueSlider);
             WireframeHueSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* WireframeHueSlider
-          { NormalValSlider = new Fl_Value_Slider(860, 265, 220, 25, "Val");
+          { NormalValSlider = new Fl_Value_Slider(860, 235, 220, 20, "Val");
             NormalValSlider->type(5);
             NormalValSlider->selection_color((Fl_Color)2);
             NormalValSlider->value(0.5);
             NormalValSlider->textsize(14);
+            NormalValSlider->callback((Fl_Callback*)cb_NormalValSlider);
             NormalValSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* NormalValSlider
-          { NormalSatSlider = new Fl_Value_Slider(860, 240, 220, 25, "Sat");
+          { NormalSatSlider = new Fl_Value_Slider(860, 215, 220, 20, "Sat");
             NormalSatSlider->type(5);
             NormalSatSlider->selection_color((Fl_Color)2);
             NormalSatSlider->value(0.5);
             NormalSatSlider->textsize(14);
+            NormalSatSlider->callback((Fl_Callback*)cb_NormalSatSlider);
             NormalSatSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* NormalSatSlider
-          { NormalHueSlider = new Fl_Value_Slider(860, 215, 220, 25, "Hue");
+          { NormalHueSlider = new Fl_Value_Slider(860, 195, 220, 20, "Hue");
             NormalHueSlider->type(5);
             NormalHueSlider->selection_color((Fl_Color)2);
             NormalHueSlider->value(0.5);
             NormalHueSlider->textsize(14);
+            NormalHueSlider->callback((Fl_Callback*)cb_NormalHueSlider);
             NormalHueSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* NormalHueSlider
-          { EndpointValSlider = new Fl_Value_Slider(1125, 265, 220, 25, "Val");
+          { EndpointValSlider = new Fl_Value_Slider(1125, 235, 220, 20, "Val");
             EndpointValSlider->type(5);
             EndpointValSlider->selection_color((Fl_Color)2);
             EndpointValSlider->value(0.5);
             EndpointValSlider->textsize(14);
+            EndpointValSlider->callback((Fl_Callback*)cb_EndpointValSlider);
             EndpointValSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* EndpointValSlider
-          { EndpointSatSlider = new Fl_Value_Slider(1125, 240, 220, 25, "Sat");
+          { EndpointSatSlider = new Fl_Value_Slider(1125, 215, 220, 20, "Sat");
             EndpointSatSlider->type(5);
             EndpointSatSlider->selection_color((Fl_Color)2);
             EndpointSatSlider->value(0.5);
             EndpointSatSlider->textsize(14);
+            EndpointSatSlider->callback((Fl_Callback*)cb_EndpointSatSlider);
             EndpointSatSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* EndpointSatSlider
-          { EndpointHueSlider = new Fl_Value_Slider(1125, 215, 220, 25, "Hue");
+          { EndpointHueSlider = new Fl_Value_Slider(1125, 195, 220, 20, "Hue");
             EndpointHueSlider->type(5);
             EndpointHueSlider->selection_color((Fl_Color)2);
             EndpointHueSlider->value(0.5);
             EndpointHueSlider->textsize(14);
+            EndpointHueSlider->callback((Fl_Callback*)cb_EndpointHueSlider);
             EndpointHueSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* EndpointHueSlider
+          { DisplayBBoxButton = new Fl_Light_Button(860, 315, 220, 20, "Display Bounding Box");
+            DisplayBBoxButton->selection_color((Fl_Color)FL_GREEN);
+            DisplayBBoxButton->callback((Fl_Callback*)cb_DisplayBBoxButton);
+          } // Fl_Light_Button* DisplayBBoxButton
+          { HighlightSlider = new Fl_Value_Slider(1125, 315, 220, 20, "Highlight");
+            HighlightSlider->type(5);
+            HighlightSlider->selection_color((Fl_Color)2);
+            HighlightSlider->value(0.5);
+            HighlightSlider->textsize(14);
+            HighlightSlider->callback((Fl_Callback*)cb_HighlightSlider);
+            HighlightSlider->align(FL_ALIGN_TOP_LEFT);
+          } // Fl_Value_Slider* HighlightSlider
+          { NormalLengthSlider = new Fl_Value_Slider(860, 275, 220, 20, "Normals length");
+            NormalLengthSlider->type(5);
+            NormalLengthSlider->selection_color((Fl_Color)2);
+            NormalLengthSlider->minimum(1);
+            NormalLengthSlider->maximum(30);
+            NormalLengthSlider->step(0.1);
+            NormalLengthSlider->value(10);
+            NormalLengthSlider->textsize(14);
+            NormalLengthSlider->callback((Fl_Callback*)cb_NormalLengthSlider);
+            NormalLengthSlider->align(FL_ALIGN_TOP_LEFT);
+          } // Fl_Value_Slider* NormalLengthSlider
+          { EndpointSizeSlider = new Fl_Value_Slider(1125, 275, 220, 20, "Endpoints size");
+            EndpointSizeSlider->type(5);
+            EndpointSizeSlider->selection_color((Fl_Color)2);
+            EndpointSizeSlider->minimum(1);
+            EndpointSizeSlider->maximum(20);
+            EndpointSizeSlider->step(0.1);
+            EndpointSizeSlider->value(8);
+            EndpointSizeSlider->textsize(14);
+            EndpointSizeSlider->callback((Fl_Callback*)cb_EndpointSizeSlider);
+            EndpointSizeSlider->align(FL_ALIGN_TOP_LEFT);
+          } // Fl_Value_Slider* EndpointSizeSlider
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(825, 330, 535, 195, "GCode rendering");
+        { Fl_Group* o = new Fl_Group(825, 360, 535, 185, "GCode rendering");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { DisplayGCodeButton = new Fl_Light_Button(860, 340, 220, 25, "Display GCode");
+          { DisplayGCodeButton = new Fl_Light_Button(860, 370, 220, 20, "Display GCode");
             DisplayGCodeButton->value(1);
             DisplayGCodeButton->selection_color((Fl_Color)FL_GREEN);
             DisplayGCodeButton->callback((Fl_Callback*)cb_DisplayGCodeButton);
           } // Fl_Light_Button* DisplayGCodeButton
-          { GCodeValSlider = new Fl_Value_Slider(860, 420, 220, 25, "Val");
-            GCodeValSlider->type(5);
-            GCodeValSlider->selection_color((Fl_Color)2);
-            GCodeValSlider->value(0.5);
-            GCodeValSlider->textsize(14);
-            GCodeValSlider->align(FL_ALIGN_LEFT);
-          } // Fl_Value_Slider* GCodeValSlider
-          { GCodeSatSlider = new Fl_Value_Slider(860, 395, 220, 25, "Sat");
-            GCodeSatSlider->type(5);
-            GCodeSatSlider->selection_color((Fl_Color)2);
-            GCodeSatSlider->value(0.5);
-            GCodeSatSlider->textsize(14);
-            GCodeSatSlider->align(FL_ALIGN_LEFT);
-          } // Fl_Value_Slider* GCodeSatSlider
-          { GCodeHueSlider = new Fl_Value_Slider(860, 370, 220, 25, "Hue");
-            GCodeHueSlider->type(5);
-            GCodeHueSlider->selection_color((Fl_Color)2);
-            GCodeHueSlider->value(0.5);
-            GCodeHueSlider->textsize(14);
-            GCodeHueSlider->align(FL_ALIGN_LEFT);
-          } // Fl_Value_Slider* GCodeHueSlider
-          { GCodeDrawStartSlider = new Fl_Value_Slider(860, 465, 490, 20, "From");
+          { GCodeExtrudeValSlider = new Fl_Value_Slider(860, 435, 220, 20, "Val");
+            GCodeExtrudeValSlider->type(5);
+            GCodeExtrudeValSlider->selection_color((Fl_Color)2);
+            GCodeExtrudeValSlider->value(0.5);
+            GCodeExtrudeValSlider->textsize(14);
+            GCodeExtrudeValSlider->callback((Fl_Callback*)cb_GCodeExtrudeValSlider);
+            GCodeExtrudeValSlider->align(FL_ALIGN_LEFT);
+          } // Fl_Value_Slider* GCodeExtrudeValSlider
+          { GCodeExtrudeSatSlider = new Fl_Value_Slider(860, 415, 220, 20, "Sat");
+            GCodeExtrudeSatSlider->type(5);
+            GCodeExtrudeSatSlider->selection_color((Fl_Color)2);
+            GCodeExtrudeSatSlider->value(0.5);
+            GCodeExtrudeSatSlider->textsize(14);
+            GCodeExtrudeSatSlider->callback((Fl_Callback*)cb_GCodeExtrudeSatSlider);
+            GCodeExtrudeSatSlider->align(FL_ALIGN_LEFT);
+          } // Fl_Value_Slider* GCodeExtrudeSatSlider
+          { GCodeExtrudeHueSlider = new Fl_Value_Slider(860, 395, 220, 20, "Hue");
+            GCodeExtrudeHueSlider->type(5);
+            GCodeExtrudeHueSlider->selection_color((Fl_Color)2);
+            GCodeExtrudeHueSlider->value(0.5);
+            GCodeExtrudeHueSlider->textsize(14);
+            GCodeExtrudeHueSlider->callback((Fl_Callback*)cb_GCodeExtrudeHueSlider);
+            GCodeExtrudeHueSlider->align(FL_ALIGN_LEFT);
+          } // Fl_Value_Slider* GCodeExtrudeHueSlider
+          { LuminanceShowsSpeedButton = new Fl_Light_Button(1125, 370, 220, 20, "Luminance shows speed");
+            LuminanceShowsSpeedButton->value(1);
+            LuminanceShowsSpeedButton->selection_color((Fl_Color)FL_GREEN);
+            LuminanceShowsSpeedButton->callback((Fl_Callback*)cb_LuminanceShowsSpeedButton);
+          } // Fl_Light_Button* LuminanceShowsSpeedButton
+          { Fl_Button* o = new Fl_Button(860, 510, 220, 20, "Crop Range");
+            o->callback((Fl_Callback*)cb_Crop);
+          } // Fl_Button* o
+          { Fl_Button* o = new Fl_Button(1130, 510, 220, 20, "Reset crop range");
+            o->callback((Fl_Callback*)cb_Reset);
+          } // Fl_Button* o
+          { GCodeDrawStartSlider = new Fl_Slider(860, 460, 490, 20, "From");
             GCodeDrawStartSlider->type(1);
             GCodeDrawStartSlider->color((Fl_Color)FL_DARK3);
             GCodeDrawStartSlider->selection_color((Fl_Color)2);
-            GCodeDrawStartSlider->textsize(14);
             GCodeDrawStartSlider->callback((Fl_Callback*)cb_GCodeDrawStartSlider);
             GCodeDrawStartSlider->align(FL_ALIGN_LEFT);
-          } // Fl_Value_Slider* GCodeDrawStartSlider
-          { GCodeDrawEndSlider = new Fl_Value_Slider(860, 490, 490, 20, "To");
+          } // Fl_Slider* GCodeDrawStartSlider
+          { GCodeDrawEndSlider = new Fl_Slider(860, 485, 490, 20, "To");
             GCodeDrawEndSlider->type(1);
+            GCodeDrawEndSlider->color((Fl_Color)FL_DARK3);
             GCodeDrawEndSlider->selection_color((Fl_Color)2);
-            GCodeDrawEndSlider->value(1);
-            GCodeDrawEndSlider->textsize(14);
             GCodeDrawEndSlider->callback((Fl_Callback*)cb_GCodeDrawEndSlider);
             GCodeDrawEndSlider->align(FL_ALIGN_LEFT);
-          } // Fl_Value_Slider* GCodeDrawEndSlider
-          { LuminanceShowsSpeedButton = new Fl_Light_Button(1125, 340, 220, 25, "Luminance shows speed");
-            LuminanceShowsSpeedButton->value(1);
-            LuminanceShowsSpeedButton->selection_color((Fl_Color)FL_GREEN);
-          } // Fl_Light_Button* LuminanceShowsSpeedButton
+          } // Fl_Slider* GCodeDrawEndSlider
+          { GCodeMoveValSlider = new Fl_Value_Slider(1125, 435, 220, 20, "Val");
+            GCodeMoveValSlider->type(5);
+            GCodeMoveValSlider->selection_color((Fl_Color)2);
+            GCodeMoveValSlider->value(0.5);
+            GCodeMoveValSlider->textsize(14);
+            GCodeMoveValSlider->callback((Fl_Callback*)cb_GCodeMoveValSlider);
+            GCodeMoveValSlider->align(FL_ALIGN_LEFT);
+          } // Fl_Value_Slider* GCodeMoveValSlider
+          { GCodeMoveSatSlider = new Fl_Value_Slider(1125, 415, 220, 20, "Sat");
+            GCodeMoveSatSlider->type(5);
+            GCodeMoveSatSlider->selection_color((Fl_Color)2);
+            GCodeMoveSatSlider->value(0.5);
+            GCodeMoveSatSlider->textsize(14);
+            GCodeMoveSatSlider->callback((Fl_Callback*)cb_GCodeMoveSatSlider);
+            GCodeMoveSatSlider->align(FL_ALIGN_LEFT);
+          } // Fl_Value_Slider* GCodeMoveSatSlider
+          { GCodeMoveHueSlider = new Fl_Value_Slider(1125, 395, 220, 20, "Hue");
+            GCodeMoveHueSlider->type(5);
+            GCodeMoveHueSlider->selection_color((Fl_Color)2);
+            GCodeMoveHueSlider->value(0.5);
+            GCodeMoveHueSlider->textsize(14);
+            GCodeMoveHueSlider->callback((Fl_Callback*)cb_GCodeMoveHueSlider);
+            GCodeMoveHueSlider->align(FL_ALIGN_LEFT);
+          } // Fl_Value_Slider* GCodeMoveHueSlider
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(825, 550, 540, 90, "Layer preview");
+        { Fl_Group* o = new Fl_Group(825, 575, 540, 90, "Layer preview");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { CuttingPlaneValueSlider = new Fl_Value_Slider(835, 570, 515, 20, "Cuttingplane");
+          { CuttingPlaneValueSlider = new Fl_Value_Slider(835, 635, 515, 20, "Cuttingplane");
             CuttingPlaneValueSlider->type(1);
             CuttingPlaneValueSlider->value(0.5);
             CuttingPlaneValueSlider->textsize(14);
             CuttingPlaneValueSlider->callback((Fl_Callback*)cb_CuttingPlaneValueSlider);
             CuttingPlaneValueSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* CuttingPlaneValueSlider
-          { DisplayCuttingPlaneButton = new Fl_Light_Button(835, 605, 170, 20, "Display CuttingPlane");
+          { DisplayCuttingPlaneButton = new Fl_Light_Button(835, 590, 170, 20, "Display CuttingPlane");
             DisplayCuttingPlaneButton->selection_color((Fl_Color)FL_GREEN);
             DisplayCuttingPlaneButton->callback((Fl_Callback*)cb_DisplayCuttingPlaneButton);
           } // Fl_Light_Button* DisplayCuttingPlaneButton
-          { DisplayinFillButton = new Fl_Light_Button(1010, 605, 165, 20, "Display inFill");
+          { DisplayinFillButton = new Fl_Light_Button(1010, 590, 165, 20, "Display inFill");
             DisplayinFillButton->selection_color((Fl_Color)FL_GREEN);
             DisplayinFillButton->callback((Fl_Callback*)cb_DisplayinFillButton);
           } // Fl_Light_Button* DisplayinFillButton
-          { DisplayAllLayersButton = new Fl_Light_Button(1180, 605, 170, 20, "Display all layers");
+          { DisplayAllLayersButton = new Fl_Light_Button(1180, 590, 170, 20, "Display all layers");
             DisplayAllLayersButton->selection_color((Fl_Color)FL_GREEN);
             DisplayAllLayersButton->callback((Fl_Callback*)cb_DisplayAllLayersButton);
           } // Fl_Light_Button* DisplayAllLayersButton
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(825, 670, 540, 140, "Lights");
+        { Fl_Group* o = new Fl_Group(825, 700, 540, 70, "Lights");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { Fl_Light_Button* o = new Fl_Light_Button(835, 680, 245, 25, "Enable light 0");
+          { Fl_Light_Button* o = new Fl_Light_Button(835, 715, 120, 20, "Enable light 0");
             o->value(1);
             o->selection_color((Fl_Color)FL_GREEN);
             o->callback((Fl_Callback*)cb_Enable2);
           } // Fl_Light_Button* o
-          { Fl_Light_Button* o = new Fl_Light_Button(835, 710, 245, 25, "Enable light 1");
-            o->value(1);
+          { Fl_Light_Button* o = new Fl_Light_Button(835, 740, 120, 20, "Enable light 1");
             o->selection_color((Fl_Color)FL_GREEN);
             o->callback((Fl_Callback*)cb_Enable3);
           } // Fl_Light_Button* o
-          { Fl_Light_Button* o = new Fl_Light_Button(835, 740, 245, 25, "Enable light 2");
-            o->value(1);
+          { Fl_Light_Button* o = new Fl_Light_Button(1095, 715, 120, 20, "Enable light 2");
             o->selection_color((Fl_Color)FL_GREEN);
             o->callback((Fl_Callback*)cb_Enable4);
           } // Fl_Light_Button* o
-          { Fl_Light_Button* o = new Fl_Light_Button(835, 770, 245, 25, "Enable light 3");
+          { Fl_Light_Button* o = new Fl_Light_Button(1095, 740, 120, 20, "Enable light 3");
             o->value(1);
             o->selection_color((Fl_Color)FL_GREEN);
             o->callback((Fl_Callback*)cb_Enable5);
           } // Fl_Light_Button* o
-          { Fl_Light_Button* o = new Fl_Light_Button(1100, 680, 245, 25, "Enable light 4");
-            o->value(1);
-            o->selection_color((Fl_Color)FL_GREEN);
-            o->callback((Fl_Callback*)cb_Enable6);
-          } // Fl_Light_Button* o
-          { Fl_Light_Button* o = new Fl_Light_Button(1100, 710, 245, 25, "Enable light 5");
-            o->value(1);
-            o->selection_color((Fl_Color)FL_GREEN);
-            o->callback((Fl_Callback*)cb_Enable7);
-          } // Fl_Light_Button* o
-          { Fl_Light_Button* o = new Fl_Light_Button(1100, 740, 245, 25, "Enable light 6");
-            o->value(1);
-            o->selection_color((Fl_Color)FL_GREEN);
-            o->callback((Fl_Callback*)cb_Enable8);
-          } // Fl_Light_Button* o
-          { Fl_Light_Button* o = new Fl_Light_Button(1100, 770, 245, 25, "Enable light 7");
-            o->value(1);
-            o->selection_color((Fl_Color)FL_GREEN);
-            o->callback((Fl_Callback*)cb_Enable9);
-          } // Fl_Light_Button* o
+          { Fl_Button* o = new Fl_Button(960, 715, 130, 20, "Edit light 0");
+            o->deactivate();
+          } // Fl_Button* o
+          { Fl_Button* o = new Fl_Button(960, 740, 130, 20, "Edit light 1");
+            o->deactivate();
+          } // Fl_Button* o
+          { Fl_Button* o = new Fl_Button(1220, 715, 130, 20, "Edit light 2");
+            o->deactivate();
+          } // Fl_Button* o
+          { Fl_Button* o = new Fl_Button(1220, 740, 130, 20, "Edit light 3");
+            o->deactivate();
+          } // Fl_Button* o
           o->end();
         } // Fl_Group* o
         o->end();
@@ -1522,5 +1768,6 @@ MVC->ReadStl("C:/#Downloads/Reprap Exchange/N_DSL-Stylus.stl");
 //MVC->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
 MVC->CopySettingsToGUI();
 MVC->draw();
+MVC->redraw();
 MVC->redraw();
 }

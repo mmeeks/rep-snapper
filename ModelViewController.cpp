@@ -53,33 +53,6 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 	ProcessControl.LoadXML();
 	CopySettingsToGUI();
 
-	// Somewhere in the initialization part of your program…
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-
-	for(int i=0;i<8;i++)
-	{
-	lights[i].Init ( GL_LIGHT0+i );
-	lights[i].SetPosition ( -100, 100, 200, 0 );
-	lights[i].SetAmbientColor ( 0.2f, 0.2f, 0.2f, 1.0f );
-	lights[i].SetDiffuseColor ( 1.0f, 1.0f, 1.0f, 1.0f );
-	lights[i].SetSpecular ( 1.0f, 1.0f, 1.0f, 1.0f );
-	lights[i].SetValues ( );
-	lights[i].TurnOn ( );
-	}
-
-	lights[0].SetPosition ( -100, 100, 200, 0 );
-	lights[1].SetPosition ( 100, 100, 200, 0 );
-	lights[2].SetPosition ( 100, -100, 200, 0 );
-	lights[3].SetPosition ( 100, -100, 200, 0 );
-
-	lights[4].SetPosition ( -100, 100, 0, 0 );
-	lights[5].SetPosition ( 100, 100, 0, 0 );
-	lights[6].SetPosition ( 100, -100, 0, 0 );
-	lights[7].SetPosition ( 100, -100, 0, 0 );
-
-	// enable lighting
-	glEnable ( GL_LIGHTING);
 
 }
 
@@ -128,10 +101,50 @@ void ModelViewController::draw()
 		glMatrixMode (GL_MODELVIEW);										// Select The Modelview Matrix
 		glLoadIdentity ();													// Reset The Modelview Matrix
 		ArcBall->setBounds((GLfloat)w(), (GLfloat)h());                 //*NEW* Update mouse bounds for arcball
+		glEnable(GL_LIGHTING);
+		for(int i=0;i<4;i++)
+		{
+			lights[i].Init ( (GLenum)(GL_LIGHT0+i) );
+			//		lights[i].SetPosition ( 0, 0, 0, 0 );
+			lights[i].SetAmbientColor ( 0.2f, 0.2f, 0.2f, 1.0f );
+			lights[i].SetDiffuseColor ( 1.0f, 1.0f, 1.0f, 1.0f );
+			lights[i].SetSpecular ( 1.0f, 1.0f, 1.0f, 1.0f );
+			lights[i].SetValues ( );
+			lights[i].TurnOff ( );
 		}
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		lights[0].SetPosition ( -100, 100, 200, 0 );
+		lights[1].SetPosition ( 100, 100, 200, 0 );
+		lights[2].SetPosition ( 100, -100, 200, 0 );
+		lights[3].SetPosition ( 100, -100, 200, 0 );
+
+		for(int i=0;i<4;i++)
+			lights[i].SetValues ( );
+
+		lights[0].TurnOn();
+		lights[3].TurnOn();
+
+/*
+		float params[4];
+
+		for(int i=0;i<8;i++)
+		{
+			GLenum lightNr = (GLenum)(GL_LIGHT0+i);
+			cout << " Light" << i << "\n";
+			glGetLightfv( (GLenum)lightNr, GL_DIFFUSE, &params[0] );
+			cout << "GL_DIFFUSE " << params[0] << " " << params[1] << " " << params[2];
+			glGetLightfv( (GLenum)lightNr, GL_POSITION, &params[0] );
+			cout << "GL_POSITION " << params[0] << " " << params[1] << " " << params[2];
+			cout << "\n";
+		}
+*/
+
+		// enable lighting
+		glDisable ( GL_LIGHTING);
+	}
+
+//    glEnable(GL_BLEND);
+//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);				// Clear Screen And Depth Buffer
 	glLoadIdentity();												// Reset The Current Modelview Matrix
 	glTranslatef(0.0f,0.0f,-zoom*2);								// Move Left 1.5 Units And Into The Screen 6.0
@@ -148,6 +161,9 @@ void ModelViewController::draw()
 	DrawGridAndAxis();
 
 	/*--------------- Draw models ------------------*/
+
+	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+
 	ProcessControl.Draw();
 
 	/*--------------- Exit -----------------*/
@@ -361,4 +377,31 @@ void ModelViewController::CopySettingsToGUI()
 	gui->DisplayCuttingPlaneButton->value(ProcessControl.DisplayCuttingPlane);
 	gui->DrawVertexNumbersButton->value(ProcessControl.DrawVertexNumbers);
 	gui->DrawLineNumbersButton->value(ProcessControl.DrawLineNumbers);
+
+	// Rendering
+	gui->PolygonValSlider->value(ProcessControl.PolygonVal);
+	gui->PolygonSatSlider->value(ProcessControl.PolygonSat);
+	gui->PolygonHueSlider->value(ProcessControl.PolygonHue);
+	gui->WireframeValSlider->value(ProcessControl.WireframeVal);
+	gui->WireframeSatSlider->value(ProcessControl.WireframeSat);
+	gui->WireframeHueSlider->value(ProcessControl.WireframeHue);
+	gui->NormalSatSlider->value(ProcessControl.NormalsSat);
+	gui->NormalValSlider->value(ProcessControl.NormalsVal);
+	gui->NormalHueSlider->value(ProcessControl.NormalsHue);
+	gui->EndpointSatSlider->value(ProcessControl.EndpointsSat);
+	gui->EndpointValSlider->value(ProcessControl.EndpointsVal);
+	gui->EndpointHueSlider->value(ProcessControl.EndpointsHue);
+	gui->GCodeExtrudeHueSlider->value(ProcessControl.GCodeExtrudeHue);
+	gui->GCodeExtrudeSatSlider->value(ProcessControl.GCodeExtrudeSat);
+	gui->GCodeExtrudeValSlider->value(ProcessControl.GCodeExtrudeVal);
+	gui->GCodeMoveHueSlider->value(ProcessControl.GCodeMoveHue);
+	gui->GCodeMoveSatSlider->value(ProcessControl.GCodeMoveSat);
+	gui->GCodeMoveValSlider->value(ProcessControl.GCodeMoveVal);
+	gui->HighlightSlider->value(ProcessControl.Highlight);
+
+	gui->NormalLengthSlider->value(ProcessControl.NormalsLength);
+	gui->EndpointSizeSlider->value(ProcessControl.EndPointSize);
+
+	gui->DisplayGCodeButton->value(ProcessControl.DisplayGCode);
+	gui->LuminanceShowsSpeedButton->value(ProcessControl.LuminanceShowsSpeed);
 }
