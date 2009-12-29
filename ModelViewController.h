@@ -23,6 +23,7 @@
 #include "ProcessController.h"
 #include "glutils.h"
 
+#include "Serial/Serial.h"
 
 // Construct a model and a view, and link them together.
 
@@ -155,6 +156,37 @@ public:
 	void SetHighlight(float val) {ProcessControl.Highlight = val;}
 	void SetNormalsLength(float val){ProcessControl.NormalsLength = val;}
 	void SetEndPointSize(float val){ProcessControl.EndPointSize = val;}
+
+	// Communication
+	void ConnectToPrinter(char on){
+		if(on)
+		{
+		serial.Open(_T("COM3"));
+		serial.Setup(CSerial::EBaud19200,CSerial::EData8,CSerial::EParNone,CSerial::EStop1);
+		serial.SetupHandshaking(CSerial::EHandshakeOff);
+		}
+		else
+			serial.Close();
+
+	}
+	void Print(){
+	serial.Write("G21");	// Metric
+	serial.Write("G90");	// absolute positioning
+	serial.Write("T0");	// Extruder
+	serial.Write("G28");	// Home
+	serial.Write("G92 E0");	// extruder home
+//	serial.Write("M104 S73.0");	// temp
+	serial.Write("G1 X20 Y20 F500");	// goto 20,20
+	serial.Write("G1 X20 Y20 F500");	// goto 20,20
+	serial.Write("M104 S0.0");	// Heater off
+	}
+	void SwitchHeat(bool on, float temp){};
+	void SetTargetTemp(float temp){};
+	void RunExtruder(){};
+	void SetExtruderDirection(bool reverse){};
+
+	CSerial serial;
+	
 
 	/*--------------ArcBall-------------------*/
 

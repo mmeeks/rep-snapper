@@ -860,6 +860,48 @@ void GUI::cb_Save2(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Save2_i(o,v);
 }
 
+void GUI::cb_ConnectToPrinterButton_i(Fl_Light_Button* o, void*) {
+  MVC->ConnectToPrinter(o->value());
+}
+void GUI::cb_ConnectToPrinterButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_ConnectToPrinterButton_i(o,v);
+}
+
+void GUI::cb_PrintButton_i(Fl_Light_Button*, void*) {
+  MVC->Print();
+}
+void GUI::cb_PrintButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_PrintButton_i(o,v);
+}
+
+void GUI::cb_SwitchHeatOnButton_i(Fl_Light_Button* o, void*) {
+  MVC->SwitchHeat(o->value(), TargetTempText->value());
+}
+void GUI::cb_SwitchHeatOnButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_SwitchHeatOnButton_i(o,v);
+}
+
+void GUI::cb_TargetTempText_i(Fl_Value_Input* o, void*) {
+  MVC->SetTargetTemp(o->value());
+}
+void GUI::cb_TargetTempText(Fl_Value_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_TargetTempText_i(o,v);
+}
+
+void GUI::cb_RunExtruderButton_i(Fl_Light_Button*, void*) {
+  MVC->RunExtruder();
+}
+void GUI::cb_RunExtruderButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_RunExtruderButton_i(o,v);
+}
+
+void GUI::cb_SetExtruderDirectionButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetExtruderDirection(o->value());
+}
+void GUI::cb_SetExtruderDirectionButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_SetExtruderDirectionButton_i(o,v);
+}
+
 GUI::GUI() {
   { mainWindow = new Fl_Double_Window(1379, 830, "RepSnapper by Kulitorum www.kulitorum.com");
     mainWindow->box(FL_UP_BOX);
@@ -918,6 +960,7 @@ GUI::GUI() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(820, 30, 550, 765, "Printer definition");
+        o->hide();
         { Fl_Group* o = new Fl_Group(830, 55, 230, 40, "Build volume (mm)");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
@@ -1743,7 +1786,6 @@ e rest of the print.");
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(820, 30, 550, 765, "Debug");
         o->color((Fl_Color)FL_DARK1);
-        o->hide();
         { ExamineSlider = new Fl_Value_Slider(890, 750, 365, 20, "Examine");
           ExamineSlider->type(1);
           ExamineSlider->step(0.001);
@@ -1776,6 +1818,30 @@ e rest of the print.");
           } // Fl_Button* o
           o->end();
         } // Fl_Group* o
+        { ConnectToPrinterButton = new Fl_Light_Button(840, 145, 220, 25, "Connect to printer");
+          ConnectToPrinterButton->callback((Fl_Callback*)cb_ConnectToPrinterButton);
+        } // Fl_Light_Button* ConnectToPrinterButton
+        { PrintButton = new Fl_Light_Button(840, 175, 220, 25, "Print");
+          PrintButton->callback((Fl_Callback*)cb_PrintButton);
+        } // Fl_Light_Button* PrintButton
+        { SwitchHeatOnButton = new Fl_Light_Button(840, 205, 220, 25, "Switch heat on");
+          SwitchHeatOnButton->callback((Fl_Callback*)cb_SwitchHeatOnButton);
+        } // Fl_Light_Button* SwitchHeatOnButton
+        { TargetTempText = new Fl_Value_Input(1225, 176, 55, 24, "Target temp");
+          TargetTempText->callback((Fl_Callback*)cb_TargetTempText);
+        } // Fl_Value_Input* TargetTempText
+        { CurrentTempText = new Fl_Value_Output(1225, 206, 55, 24, "Current temp");
+        } // Fl_Value_Output* CurrentTempText
+        { RunExtruderButton = new Fl_Light_Button(840, 235, 220, 25, "Run extruder");
+          RunExtruderButton->callback((Fl_Callback*)cb_RunExtruderButton);
+        } // Fl_Light_Button* RunExtruderButton
+        { SetExtruderDirectionButton = new Fl_Light_Button(1065, 235, 220, 25, "Reverse");
+          SetExtruderDirectionButton->callback((Fl_Callback*)cb_SetExtruderDirectionButton);
+        } // Fl_Light_Button* SetExtruderDirectionButton
+        { CommunationsLogText = new Fl_Text_Display(840, 285, 445, 390, "Communications log");
+          CommunationsLogText->box(FL_UP_FRAME);
+          CommunationsLogText->align(FL_ALIGN_TOP_LEFT);
+        } // Fl_Text_Display* CommunationsLogText
         o->end();
       } // Fl_Group* o
       Tabs->end();

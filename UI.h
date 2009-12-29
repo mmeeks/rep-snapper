@@ -19,6 +19,8 @@ class ModelViewController;
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Text_Editor.H>
 #include <FL/Fl_Slider.H>
+#include <FL/Fl_Value_Output.H>
+#include <FL/Fl_Text_Display.H>
 
 class GUI {
 public:
@@ -495,6 +497,38 @@ private:
   void cb_Save2_i(Fl_Button*, void*);
   static void cb_Save2(Fl_Button*, void*);
 public:
+  Fl_Light_Button *ConnectToPrinterButton;
+private:
+  void cb_ConnectToPrinterButton_i(Fl_Light_Button*, void*);
+  static void cb_ConnectToPrinterButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *PrintButton;
+private:
+  void cb_PrintButton_i(Fl_Light_Button*, void*);
+  static void cb_PrintButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *SwitchHeatOnButton;
+private:
+  void cb_SwitchHeatOnButton_i(Fl_Light_Button*, void*);
+  static void cb_SwitchHeatOnButton(Fl_Light_Button*, void*);
+public:
+  Fl_Value_Input *TargetTempText;
+private:
+  void cb_TargetTempText_i(Fl_Value_Input*, void*);
+  static void cb_TargetTempText(Fl_Value_Input*, void*);
+public:
+  Fl_Value_Output *CurrentTempText;
+  Fl_Light_Button *RunExtruderButton;
+private:
+  void cb_RunExtruderButton_i(Fl_Light_Button*, void*);
+  static void cb_RunExtruderButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *SetExtruderDirectionButton;
+private:
+  void cb_SetExtruderDirectionButton_i(Fl_Light_Button*, void*);
+  static void cb_SetExtruderDirectionButton(Fl_Light_Button*, void*);
+public:
+  Fl_Text_Display *CommunationsLogText;
   void show(int argc, char **argv);
 };
 #endif

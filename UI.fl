@@ -11,7 +11,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {377 215 1379 830} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
+      xywh {306 321 1379 830} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -124,7 +124,7 @@ MVC->redraw();}
         }
         Fl_Group {} {
           label {Printer definition} open
-          xywh {820 30 550 765}
+          xywh {820 30 550 765} hide
         } {
           Fl_Group {} {
             label {Build volume (mm)} open
@@ -162,7 +162,7 @@ MVC->redraw();}
           } {
             Fl_Value_Slider accelerationStepsSlider {
               label {Number of acceleration steps}
-              callback {MVC->NumAccelerationSteps(o->value());} selected
+              callback {MVC->NumAccelerationSteps(o->value());}
               xywh {840 540 515 20} type Horizontal selection_color 2 align 5 maximum 10 step 1 value 5 textsize 14 deactivate
             }
             Fl_Value_Slider distanceBetweenSpeedStepsSlider {
@@ -820,7 +820,7 @@ MVC->redraw();}
         }
         Fl_Group {} {
           label Debug open
-          xywh {820 30 550 765} color 47 hide
+          xywh {820 30 550 765} color 47
         } {
           Fl_Value_Slider ExamineSlider {
             label Examine
@@ -877,6 +877,44 @@ MVC->ProcessControl.GCodeEndText = string(pText);
 MVC->ProcessControl.SaveXML();}
               xywh {840 70 185 30}
             }
+          }
+          Fl_Light_Button ConnectToPrinterButton {
+            label {Connect to printer}
+            callback {MVC->ConnectToPrinter(o->value());}
+            xywh {840 145 220 25}
+          }
+          Fl_Light_Button PrintButton {
+            label Print
+            callback {MVC->Print();}
+            xywh {840 175 220 25}
+          }
+          Fl_Light_Button SwitchHeatOnButton {
+            label {Switch heat on}
+            callback {MVC->SwitchHeat(o->value(), TargetTempText->value());} selected
+            xywh {840 205 220 25}
+          }
+          Fl_Value_Input TargetTempText {
+            label {Target temp}
+            callback {MVC->SetTargetTemp(o->value());}
+            xywh {1225 176 55 24}
+          }
+          Fl_Value_Output CurrentTempText {
+            label {Current temp}
+            xywh {1225 206 55 24}
+          }
+          Fl_Light_Button RunExtruderButton {
+            label {Run extruder}
+            callback {MVC->RunExtruder();}
+            xywh {840 235 220 25}
+          }
+          Fl_Light_Button SetExtruderDirectionButton {
+            label Reverse
+            callback {MVC->SetExtruderDirection(o->value());}
+            xywh {1065 235 220 25}
+          }
+          Fl_Text_Display CommunationsLogText {
+            label {Communications log}
+            xywh {840 285 445 390} box UP_FRAME align 5
           }
         }
       }
