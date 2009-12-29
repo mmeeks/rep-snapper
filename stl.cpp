@@ -589,6 +589,14 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	code.commands.push_back(command);
 
 
+	// Set speed for next move
+	command.Code = COORDINATEDMOTION;
+	command.where = Vector3f(0,0,lastLayerZ);
+	command.e = E;					// move
+	command.f = MinPrintSpeedZ;		// Use Min Z speed
+	command.comment = "Next layer z";
+	code.commands.push_back(command);
+	command.comment = "";
 	// Move Z axis
 	command.Code = COORDINATEDMOTION;
 	command.where = Vector3f(0,0,z);

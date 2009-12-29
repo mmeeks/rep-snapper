@@ -163,12 +163,19 @@ Vector3f ProcessController::MakeRaft(float &z)
 
 			reverseLines = !reverseLines;
 		}
+		// Set startspeed for Z-move
+		Command g;
+		g.Code = COORDINATEDMOTION;
+		g.where = Vector3f(P2.x, P2.y, z);
+		g.f=MinPrintSpeedZ;
+		g.comment = "Move Z";
+		g.e = E;
+		gcode.commands.push_back(g);
 		if(LayerNr < RaftBaseLayerCount)
 			z+=RaftBaseThickness*LayerThickness;
 		else
 			z+=RaftInterfaceThickness*LayerThickness;
 		// Move Z
-		Command g;
 		g.Code = COORDINATEDMOTION;
 		g.where = Vector3f(P2.x, P2.y, z);
 		g.f=MinPrintSpeedZ;
