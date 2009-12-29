@@ -298,6 +298,7 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 	float lastE = -10;
 
 	GcodeTxt += GcodeStart;
+	GcodeTxt += "\n";
 
 	for(UINT i=0;i<commands.size() ;i++)
 	{
@@ -306,6 +307,7 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 		{
 		case RESET_XY_AXIES:
 			GcodeTxt += GcodeLayer;
+			GcodeTxt += "\n";
 			break;
 		case SELECTEXTRUDER:
 			oss  << "T0\n";
@@ -329,7 +331,11 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 				if(commands[i].e != 0.0f)
 					oss << "E" << commands[i].e << " ";
 				}
-			oss << " F" << commands[i].f << "\n";
+			oss << " F" << commands[i].f;
+			if(commands[i].comment.length() != 0)
+				oss << "	;" << commands[i].comment << "\n";
+			else
+				oss <<  "\n";
 			GcodeTxt += oss.str();
 			LastPos = commands[i].where;
 			lastE = commands[i].e;
@@ -345,5 +351,6 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 	}
 
 	GcodeTxt += GcodeEnd;
+	GcodeTxt += "\n";
 }
 

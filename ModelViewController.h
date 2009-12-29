@@ -80,6 +80,8 @@ public:
 	void SetDisplayNormals(bool val){ProcessControl.DisplayNormals = val; redraw();}
 	void SetDisplayBBox(bool val){ProcessControl.DisplayBBox = val; redraw();}
 	void SetDisplayWireframe(bool val){ProcessControl.DisplayWireframe = val; redraw();}
+	void SetDisplayWireframeShaded(bool val){ProcessControl.DisplayWireframeShaded = val; redraw();}
+
 	void SetDisplayPolygons(bool val){ProcessControl.DisplayPolygons = val; redraw();}
 	void SetDisplayAllLayers(bool val){ProcessControl.DisplayAllLayers = val; redraw();}
 	void SetDisplayinFill(bool val){ProcessControl.DisplayinFill = val; redraw();}
@@ -120,14 +122,16 @@ public:
 	void SetRaftInterfaceTemperature(float val){ProcessControl.RaftInterfaceTemperature=val;}
 
 	// Apron
-	void SetApronEnable(bool val){};
-	void SetApronPreview(bool val){};
-	void SetApronSize(float val){};
-	void SetApronHeight(float val){};
-	void SetApronCoverageX(float val){};
-	void SetApronCoverageY(float val){};
-	void SetApronApronDistanceToObject(float val){};
-	void SetApronInfillDistance(float val){};
+	void SetApronEnable(bool val){ProcessControl.ApronEnable = val;}
+	void SetApronPreview(bool val){ProcessControl.ApronPreview = val;}
+	void SetApronSize(float val){ProcessControl.ApronSize = val;}
+	void SetApronHeight(float val){ProcessControl.ApronHeight = val;}
+	void SetApronCoverageX(float val){ProcessControl.ApronCoverageX = val;}
+	void SetApronCoverageY(float val){ProcessControl.ApronCoverageY = val;}
+	void SetApronDistanceToObject(float val){ProcessControl.ApronDistanceToObject = val;}
+	void SetApronInfillDistance(float val){ProcessControl.ApronInfillDistance = val;}
+	void SetRaftEnable(bool val){ProcessControl.RaftEnable = val;}
+
 
 	// Rendering
 	void SetPolygonVal(float val) {ProcessControl.PolygonVal=val;}

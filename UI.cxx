@@ -125,11 +125,13 @@ if(o->value())
 {
 accelerationStepsSlider->activate();
 distanceBetweenSpeedStepsSlider->activate();
+UseFirmwareAccelerationButton->activate();
 }
 else
 {
 accelerationStepsSlider->deactivate();
 distanceBetweenSpeedStepsSlider->deactivate();
+UseFirmwareAccelerationButton->deactivate();
 };
 }
 void GUI::cb_EnableAccelerationButton(Fl_Light_Button* o, void* v) {
@@ -138,6 +140,19 @@ void GUI::cb_EnableAccelerationButton(Fl_Light_Button* o, void* v) {
 
 void GUI::cb_UseFirmwareAccelerationButton_i(Fl_Light_Button* o, void*) {
   MVC->SetUseFirmwareAcceleration(o->value());
+
+if(o->value())
+{
+accelerationStepsSlider->deactivate();
+distanceBetweenSpeedStepsSlider->label("Distance used to read full speed(mm)");;
+}
+else
+{
+accelerationStepsSlider->activate();
+distanceBetweenSpeedStepsSlider->label("Distance Pr Acceleration Step (mm)");;
+}
+accelerationStepsSlider->redraw();
+distanceBetweenSpeedStepsSlider->redraw();
 }
 void GUI::cb_UseFirmwareAccelerationButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_UseFirmwareAccelerationButton_i(o,v);
@@ -255,11 +270,11 @@ void GUI::cb_ApronCoverageXSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ApronCoverageXSlider_i(o,v);
 }
 
-void GUI::cb_ApronBaseLayerCountSlider_i(Fl_Value_Slider* o, void*) {
+void GUI::cb_ApronHeightSlider_i(Fl_Value_Slider* o, void*) {
   MVC->SetApronHeight(o->value());
 }
-void GUI::cb_ApronBaseLayerCountSlider(Fl_Value_Slider* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ApronBaseLayerCountSlider_i(o,v);
+void GUI::cb_ApronHeightSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ApronHeightSlider_i(o,v);
 }
 
 void GUI::cb_ApronCoverageYSlider_i(Fl_Value_Slider* o, void*) {
@@ -269,15 +284,15 @@ void GUI::cb_ApronCoverageYSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ApronCoverageYSlider_i(o,v);
 }
 
-void GUI::cb_Enable_i(Fl_Light_Button* o, void*) {
+void GUI::cb_ApronEnableButton_i(Fl_Light_Button* o, void*) {
   MVC->SetApronEnable(o->value());
 }
-void GUI::cb_Enable(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Enable_i(o,v);
+void GUI::cb_ApronEnableButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ApronEnableButton_i(o,v);
 }
 
 void GUI::cb_ApronDistanceToObjectSlider_i(Fl_Value_Slider* o, void*) {
-  MVC->SetApronApronDistanceToObject(o->value());
+  MVC->SetApronDistanceToObject(o->value());
 }
 void GUI::cb_ApronDistanceToObjectSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ApronDistanceToObjectSlider_i(o,v);
@@ -290,11 +305,11 @@ void GUI::cb_ApronInfillDistanceSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ApronInfillDistanceSlider_i(o,v);
 }
 
-void GUI::cb_Preview_i(Fl_Light_Button* o, void*) {
+void GUI::cb_ApronPreviewButton_i(Fl_Light_Button* o, void*) {
   MVC->SetApronPreview(o->value());
 }
-void GUI::cb_Preview(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Preview_i(o,v);
+void GUI::cb_ApronPreviewButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ApronPreviewButton_i(o,v);
 }
 
 void GUI::cb_RaftMaterialPrDistanceRatioSlider_i(Fl_Value_Slider* o, void*) {
@@ -388,18 +403,18 @@ void GUI::cb_RaftInterfaceTemperatureSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_RaftInterfaceTemperatureSlider_i(o,v);
 }
 
-void GUI::cb_Enable1_i(Fl_Light_Button* o, void*) {
-  MVC->SetApronEnable(o->value());
+void GUI::cb_RaftEnableButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetRaftEnable(o->value());
 }
-void GUI::cb_Enable1(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Enable1_i(o,v);
+void GUI::cb_RaftEnableButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_RaftEnableButton_i(o,v);
 }
 
-void GUI::cb_Preview1_i(Fl_Light_Button* o, void*) {
+void GUI::cb_Preview_i(Fl_Light_Button* o, void*) {
   MVC->SetApronPreview(o->value());
 }
-void GUI::cb_Preview1(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Preview1_i(o,v);
+void GUI::cb_Preview(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Preview_i(o,v);
 }
 
 void GUI::cb_Load1_i(Fl_Button*, void*) {
@@ -619,6 +634,13 @@ void GUI::cb_EndpointSizeSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_EndpointSizeSlider_i(o,v);
 }
 
+void GUI::cb_DisplayWireframeShadedButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetDisplayWireframeShaded(o->value());
+}
+void GUI::cb_DisplayWireframeShadedButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_DisplayWireframeShadedButton_i(o,v);
+}
+
 void GUI::cb_DisplayGCodeButton_i(Fl_Light_Button* o, void*) {
   MVC->SetDisplayGCode(o->value());
 MVC->redraw();
@@ -747,32 +769,32 @@ void GUI::cb_DisplayAllLayersButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_DisplayAllLayersButton_i(o,v);
 }
 
-void GUI::cb_Enable2_i(Fl_Light_Button* o, void*) {
+void GUI::cb_Enable_i(Fl_Light_Button* o, void*) {
   MVC->SetEnableLight(0, o->value());
+}
+void GUI::cb_Enable(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Enable_i(o,v);
+}
+
+void GUI::cb_Enable1_i(Fl_Light_Button* o, void*) {
+  MVC->SetEnableLight(1, o->value());
+}
+void GUI::cb_Enable1(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Enable1_i(o,v);
+}
+
+void GUI::cb_Enable2_i(Fl_Light_Button* o, void*) {
+  MVC->SetEnableLight(2, o->value());
 }
 void GUI::cb_Enable2(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Enable2_i(o,v);
 }
 
 void GUI::cb_Enable3_i(Fl_Light_Button* o, void*) {
-  MVC->SetEnableLight(1, o->value());
+  MVC->SetEnableLight(3, o->value());
 }
 void GUI::cb_Enable3(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Enable3_i(o,v);
-}
-
-void GUI::cb_Enable4_i(Fl_Light_Button* o, void*) {
-  MVC->SetEnableLight(2, o->value());
-}
-void GUI::cb_Enable4(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Enable4_i(o,v);
-}
-
-void GUI::cb_Enable5_i(Fl_Light_Button* o, void*) {
-  MVC->SetEnableLight(3, o->value());
-}
-void GUI::cb_Enable5(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Enable5_i(o,v);
 }
 
 void GUI::cb_ExamineSlider_i(Fl_Value_Slider* o, void*) {
@@ -859,6 +881,7 @@ GUI::GUI() {
     { Tabs = new Fl_Tabs(820, 10, 550, 805);
       Tabs->align(FL_ALIGN_TOP_LEFT);
       { Fl_Group* o = new Fl_Group(820, 30, 550, 785, "Input file");
+        o->hide();
         { Fl_Button* o = new Fl_Button(835, 40, 145, 25, "Load STL");
           o->callback((Fl_Callback*)cb_Load);
         } // Fl_Button* o
@@ -895,7 +918,6 @@ GUI::GUI() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(820, 30, 550, 765, "Printer definition");
-        o->hide();
         { Fl_Group* o = new Fl_Group(830, 55, 230, 40, "Build volume (mm)");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
@@ -941,8 +963,9 @@ GUI::GUI() {
             accelerationStepsSlider->textsize(14);
             accelerationStepsSlider->callback((Fl_Callback*)cb_accelerationStepsSlider);
             accelerationStepsSlider->align(FL_ALIGN_TOP_LEFT);
+            accelerationStepsSlider->deactivate();
           } // Fl_Value_Slider* accelerationStepsSlider
-          { distanceBetweenSpeedStepsSlider = new Fl_Value_Slider(840, 580, 515, 20, "Distance Pr Acceleration Step (mm)");
+          { distanceBetweenSpeedStepsSlider = new Fl_Value_Slider(840, 580, 515, 20, "Distance used to read full speed(mm)");
             distanceBetweenSpeedStepsSlider->type(1);
             distanceBetweenSpeedStepsSlider->selection_color((Fl_Color)2);
             distanceBetweenSpeedStepsSlider->maximum(10);
@@ -1140,18 +1163,18 @@ GUI::GUI() {
             ApronCoverageXSlider->align(FL_ALIGN_TOP_LEFT);
             ApronCoverageXSlider->deactivate();
           } // Fl_Value_Slider* ApronCoverageXSlider
-          { ApronBaseLayerCountSlider = new Fl_Value_Slider(840, 155, 510, 20, "Height");
-            ApronBaseLayerCountSlider->type(1);
-            ApronBaseLayerCountSlider->selection_color((Fl_Color)2);
-            ApronBaseLayerCountSlider->minimum(1);
-            ApronBaseLayerCountSlider->maximum(30);
-            ApronBaseLayerCountSlider->step(1);
-            ApronBaseLayerCountSlider->value(8);
-            ApronBaseLayerCountSlider->textsize(14);
-            ApronBaseLayerCountSlider->callback((Fl_Callback*)cb_ApronBaseLayerCountSlider);
-            ApronBaseLayerCountSlider->align(FL_ALIGN_TOP_LEFT);
-            ApronBaseLayerCountSlider->deactivate();
-          } // Fl_Value_Slider* ApronBaseLayerCountSlider
+          { ApronHeightSlider = new Fl_Value_Slider(840, 155, 510, 20, "Height");
+            ApronHeightSlider->type(1);
+            ApronHeightSlider->selection_color((Fl_Color)2);
+            ApronHeightSlider->minimum(1);
+            ApronHeightSlider->maximum(30);
+            ApronHeightSlider->step(1);
+            ApronHeightSlider->value(8);
+            ApronHeightSlider->textsize(14);
+            ApronHeightSlider->callback((Fl_Callback*)cb_ApronHeightSlider);
+            ApronHeightSlider->align(FL_ALIGN_TOP_LEFT);
+            ApronHeightSlider->deactivate();
+          } // Fl_Value_Slider* ApronHeightSlider
           { ApronCoverageYSlider = new Fl_Value_Slider(840, 235, 510, 20, "Coverage Y axis");
             ApronCoverageYSlider->type(1);
             ApronCoverageYSlider->selection_color((Fl_Color)2);
@@ -1164,9 +1187,9 @@ GUI::GUI() {
             ApronCoverageYSlider->align(FL_ALIGN_TOP_LEFT);
             ApronCoverageYSlider->deactivate();
           } // Fl_Value_Slider* ApronCoverageYSlider
-          { Fl_Light_Button* o = new Fl_Light_Button(840, 75, 250, 20, "Enable");
-            o->callback((Fl_Callback*)cb_Enable);
-          } // Fl_Light_Button* o
+          { ApronEnableButton = new Fl_Light_Button(840, 75, 250, 20, "Enable");
+            ApronEnableButton->callback((Fl_Callback*)cb_ApronEnableButton);
+          } // Fl_Light_Button* ApronEnableButton
           { ApronDistanceToObjectSlider = new Fl_Value_Slider(840, 275, 510, 20, "Distance to object");
             ApronDistanceToObjectSlider->type(1);
             ApronDistanceToObjectSlider->selection_color((Fl_Color)2);
@@ -1191,10 +1214,10 @@ GUI::GUI() {
             ApronInfillDistanceSlider->align(FL_ALIGN_TOP_LEFT);
             ApronInfillDistanceSlider->deactivate();
           } // Fl_Value_Slider* ApronInfillDistanceSlider
-          { Fl_Light_Button* o = new Fl_Light_Button(1095, 75, 255, 20, "Preview");
-            o->callback((Fl_Callback*)cb_Preview);
-            o->deactivate();
-          } // Fl_Light_Button* o
+          { ApronPreviewButton = new Fl_Light_Button(1095, 75, 255, 20, "Preview");
+            ApronPreviewButton->callback((Fl_Callback*)cb_ApronPreviewButton);
+            ApronPreviewButton->deactivate();
+          } // Fl_Light_Button* ApronPreviewButton
           o->end();
         } // Fl_Group* o
         o->end();
@@ -1367,11 +1390,11 @@ e rest of the print.");
         { Fl_Group* o = new Fl_Group(825, 50, 535, 55, "Size");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { Fl_Light_Button* o = new Fl_Light_Button(830, 70, 255, 25, "Enable");
-            o->callback((Fl_Callback*)cb_Enable1);
-          } // Fl_Light_Button* o
+          { RaftEnableButton = new Fl_Light_Button(830, 70, 255, 25, "Enable");
+            RaftEnableButton->callback((Fl_Callback*)cb_RaftEnableButton);
+          } // Fl_Light_Button* RaftEnableButton
           { Fl_Light_Button* o = new Fl_Light_Button(1090, 70, 255, 25, "Preview");
-            o->callback((Fl_Callback*)cb_Preview1);
+            o->callback((Fl_Callback*)cb_Preview);
             o->deactivate();
           } // Fl_Light_Button* o
           o->end();
@@ -1426,7 +1449,7 @@ e rest of the print.");
             DisplayPolygonsButton->selection_color((Fl_Color)FL_GREEN);
             DisplayPolygonsButton->callback((Fl_Callback*)cb_DisplayPolygonsButton);
           } // Fl_Light_Button* DisplayPolygonsButton
-          { DisplayWireframeButton = new Fl_Light_Button(1125, 70, 220, 20, "Display Wireframe");
+          { DisplayWireframeButton = new Fl_Light_Button(1125, 70, 140, 20, "Display Wireframe");
             DisplayWireframeButton->selection_color((Fl_Color)FL_GREEN);
             DisplayWireframeButton->callback((Fl_Callback*)cb_DisplayWireframeButton);
           } // Fl_Light_Button* DisplayWireframeButton
@@ -1568,6 +1591,10 @@ e rest of the print.");
             EndpointSizeSlider->callback((Fl_Callback*)cb_EndpointSizeSlider);
             EndpointSizeSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* EndpointSizeSlider
+          { DisplayWireframeShadedButton = new Fl_Light_Button(1270, 70, 75, 20, "Shaded");
+            DisplayWireframeShadedButton->selection_color((Fl_Color)FL_GREEN);
+            DisplayWireframeShadedButton->callback((Fl_Callback*)cb_DisplayWireframeShadedButton);
+          } // Fl_Light_Button* DisplayWireframeShadedButton
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(825, 360, 535, 185, "GCode rendering");
@@ -1683,20 +1710,20 @@ e rest of the print.");
           { Fl_Light_Button* o = new Fl_Light_Button(835, 715, 120, 20, "Enable light 0");
             o->value(1);
             o->selection_color((Fl_Color)FL_GREEN);
-            o->callback((Fl_Callback*)cb_Enable2);
+            o->callback((Fl_Callback*)cb_Enable);
           } // Fl_Light_Button* o
           { Fl_Light_Button* o = new Fl_Light_Button(835, 740, 120, 20, "Enable light 1");
             o->selection_color((Fl_Color)FL_GREEN);
-            o->callback((Fl_Callback*)cb_Enable3);
+            o->callback((Fl_Callback*)cb_Enable1);
           } // Fl_Light_Button* o
           { Fl_Light_Button* o = new Fl_Light_Button(1095, 715, 120, 20, "Enable light 2");
             o->selection_color((Fl_Color)FL_GREEN);
-            o->callback((Fl_Callback*)cb_Enable4);
+            o->callback((Fl_Callback*)cb_Enable2);
           } // Fl_Light_Button* o
           { Fl_Light_Button* o = new Fl_Light_Button(1095, 740, 120, 20, "Enable light 3");
             o->value(1);
             o->selection_color((Fl_Color)FL_GREEN);
-            o->callback((Fl_Callback*)cb_Enable5);
+            o->callback((Fl_Callback*)cb_Enable3);
           } // Fl_Light_Button* o
           { Fl_Button* o = new Fl_Button(960, 715, 130, 20, "Edit light 0");
             o->deactivate();

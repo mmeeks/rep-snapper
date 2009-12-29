@@ -70,6 +70,7 @@ public:
 		DisplayNormals = false;
 		DisplayBBox = false;
 		DisplayWireframe = false;
+		DisplayWireframeShaded = true;
 		DisplayPolygons = false;
 		DisplayAllLayers = false;
 		DisplayinFill = false;
@@ -192,6 +193,7 @@ public:
 	bool DisplayNormals;
 	bool DisplayBBox;
 	bool DisplayWireframe;
+	bool DisplayWireframeShaded;
 	bool DisplayPolygons;
 	bool DisplayAllLayers;
 	bool DisplayinFill;
@@ -226,4 +228,14 @@ public:
 
 	bool LuminanceShowsSpeed;
 	bool DisplayGCode;
+
+	bool ApronEnable;
+	bool ApronPreview;
+	bool RaftEnable;
+	float ApronSize;
+	float ApronHeight;
+	float ApronCoverageX;
+	float ApronCoverageY;
+	float ApronDistanceToObject;
+	float ApronInfillDistance;
 };

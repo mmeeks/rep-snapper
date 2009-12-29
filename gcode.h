@@ -144,6 +144,7 @@ public:
 	GCodes Code;
 	Vector3f where;
 	float f,e;	// Feedrates f=speed, e=extrusion to preform while moving (Pythagoras)
+	string comment;
 };
 
 class GCode

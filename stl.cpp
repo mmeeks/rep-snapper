@@ -201,23 +201,32 @@ void STL::draw(const ProcessController &PC)
 
 	glDisable (GL_POLYGON_OFFSET_FILL);
 	glDisable(GL_BLEND);
-	glDisable(GL_LIGHTING);
+
+	if(!PC.DisplayWireframeShaded)
+		glDisable(GL_LIGHTING);
 
 	// WireFrame
 	if(PC.DisplayWireframe)
 	{
 		float r,g,b;
 		HSVtoRGB(PC.WireframeHue, PC.WireframeSat, PC.WireframeVal, r,g,b);
+		HSVtoRGB(PC.WireframeHue, PC.WireframeSat, PC.WireframeVal, mat_diffuse[0], mat_diffuse[1], mat_diffuse[2]);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+
 		glColor3f(r,g,b);
 		for(UINT i=0;i<triangles.size();i++)
 		{
 			glBegin(GL_LINE_LOOP);
+			glNormal3f(triangles[i].N.x, triangles[i].N.y, triangles[i].N.z);
 			glVertex3f(triangles[i].A.x, triangles[i].A.y, triangles[i].A.z);
 			glVertex3f(triangles[i].B.x, triangles[i].B.y, triangles[i].B.z);
 			glVertex3f(triangles[i].C.x, triangles[i].C.y, triangles[i].C.z);
 			glEnd();
 		}
 	}
+
+	glDisable(GL_LIGHTING);
+
 	// normals
 	if(PC.DisplayNormals)
 	{
@@ -565,14 +574,18 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	float E = 0.0f;
 
 	Vector3f LastPosition= Vector3f(0,0,z);
-
+	static float lastLayerZ = 0;
 	Command command;
+
+	if(lastLayerZ == 0)
+		lastLayerZ = z;
 
 	// Select Extruder (Reset XY pos?)
 	command.Code = RESET_XY_AXIES;
-	command.where = Vector3f(0,0,LastPosition.z);
+	command.where = Vector3f(0,0,lastLayerZ);
 	command.e = E;					// move
 	command.f = MaxPrintSpeedXY;					// Use Max XY speed
+	command.comment = "RESET_XY_AXIES";
 	code.commands.push_back(command);
 
 
@@ -580,8 +593,10 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	command.Code = COORDINATEDMOTION;
 	command.where = Vector3f(0,0,z);
 	command.e = E;					// move
-	command.f = MinPrintSpeedZ;		// Use Max Z speed
+	command.f = MinPrintSpeedZ;		// Use Min Z speed
+	command.comment = "Next layer z";
 	code.commands.push_back(command);
+	command.comment = "";
 
 	/*
 	M107 ;cooler off
@@ -668,6 +683,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 		if(thisPoint != -1)
 			used[thisPoint] = true;
 		}
+	lastLayerZ = z;
 }
 
 

@@ -164,17 +164,20 @@ private:
   void cb_ApronCoverageXSlider_i(Fl_Value_Slider*, void*);
   static void cb_ApronCoverageXSlider(Fl_Value_Slider*, void*);
 public:
-  Fl_Value_Slider *ApronBaseLayerCountSlider;
+  Fl_Value_Slider *ApronHeightSlider;
 private:
-  void cb_ApronBaseLayerCountSlider_i(Fl_Value_Slider*, void*);
-  static void cb_ApronBaseLayerCountSlider(Fl_Value_Slider*, void*);
+  void cb_ApronHeightSlider_i(Fl_Value_Slider*, void*);
+  static void cb_ApronHeightSlider(Fl_Value_Slider*, void*);
 public:
   Fl_Value_Slider *ApronCoverageYSlider;
 private:
   void cb_ApronCoverageYSlider_i(Fl_Value_Slider*, void*);
   static void cb_ApronCoverageYSlider(Fl_Value_Slider*, void*);
-  void cb_Enable_i(Fl_Light_Button*, void*);
-  static void cb_Enable(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *ApronEnableButton;
+private:
+  void cb_ApronEnableButton_i(Fl_Light_Button*, void*);
+  static void cb_ApronEnableButton(Fl_Light_Button*, void*);
 public:
   Fl_Value_Slider *ApronDistanceToObjectSlider;
 private:
@@ -185,8 +188,11 @@ public:
 private:
   void cb_ApronInfillDistanceSlider_i(Fl_Value_Slider*, void*);
   static void cb_ApronInfillDistanceSlider(Fl_Value_Slider*, void*);
-  void cb_Preview_i(Fl_Light_Button*, void*);
-  static void cb_Preview(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *ApronPreviewButton;
+private:
+  void cb_ApronPreviewButton_i(Fl_Light_Button*, void*);
+  static void cb_ApronPreviewButton(Fl_Light_Button*, void*);
 public:
   Fl_Value_Slider *RaftMaterialPrDistanceRatioSlider;
 private:
@@ -252,10 +258,13 @@ public:
 private:
   void cb_RaftInterfaceTemperatureSlider_i(Fl_Value_Slider*, void*);
   static void cb_RaftInterfaceTemperatureSlider(Fl_Value_Slider*, void*);
-  void cb_Enable1_i(Fl_Light_Button*, void*);
-  static void cb_Enable1(Fl_Light_Button*, void*);
-  void cb_Preview1_i(Fl_Light_Button*, void*);
-  static void cb_Preview1(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *RaftEnableButton;
+private:
+  void cb_RaftEnableButton_i(Fl_Light_Button*, void*);
+  static void cb_RaftEnableButton(Fl_Light_Button*, void*);
+  void cb_Preview_i(Fl_Light_Button*, void*);
+  static void cb_Preview(Fl_Light_Button*, void*);
   void cb_Load1_i(Fl_Button*, void*);
   static void cb_Load1(Fl_Button*, void*);
 public:
@@ -372,6 +381,11 @@ private:
   void cb_EndpointSizeSlider_i(Fl_Value_Slider*, void*);
   static void cb_EndpointSizeSlider(Fl_Value_Slider*, void*);
 public:
+  Fl_Light_Button *DisplayWireframeShadedButton;
+private:
+  void cb_DisplayWireframeShadedButton_i(Fl_Light_Button*, void*);
+  static void cb_DisplayWireframeShadedButton(Fl_Light_Button*, void*);
+public:
   Fl_Light_Button *DisplayGCodeButton;
 private:
   void cb_DisplayGCodeButton_i(Fl_Light_Button*, void*);
@@ -445,14 +459,14 @@ public:
 private:
   void cb_DisplayAllLayersButton_i(Fl_Light_Button*, void*);
   static void cb_DisplayAllLayersButton(Fl_Light_Button*, void*);
+  void cb_Enable_i(Fl_Light_Button*, void*);
+  static void cb_Enable(Fl_Light_Button*, void*);
+  void cb_Enable1_i(Fl_Light_Button*, void*);
+  static void cb_Enable1(Fl_Light_Button*, void*);
   void cb_Enable2_i(Fl_Light_Button*, void*);
   static void cb_Enable2(Fl_Light_Button*, void*);
   void cb_Enable3_i(Fl_Light_Button*, void*);
   static void cb_Enable3(Fl_Light_Button*, void*);
-  void cb_Enable4_i(Fl_Light_Button*, void*);
-  static void cb_Enable4(Fl_Light_Button*, void*);
-  void cb_Enable5_i(Fl_Light_Button*, void*);
-  static void cb_Enable5(Fl_Light_Button*, void*);
 public:
   Fl_Value_Slider *ExamineSlider;
 private:

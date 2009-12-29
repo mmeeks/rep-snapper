@@ -312,6 +312,7 @@ void ModelViewController::CopySettingsToGUI()
 	buffer = gui->GCodeEnd->buffer();
 	buffer->text(ProcessControl.GCodeEndText.c_str());
 
+	gui->RaftEnableButton->value(ProcessControl.RaftEnable);
 	gui->RaftSizeSlider->value(ProcessControl.RaftSize);
 	gui->RaftBaseLayerCountSlider->value(ProcessControl.RaftBaseLayerCount);
 	gui->RaftMaterialPrDistanceRatioSlider->value(ProcessControl.RaftMaterialPrDistanceRatio);
@@ -369,6 +370,7 @@ void ModelViewController::CopySettingsToGUI()
 	gui->DisplayEndpointsButton->value(ProcessControl.DisplayEndpoints);
 	gui->DisplayNormalsButton->value(ProcessControl.DisplayNormals);
 	gui->DisplayWireframeButton->value(ProcessControl.DisplayWireframe);
+	gui->DisplayWireframeShadedButton->value(ProcessControl.DisplayWireframeShaded);
 	gui->DisplayPolygonsButton->value(ProcessControl.DisplayPolygons);
 	gui->DisplayAllLayersButton->value(ProcessControl.DisplayAllLayers);
 	gui->DisplayinFillButton->value(ProcessControl.DisplayinFill);
@@ -404,4 +406,14 @@ void ModelViewController::CopySettingsToGUI()
 
 	gui->DisplayGCodeButton->value(ProcessControl.DisplayGCode);
 	gui->LuminanceShowsSpeedButton->value(ProcessControl.LuminanceShowsSpeed);
+
+	gui->ApronEnableButton->value(ProcessControl.ApronEnable);
+	gui->ApronPreviewButton->value(ProcessControl.ApronPreview);
+	gui->ApronSizeSlider->value(ProcessControl.ApronSize);
+	gui->ApronHeightSlider->value(ProcessControl.ApronHeight);
+	gui->ApronCoverageXSlider->value(ProcessControl.ApronCoverageX);
+	gui->ApronCoverageYSlider->value(ProcessControl.ApronCoverageY);
+	gui->ApronDistanceToObjectSlider->value(ProcessControl.ApronDistanceToObject);
+	gui->ApronInfillDistanceSlider->value(ProcessControl.ApronInfillDistance);
+
 }

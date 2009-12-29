@@ -26,8 +26,8 @@ class GUI {open
         xywh {820 10 550 805} align 5
       } {
         Fl_Group {} {
-          label {Input file} open selected
-          xywh {820 30 550 785}
+          label {Input file} open
+          xywh {820 30 550 785} hide
         } {
           Fl_Button {} {
             label {Load STL}
@@ -124,7 +124,7 @@ MVC->redraw();}
         }
         Fl_Group {} {
           label {Printer definition} open
-          xywh {820 30 550 765} hide
+          xywh {820 30 550 765}
         } {
           Fl_Group {} {
             label {Build volume (mm)} open
@@ -162,12 +162,12 @@ MVC->redraw();}
           } {
             Fl_Value_Slider accelerationStepsSlider {
               label {Number of acceleration steps}
-              callback {MVC->NumAccelerationSteps(o->value());}
-              xywh {840 540 515 20} type Horizontal selection_color 2 align 5 maximum 10 step 1 value 5 textsize 14
+              callback {MVC->NumAccelerationSteps(o->value());} selected
+              xywh {840 540 515 20} type Horizontal selection_color 2 align 5 maximum 10 step 1 value 5 textsize 14 deactivate
             }
             Fl_Value_Slider distanceBetweenSpeedStepsSlider {
-              label {Distance Pr Acceleration Step (mm)}
-              callback {MVC->SetDistancePrAccelerationStep(o->value());}
+              label {Distance used to read full speed(mm)}
+              callback {MVC->SetDistancePrAccelerationStep(o->value())}
               xywh {840 580 515 20} type Horizontal selection_color 2 align 5 maximum 10 value 0.1 textsize 14
             }
             Fl_Light_Button EnableAccelerationButton {
@@ -177,17 +177,32 @@ if(o->value())
 {
 accelerationStepsSlider->activate();
 distanceBetweenSpeedStepsSlider->activate();
+UseFirmwareAccelerationButton->activate();
 }
 else
 {
 accelerationStepsSlider->deactivate();
 distanceBetweenSpeedStepsSlider->deactivate();
+UseFirmwareAccelerationButton->deactivate();
 }}
               xywh {840 500 255 20} selection_color 63
             }
             Fl_Light_Button UseFirmwareAccelerationButton {
               label {Use Firmware Acceleration}
-              callback {MVC->SetUseFirmwareAcceleration(o->value());}
+              callback {MVC->SetUseFirmwareAcceleration(o->value());
+
+if(o->value())
+{
+accelerationStepsSlider->deactivate();
+distanceBetweenSpeedStepsSlider->label("Distance used to read full speed(mm)");;
+}
+else
+{
+accelerationStepsSlider->activate();
+distanceBetweenSpeedStepsSlider->label("Distance Pr Acceleration Step (mm)");;
+}
+accelerationStepsSlider->redraw();
+distanceBetweenSpeedStepsSlider->redraw();}
               xywh {1100 500 255 20} selection_color 63
             }
           }
@@ -283,7 +298,7 @@ distanceBetweenSpeedStepsSlider->deactivate();
           }
         }
         Fl_Group {} {
-          label Apron
+          label Apron open
           xywh {820 30 550 765} color 47 hide
         } {
           Fl_Group {} {
@@ -300,7 +315,7 @@ distanceBetweenSpeedStepsSlider->deactivate();
               callback {MVC->SetApronCoverageX(o->value());}
               xywh {840 195 510 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 100 step 1 value 30 textsize 14 deactivate
             }
-            Fl_Value_Slider ApronBaseLayerCountSlider {
+            Fl_Value_Slider ApronHeightSlider {
               label Height
               callback {MVC->SetApronHeight(o->value());}
               xywh {840 155 510 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 30 step 1 value 8 textsize 14 deactivate
@@ -310,14 +325,14 @@ distanceBetweenSpeedStepsSlider->deactivate();
               callback {MVC->SetApronCoverageY(o->value());}
               xywh {840 235 510 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 100 step 1 value 30 textsize 14 deactivate
             }
-            Fl_Light_Button {} {
+            Fl_Light_Button ApronEnableButton {
               label Enable
               callback {MVC->SetApronEnable(o->value());}
               xywh {840 75 250 20}
             }
             Fl_Value_Slider ApronDistanceToObjectSlider {
               label {Distance to object}
-              callback {MVC->SetApronApronDistanceToObject(o->value());}
+              callback {MVC->SetApronDistanceToObject(o->value());}
               xywh {840 275 510 20} type Horizontal selection_color 2 align 5 minimum -1 maximum 3 step 0.1 value 0.5 textsize 14 deactivate
             }
             Fl_Value_Slider ApronInfillDistanceSlider {
@@ -325,7 +340,7 @@ distanceBetweenSpeedStepsSlider->deactivate();
               callback {MVC->SetApronInfillDistance(o->value());}
               xywh {840 315 510 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14 deactivate
             }
-            Fl_Light_Button {} {
+            Fl_Light_Button ApronPreviewButton {
               label Preview
               callback {MVC->SetApronPreview(o->value());}
               xywh {1095 75 255 20} deactivate
@@ -333,7 +348,7 @@ distanceBetweenSpeedStepsSlider->deactivate();
           }
         }
         Fl_Group {} {
-          label Raft
+          label Raft open
           xywh {820 30 550 765} color 47 hide
         } {
           Fl_Group {} {
@@ -420,9 +435,9 @@ distanceBetweenSpeedStepsSlider->deactivate();
             label Size open
             xywh {825 50 535 55} box FLAT_BOX color 39
           } {
-            Fl_Light_Button {} {
+            Fl_Light_Button RaftEnableButton {
               label Enable
-              callback {MVC->SetApronEnable(o->value());}
+              callback {MVC->SetRaftEnable(o->value());}
               xywh {830 70 255 25}
             }
             Fl_Light_Button {} {
@@ -542,7 +557,7 @@ MVC->redraw();
             Fl_Light_Button DisplayWireframeButton {
               label {Display Wireframe}
               callback {MVC->SetDisplayWireframe(o->value());}
-              xywh {1125 70 220 20} selection_color 63
+              xywh {1125 70 140 20} selection_color 63
             }
             Fl_Light_Button DisplayNormalsButton {
               label {Display Normals}
@@ -648,6 +663,11 @@ MVC->redraw();}
               callback {MVC->SetEndPointSize(o->value());
 MVC->redraw();}
               xywh {1125 275 220 20} type {Horz Knob} selection_color 2 align 5 minimum 1 maximum 20 step 0.1 value 8 textsize 14
+            }
+            Fl_Light_Button DisplayWireframeShadedButton {
+              label Shaded
+              callback {MVC->SetDisplayWireframeShaded(o->value());}
+              xywh {1270 70 75 20} selection_color 63
             }
           }
           Fl_Group {} {
