@@ -52,6 +52,35 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 
 	ProcessControl.LoadXML();
 	CopySettingsToGUI();
+
+	// Somewhere in the initialization part of your program…
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+
+	for(int i=0;i<8;i++)
+	{
+	lights[i].Init ( GL_LIGHT0+i );
+	lights[i].SetPosition ( -100, 100, 200, 0 );
+	lights[i].SetAmbientColor ( 0.2f, 0.2f, 0.2f, 1.0f );
+	lights[i].SetDiffuseColor ( 1.0f, 1.0f, 1.0f, 1.0f );
+	lights[i].SetSpecular ( 1.0f, 1.0f, 1.0f, 1.0f );
+	lights[i].SetValues ( );
+	lights[i].TurnOn ( );
+	}
+
+	lights[0].SetPosition ( -100, 100, 200, 0 );
+	lights[1].SetPosition ( 100, 100, 200, 0 );
+	lights[2].SetPosition ( 100, -100, 200, 0 );
+	lights[3].SetPosition ( 100, -100, 200, 0 );
+
+	lights[4].SetPosition ( -100, 100, 0, 0 );
+	lights[5].SetPosition ( 100, 100, 0, 0 );
+	lights[6].SetPosition ( 100, -100, 0, 0 );
+	lights[7].SetPosition ( 100, -100, 0, 0 );
+
+	// enable lighting
+	glEnable ( GL_LIGHTING);
+
 }
 
 
@@ -307,7 +336,7 @@ void ModelViewController::CopySettingsToGUI()
 	// STL 
 	gui->LayerThicknessSlider->value(ProcessControl.LayerThickness);
 	gui->CuttingPlaneValueSlider->value(ProcessControl.CuttingPlaneValue);
-	gui->PolygonOpasitySlider->value(ProcessControl.PolygonOpasity);
+//	gui->PolygonOpasitySlider->value(ProcessControl.PolygonOpasity);
 	// CuttingPlane
 	gui->InfillDistanceSlider->value(ProcessControl.InfillDistance);
 	gui->InfillRotationSlider->value(ProcessControl.InfillRotation);

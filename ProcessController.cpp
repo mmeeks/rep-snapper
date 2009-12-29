@@ -249,12 +249,11 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("InfillRotation", true, "0.66")->SetValueFloat(InfillRotation);
 	x->FindVariableZ("InfillRotationPrLayer", true, "0.66")->SetValueFloat(InfillRotationPrLayer);
 	x->FindVariableZ("Optimization", true, "0.66")->SetValueFloat(Optimization);
-	x->FindVariableZ("PolygonOpasity", true, "0.66")->SetValueFloat(PolygonOpasity);
+//	x->FindVariableZ("PolygonOpasity", true, "0.66")->SetValueFloat(PolygonOpasity);
 
 
 	// GUI parameters
 	x->FindVariableZ("CuttingPlaneValue", true, "0.66")->SetValueFloat(CuttingPlaneValue);
-	x->FindVariableZ("PolygonOpasity", true, "0.66")->SetValueFloat(PolygonOpasity);
 	x->FindVariableZ("Examine", true, "0.66")->SetValueFloat(Examine);
 
 	x->FindVariableZ("DisplayEndpoints", true, "0.66")->SetValueInt((int)DisplayEndpoints);
@@ -397,8 +396,8 @@ void ProcessController::LoadXML(XMLElement *e)
 	if(y)	LayerThickness = y->GetValueFloat();
 	y=x->FindVariableZ("CuttingPlaneValue", false, "0");
 	if(y)	CuttingPlaneValue = y->GetValueFloat();
-	y=x->FindVariableZ("PolygonOpasity", false, "0");
-	if(y)	PolygonOpasity = y->GetValueFloat();
+//	y=x->FindVariableZ("PolygonOpasity", false, "0");
+//	if(y)	PolygonOpasity = y->GetValueFloat();
 
 	// CuttingPlane
 	y=x->FindVariableZ("InfillDistance", false, "0");

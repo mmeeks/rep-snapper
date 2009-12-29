@@ -143,18 +143,45 @@ void STL::CalcBoundingBoxAndZoom()
 void STL::draw(const ProcessController &PC)
 {
 	// polygons
+	glEnable(GL_LIGHTING);
+	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+
+	glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHTING);
+
+	float no_mat[] = {0.0f, 0.0f, 0.0f, 1.0f};
+	float mat_ambient[] = {0.7f, 0.7f, 0.7f, 1.0f};
+	float mat_ambient_color[] = {0.8f, 0.8f, 0.2f, 1.0f};
+	float mat_diffuse[] = {0.1f, 0.5f, 0.8f, 1.0f};
+	float mat_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
+	float no_shininess = 0.0f;
+	float low_shininess = 5.0f;
+	float high_shininess = 100.0f;
+	float mat_emission[] = {0.3f, 0.2f, 0.2f, 0.0f};
+
+	/* draw sphere in first row, first column
+	* diffuse reflection only; no ambient or specular
+	*/
+	glMaterialfv(GL_FRONT, GL_AMBIENT, no_mat);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat);
+	glMaterialf(GL_FRONT, GL_SHININESS, high_shininess);
+	glMaterialfv(GL_FRONT, GL_EMISSION, no_mat);
+
+	glEnable (GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset (0.5f, 0.5f);
 
 	if(PC.DisplayPolygons)
 	{
 		glEnable(GL_CULL_FACE);
-//		glEnable(GL_DEPTH_TEST);
-		glDepthMask(GL_TRUE);
+		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
+		glDepthMask(GL_TRUE);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  //define blending factors
 		glBegin(GL_TRIANGLES);
 		for(UINT i=0;i<triangles.size();i++)
 		{
-			switch(triangles[i].axis)
+/*			switch(triangles[i].axis)
 				{
 				case NEGX:	glColor4f(1,0,0,PC.PolygonOpasity); break;
 				case POSX:	glColor4f(0.5f,0,0,PC.PolygonOpasity); break;
@@ -163,7 +190,7 @@ void STL::draw(const ProcessController &PC)
 				case NEGZ:	glColor4f(0,0,1,PC.PolygonOpasity); break;
 				case POSZ:	glColor4f(0,0,0.3f,PC.PolygonOpasity); break;
 				default: glColor4f(0.2f,0.2f,0.2f,PC.PolygonOpasity); break;
-				}
+				}*/
 			glNormal3fv((GLfloat*)&triangles[i].N);
 			glVertex3fv((GLfloat*)&triangles[i].A);
 			glVertex3fv((GLfloat*)&triangles[i].B);
@@ -172,6 +199,8 @@ void STL::draw(const ProcessController &PC)
 		glEnd();
 		glDisable(GL_BLEND);
 	}
+
+	glDisable(GL_LIGHTING);
 
 	// WireFrame
 	if(PC.DisplayWireframe)
@@ -215,6 +244,7 @@ void STL::draw(const ProcessController &PC)
 		}
 		glEnd();
 	}
+	glDisable(GL_DEPTH_TEST);
 
 	// Make Layers
 	UINT LayerNr = 0;

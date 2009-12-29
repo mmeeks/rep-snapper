@@ -64,7 +64,7 @@ public:
 
 		LayerThickness = 0.4f;
 		CuttingPlaneValue = 0.5f;
-		PolygonOpasity = 0.5f;
+//		PolygonOpasity = 0.5f;
 
 		DisplayEndpoints = false;
 		DisplayNormals = false;
@@ -172,7 +172,7 @@ public:
 	// STL 
 	float LayerThickness;
 	float CuttingPlaneValue;
-	float PolygonOpasity;
+//	float PolygonOpasity;
 
 	// CuttingPlane
 	float InfillDistance;

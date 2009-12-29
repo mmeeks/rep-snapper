@@ -21,6 +21,8 @@
 #include "gcode.h"
 #include "stl.h"
 #include "ProcessController.h"
+#include "glutils.h"
+
 
 // Construct a model and a view, and link them together.
 
@@ -80,7 +82,7 @@ public:
 	void SetDisplayPolygons(bool val){ProcessControl.DisplayPolygons = val; redraw();}
 	void SetDisplayAllLayers(bool val){ProcessControl.DisplayAllLayers = val; redraw();}
 	void SetDisplayinFill(bool val){ProcessControl.DisplayinFill = val; redraw();}
-	void SetPolygonOpasity(float val){ProcessControl.PolygonOpasity = val; redraw();}
+//	void SetPolygonOpasity(float val){ProcessControl.PolygonOpasity = val; redraw();}
 
 	// CuttingPlane GUI values
 	void SetInfillDistance(float val){ProcessControl.InfillDistance = val; redraw();}
@@ -142,6 +144,8 @@ public:
 	Vector3f Min;
 	Vector3f Max;
 	float zoom;
+	void EnableLight(int lightNr, bool on){ if(on) lights[lightNr].TurnOn(); else lights[lightNr].TurnOff(); redraw(); }
+	CGL_Light3D lights[8];
 	
 	/*--------------User interface (View)-------------------*/
 	GUI *gui;
