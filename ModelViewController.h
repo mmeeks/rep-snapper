@@ -23,7 +23,7 @@
 #include "ProcessController.h"
 #include "glutils.h"
 
-#include "Serial/Serial.h"
+#include "RepRapSerial.h"
 
 // Construct a model and a view, and link them together.
 
@@ -164,6 +164,7 @@ public:
 		serial.Open(_T("COM3"));
 		serial.Setup(CSerial::EBaud19200,CSerial::EData8,CSerial::EParNone,CSerial::EStop1);
 		serial.SetupHandshaking(CSerial::EHandshakeOff);
+		serial.StartListener();
 		}
 		else
 			serial.Close();
@@ -185,7 +186,7 @@ public:
 	void RunExtruder(){};
 	void SetExtruderDirection(bool reverse){};
 
-	CSerial serial;
+	RepRapSerial serial;
 	
 
 	/*--------------ArcBall-------------------*/

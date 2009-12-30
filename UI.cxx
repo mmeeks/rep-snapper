@@ -920,7 +920,7 @@ GUI::GUI() {
       MVC->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
       MVC->when(FL_WHEN_RELEASE);
     } // ModelViewController* MVC
-    { Tabs = new Fl_Tabs(820, 10, 550, 805);
+    { Tabs = new Fl_Tabs(820, 10, 560, 815);
       Tabs->align(FL_ALIGN_TOP_LEFT);
       { Fl_Group* o = new Fl_Group(820, 30, 550, 785, "Input file");
         o->hide();
@@ -1444,40 +1444,47 @@ e rest of the print.");
         } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(820, 30, 550, 785, "GCode");
+      { Fl_Group* o = new Fl_Group(830, 40, 550, 785, "GCode");
         o->hide();
-        { Fl_Button* o = new Fl_Button(825, 70, 145, 25, "Load Gcode");
+        { Fl_Button* o = new Fl_Button(835, 80, 145, 25, "Load Gcode");
           o->callback((Fl_Callback*)cb_Load1);
         } // Fl_Button* o
-        { GCodeLengthText = new Fl_Output(975, 71, 225, 24);
+        { GCodeLengthText = new Fl_Output(985, 81, 225, 24);
         } // Fl_Output* GCodeLengthText
-        { Fl_Button* o = new Fl_Button(825, 40, 145, 25, "Convert to GCode");
+        { Fl_Button* o = new Fl_Button(835, 50, 145, 25, "Convert to GCode");
           o->callback((Fl_Callback*)cb_Convert);
         } // Fl_Button* o
-        { Fl_Tabs* o = new Fl_Tabs(820, 100, 550, 715);
-          { Fl_Text_Editor* o = GCodeStart = new Fl_Text_Editor(820, 120, 550, 695, "Start code");
+        { Fl_Tabs* o = new Fl_Tabs(830, 110, 550, 715);
+          { Fl_Text_Editor* o = GCodeStart = new Fl_Text_Editor(830, 130, 550, 695, "Start code");
             GCodeStart->hide();
             Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();
             o->buffer(startbuff);
           } // Fl_Text_Editor* GCodeStart
-          { Fl_Text_Editor* o = GCodeLayer = new Fl_Text_Editor(820, 120, 550, 695, "Next layer");
+          { Fl_Text_Editor* o = GCodeLayer = new Fl_Text_Editor(830, 130, 550, 695, "Next layer");
             GCodeLayer->hide();
             Fl_Text_Buffer *layerbuff = new Fl_Text_Buffer();
             o->buffer(layerbuff);
           } // Fl_Text_Editor* GCodeLayer
-          { Fl_Text_Editor* o = GCodeEnd = new Fl_Text_Editor(820, 120, 550, 695, "End code");
+          { Fl_Text_Editor* o = GCodeEnd = new Fl_Text_Editor(830, 130, 550, 695, "End code");
             GCodeEnd->hide();
             Fl_Text_Buffer *endbuff = new Fl_Text_Buffer();
             o->buffer(endbuff);
           } // Fl_Text_Editor* GCodeEnd
-          { Fl_Text_Editor* o = GCodeResult = new Fl_Text_Editor(820, 120, 550, 695, "Result");
+          { Fl_Text_Editor* o = GCodeResult = new Fl_Text_Editor(830, 130, 550, 695, "Result");
             Fl_Text_Buffer *resultbuff = new Fl_Text_Buffer();
             o->buffer(resultbuff);
           } // Fl_Text_Editor* GCodeResult
           o->end();
         } // Fl_Tabs* o
-        { Fl_Button* o = new Fl_Button(1205, 70, 145, 25, "Save Gcode");
+        { Fl_Button* o = new Fl_Button(1215, 80, 145, 25, "Save Gcode");
           o->callback((Fl_Callback*)cb_Save1);
+        } // Fl_Button* o
+        o->end();
+      } // Fl_Group* o
+      { Fl_Group* o = new Fl_Group(820, 30, 550, 785, "Score");
+        o->hide();
+        { new Fl_Button(830, 55, 540, 140, "Placeholder and reminder for antomatic Score\'ing of objects (see todo folder\
+)");
         } // Fl_Button* o
         o->end();
       } // Fl_Group* o

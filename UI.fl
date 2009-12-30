@@ -11,7 +11,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {306 321 1379 830} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
+      xywh {409 262 1379 830} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -23,10 +23,10 @@ class GUI {open
         class ModelViewController
       }
       Fl_Tabs Tabs {open
-        xywh {820 10 550 805} align 5
+        xywh {820 10 560 815} align 5
       } {
         Fl_Group {} {
-          label {Input file} open
+          label {Input file}
           xywh {820 30 550 785} hide
         } {
           Fl_Button {} {
@@ -123,7 +123,7 @@ MVC->redraw();}
           }
         }
         Fl_Group {} {
-          label {Printer definition} open
+          label {Printer definition}
           xywh {820 30 550 765} hide
         } {
           Fl_Group {} {
@@ -253,7 +253,7 @@ distanceBetweenSpeedStepsSlider->redraw();}
           }
         }
         Fl_Group {} {
-          label Infill open
+          label Infill
           xywh {820 30 550 770} hide
         } {
           Fl_Group {} {
@@ -298,7 +298,7 @@ distanceBetweenSpeedStepsSlider->redraw();}
           }
         }
         Fl_Group {} {
-          label Apron open
+          label Apron
           xywh {820 30 550 765} color 47 hide
         } {
           Fl_Group {} {
@@ -348,7 +348,7 @@ distanceBetweenSpeedStepsSlider->redraw();}
           }
         }
         Fl_Group {} {
-          label Raft open
+          label Raft
           xywh {820 30 550 765} color 47 hide
         } {
           Fl_Group {} {
@@ -448,8 +448,8 @@ distanceBetweenSpeedStepsSlider->redraw();}
           }
         }
         Fl_Group {} {
-          label GCode
-          xywh {820 30 550 785} hide
+          label GCode open
+          xywh {830 40 550 785} hide
         } {
           Fl_Button {} {
             label {Load Gcode}
@@ -467,41 +467,41 @@ if(dir.length())
 MVC->ReadGCode(dir);
 MVC->redraw();
 };}
-            xywh {825 70 145 25}
+            xywh {835 80 145 25}
             code0 {\#include <FL/Fl_File_Chooser.H>}
           }
           Fl_Output GCodeLengthText {
-            xywh {975 71 225 24}
+            xywh {985 81 225 24}
           }
           Fl_Button {} {
             label {Convert to GCode}
             callback {MVC->ConvertToGCode();}
-            xywh {825 40 145 25}
+            xywh {835 50 145 25}
           }
           Fl_Tabs {} {open
-            xywh {820 100 550 715}
+            xywh {830 110 550 715}
           } {
             Fl_Text_Editor GCodeStart {
               label {Start code}
-              xywh {820 120 550 695} hide
+              xywh {830 130 550 695} hide
               code0 {Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(startbuff);}
             }
             Fl_Text_Editor GCodeLayer {
               label {Next layer}
-              xywh {820 120 550 695} hide
+              xywh {830 130 550 695} hide
               code0 {Fl_Text_Buffer *layerbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(layerbuff);}
             }
             Fl_Text_Editor GCodeEnd {
               label {End code}
-              xywh {820 120 550 695} hide
+              xywh {830 130 550 695} hide
               code0 {Fl_Text_Buffer *endbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(endbuff);}
             }
             Fl_Text_Editor GCodeResult {
               label Result
-              xywh {820 120 550 695}
+              xywh {830 130 550 695}
               code0 {Fl_Text_Buffer *resultbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(resultbuff);}
             }
@@ -537,12 +537,21 @@ break;
 
 MVC->redraw();
 };}
-            xywh {1205 70 145 25}
+            xywh {1215 80 145 25}
             code0 {\#include <FL/Fl_File_Chooser.H>}
           }
         }
         Fl_Group {} {
-          label Rendering open
+          label Score open
+          xywh {820 30 550 785} hide
+        } {
+          Fl_Button {} {
+            label {Placeholder and reminder for antomatic Score'ing of objects (see todo folder)}
+            xywh {830 55 540 140}
+          }
+        }
+        Fl_Group {} {
+          label Rendering
           xywh {820 30 550 780} color 47 hide
         } {
           Fl_Group {} {
@@ -819,7 +828,7 @@ MVC->redraw();}
           }
         }
         Fl_Group {} {
-          label Debug open
+          label Debug selected
           xywh {820 30 550 765} color 47
         } {
           Fl_Value_Slider ExamineSlider {
@@ -890,7 +899,7 @@ MVC->ProcessControl.SaveXML();}
           }
           Fl_Light_Button SwitchHeatOnButton {
             label {Switch heat on}
-            callback {MVC->SwitchHeat(o->value(), TargetTempText->value());} selected
+            callback {MVC->SwitchHeat(o->value(), TargetTempText->value());}
             xywh {840 205 220 25}
           }
           Fl_Value_Input TargetTempText {
