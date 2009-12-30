@@ -3,6 +3,8 @@
 
 enum { EOF_Char = 27 };
 
+//From http://www.codeproject.com/KB/system/serial.aspx
+
 int ShowError (LONG lError, LPCTSTR lptszMessage)
 {
 	// Generate a message text
@@ -74,8 +76,7 @@ void RepRapSerial::OnEvent (EEvent eEvent, EError eError)
 		// Read data, until there is nothing left
 		DWORD dwBytesRead = 0;
 		char szBuffer[101];
-		do
-		{
+		do{
 			// Read data from the COM-port
 			lLastError = Read(szBuffer,sizeof(szBuffer)-1,&dwBytesRead);
 			if (lLastError != ERROR_SUCCESS)
@@ -89,14 +90,49 @@ void RepRapSerial::OnEvent (EEvent eEvent, EError eError)
 				// Finalize the data, so it is a valid string
 				szBuffer[dwBytesRead] = '\0';
 
-				// Display the data
-				printf("%s", szBuffer);
+//				gui->CommunationsLogText->insert(szBuffer);
 
 				// Check if EOF (CTRL+'[') has been specified
 				if (strchr(szBuffer,EOF_Char))
 					return;//fContinue = false;
 			}
-		}
-		while (dwBytesRead == sizeof(szBuffer)-1);
+		}while (dwBytesRead == sizeof(szBuffer)-1);
+	
+
+		// Buffer has been read, understand it
+		printf("Received:\"%s\" (%d bytes)\n", szBuffer, dwBytesRead);
+//		if(string(szBuffer) == "ok")
+		{
+			if(m_bPrinting)
+			{
+				SendNextLine();
+			}
+		}	// if recieved 'ok'
 	}
+}
+
+void RepRapSerial::StartPrint()
+{
+	m_bPrinting = true;
+	SendNextLine();
+	SendNextLine();
+	SendNextLine();
+	SendNextLine();
+}
+
+void RepRapSerial::SendNextLine()
+{
+	assert(m_bPrinting == true);
+	if(m_iLineNr < buffer.size())
+		{
+//		printf("Sending:%s", buffer[m_iLineNr].c_str());
+		string a = buffer[m_iLineNr++];
+		a+= "\n";
+		Write(a.c_str());
+		}
+	else	// we are done
+		{
+		m_bPrinting = false;
+		buffer.clear();
+		}
 }

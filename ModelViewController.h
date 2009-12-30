@@ -161,26 +161,21 @@ public:
 	void ConnectToPrinter(char on){
 		if(on)
 		{
-		serial.Open(_T("COM3"));
-		serial.Setup(CSerial::EBaud19200,CSerial::EData8,CSerial::EParNone,CSerial::EStop1);
-		serial.SetupHandshaking(CSerial::EHandshakeOff);
-		serial.StartListener();
+		LONG error=ERROR_SUCCESS;
+		error = serial.Open(_T("COM4"), 0, 0, true);
+		assert(error == 0);
+		error = serial.Setup(CSerial::EBaud19200,CSerial::EData8,CSerial::EParNone,CSerial::EStop1);
+		assert(error == 0);
+		error = serial.SetupHandshaking(CSerial::EHandshakeOff);//EHandshakeHardware);
+		assert(error == 0);
+		error = serial.StartListener();
+		assert(error == 0);
 		}
 		else
 			serial.Close();
 
 	}
-	void Print(){
-	serial.Write("G21");	// Metric
-	serial.Write("G90");	// absolute positioning
-	serial.Write("T0");	// Extruder
-	serial.Write("G28");	// Home
-	serial.Write("G92 E0");	// extruder home
-//	serial.Write("M104 S73.0");	// temp
-	serial.Write("G1 X20 Y20 F500");	// goto 20,20
-	serial.Write("G1 X20 Y20 F500");	// goto 20,20
-	serial.Write("M104 S0.0");	// Heater off
-	}
+	void Print();
 	void SwitchHeat(bool on, float temp){};
 	void SetTargetTemp(float temp){};
 	void RunExtruder(){};

@@ -417,3 +417,27 @@ void ModelViewController::CopySettingsToGUI()
 	gui->ApronInfillDistanceSlider->value(ProcessControl.ApronInfillDistance);
 
 }
+
+void ModelViewController::Print()
+{
+	// Snack one line at a time from the Gcode view, and buffer it.
+
+	Fl_Text_Buffer* buffer = gui->GCodeResult->buffer();
+	char* pText = buffer->text();
+	UINT length = buffer->length();
+
+	UINT pos = 2;
+	while(pos < length)
+		{
+		char* line = buffer->line_text(pos);
+		if(line[0] == ';')
+			{
+			pos = buffer->line_end(pos)+1;	// skip
+			continue;
+			}
+//		printf("%s\n", line/*szBuffer*/);
+		serial.AddToBuffer(line);
+		pos = buffer->line_end(pos)+1;	// find end of line
+		}
+	serial.StartPrint();
+}
