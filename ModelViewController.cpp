@@ -53,7 +53,8 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 	ProcessControl.LoadXML();
 	CopySettingsToGUI();
 
-
+	m_bConnected = false;
+	m_bExtruderDirection = true;
 }
 
 
@@ -440,4 +441,31 @@ void ModelViewController::Print()
 		pos = buffer->line_end(pos)+1;	// find end of line
 		}
 	serial.StartPrint();
+}
+
+
+void ModelViewController::SwitchHeat(bool on, float temp)
+{
+	if(on)
+		serial.SendNow("M104 S64");
+	else
+		serial.SendNow("M104 S0");
+}
+void ModelViewController::SetTargetTemp(float temp)
+{
+}
+void ModelViewController::RunExtruder()
+{
+	serial.SendNow("G1 F3000.0");
+	serial.SendNow("G92 E0");	// set extruder zero
+
+	if(m_bExtruderDirection)	// Forwards
+		serial.SendNow("G1 E250.0");
+	else
+		serial.SendNow("G1 E-250.0");
+	serial.SendNow("G1 F1500.0");
+}
+void ModelViewController::SetExtruderDirection(bool reverse)
+{
+	m_bExtruderDirection = !reverse;
 }

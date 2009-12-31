@@ -125,7 +125,7 @@ void RepRapSerial::SendNextLine()
 	assert(m_bPrinting == true);
 	if(m_iLineNr < buffer.size())
 		{
-//		printf("Sending:%s", buffer[m_iLineNr].c_str());
+		printf("Sending:%s", buffer[m_iLineNr].c_str());
 		string a = buffer[m_iLineNr++];
 		a+= "\n";
 		Write(a.c_str());
@@ -135,4 +135,11 @@ void RepRapSerial::SendNextLine()
 		m_bPrinting = false;
 		buffer.clear();
 		}
+}
+
+void RepRapSerial::SendNow(string s)
+{
+	printf("Sending:%s", s.c_str());
+	s+= "\n";
+	Write(s.c_str());
 }

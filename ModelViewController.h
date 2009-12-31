@@ -162,7 +162,7 @@ public:
 		if(on)
 		{
 		LONG error=ERROR_SUCCESS;
-		error = serial.Open(_T("COM4"), 0, 0, true);
+		error = serial.Open(_T("COM3"), 0, 0, true);
 		assert(error == 0);
 		error = serial.Setup(CSerial::EBaud19200,CSerial::EData8,CSerial::EParNone,CSerial::EStop1);
 		assert(error == 0);
@@ -170,18 +170,24 @@ public:
 		assert(error == 0);
 		error = serial.StartListener();
 		assert(error == 0);
+		m_bConnected = true;
 		}
 		else
+		{
 			serial.Close();
+			m_bConnected = false;
+		}
 
 	}
 	void Print();
-	void SwitchHeat(bool on, float temp){};
-	void SetTargetTemp(float temp){};
-	void RunExtruder(){};
-	void SetExtruderDirection(bool reverse){};
+	void SwitchHeat(bool on, float temp);
+	void SetTargetTemp(float temp);
+	void RunExtruder();
+	void SetExtruderDirection(bool reverse);
 
 	RepRapSerial serial;
+	bool m_bConnected;
+	bool m_bExtruderDirection; // True = forwards
 	
 
 	/*--------------ArcBall-------------------*/

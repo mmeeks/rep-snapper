@@ -12,6 +12,7 @@ public:
 	virtual void OnEvent (EEvent eEvent, EError eError);
 
 	void AddToBuffer(string s){s+="\n"; buffer.push_back(s);}
+	void SendNow(string s);
 	void Clear() { buffer.clear();}
 	UINT Length() { return buffer.size();}
 	void StartPrint();
