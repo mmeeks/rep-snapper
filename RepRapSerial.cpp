@@ -100,14 +100,79 @@ void RepRapSerial::OnEvent (EEvent eEvent, EError eError)
 	
 
 		// Buffer has been read, understand it
+		InBuffer += szBuffer;		// Buffer data for later analysis
+
+		// Endchars = \r\n
+
 		printf("Received:\"%s\" (%d bytes)\n", szBuffer, dwBytesRead);
 //		if(string(szBuffer) == "ok")
 		{
-			if(m_bPrinting)
+			// Check inbuffer for good stuff
+
+			while(InBuffer.length() > 0 && (InBuffer.substr(0,1) == "\n" ||  InBuffer.substr(0,1) == "\r"))
+				InBuffer = InBuffer.substr(1, InBuffer.length()-1);
+
+			size_t found;
+			found=InBuffer.find_first_of("\r");
+
+			while (found!=string::npos && found != 0)
 			{
-				SendNextLine();
+				string command = InBuffer.substr(0,found);
+
+				if (command == "ok")	// most common, first
+				{
+//					printf("Received:\"%s\"\n", command.c_str());
+					if(m_bPrinting)
+					{
+						SendNextLine();
+					}
+				}
+				else if(command.substr(0,2) == "T:") // search, there's a parameter int (temperature)
+				{
+					string parameter = command.substr(2,command.length()-2);
+//					printf("Received:\"%s\" with parameter \"%s\"\n", command.c_str(), parameter.c_str());
+					// Check parameter
+
+				}
+				else if(command == "start")
+				{
+//					printf("Received:\"%s\" \n", command.c_str());
+					// Tell GUI we are ready to go.
+					int a=0;
+				}
+				else if(command.substr(0,3) == "E: ") // search, there's a parameter int (temperature_error, wait_till_hot)
+				{
+					string parameter = command.substr(3,command.length()-3);
+//					printf("Received:\"%s\" with parameter \"%s\"\n", command.c_str(), parameter.c_str());
+					// Check parameter
+
+				}
+				else if(command.substr(0,3) == "ok ") // search, there's a parameter string (debugstring)
+				{
+					string parameter = command.substr(3,command.length()-3);
+					printf("Received:\"%s\" with parameter \"%s \"\n", command.c_str(), parameter.c_str());
+				}
+				else if(command.substr(0,6) == "huh? G") // search, there's a parameter string (unknown command)
+				{
+					string parameter = command.substr(6,command.length()-6);
+					printf("Received:\"%s\" with parameter \"%s \"\n", command.c_str(), parameter.c_str());
+				}
+				else if(command.substr(0,45) == "[FIRMWARE WARNING] invalid M-Code received: M") // search, there's a parameter string (unknown Mcode)
+				{
+					string parameter = command.substr(45,command.length()-45);
+					printf("Received:\"%s\" with parameter \"%s \"\n", command.c_str(), parameter.c_str());
+				}
+				else	// Unknown response
+				{
+					printf("Received:\"%s\" and I have no idea what that means\n", command.c_str());
+				}
+				InBuffer = InBuffer.substr(found);	// 2 end-line characters, \n\r
+				// Empty eol crap
+				while(InBuffer.length() > 0 && (InBuffer.substr(0,1) == "\n" ||  InBuffer.substr(0,1) == "\r"))
+					InBuffer = InBuffer.substr(1, InBuffer.length()-1);
+				found=InBuffer.find_first_of("\r");
 			}
-		}	// if recieved 'ok'
+		}
 	}
 }
 
@@ -125,10 +190,19 @@ void RepRapSerial::SendNextLine()
 	assert(m_bPrinting == true);
 	if(m_iLineNr < buffer.size())
 		{
-		printf("Sending:%s", buffer[m_iLineNr].c_str());
 		string a = buffer[m_iLineNr++];
 		a+= "\n";
 		Write(a.c_str());
+		if(gui)
+		{
+			string b;
+			b="SEND:";
+			b+=a;
+			gui->CommunationsLogText->insert(b.c_str());
+			gui->CommunationsLogText->redraw();
+		}
+		else
+			printf("Sending:%s", a.c_str());
 		}
 	else	// we are done
 		{
@@ -139,7 +213,16 @@ void RepRapSerial::SendNextLine()
 
 void RepRapSerial::SendNow(string s)
 {
-	printf("Sending:%s", s.c_str());
+	if(gui)
+	{
+		string b;
+		b="SEND:";
+		b+=s;
+		gui->CommunationsLogText->insert(b.c_str());
+		gui->CommunationsLogText->redraw();
+	}
+	else
+		printf("Sending:%s", s.c_str());
 	s+= "\n";
 	Write(s.c_str());
 }

@@ -297,6 +297,9 @@ void ModelViewController::init()
 	buffer->text(ProcessControl.GCodeLayerText.c_str());
 	buffer = gui->GCodeEnd->buffer();
 	buffer->text(ProcessControl.GCodeEndText.c_str());
+
+	buffer = gui->CommunationsLogText->buffer();
+	buffer->text("Dump");
 }
 
 //Make the remaining buttons work

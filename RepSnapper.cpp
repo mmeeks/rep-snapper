@@ -31,6 +31,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	char WindowTitle[100] = "GCodeView";
 	char* W = &WindowTitle[0];
 	gui->MVC->gui = gui;
+	gui->MVC->serial.setGUI(gui);
 	gui->show(1,&W);
 	return Fl::run();
 }

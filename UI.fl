@@ -828,18 +828,18 @@ MVC->redraw();}
           }
         }
         Fl_Group {} {
-          label Debug selected
-          xywh {820 30 550 765} color 47
+          label Debug open
+          xywh {820 30 550 790} color 47
         } {
           Fl_Value_Slider ExamineSlider {
             label Examine
             callback {MVC->SetExamine(o->value());}
-            xywh {890 750 365 20} type Horizontal align 5 step 0.001 value 0.098 textsize 14
+            xywh {845 800 365 20} type Horizontal align 5 step 0.001 value 0.098 textsize 14
           }
           Fl_Light_Button DisplayDebuginFillButton {
             label {Display Debug inFill}
             callback {MVC->SetDisplayDebuginFill(o->value());}
-            xywh {1085 710 170 20} selection_color 63
+            xywh {1040 760 170 20} selection_color 63
           }
           Fl_Light_Button DisplayDebugButton {
             label Debug
@@ -856,17 +856,17 @@ ExamineSlider->hide();
 
 
 MVC->redraw();}
-            xywh {890 710 190 20} selection_color 63
+            xywh {845 760 190 20} selection_color 63
           }
           Fl_Light_Button DrawVertexNumbersButton {
             label {Draw vertex numbers}
             callback {MVC->SetDrawVertexNumbers(o->value());}
-            xywh {890 685 190 20} selection_color 63
+            xywh {845 735 190 20} selection_color 63
           }
           Fl_Light_Button DrawLineNumbersButton {
             label {Draw line numbers}
             callback {MVC->SetDrawLineNumbers(o->value());}
-            xywh {1080 685 155 20} selection_color 63
+            xywh {1035 735 155 20} selection_color 63
           }
           Fl_Group {} {
             label Size open
@@ -922,8 +922,10 @@ MVC->ProcessControl.SaveXML();}
             xywh {1065 235 220 25}
           }
           Fl_Text_Display CommunationsLogText {
-            label {Communications log}
-            xywh {840 285 445 390} box UP_FRAME align 5
+            label {Communications log} selected
+            xywh {840 285 520 445} box UP_FRAME align 5
+            code0 {Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();}
+            code1 {o->buffer(startbuff);}
           }
         }
       }

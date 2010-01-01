@@ -162,11 +162,11 @@ public:
 		if(on)
 		{
 		LONG error=ERROR_SUCCESS;
-		error = serial.Open(_T("COM3"), 0, 0, true);
+		error = serial.Open(_T("COM4"), 0, 0, true);
 		assert(error == 0);
 		error = serial.Setup(CSerial::EBaud19200,CSerial::EData8,CSerial::EParNone,CSerial::EStop1);
 		assert(error == 0);
-		error = serial.SetupHandshaking(CSerial::EHandshakeOff);//EHandshakeHardware);
+		error = serial.SetupHandshaking(CSerial::EHandshakeSoftware);//EHandshakeOff= works ok, sometimes there's comm. error (huh?) EHandshakeHardware = crash, reboot;
 		assert(error == 0);
 		error = serial.StartListener();
 		assert(error == 0);

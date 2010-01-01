@@ -1456,7 +1456,6 @@ e rest of the print.");
         } // Fl_Button* o
         { Fl_Tabs* o = new Fl_Tabs(830, 110, 550, 715);
           { Fl_Text_Editor* o = GCodeStart = new Fl_Text_Editor(830, 130, 550, 695, "Start code");
-            GCodeStart->hide();
             Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();
             o->buffer(startbuff);
           } // Fl_Text_Editor* GCodeStart
@@ -1471,6 +1470,7 @@ e rest of the print.");
             o->buffer(endbuff);
           } // Fl_Text_Editor* GCodeEnd
           { Fl_Text_Editor* o = GCodeResult = new Fl_Text_Editor(830, 130, 550, 695, "Result");
+            GCodeResult->hide();
             Fl_Text_Buffer *resultbuff = new Fl_Text_Buffer();
             o->buffer(resultbuff);
           } // Fl_Text_Editor* GCodeResult
@@ -1845,9 +1845,11 @@ e rest of the print.");
         { SetExtruderDirectionButton = new Fl_Light_Button(1065, 235, 220, 25, "Reverse");
           SetExtruderDirectionButton->callback((Fl_Callback*)cb_SetExtruderDirectionButton);
         } // Fl_Light_Button* SetExtruderDirectionButton
-        { CommunationsLogText = new Fl_Text_Display(840, 285, 445, 390, "Communications log");
+        { Fl_Text_Display* o = CommunationsLogText = new Fl_Text_Display(840, 285, 445, 390, "Communications log");
           CommunationsLogText->box(FL_UP_FRAME);
           CommunationsLogText->align(FL_ALIGN_TOP_LEFT);
+          Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();
+          o->buffer(startbuff);
         } // Fl_Text_Display* CommunationsLogText
         o->end();
       } // Fl_Group* o
