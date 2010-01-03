@@ -18,8 +18,11 @@ public:
 	UINT Length() { return buffer.size();}
 	void StartPrint();
 	void setGUI(GUI* g){ gui=g;}
-private:
 	void SendNextLine();
+	void test();
+private:
+	void debugPrint(string s, bool selectLine = false);
+	void echo(string s);
 	vector<string> buffer;
 	bool m_bPrinting;
 	UINT m_iLineNr;

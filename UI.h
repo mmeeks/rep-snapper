@@ -20,7 +20,7 @@ class ModelViewController;
 #include <FL/Fl_Text_Editor.H>
 #include <FL/Fl_Slider.H>
 #include <FL/Fl_Value_Output.H>
-#include <FL/Fl_Text_Display.H>
+#include <FL/Fl_Multi_Browser.h>
 
 class GUI {
 public:
@@ -528,7 +528,23 @@ private:
   void cb_SetExtruderDirectionButton_i(Fl_Light_Button*, void*);
   static void cb_SetExtruderDirectionButton(Fl_Light_Button*, void*);
 public:
-  Fl_Text_Display *CommunationsLogText;
+  Fl_Multi_Browser *CommunationLog;
+  Fl_Multi_Browser *ErrorLog;
+  Fl_Text_Editor *Echo;
+private:
+  void cb_Save3_i(Fl_Button*, void*);
+  static void cb_Save3(Fl_Button*, void*);
+public:
+  Fl_Light_Button *ContinueButton;
+private:
+  void cb_ContinueButton_i(Fl_Light_Button*, void*);
+  static void cb_ContinueButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *TestButton;
+private:
+  void cb_TestButton_i(Fl_Light_Button*, void*);
+  static void cb_TestButton(Fl_Light_Button*, void*);
+public:
   void show(int argc, char **argv);
 };
 #endif

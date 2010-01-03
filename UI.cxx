@@ -868,7 +868,8 @@ void GUI::cb_ConnectToPrinterButton(Fl_Light_Button* o, void* v) {
 }
 
 void GUI::cb_PrintButton_i(Fl_Light_Button*, void*) {
-  MVC->Print();
+  CommunationLog->clear();
+MVC->Print();
 }
 void GUI::cb_PrintButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_PrintButton_i(o,v);
@@ -902,6 +903,55 @@ void GUI::cb_SetExtruderDirectionButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_SetExtruderDirectionButton_i(o,v);
 }
 
+void GUI::cb_Save3_i(Fl_Button*, void*) {
+  Fl_File_Chooser chooser("\\", "*.txt", Fl_File_Chooser::CREATE, "Choose filename");
+chooser.show();
+while (chooser.shown())
+	Fl::wait();
+if(chooser.value() == 0)
+	return;
+std::string dir(chooser.value());
+
+
+if(dir.length())
+{
+Fl_Text_Buffer *buffer = Echo->buffer();
+
+int result = buffer->savefile(chooser.value());
+
+switch(result)
+{
+case 0:	// Succes
+break;
+case 1:	//Open for write failed
+fl_alert("Error saving txt file, error creating file.", "OK");
+break;
+case 2: // Partially saved file
+fl_alert("Error saving txt file, while writing file, is the disk full?.", "OK");
+break;
+}
+
+MVC->redraw();
+};
+}
+void GUI::cb_Save3(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Save3_i(o,v);
+}
+
+void GUI::cb_ContinueButton_i(Fl_Light_Button*, void*) {
+  MVC->Continue();
+}
+void GUI::cb_ContinueButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_ContinueButton_i(o,v);
+}
+
+void GUI::cb_TestButton_i(Fl_Light_Button*, void*) {
+  MVC->TestSerial();
+}
+void GUI::cb_TestButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_TestButton_i(o,v);
+}
+
 GUI::GUI() {
   { mainWindow = new Fl_Double_Window(1379, 830, "RepSnapper by Kulitorum www.kulitorum.com");
     mainWindow->box(FL_UP_BOX);
@@ -920,7 +970,7 @@ GUI::GUI() {
       MVC->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
       MVC->when(FL_WHEN_RELEASE);
     } // ModelViewController* MVC
-    { Tabs = new Fl_Tabs(820, 10, 560, 815);
+    { Tabs = new Fl_Tabs(820, 10, 565, 815);
       Tabs->align(FL_ALIGN_TOP_LEFT);
       { Fl_Group* o = new Fl_Group(820, 30, 550, 785, "Input file");
         o->hide();
@@ -1456,6 +1506,7 @@ e rest of the print.");
         } // Fl_Button* o
         { Fl_Tabs* o = new Fl_Tabs(830, 110, 550, 715);
           { Fl_Text_Editor* o = GCodeStart = new Fl_Text_Editor(830, 130, 550, 695, "Start code");
+            GCodeStart->hide();
             Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();
             o->buffer(startbuff);
           } // Fl_Text_Editor* GCodeStart
@@ -1470,7 +1521,6 @@ e rest of the print.");
             o->buffer(endbuff);
           } // Fl_Text_Editor* GCodeEnd
           { Fl_Text_Editor* o = GCodeResult = new Fl_Text_Editor(830, 130, 550, 695, "Result");
-            GCodeResult->hide();
             Fl_Text_Buffer *resultbuff = new Fl_Text_Buffer();
             o->buffer(resultbuff);
           } // Fl_Text_Editor* GCodeResult
@@ -1791,29 +1841,29 @@ e rest of the print.");
         } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(820, 30, 550, 765, "Debug");
+      { Fl_Group* o = new Fl_Group(820, 30, 565, 795, "Debug");
         o->color((Fl_Color)FL_DARK1);
-        { ExamineSlider = new Fl_Value_Slider(890, 750, 365, 20, "Examine");
+        { ExamineSlider = new Fl_Value_Slider(885, 800, 375, 20, "Examine");
           ExamineSlider->type(1);
           ExamineSlider->step(0.001);
           ExamineSlider->value(0.098);
           ExamineSlider->textsize(14);
           ExamineSlider->callback((Fl_Callback*)cb_ExamineSlider);
-          ExamineSlider->align(FL_ALIGN_TOP_LEFT);
+          ExamineSlider->align(FL_ALIGN_LEFT);
         } // Fl_Value_Slider* ExamineSlider
-        { DisplayDebuginFillButton = new Fl_Light_Button(1085, 710, 170, 20, "Display Debug inFill");
+        { DisplayDebuginFillButton = new Fl_Light_Button(890, 780, 145, 20, "Display Debug inFill");
           DisplayDebuginFillButton->selection_color((Fl_Color)FL_GREEN);
           DisplayDebuginFillButton->callback((Fl_Callback*)cb_DisplayDebuginFillButton);
         } // Fl_Light_Button* DisplayDebuginFillButton
-        { DisplayDebugButton = new Fl_Light_Button(890, 710, 190, 20, "Debug");
+        { DisplayDebugButton = new Fl_Light_Button(825, 780, 65, 20, "Debug");
           DisplayDebugButton->selection_color((Fl_Color)FL_GREEN);
           DisplayDebugButton->callback((Fl_Callback*)cb_DisplayDebugButton);
         } // Fl_Light_Button* DisplayDebugButton
-        { DrawVertexNumbersButton = new Fl_Light_Button(890, 685, 190, 20, "Draw vertex numbers");
+        { DrawVertexNumbersButton = new Fl_Light_Button(1035, 780, 155, 20, "Draw vertex numbers");
           DrawVertexNumbersButton->selection_color((Fl_Color)FL_GREEN);
           DrawVertexNumbersButton->callback((Fl_Callback*)cb_DrawVertexNumbersButton);
         } // Fl_Light_Button* DrawVertexNumbersButton
-        { DrawLineNumbersButton = new Fl_Light_Button(1080, 685, 155, 20, "Draw line numbers");
+        { DrawLineNumbersButton = new Fl_Light_Button(1190, 780, 155, 20, "Draw line numbers");
           DrawLineNumbersButton->selection_color((Fl_Color)FL_GREEN);
           DrawLineNumbersButton->callback((Fl_Callback*)cb_DrawLineNumbersButton);
         } // Fl_Light_Button* DrawLineNumbersButton
@@ -1825,32 +1875,66 @@ e rest of the print.");
           } // Fl_Button* o
           o->end();
         } // Fl_Group* o
-        { ConnectToPrinterButton = new Fl_Light_Button(840, 145, 220, 25, "Connect to printer");
+        { ConnectToPrinterButton = new Fl_Light_Button(840, 115, 220, 25, "Connect to printer");
           ConnectToPrinterButton->callback((Fl_Callback*)cb_ConnectToPrinterButton);
         } // Fl_Light_Button* ConnectToPrinterButton
-        { PrintButton = new Fl_Light_Button(840, 175, 220, 25, "Print");
+        { PrintButton = new Fl_Light_Button(840, 140, 220, 25, "Print");
           PrintButton->callback((Fl_Callback*)cb_PrintButton);
         } // Fl_Light_Button* PrintButton
-        { SwitchHeatOnButton = new Fl_Light_Button(840, 205, 220, 25, "Switch heat on");
+        { SwitchHeatOnButton = new Fl_Light_Button(840, 165, 220, 25, "Switch heat on");
           SwitchHeatOnButton->callback((Fl_Callback*)cb_SwitchHeatOnButton);
         } // Fl_Light_Button* SwitchHeatOnButton
-        { TargetTempText = new Fl_Value_Input(1225, 176, 55, 24, "Target temp");
+        { TargetTempText = new Fl_Value_Input(1295, 166, 55, 24, "Target temp");
           TargetTempText->callback((Fl_Callback*)cb_TargetTempText);
         } // Fl_Value_Input* TargetTempText
-        { CurrentTempText = new Fl_Value_Output(1225, 206, 55, 24, "Current temp");
+        { CurrentTempText = new Fl_Value_Output(1150, 166, 55, 24, "Current temp");
         } // Fl_Value_Output* CurrentTempText
-        { RunExtruderButton = new Fl_Light_Button(840, 235, 220, 25, "Run extruder");
+        { RunExtruderButton = new Fl_Light_Button(840, 190, 220, 25, "Run extruder");
           RunExtruderButton->callback((Fl_Callback*)cb_RunExtruderButton);
         } // Fl_Light_Button* RunExtruderButton
-        { SetExtruderDirectionButton = new Fl_Light_Button(1065, 235, 220, 25, "Reverse");
+        { SetExtruderDirectionButton = new Fl_Light_Button(1065, 190, 220, 25, "Reverse");
           SetExtruderDirectionButton->callback((Fl_Callback*)cb_SetExtruderDirectionButton);
         } // Fl_Light_Button* SetExtruderDirectionButton
-        { Fl_Text_Display* o = CommunationsLogText = new Fl_Text_Display(840, 285, 445, 390, "Communications log");
-          CommunationsLogText->box(FL_UP_FRAME);
-          CommunationsLogText->align(FL_ALIGN_TOP_LEFT);
-          Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();
-          o->buffer(startbuff);
-        } // Fl_Text_Display* CommunationsLogText
+        { Fl_Tabs* o = new Fl_Tabs(825, 215, 540, 565);
+          { CommunationLog = new Fl_Multi_Browser(830, 240, 530, 540, "Communication log");
+            CommunationLog->box(FL_NO_BOX);
+            CommunationLog->color((Fl_Color)FL_BACKGROUND2_COLOR);
+            CommunationLog->selection_color((Fl_Color)FL_SELECTION_COLOR);
+            CommunationLog->labeltype(FL_NORMAL_LABEL);
+            CommunationLog->labelfont(0);
+            CommunationLog->labelsize(14);
+            CommunationLog->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+            CommunationLog->align(FL_ALIGN_BOTTOM);
+            CommunationLog->when(FL_WHEN_RELEASE_ALWAYS);
+            CommunationLog->hide();
+          } // Fl_Multi_Browser* CommunationLog
+          { ErrorLog = new Fl_Multi_Browser(830, 240, 530, 540, "Errors / warnings");
+            ErrorLog->box(FL_NO_BOX);
+            ErrorLog->color((Fl_Color)FL_BACKGROUND2_COLOR);
+            ErrorLog->selection_color((Fl_Color)FL_SELECTION_COLOR);
+            ErrorLog->labeltype(FL_NORMAL_LABEL);
+            ErrorLog->labelfont(0);
+            ErrorLog->labelsize(14);
+            ErrorLog->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+            ErrorLog->align(FL_ALIGN_BOTTOM);
+            ErrorLog->when(FL_WHEN_RELEASE_ALWAYS);
+            ErrorLog->hide();
+          } // Fl_Multi_Browser* ErrorLog
+          { Fl_Text_Editor* o = Echo = new Fl_Text_Editor(825, 240, 535, 535, "Echo");
+            Fl_Text_Buffer *echobuff = new Fl_Text_Buffer();
+            o->buffer(echobuff);
+          } // Fl_Text_Editor* Echo
+          o->end();
+        } // Fl_Tabs* o
+        { Fl_Button* o = new Fl_Button(1260, 800, 105, 20, "Save echo log");
+          o->callback((Fl_Callback*)cb_Save3);
+        } // Fl_Button* o
+        { ContinueButton = new Fl_Light_Button(1065, 140, 90, 25, "Continue");
+          ContinueButton->callback((Fl_Callback*)cb_ContinueButton);
+        } // Fl_Light_Button* ContinueButton
+        { TestButton = new Fl_Light_Button(1165, 140, 90, 25, "Test Serial");
+          TestButton->callback((Fl_Callback*)cb_TestButton);
+        } // Fl_Light_Button* TestButton
         o->end();
       } // Fl_Group* o
       Tabs->end();

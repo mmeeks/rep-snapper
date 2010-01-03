@@ -166,7 +166,7 @@ public:
 		assert(error == 0);
 		error = serial.Setup(CSerial::EBaud19200,CSerial::EData8,CSerial::EParNone,CSerial::EStop1);
 		assert(error == 0);
-		error = serial.SetupHandshaking(CSerial::EHandshakeSoftware);//EHandshakeOff= works ok, sometimes there's comm. error (huh?) EHandshakeHardware = crash, reboot;
+		error = serial.SetupHandshaking(CSerial::EHandshakeOff);//EHandshakeOff= works ok, sometimes there's comm. error (huh?) EHandshakeHardware = crash, reboot;
 		assert(error == 0);
 		error = serial.StartListener();
 		assert(error == 0);
@@ -180,6 +180,8 @@ public:
 
 	}
 	void Print();
+	void Continue();
+	void TestSerial();
 	void SwitchHeat(bool on, float temp);
 	void SetTargetTemp(float temp);
 	void RunExtruder();

@@ -11,7 +11,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {409 262 1379 830} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
+      xywh {163 184 1379 830} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -23,7 +23,7 @@ class GUI {open
         class ModelViewController
       }
       Fl_Tabs Tabs {open
-        xywh {820 10 560 815} align 5
+        xywh {820 10 565 815} align 5
       } {
         Fl_Group {} {
           label {Input file}
@@ -829,17 +829,17 @@ MVC->redraw();}
         }
         Fl_Group {} {
           label Debug open
-          xywh {820 30 550 790} color 47
+          xywh {820 30 565 795} color 47
         } {
           Fl_Value_Slider ExamineSlider {
             label Examine
             callback {MVC->SetExamine(o->value());}
-            xywh {845 800 365 20} type Horizontal align 5 step 0.001 value 0.098 textsize 14
+            xywh {885 800 375 20} type Horizontal align 4 step 0.001 value 0.098 textsize 14
           }
           Fl_Light_Button DisplayDebuginFillButton {
             label {Display Debug inFill}
             callback {MVC->SetDisplayDebuginFill(o->value());}
-            xywh {1040 760 170 20} selection_color 63
+            xywh {890 780 145 20} selection_color 63
           }
           Fl_Light_Button DisplayDebugButton {
             label Debug
@@ -856,17 +856,17 @@ ExamineSlider->hide();
 
 
 MVC->redraw();}
-            xywh {845 760 190 20} selection_color 63
+            xywh {825 780 65 20} selection_color 63
           }
           Fl_Light_Button DrawVertexNumbersButton {
             label {Draw vertex numbers}
             callback {MVC->SetDrawVertexNumbers(o->value());}
-            xywh {845 735 190 20} selection_color 63
+            xywh {1035 780 155 20} selection_color 63
           }
           Fl_Light_Button DrawLineNumbersButton {
             label {Draw line numbers}
             callback {MVC->SetDrawLineNumbers(o->value());}
-            xywh {1035 735 155 20} selection_color 63
+            xywh {1190 780 155 20} selection_color 63
           }
           Fl_Group {} {
             label Size open
@@ -890,42 +890,102 @@ MVC->ProcessControl.SaveXML();}
           Fl_Light_Button ConnectToPrinterButton {
             label {Connect to printer}
             callback {MVC->ConnectToPrinter(o->value());}
-            xywh {840 145 220 25}
+            xywh {840 115 220 25}
           }
           Fl_Light_Button PrintButton {
             label Print
-            callback {MVC->Print();}
-            xywh {840 175 220 25}
+            callback {CommunationLog->clear();
+MVC->Print();}
+            xywh {840 140 220 25}
           }
           Fl_Light_Button SwitchHeatOnButton {
             label {Switch heat on}
             callback {MVC->SwitchHeat(o->value(), TargetTempText->value());}
-            xywh {840 205 220 25}
+            xywh {840 165 220 25}
           }
           Fl_Value_Input TargetTempText {
             label {Target temp}
             callback {MVC->SetTargetTemp(o->value());}
-            xywh {1225 176 55 24}
+            xywh {1295 166 55 24}
           }
           Fl_Value_Output CurrentTempText {
             label {Current temp}
-            xywh {1225 206 55 24}
+            xywh {1150 166 55 24}
           }
           Fl_Light_Button RunExtruderButton {
             label {Run extruder}
             callback {MVC->RunExtruder();}
-            xywh {840 235 220 25}
+            xywh {840 190 220 25}
           }
           Fl_Light_Button SetExtruderDirectionButton {
             label Reverse
             callback {MVC->SetExtruderDirection(o->value());}
-            xywh {1065 235 220 25}
+            xywh {1065 190 220 25}
           }
-          Fl_Text_Display CommunationsLogText {
-            label {Communications log} selected
-            xywh {840 285 520 445} box UP_FRAME align 5
-            code0 {Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();}
-            code1 {o->buffer(startbuff);}
+          Fl_Tabs {} {open
+            xywh {825 215 540 565}
+          } {
+            Fl_Browser CommunationLog {
+              label {Communication log}
+              xywh {830 240 530 540} hide
+              code0 {\#include <FL/Fl_Multi_Browser.h>}
+              class Fl_Multi_Browser
+            }
+            Fl_Browser ErrorLog {
+              label {Errors / warnings}
+              xywh {830 240 530 540} hide
+              code0 {\#include <FL/Fl_Multi_Browser.h>}
+              class Fl_Multi_Browser
+            }
+            Fl_Text_Editor Echo {
+              label Echo
+              xywh {825 240 535 535}
+              code0 {Fl_Text_Buffer *echobuff = new Fl_Text_Buffer();}
+              code1 {o->buffer(echobuff);}
+            }
+          }
+          Fl_Button {} {
+            label {Save echo log}
+            callback {Fl_File_Chooser chooser("\\\\", "*.txt", Fl_File_Chooser::CREATE, "Choose filename");
+chooser.show();
+while (chooser.shown())
+	Fl::wait();
+if(chooser.value() == 0)
+	return;
+std::string dir(chooser.value());
+
+
+if(dir.length())
+{
+Fl_Text_Buffer *buffer = Echo->buffer();
+
+int result = buffer->savefile(chooser.value());
+
+switch(result)
+{
+case 0:	// Succes
+break;
+case 1:	//Open for write failed
+fl_alert("Error saving txt file, error creating file.", "OK");
+break;
+case 2: // Partially saved file
+fl_alert("Error saving txt file, while writing file, is the disk full?.", "OK");
+break;
+}
+
+MVC->redraw();
+};}
+            xywh {1260 800 105 20}
+          }
+          Fl_Light_Button ContinueButton {
+            label Continue
+            callback {MVC->Continue();}
+            xywh {1065 140 90 25}
+          }
+          Fl_Light_Button TestButton {
+            label {Test Serial}
+            callback {MVC->TestSerial();} selected
+            xywh {1165 140 90 25}
           }
         }
       }

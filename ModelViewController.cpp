@@ -298,8 +298,8 @@ void ModelViewController::init()
 	buffer = gui->GCodeEnd->buffer();
 	buffer->text(ProcessControl.GCodeEndText.c_str());
 
-	buffer = gui->CommunationsLogText->buffer();
-	buffer->text("Dump");
+//	buffer = gui->CommunationsLogText->buffer();
+//	buffer->text("Dump");
 }
 
 //Make the remaining buttons work
@@ -420,6 +420,16 @@ void ModelViewController::CopySettingsToGUI()
 	gui->ApronDistanceToObjectSlider->value(ProcessControl.ApronDistanceToObject);
 	gui->ApronInfillDistanceSlider->value(ProcessControl.ApronInfillDistance);
 
+}
+
+void ModelViewController::Continue()
+{
+	serial.SendNextLine();
+}
+
+void ModelViewController::TestSerial()
+{
+	serial.test();
 }
 
 void ModelViewController::Print()

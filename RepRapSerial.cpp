@@ -1,9 +1,56 @@
 #include "stdafx.h"
 #include "RepRapSerial.h"
+#include "Convert.h"
 
 enum { EOF_Char = 27 };
 
 //From http://www.codeproject.com/KB/system/serial.aspx
+
+void RepRapSerial::debugPrint(string s, bool selectLine)
+{
+	if(gui)
+	{
+		int a=0;
+		while(a<s.length())
+		{
+			if(s[a] == '\r' || s[a] == '\n') s[a] = ' ';
+			a++;
+		}
+
+		gui->CommunationLog->add(s.c_str());
+		gui->CommunationLog->bottomline(gui->CommunationLog->size());
+		if(selectLine)
+		{
+			gui->CommunationLog->select(gui->CommunationLog->size());
+			gui->ErrorLog->add(s.c_str());
+			gui->ErrorLog->bottomline(gui->ErrorLog->size());
+		}
+		gui->CommunationLog->redraw();
+	}
+	else
+		printf("%s", s.c_str());
+
+};
+void RepRapSerial::echo(string s)
+{
+	if(gui)
+	{
+		int a=0;
+		while(a<s.length())
+		{
+			if(s[a] == '\r' || s[a] == '\n') s[a] = ' ';
+			a++;
+		}
+		s+='\n';
+		gui->Echo->insert(s.c_str());
+//		gui->Echo->bottomline(gui->Echo->size());
+		gui->Echo->redraw();
+	}
+	else
+		printf("%s", s.c_str());
+
+};
+
 
 int ShowError (LONG lError, LPCTSTR lptszMessage)
 {
@@ -24,50 +71,50 @@ void RepRapSerial::OnEvent (EEvent eEvent, EError eError)
 	// Handle break event
 	if (eEvent & CSerial::EEventBreak)
 	{
-		printf("\n### BREAK received ###\n");
+		debugPrint("### BREAK received ###");
 	}
 
 	// Handle CTS event
 	if (eEvent & CSerial::EEventCTS)
 	{
-		printf("\n### Clear to send %s ###\n", GetCTS()?"on":"off");
+		debugPrint( string("### Clear to send :") + stringify(GetCTS()?"on":"off"));
 	}
 
 	// Handle DSR event
 	if (eEvent & CSerial::EEventDSR)
 	{
-		printf("\n### Data set ready %s ###\n", GetDSR()?"on":"off");
+		debugPrint(string("### Data set ready :") + stringify(GetDSR()?"on":"off"));
 	}
 
 	// Handle error event
 	if (eEvent & CSerial::EEventError)
 	{
-		printf("\n### ERROR: ");
+		debugPrint("### ERROR: ");
 		switch (GetError())
 		{
-		case CSerial::EErrorBreak:		printf("Break condition");			break;
-		case CSerial::EErrorFrame:		printf("Framing error");			break;
-		case CSerial::EErrorIOE:		printf("IO device error");			break;
-		case CSerial::EErrorMode:		printf("Unsupported mode");			break;
-		case CSerial::EErrorOverrun:	printf("Buffer overrun");			break;
-		case CSerial::EErrorRxOver:		printf("Input buffer overflow");	break;
-		case CSerial::EErrorParity:		printf("Input parity error");		break;
-		case CSerial::EErrorTxFull:		printf("Output buffer full");		break;
-		default:						printf("Unknown");					break;
+		case CSerial::EErrorBreak:		debugPrint("Break condition");			break;
+		case CSerial::EErrorFrame:		debugPrint("Framing error");			break;
+		case CSerial::EErrorIOE:		debugPrint("IO device error");			break;
+		case CSerial::EErrorMode:		debugPrint("Unsupported mode");			break;
+		case CSerial::EErrorOverrun:	debugPrint("Buffer overrun");			break;
+		case CSerial::EErrorRxOver:		debugPrint("Input buffer overflow");	break;
+		case CSerial::EErrorParity:		debugPrint("Input parity error");		break;
+		case CSerial::EErrorTxFull:		debugPrint("Output buffer full");		break;
+		default:						debugPrint("Unknown");					break;
 		}
-		printf(" ###\n");
+		debugPrint(" ###");
 	}
 
 	// Handle ring event
 	if (eEvent & CSerial::EEventRing)
 	{
-		printf("\n### RING ###\n");
+		debugPrint("### RING ###");
 	}
 
 	// Handle RLSD/CD event
 	if (eEvent & CSerial::EEventRLSD)
 	{
-		printf("\n### RLSD/CD %s ###\n", GetRLSD()?"on":"off");
+		debugPrint( string("### RLSD/CD :") + stringify( GetRLSD()?"on":"off"));
 	}
 
 	// Handle data receive event
@@ -104,8 +151,7 @@ void RepRapSerial::OnEvent (EEvent eEvent, EError eError)
 
 		// Endchars = \r\n
 
-		printf("Received:\"%s\" (%d bytes)\n", szBuffer, dwBytesRead);
-//		if(string(szBuffer) == "ok")
+//		debugPrint( string("Received:\"") + szBuffer +"\" (" + stringify(dwBytesRead));
 		{
 			// Check inbuffer for good stuff
 
@@ -121,50 +167,62 @@ void RepRapSerial::OnEvent (EEvent eEvent, EError eError)
 
 				if (command == "ok")	// most common, first
 				{
-//					printf("Received:\"%s\"\n", command.c_str());
+					debugPrint("Recieved: Ok");
 					if(m_bPrinting)
 					{
 						SendNextLine();
 					}
 				}
+				else if(command.substr(0,5) == "Echo:") // search, there's a parameter int (temperature)
+				{
+					string parameter = command.substr(5,command.length()-5);
+					echo( string("Echo:") + parameter);
+					// Check parameter
+				}
 				else if(command.substr(0,2) == "T:") // search, there's a parameter int (temperature)
 				{
 					string parameter = command.substr(2,command.length()-2);
-//					printf("Received:\"%s\" with parameter \"%s\"\n", command.c_str(), parameter.c_str());
+					debugPrint( string("Received:") + command+ " with parameter " + parameter);
 					// Check parameter
 
 				}
 				else if(command == "start")
 				{
-//					printf("Received:\"%s\" \n", command.c_str());
+					debugPrint( string("Received: start"));
 					// Tell GUI we are ready to go.
 					int a=0;
 				}
 				else if(command.substr(0,3) == "E: ") // search, there's a parameter int (temperature_error, wait_till_hot)
 				{
 					string parameter = command.substr(3,command.length()-3);
-//					printf("Received:\"%s\" with parameter \"%s\"\n", command.c_str(), parameter.c_str());
+					debugPrint( string("Received:") + command+ " with parameter " + parameter);
 					// Check parameter
 
 				}
 				else if(command.substr(0,3) == "ok ") // search, there's a parameter string (debugstring)
 				{
 					string parameter = command.substr(3,command.length()-3);
-					printf("Received:\"%s\" with parameter \"%s \"\n", command.c_str(), parameter.c_str());
+					debugPrint( string("Received:") + command+ " with parameter " + parameter + "**************************************", true);
 				}
-				else if(command.substr(0,6) == "huh? G") // search, there's a parameter string (unknown command)
+				else if(command.substr(0,5) == "huh? ") // search, there's a parameter string (unknown command)
 				{
-					string parameter = command.substr(6,command.length()-6);
-					printf("Received:\"%s\" with parameter \"%s \"\n", command.c_str(), parameter.c_str());
+					string parameter = command.substr(6,command.length()-5);
+					debugPrint( string("Received:") + command+ " with parameter " + parameter, true);
+
+					if(m_bPrinting)
+					{
+						SendNextLine();
+					}
+
 				}
 				else if(command.substr(0,45) == "[FIRMWARE WARNING] invalid M-Code received: M") // search, there's a parameter string (unknown Mcode)
 				{
 					string parameter = command.substr(45,command.length()-45);
-					printf("Received:\"%s\" with parameter \"%s \"\n", command.c_str(), parameter.c_str());
+					debugPrint( string("Received:") + command+ " with parameter " + parameter, true);
 				}
 				else	// Unknown response
 				{
-					printf("Received:\"%s\" and I have no idea what that means\n", command.c_str());
+					debugPrint( string("Received:") + command + " and I have no idea what that means\n", true);
 				}
 				InBuffer = InBuffer.substr(found);	// 2 end-line characters, \n\r
 				// Empty eol crap
@@ -185,24 +243,28 @@ void RepRapSerial::StartPrint()
 	SendNextLine();
 }
 
+void RepRapSerial::test()
+{
+	for(UINT i=0;i<100;i++)
+	{
+	string a("test:" + stringify(i));
+	a+= "\n";
+	Write(a.c_str());
+//	Sleep(21);
+	}
+}
+
 void RepRapSerial::SendNextLine()
 {
 	assert(m_bPrinting == true);
 	if(m_iLineNr < buffer.size())
 		{
-		string a = buffer[m_iLineNr++];
-		a+= "\n";
+		string a = buffer[m_iLineNr];
+//		a+= "L" + stringify(m_iLineNr) + "\n";
 		Write(a.c_str());
-		if(gui)
-		{
-			string b;
-			b="SEND:";
-			b+=a;
-			gui->CommunationsLogText->insert(b.c_str());
-			gui->CommunationsLogText->redraw();
-		}
-		else
-			printf("Sending:%s", a.c_str());
+//		Sleep(250);
+		debugPrint( string("Sending:") + a);
+		m_iLineNr++;
 		}
 	else	// we are done
 		{
@@ -213,16 +275,7 @@ void RepRapSerial::SendNextLine()
 
 void RepRapSerial::SendNow(string s)
 {
-	if(gui)
-	{
-		string b;
-		b="SEND:";
-		b+=s;
-		gui->CommunationsLogText->insert(b.c_str());
-		gui->CommunationsLogText->redraw();
-	}
-	else
-		printf("Sending:%s", s.c_str());
 	s+= "\n";
+	debugPrint( string("Sending:") + s);
 	Write(s.c_str());
 }

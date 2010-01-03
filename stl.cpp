@@ -585,7 +585,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	command.where = Vector3f(0,0,lastLayerZ);
 	command.e = E;					// move
 	command.f = MaxPrintSpeedXY;					// Use Max XY speed
-	command.comment = "RESET_XY_AXIES";
+//	command.comment = "RESET_XY_AXIES";
 	code.commands.push_back(command);
 
 
@@ -594,7 +594,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	command.where = Vector3f(0,0,lastLayerZ);
 	command.e = E;					// move
 	command.f = MinPrintSpeedZ;		// Use Min Z speed
-	command.comment = "Next layer z";
+//	command.comment = "Next layer z";
 	code.commands.push_back(command);
 	command.comment = "";
 	// Move Z axis
@@ -602,7 +602,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	command.where = Vector3f(0,0,z);
 	command.e = E;					// move
 	command.f = MinPrintSpeedZ;		// Use Min Z speed
-	command.comment = "Next layer z";
+//	command.comment = "Next layer z";
 	code.commands.push_back(command);
 	command.comment = "";
 
