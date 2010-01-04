@@ -162,7 +162,7 @@ public:
 		if(on)
 		{
 		LONG error=ERROR_SUCCESS;
-		error = serial.Open(_T("COM4"), 0, 0, true);
+		error = serial.Open(_T("COM5"), 0, 0, true);
 		assert(error == 0);
 		error = serial.Setup(CSerial::EBaud19200,CSerial::EData8,CSerial::EParNone,CSerial::EStop1);
 		assert(error == 0);

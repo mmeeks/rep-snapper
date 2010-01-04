@@ -868,8 +868,7 @@ void GUI::cb_ConnectToPrinterButton(Fl_Light_Button* o, void* v) {
 }
 
 void GUI::cb_PrintButton_i(Fl_Light_Button*, void*) {
-  CommunationLog->clear();
-MVC->Print();
+  MVC->Print();
 }
 void GUI::cb_PrintButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_PrintButton_i(o,v);

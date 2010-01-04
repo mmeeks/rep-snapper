@@ -436,6 +436,13 @@ void ModelViewController::Print()
 {
 	// Snack one line at a time from the Gcode view, and buffer it.
 
+	if(gui->PrintButton->value() == 0)	// Turned off print, cancel buffer and flush
+	{
+		serial.Clear();
+		return;
+	}
+
+	gui->CommunationLog->clear();
 	Fl_Text_Buffer* buffer = gui->GCodeResult->buffer();
 	char* pText = buffer->text();
 	UINT length = buffer->length();
@@ -446,10 +453,9 @@ void ModelViewController::Print()
 		char* line = buffer->line_text(pos);
 		if(line[0] == ';')
 			{
-			pos = buffer->line_end(pos)+1;	// skip
+			pos = buffer->line_end(pos)+1;	// skip newline
 			continue;
 			}
-//		printf("%s\n", line/*szBuffer*/);
 		serial.AddToBuffer(line);
 		pos = buffer->line_end(pos)+1;	// find end of line
 		}

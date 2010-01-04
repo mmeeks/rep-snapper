@@ -215,6 +215,20 @@ void RepRapSerial::OnEvent (EEvent eEvent, EError eError)
 					}
 
 				}
+				else if(command.substr(0,7) == "Resend:") // search, there's a parameter string (unknown command)
+				{
+					string parameter = command.substr(7,command.length()-7);
+					debugPrint( string("Received:") + command+ " with parameter " + parameter, true);
+
+					std::stringstream iss(parameter);
+					iss >> m_iLineNr;	// Rewind to requested line
+
+					if(m_bPrinting)
+					{
+						SendNextLine();
+					}
+
+				}
 				else if(command.substr(0,45) == "[FIRMWARE WARNING] invalid M-Code received: M") // search, there's a parameter string (unknown Mcode)
 				{
 					string parameter = command.substr(45,command.length()-45);
@@ -236,6 +250,7 @@ void RepRapSerial::OnEvent (EEvent eEvent, EError eError)
 
 void RepRapSerial::StartPrint()
 {
+	m_iLineNr = 0;
 	m_bPrinting = true;
 	SendNextLine();
 	SendNextLine();
@@ -249,7 +264,7 @@ void RepRapSerial::test()
 	{
 	string a("test:" + stringify(i));
 	a+= "\n";
-	Write(a.c_str());
+	SendData(a.c_str(), i);
 //	Sleep(21);
 	}
 }
@@ -260,10 +275,7 @@ void RepRapSerial::SendNextLine()
 	if(m_iLineNr < buffer.size())
 		{
 		string a = buffer[m_iLineNr];
-//		a+= "L" + stringify(m_iLineNr) + "\n";
-		Write(a.c_str());
-//		Sleep(250);
-		debugPrint( string("Sending:") + a);
+		SendData(a.c_str(), m_iLineNr);
 		m_iLineNr++;
 		}
 	else	// we are done
@@ -278,4 +290,17 @@ void RepRapSerial::SendNow(string s)
 	s+= "\n";
 	debugPrint( string("Sending:") + s);
 	Write(s.c_str());
+}
+void RepRapSerial::SendData(const string &s, const int lineNr)
+{
+	string buffer = s;
+	std::stringstream oss;
+	oss << " L" << lineNr << " C";
+	buffer += oss.str();
+	oss.str( "" );
+	oss << std::setfill('0') << std::setw(2) << buffer.length()+2;
+	buffer += oss.str();
+	debugPrint( string("SendData:") + buffer);
+	buffer += "\r\n";
+	Write(buffer.c_str());
 }

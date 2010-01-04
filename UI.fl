@@ -894,8 +894,7 @@ MVC->ProcessControl.SaveXML();}
           }
           Fl_Light_Button PrintButton {
             label Print
-            callback {CommunationLog->clear();
-MVC->Print();}
+            callback {MVC->Print();} selected
             xywh {840 140 220 25}
           }
           Fl_Light_Button SwitchHeatOnButton {
@@ -984,7 +983,7 @@ MVC->redraw();
           }
           Fl_Light_Button TestButton {
             label {Test Serial}
-            callback {MVC->TestSerial();} selected
+            callback {MVC->TestSerial();}
             xywh {1165 140 90 25}
           }
         }
