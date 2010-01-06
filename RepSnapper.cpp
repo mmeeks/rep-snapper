@@ -32,6 +32,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	char* W = &WindowTitle[0];
 	gui->MVC->gui = gui;
 	gui->MVC->serial.setGUI(gui);
+	gui->MVC->ProcessControl.gui = gui;
 	gui->show(1,&W);
 	return Fl::run();
 }

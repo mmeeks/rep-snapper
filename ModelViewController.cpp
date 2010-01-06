@@ -459,6 +459,11 @@ void ModelViewController::Print()
 		serial.AddToBuffer(line);
 		pos = buffer->line_end(pos)+1;	// find end of line
 		}
+
+	gui->ProgressBar->maximum(serial.Length());
+	gui->ProgressBar->label("Printing");
+	gui->ProgressBar->value(0);
+
 	serial.StartPrint();
 }
 

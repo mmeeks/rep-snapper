@@ -15,7 +15,7 @@
 #include "Printer.h"
 #include "xml/xml.h"
 #include <vmmlib/vmmlib.h>
-
+#include "UI.h"
 #include "stl.h"
 #include "gcode.h"
 
@@ -93,6 +93,8 @@ public:
 		EnableAcceleration = true;
 		DisplayDebuginFill = true;
 		DisplayCuttingPlane = true;
+
+		gui = 0;
 
 };
 
@@ -238,4 +240,7 @@ public:
 	float ApronCoverageY;
 	float ApronDistanceToObject;
 	float ApronInfillDistance;
+
+	// Maybe a pointer to the gui
+	GUI *gui;
 };

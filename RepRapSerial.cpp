@@ -26,6 +26,7 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 			gui->ErrorLog->bottomline(gui->ErrorLog->size());
 		}
 		gui->CommunationLog->redraw();
+		Fl::check();
 	}
 	else
 		printf("%s", s.c_str());
@@ -42,8 +43,8 @@ void RepRapSerial::echo(string s)
 			a++;
 		}
 		s+='\n';
-		gui->Echo->insert(s.c_str());
-//		gui->Echo->bottomline(gui->Echo->size());
+		gui->Echo->add(s.c_str());
+		gui->Echo->bottomline(gui->Echo->size());
 		gui->Echo->redraw();
 	}
 	else
@@ -236,7 +237,7 @@ void RepRapSerial::OnEvent (EEvent eEvent, EError eError)
 				}
 				else	// Unknown response
 				{
-					debugPrint( string("Received:") + command + " and I have no idea what that means\n", true);
+					debugPrint( string("Received:") + command+"\n", true);
 				}
 				InBuffer = InBuffer.substr(found);	// 2 end-line characters, \n\r
 				// Empty eol crap
@@ -265,7 +266,7 @@ void RepRapSerial::test()
 	string a("test:" + stringify(i));
 	a+= "\n";
 	SendData(a.c_str(), i);
-//	Sleep(21);
+	Sleep(21);
 	}
 }
 
@@ -282,7 +283,11 @@ void RepRapSerial::SendNextLine()
 		{
 		m_bPrinting = false;
 		buffer.clear();
+		gui->ProgressBar->label("Print done");
+		return;
 		}
+	if(gui)
+		gui->ProgressBar->value(m_iLineNr);
 }
 
 void RepRapSerial::SendNow(string s)
@@ -291,7 +296,7 @@ void RepRapSerial::SendNow(string s)
 	debugPrint( string("Sending:") + s);
 	Write(s.c_str());
 }
-void RepRapSerial::SendData(const string &s, const int lineNr)
+void RepRapSerial::SendData(const string &s, const UINT lineNr)
 {
 	string buffer = s;
 	std::stringstream oss;

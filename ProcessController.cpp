@@ -19,6 +19,12 @@ ProcessController::~ProcessController()
 
 void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd)
 {
+	if(gui)
+	{
+		gui->ProgressBar->value(0);
+		gui->ProgressBar->label("Converting");
+		gui->ProgressBar->maximum(stl.Max.z);
+	}
 
 	// Make Layers
 	UINT LayerNr = 0;
@@ -37,6 +43,12 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 		}
 	while(z<stl.Max.z+0.0001f)
 	{
+		if(gui)
+		{
+			gui->ProgressBar->value(z);
+			gui->ProgressBar->redraw();
+			Fl::check();
+		}
 		{
 		CuttingPlane plane;
 		stl.CalcCuttingPlane(z, plane);	// output is alot of un-connected line segments with individual vertices
@@ -74,6 +86,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 
 	GcodeTxt.clear();
 	gcode.MakeText(GcodeTxt, GcodeStart, GcodeLayer, GcodeEnd, UseIncrementalEcode);
+	gui->ProgressBar->label("Done");
 }
 
 

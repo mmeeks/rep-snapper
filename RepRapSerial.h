@@ -4,6 +4,7 @@
 
 #include "Serial/SerialEx.h"
 #include "UI.h"
+//#include "ftd2xx.h"
 
 class RepRapSerial : public CSerialEx
 {
@@ -20,7 +21,7 @@ public:
 	void setGUI(GUI* g){ gui=g;}
 	void SendNextLine();
 	void test();
-	void SendData(const string &s, const int lineNr);
+	void SendData(const string &s, const UINT lineNr);
 private:
 	void debugPrint(string s, bool selectLine = false);
 	void echo(string s);
@@ -30,5 +31,18 @@ private:
 	string InBuffer;
 	
 	GUI* gui;
+/*
+	// Very private :P
+	FT_HANDLE fthandle;
+	FT_STATUS res;
+	LONG COMPORT;
+
+	char COMx[5];
+	int n;
+
+	DCB dcb;
+	HANDLE hCommPort;
+	BOOL fSuccess;	*/
+
 
 };

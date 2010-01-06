@@ -21,6 +21,7 @@ class ModelViewController;
 #include <FL/Fl_Slider.H>
 #include <FL/Fl_Value_Output.H>
 #include <FL/Fl_Multi_Browser.h>
+#include <FL/Fl_Progress.H>
 
 class GUI {
 public:
@@ -530,21 +531,13 @@ private:
 public:
   Fl_Multi_Browser *CommunationLog;
   Fl_Multi_Browser *ErrorLog;
-  Fl_Text_Editor *Echo;
-private:
-  void cb_Save3_i(Fl_Button*, void*);
-  static void cb_Save3(Fl_Button*, void*);
-public:
+  Fl_Multi_Browser *Echo;
   Fl_Light_Button *ContinueButton;
 private:
   void cb_ContinueButton_i(Fl_Light_Button*, void*);
   static void cb_ContinueButton(Fl_Light_Button*, void*);
 public:
-  Fl_Light_Button *TestButton;
-private:
-  void cb_TestButton_i(Fl_Light_Button*, void*);
-  static void cb_TestButton(Fl_Light_Button*, void*);
-public:
+  Fl_Progress *ProgressBar;
   void show(int argc, char **argv);
 };
 #endif
