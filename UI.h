@@ -18,6 +18,7 @@ class ModelViewController;
 #include <FL/Fl_File_Chooser.H>
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Text_Editor.H>
+#include <FL/Fl_Choice.H>
 #include <FL/Fl_Slider.H>
 #include <FL/Fl_Value_Output.H>
 #include <FL/Fl_Multi_Browser.h>
@@ -277,6 +278,8 @@ private:
   static void cb_Convert(Fl_Button*, void*);
 public:
   Fl_Text_Editor *GCodeStart;
+  static Fl_Menu_Item menu_Printer[];
+  static Fl_Menu_Item *MinSpeedXY;
   Fl_Text_Editor *GCodeLayer;
   Fl_Text_Editor *GCodeEnd;
   Fl_Text_Editor *GCodeResult;

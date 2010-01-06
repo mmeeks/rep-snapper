@@ -208,6 +208,7 @@ void GCode::draw(const ProcessController &PC)
 	{
 		switch(commands[i].Code)
 		{
+		case ZMOVE:
 		case COORDINATEDMOTION:
 			if(commands[i].e == 0)
 				{
@@ -305,14 +306,15 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 		oss.str( "" );
 		switch(commands[i].Code)
 		{
-		case RESET_XY_AXIES:
-			GcodeTxt += GcodeLayer;
-			GcodeTxt += "\n";
-			break;
 		case SELECTEXTRUDER:
 			oss  << "T0\n";
 			GcodeTxt += oss.str();
 			break;
+		case SETSPEED:
+			commands[i].where.z = LastPos.z;
+		case ZMOVE:
+			commands[i].where.x = LastPos.x;
+			commands[i].where.y = LastPos.y;
 		case COORDINATEDMOTION:
 			oss  << "G1 ";
 			if(commands[i].where.x != LastPos.x)

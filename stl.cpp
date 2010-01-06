@@ -411,7 +411,7 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSte
 			direction.normalize();
 
 			// Set start feedrage
-			command.Code = COORDINATEDMOTION;
+			command.Code = SETSPEED;
 			command.where = start;
 			command.e = 0.0f;		// move or extrude?
 			command.f = minSpeedXY;
@@ -573,13 +573,15 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 
 	float E = 0.0f;
 
-	Vector3f LastPosition= Vector3f(0,0,z);
+	static Vector3f LastPosition;//	= Vector3f(0,0,z);
+	LastPosition.z = z;
+
 	static float lastLayerZ = 0;
 	Command command;
 
 	if(lastLayerZ == 0)
 		lastLayerZ = z;
-
+/*
 	// Select Extruder (Reset XY pos?)
 	command.Code = RESET_XY_AXIES;
 	command.where = Vector3f(0,0,lastLayerZ);
@@ -587,10 +589,10 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	command.f = MaxPrintSpeedXY;					// Use Max XY speed
 //	command.comment = "RESET_XY_AXIES";
 	code.commands.push_back(command);
-
+*/
 
 	// Set speed for next move
-	command.Code = COORDINATEDMOTION;
+	command.Code = SETSPEED;
 	command.where = Vector3f(0,0,lastLayerZ);
 	command.e = E;					// move
 	command.f = MinPrintSpeedZ;		// Use Min Z speed
@@ -598,7 +600,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	code.commands.push_back(command);
 	command.comment = "";
 	// Move Z axis
-	command.Code = COORDINATEDMOTION;
+	command.Code = ZMOVE;
 	command.where = Vector3f(0,0,z);
 	command.e = E;					// move
 	command.f = MinPrintSpeedZ;		// Use Min Z speed

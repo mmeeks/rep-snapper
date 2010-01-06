@@ -11,7 +11,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {265 164 1379 842} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
+      xywh {265 164 1379 842} type Double box UP_BOX color 0 selection_color 0 labelsize 12 resizable visible
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -258,8 +258,8 @@ distanceBetweenSpeedStepsSlider->redraw();}
           }
         }
         Fl_Group {} {
-          label Infill
-          xywh {830 40 545 795} hide
+          label Infill selected
+          xywh {830 40 545 795}
         } {
           Fl_Group {} {
             label Infill open
@@ -481,27 +481,52 @@ MVC->redraw();
           Fl_Tabs {} {open
             xywh {830 120 545 715}
           } {
-            Fl_Text_Editor GCodeStart {
-              label {Start code}
-              xywh {830 140 545 695} hide
-              code0 {Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();}
-              code1 {o->buffer(startbuff);}
+            Fl_Group {} {
+              label {Start code} open
+              xywh {830 140 545 695}
+            } {
+              Fl_Text_Editor GCodeStart {
+                xywh {830 140 530 605}
+                code0 {Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();}
+                code1 {o->buffer(startbuff);}
+              }
+              Fl_Choice {} {
+                label {Printer definition} open
+                xywh {955 750 75 15} down_box BORDER_BOX
+              } {
+                MenuItem MinSpeedXY {
+                  label {Min PrintSpeed XY}
+                  xywh {0 0 34 24}
+                }
+                MenuItem {} {
+                  label {Max PrintSpeed XY}
+                  xywh {0 0 34 24}
+                }
+                MenuItem {} {
+                  label {Min PrintSpeed Z}
+                  xywh {0 0 34 24}
+                }
+                MenuItem {} {
+                  label {Max PrintSpeed Z}
+                  xywh {0 0 34 24}
+                }
+              }
             }
             Fl_Text_Editor GCodeLayer {
               label {Next layer}
-              xywh {830 140 545 695} hide
+              xywh {830 140 530 695} hide
               code0 {Fl_Text_Buffer *layerbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(layerbuff);}
             }
             Fl_Text_Editor GCodeEnd {
               label {End code}
-              xywh {830 140 545 695} hide
+              xywh {830 140 530 695} hide
               code0 {Fl_Text_Buffer *endbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(endbuff);}
             }
             Fl_Text_Editor GCodeResult {
               label Result
-              xywh {830 140 545 695}
+              xywh {830 140 530 695} hide
               code0 {Fl_Text_Buffer *resultbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(resultbuff);}
             }
@@ -828,8 +853,8 @@ MVC->redraw();}
           }
         }
         Fl_Group {} {
-          label Debug open selected
-          xywh {830 40 550 795} color 47
+          label Debug open
+          xywh {830 40 550 795} color 47 hide
         } {
           Fl_Value_Slider ExamineSlider {
             label Examine

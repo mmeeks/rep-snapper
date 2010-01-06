@@ -178,7 +178,7 @@ Vector3f ProcessController::MakeRaft(float &z)
 		}
 		// Set startspeed for Z-move
 		Command g;
-		g.Code = COORDINATEDMOTION;
+		g.Code = SETSPEED;
 		g.where = Vector3f(P2.x, P2.y, z);
 		g.f=MinPrintSpeedZ;
 		g.comment = "Move Z";
@@ -189,7 +189,7 @@ Vector3f ProcessController::MakeRaft(float &z)
 		else
 			z+=RaftInterfaceThickness*LayerThickness;
 		// Move Z
-		g.Code = COORDINATEDMOTION;
+		g.Code = ZMOVE;
 		g.where = Vector3f(P2.x, P2.y, z);
 		g.f=MinPrintSpeedZ;
 		g.comment = "Move Z";

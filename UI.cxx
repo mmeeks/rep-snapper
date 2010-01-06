@@ -444,6 +444,15 @@ void GUI::cb_Convert(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Convert_i(o,v);
 }
 
+Fl_Menu_Item GUI::menu_Printer[] = {
+ {"Min PrintSpeed XY", 0,  0, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {"Max PrintSpeed XY", 0,  0, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {"Min PrintSpeed Z", 0,  0, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {"Max PrintSpeed Z", 0,  0, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {0,0,0,0,0,0,0,0,0}
+};
+Fl_Menu_Item* GUI::MinSpeedXY = GUI::menu_Printer + 0;
+
 void GUI::cb_Save1_i(Fl_Button*, void*) {
   Fl_File_Chooser chooser("\\", "*.gcode", Fl_File_Chooser::CREATE, "Choose filename");
 chooser.show();
@@ -1120,7 +1129,6 @@ GUI::GUI() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(830, 40, 545, 795, "Infill");
-        o->hide();
         { Fl_Group* o = new Fl_Group(840, 65, 535, 215, "Infill");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
@@ -1462,22 +1470,29 @@ e rest of the print.");
           o->callback((Fl_Callback*)cb_Convert);
         } // Fl_Button* o
         { Fl_Tabs* o = new Fl_Tabs(830, 120, 545, 715);
-          { Fl_Text_Editor* o = GCodeStart = new Fl_Text_Editor(830, 140, 545, 695, "Start code");
-            GCodeStart->hide();
-            Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();
-            o->buffer(startbuff);
-          } // Fl_Text_Editor* GCodeStart
-          { Fl_Text_Editor* o = GCodeLayer = new Fl_Text_Editor(830, 140, 545, 695, "Next layer");
+          { Fl_Group* o = new Fl_Group(830, 140, 545, 695, "Start code");
+            { Fl_Text_Editor* o = GCodeStart = new Fl_Text_Editor(830, 140, 530, 605);
+              Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();
+              o->buffer(startbuff);
+            } // Fl_Text_Editor* GCodeStart
+            { Fl_Choice* o = new Fl_Choice(955, 750, 75, 15, "Printer definition");
+              o->down_box(FL_BORDER_BOX);
+              o->menu(menu_Printer);
+            } // Fl_Choice* o
+            o->end();
+          } // Fl_Group* o
+          { Fl_Text_Editor* o = GCodeLayer = new Fl_Text_Editor(830, 140, 530, 695, "Next layer");
             GCodeLayer->hide();
             Fl_Text_Buffer *layerbuff = new Fl_Text_Buffer();
             o->buffer(layerbuff);
           } // Fl_Text_Editor* GCodeLayer
-          { Fl_Text_Editor* o = GCodeEnd = new Fl_Text_Editor(830, 140, 545, 695, "End code");
+          { Fl_Text_Editor* o = GCodeEnd = new Fl_Text_Editor(830, 140, 530, 695, "End code");
             GCodeEnd->hide();
             Fl_Text_Buffer *endbuff = new Fl_Text_Buffer();
             o->buffer(endbuff);
           } // Fl_Text_Editor* GCodeEnd
-          { Fl_Text_Editor* o = GCodeResult = new Fl_Text_Editor(830, 140, 545, 695, "Result");
+          { Fl_Text_Editor* o = GCodeResult = new Fl_Text_Editor(830, 140, 530, 695, "Result");
+            GCodeResult->hide();
             Fl_Text_Buffer *resultbuff = new Fl_Text_Buffer();
             o->buffer(resultbuff);
           } // Fl_Text_Editor* GCodeResult
@@ -1800,6 +1815,7 @@ e rest of the print.");
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(830, 40, 550, 795, "Debug");
         o->color((Fl_Color)FL_DARK1);
+        o->hide();
         { ExamineSlider = new Fl_Value_Slider(895, 810, 475, 20, "Examine");
           ExamineSlider->type(1);
           ExamineSlider->step(0.001);

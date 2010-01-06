@@ -7,6 +7,12 @@
 * This file is part of RepSnapper and is made available under
 * the terms of the GNU General Public License, version 2, or at your
 * option, any later version, incorporated herein by reference.
+
+	todo:
+	Add variables to start, layer and end gcode
+	Avoid voids when moving - pathfinding
+	Make scoring
+
 *
 * ------------------------------------------------------------------------- */
 #include "stdafx.h"
