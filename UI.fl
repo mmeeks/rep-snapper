@@ -123,7 +123,7 @@ MVC->redraw();}
           }
         }
         Fl_Group {} {
-          label {Printer definition}
+          label {Printer definition} open
           xywh {830 40 545 795} hide
         } {
           Fl_Group {} {
@@ -158,17 +158,17 @@ MVC->redraw();}
           }
           Fl_Group {} {
             label Acceleration open
-            xywh {840 500 535 120} box FLAT_BOX color 39
+            xywh {840 530 535 120} box FLAT_BOX color 39
           } {
             Fl_Value_Slider accelerationStepsSlider {
               label {Number of acceleration steps}
               callback {MVC->NumAccelerationSteps(o->value());}
-              xywh {850 550 515 20} type Horizontal selection_color 2 align 5 maximum 10 step 1 value 5 textsize 14 deactivate
+              xywh {850 580 515 20} type {Horz Knob} selection_color 2 align 5 maximum 10 step 1 value 5 textsize 14 deactivate
             }
             Fl_Value_Slider distanceBetweenSpeedStepsSlider {
               label {Distance used to read full speed(mm)}
               callback {MVC->SetDistancePrAccelerationStep(o->value())}
-              xywh {850 590 515 20} type Horizontal selection_color 2 align 5 maximum 10 value 0.1 textsize 14
+              xywh {850 620 515 20} type {Horz Knob} selection_color 2 align 5 maximum 10 value 0.1 textsize 14
             }
             Fl_Light_Button EnableAccelerationButton {
               label {Enable Acceleration}
@@ -185,7 +185,7 @@ accelerationStepsSlider->deactivate();
 distanceBetweenSpeedStepsSlider->deactivate();
 UseFirmwareAccelerationButton->deactivate();
 }}
-              xywh {850 510 255 20} selection_color 63
+              xywh {850 540 255 20} selection_color 63
             }
             Fl_Light_Button UseFirmwareAccelerationButton {
               label {Use Firmware Acceleration}
@@ -203,52 +203,57 @@ distanceBetweenSpeedStepsSlider->label("Distance Pr Acceleration Step (mm)");;
 }
 accelerationStepsSlider->redraw();
 distanceBetweenSpeedStepsSlider->redraw();}
-              xywh {1110 510 255 20} selection_color 63
+              xywh {1110 540 255 20} selection_color 63
             }
           }
           Fl_Group {} {
             label {Print speeds}
-            xywh {840 300 535 170} box FLAT_BOX color 39
+            xywh {840 330 535 170} box FLAT_BOX color 39
           } {
             Fl_Value_Slider MaxPrintSpeedXYSlider {
               label {Max PrintSpeed XY (mm/minute)}
               callback {MVC->SetMaxPrintSpeedXY(o->value());}
-              xywh {850 360 515 20} type Horizontal selection_color 2 align 5 maximum 8000 step 100 value 4000 textsize 14
+              xywh {850 390 515 20} type {Horz Knob} selection_color 2 align 5 maximum 8000 step 100 value 4000 textsize 14
             }
             Fl_Value_Slider MinPrintSpeedZSlider {
               label {Min PrintSpeed Z (mm/minute)}
               callback {MVC->SetMinPrintSpeedZ(o->value());}
-              xywh {850 400 515 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 2500 step 10 value 50 textsize 14
+              xywh {850 430 515 20} type {Horz Knob} selection_color 2 align 5 minimum 1 maximum 2500 step 10 value 50 textsize 14
             }
             Fl_Value_Slider MinPrintSpeedXYSlider {
               label {Min PrintSpeed XY (mm/minute)}
               callback {MVC->SetMinPrintSpeedXY(o->value());}
-              xywh {850 320 515 20} type Horizontal selection_color 2 align 5 maximum 8000 step 100 value 1000 textsize 14
+              xywh {850 350 515 20} type {Horz Knob} selection_color 2 align 5 maximum 8000 step 100 value 1000 textsize 14
             }
             Fl_Value_Slider MaxPrintSpeedZSlider {
               label {Max PrintSpeed Z (mm/minute)}
               callback {MVC->SetMaxPrintSpeedZ(o->value());}
-              xywh {850 440 515 20} type Horizontal selection_color 2 align 5 maximum 2500 step 10 value 150 textsize 14
+              xywh {850 470 515 20} type {Horz Knob} selection_color 2 align 5 maximum 2500 step 10 value 150 textsize 14
             }
           }
           Fl_Group {} {
             label Extruder open
-            xywh {840 135 535 120} box FLAT_BOX color 39
+            xywh {840 135 535 160} box FLAT_BOX color 39
           } {
             Fl_Value_Slider ExtrudedMaterialWidthSlider {
               label {Extruded material width}
               callback {MVC->SetExtrudedMaterialWidth(o->value());}
-              xywh {850 190 515 20} type Horizontal selection_color 2 align 5 value 0.7 textsize 14
+              xywh {850 190 515 20} type {Horz Knob} selection_color 2 align 5 value 0.7 textsize 14
             }
             Fl_Value_Slider extrusionFactorSlider {
               label {Extrusion multiplier}
               callback {MVC->SetExtrusionFactor(o->value());}
-              xywh {850 230 515 20} type Horizontal selection_color 2 align 5 maximum 2 value 1 textsize 14
+              xywh {850 230 515 20} type {Horz Knob} selection_color 2 align 5 maximum 2 value 1 textsize 14
             }
             Fl_Light_Button UseIncrementalEcodeButton {
               label {Use incremental ecode (for seperate extruder controller)}
               callback {MVC->SetUseIncrementalEcode(o->value());}
               xywh {850 145 515 20} selection_color 63
+            }
+            Fl_Value_Slider LayerThicknessSlider {
+              label {Layer Thickness}
+              callback {MVC->SetLayerThickness(o->value());}
+              xywh {850 270 515 20} type {Horz Knob} selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 0.4 textsize 14
             }
           }
         }
@@ -258,32 +263,27 @@ distanceBetweenSpeedStepsSlider->redraw();}
         } {
           Fl_Group {} {
             label Infill open
-            xywh {840 65 535 250} box FLAT_BOX color 39
+            xywh {840 65 535 215} box FLAT_BOX color 39
           } {
             Fl_Value_Slider InfillRotationSlider {
               label Rotation
               callback {MVC->SetInfillRotation(o->value());}
-              xywh {850 125 515 20} type Horizontal selection_color 2 align 5 maximum 360 step 1 value 45 textsize 14
+              xywh {850 125 515 20} type {Horz Knob} selection_color 2 align 5 maximum 360 step 1 value 45 textsize 14
             }
             Fl_Value_Slider InfillRotationPrLayerSlider {
               label {InFill Rotation pr. Layer}
               callback {MVC->SetInfillRotationPrLayer(o->value());}
-              xywh {850 165 515 20} type Horizontal selection_color 2 align 5 maximum 360 step 1 value 90 textsize 14
+              xywh {850 165 515 20} type {Horz Knob} selection_color 2 align 5 maximum 360 step 1 value 90 textsize 14
             }
             Fl_Value_Slider InfillDistanceSlider {
               label {Infill Distance}
               callback {MVC->SetInfillDistance(o->value());}
-              xywh {850 205 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14
-            }
-            Fl_Value_Slider LayerThicknessSlider {
-              label {Layer Thickness}
-              callback {MVC->SetLayerThickness(o->value());}
-              xywh {850 245 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 0.4 textsize 14
+              xywh {850 205 515 20} type {Horz Knob} selection_color 2 align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14
             }
             Fl_Value_Slider OptimizationSlider {
               label Optimize
               callback {MVC->SetOptimization(o->value());}
-              xywh {850 285 515 20} type Horizontal selection_color 2 align 5 value 0.01 textsize 14
+              xywh {850 250 515 20} type {Horz Knob} selection_color 2 align 5 value 0.01 textsize 14
             }
             Fl_Light_Button ShellOnlyButton {
               label {Shell Only - no infill}
@@ -293,7 +293,7 @@ distanceBetweenSpeedStepsSlider->redraw();}
             Fl_Value_Slider ShellCountSlider {
               label {Shell count}
               callback {MVC->SetShellCount(o->value());}
-              xywh {1110 85 255 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 10 step 1 value 1 textsize 14
+              xywh {1110 85 255 20} type {Horz Knob} selection_color 2 align 5 minimum 1 maximum 10 step 1 value 1 textsize 14
             }
           }
         }
@@ -308,22 +308,22 @@ distanceBetweenSpeedStepsSlider->redraw();}
             Fl_Value_Slider ApronSizeSlider {
               label Size
               callback {MVC->SetApronSize(o->value());}
-              tooltip {How much larget then the print should the Raft be.} xywh {850 125 510 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 2 step 0.1 value 1.3 textsize 14 deactivate
+              tooltip {How much larget then the print should the Raft be.} xywh {850 125 510 20} type {Horz Knob} selection_color 2 align 5 minimum 0.1 maximum 2 step 0.1 value 1.3 textsize 14 deactivate
             }
             Fl_Value_Slider ApronCoverageXSlider {
               label {Coverage X axis}
               callback {MVC->SetApronCoverageX(o->value());}
-              xywh {850 205 510 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 100 step 1 value 30 textsize 14 deactivate
+              xywh {850 205 510 20} type {Horz Knob} selection_color 2 align 5 minimum 1 maximum 100 step 1 value 30 textsize 14 deactivate
             }
             Fl_Value_Slider ApronHeightSlider {
               label Height
               callback {MVC->SetApronHeight(o->value());}
-              xywh {850 165 510 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 30 step 1 value 8 textsize 14 deactivate
+              xywh {850 165 510 20} type {Horz Knob} selection_color 2 align 5 minimum 1 maximum 30 step 1 value 8 textsize 14 deactivate
             }
             Fl_Value_Slider ApronCoverageYSlider {
               label {Coverage Y axis}
               callback {MVC->SetApronCoverageY(o->value());}
-              xywh {850 245 510 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 100 step 1 value 30 textsize 14 deactivate
+              xywh {850 245 510 20} type {Horz Knob} selection_color 2 align 5 minimum 1 maximum 100 step 1 value 30 textsize 14 deactivate
             }
             Fl_Light_Button ApronEnableButton {
               label Enable
@@ -333,12 +333,12 @@ distanceBetweenSpeedStepsSlider->redraw();}
             Fl_Value_Slider ApronDistanceToObjectSlider {
               label {Distance to object}
               callback {MVC->SetApronDistanceToObject(o->value());}
-              xywh {850 285 510 20} type Horizontal selection_color 2 align 5 minimum -1 maximum 3 step 0.1 value 0.5 textsize 14 deactivate
+              xywh {850 285 510 20} type {Horz Knob} selection_color 2 align 5 minimum -1 maximum 3 step 0.1 value 0.5 textsize 14 deactivate
             }
             Fl_Value_Slider ApronInfillDistanceSlider {
               label {Infill Distance}
               callback {MVC->SetApronInfillDistance(o->value());}
-              xywh {850 325 510 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14 deactivate
+              xywh {850 325 510 20} type {Horz Knob} selection_color 2 align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14 deactivate
             }
             Fl_Light_Button ApronPreviewButton {
               label Preview
@@ -358,32 +358,32 @@ distanceBetweenSpeedStepsSlider->redraw();}
             Fl_Value_Slider RaftMaterialPrDistanceRatioSlider {
               label {Material pr. distance ratio}
               callback {MVC->SetRaftMaterialPrDistanceRatio(o->value());}
-              xywh {845 285 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 1.75 textsize 14
+              xywh {845 285 515 20} type {Horz Knob} selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 1.75 textsize 14
             }
             Fl_Value_Slider RaftRotationSlider {
               label Rotation
               callback {MVC->SetRaftRotation(o->value());}
-              xywh {845 325 515 20} type Horizontal selection_color 2 align 5 maximum 360 step 1 value 90 textsize 14
+              xywh {845 325 515 20} type {Horz Knob} selection_color 2 align 5 maximum 360 step 1 value 90 textsize 14
             }
             Fl_Value_Slider RaftBaseDistanceSlider {
               label {Distance between lines}
               callback {MVC->SetRaftBaseDistance(o->value());}
-              tooltip {Distance between the base layer's lines} xywh {845 370 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14
+              tooltip {Distance between the base layer's lines} xywh {845 370 515 20} type {Horz Knob} selection_color 2 align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14
             }
             Fl_Value_Slider RaftBaseThicknessSlider {
               label {Thinkness ratio}
               callback {MVC->SetRaftBaseThickness(o->value());}
-              tooltip {How much thicker or thinner then a normal layer should the raft base be.} xywh {845 415 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 1 textsize 14
+              tooltip {How much thicker or thinner then a normal layer should the raft base be.} xywh {845 415 515 20} type {Horz Knob} selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 1 textsize 14
             }
             Fl_Value_Slider RaftBaseLayerCountSlider {
               label {Number of Base layers}
               callback {MVC->SetRaftBaseLayerCount(o->value());}
-              xywh {845 245 515 20} type Horizontal selection_color 2 align 5 maximum 5 step 1 value 1 textsize 14
+              xywh {845 245 515 20} type {Horz Knob} selection_color 2 align 5 maximum 5 step 1 value 1 textsize 14
             }
             Fl_Value_Slider RaftBaseTemperatureSlider {
               label {Temperature ratio}
               callback {MVC->SetRaftBaseTemperature(o->value());}
-              tooltip {To make the flow better, you may want to print the base layers hotter then the rest of the print.} xywh {845 460 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 3 value 1.1 textsize 14
+              tooltip {To make the flow better, you may want to print the base layers hotter then the rest of the print.} xywh {845 460 515 20} type {Horz Knob} selection_color 2 align 5 minimum 0.1 maximum 3 value 1.1 textsize 14
             }
           }
           Fl_Group {} {
@@ -393,7 +393,7 @@ distanceBetweenSpeedStepsSlider->redraw();}
             Fl_Value_Slider RaftSizeSlider {
               label Size
               callback {MVC->SetRaftSize(o->value());}
-              tooltip {How much larget then the print should the Raft be.} xywh {845 170 515 20} type Horizontal selection_color 2 align 5 minimum 1 maximum 3 value 1.33 textsize 14
+              tooltip {How much larget then the print should the Raft be.} xywh {845 170 515 20} type {Horz Knob} selection_color 2 align 5 minimum 1 maximum 3 value 1.33 textsize 14
             }
           }
           Fl_Group {} {
@@ -403,32 +403,32 @@ distanceBetweenSpeedStepsSlider->redraw();}
             Fl_Value_Slider RaftInterfaceMaterialPrDistanceRatioSlider {
               label {Material pr. distance ratio}
               callback {MVC->SetRaftInterfaceMaterialPrDistanceRatio(o->value());}
-              xywh {845 595 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 1 textsize 14
+              xywh {845 595 515 20} type {Horz Knob} selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 1 textsize 14
             }
             Fl_Value_Slider RaftRotationPrLayerSlider {
               label {Rotation pr. layer}
               callback {MVC->SetRaftRotationPrLayer(o->value());}
-              xywh {845 640 515 20} type Horizontal selection_color 2 align 5 maximum 360 step 1 value 90 textsize 14
+              xywh {845 640 515 20} type {Horz Knob} selection_color 2 align 5 maximum 360 step 1 value 90 textsize 14
             }
             Fl_Value_Slider RaftInterfaceDistanceSlider {
               label {Distance between lines}
               callback {MVC->SetRaftInterfaceDistance(o->value());}
-              tooltip {Distance between the base layer's lines} xywh {845 685 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14
+              tooltip {Distance between the base layer's lines} xywh {845 685 515 20} type {Horz Knob} selection_color 2 align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14
             }
             Fl_Value_Slider RaftInterfaceThicknessSlider {
               label {Thinkness ratio}
               callback {MVC->SetRaftBaseThickness(o->value());}
-              tooltip {How much thicker or thinner then a normal layer should the raft base be.} xywh {845 730 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 1 textsize 14
+              tooltip {How much thicker or thinner then a normal layer should the raft base be.} xywh {845 730 515 20} type {Horz Knob} selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 1 textsize 14
             }
             Fl_Value_Slider RaftInterfaceLayerCountSlider {
               label {Number of interface layers}
               callback {MVC->SeRaftInterfaceLayerCount(o->value());}
-              xywh {845 550 515 20} type Horizontal selection_color 2 align 5 maximum 5 step 1 value 2 textsize 14
+              xywh {845 550 515 20} type {Horz Knob} selection_color 2 align 5 maximum 5 step 1 value 2 textsize 14
             }
             Fl_Value_Slider RaftInterfaceTemperatureSlider {
               label {Temperature ratio}
               callback {MVC->SetRaftInterfaceTemperature(o->value());}
-              tooltip {To make the flow better, you may want to print the base layers hotter then the rest of the print.} xywh {845 775 515 20} type Horizontal selection_color 2 align 5 minimum 0.1 maximum 3 value 1.1 textsize 14
+              tooltip {To make the flow better, you may want to print the base layers hotter then the rest of the print.} xywh {845 775 515 20} type {Horz Knob} selection_color 2 align 5 minimum 0.1 maximum 3 value 1.1 textsize 14
             }
           }
           Fl_Group {} {
@@ -551,7 +551,7 @@ MVC->redraw();
           }
         }
         Fl_Group {} {
-          label Rendering
+          label Rendering open
           xywh {830 40 545 795} color 47 hide
         } {
           Fl_Group {} {
@@ -767,7 +767,7 @@ MVC->redraw();}
             Fl_Value_Slider CuttingPlaneValueSlider {
               label Cuttingplane
               callback {MVC->SetCuttingPlaneValue(o->value());}
-              xywh {845 645 515 20} type Horizontal align 5 value 0.5 textsize 14
+              xywh {845 645 515 20} type {Horz Knob} align 5 value 0.5 textsize 14
             }
             Fl_Light_Button DisplayCuttingPlaneButton {
               label {Display CuttingPlane}
@@ -828,7 +828,7 @@ MVC->redraw();}
           }
         }
         Fl_Group {} {
-          label Debug open
+          label Debug open selected
           xywh {830 40 550 795} color 47
         } {
           Fl_Value_Slider ExamineSlider {
@@ -925,7 +925,7 @@ MVC->ProcessControl.SaveXML();}
             xywh {835 225 535 565}
           } {
             Fl_Browser CommunationLog {
-              label {Communication log} selected
+              label {Communication log}
               xywh {840 250 530 540}
               code0 {\#include <FL/Fl_Multi_Browser.h>}
               class Fl_Multi_Browser

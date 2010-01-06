@@ -122,6 +122,11 @@ private:
   void cb_UseIncrementalEcodeButton_i(Fl_Light_Button*, void*);
   static void cb_UseIncrementalEcodeButton(Fl_Light_Button*, void*);
 public:
+  Fl_Value_Slider *LayerThicknessSlider;
+private:
+  void cb_LayerThicknessSlider_i(Fl_Value_Slider*, void*);
+  static void cb_LayerThicknessSlider(Fl_Value_Slider*, void*);
+public:
   Fl_Value_Slider *InfillRotationSlider;
 private:
   void cb_InfillRotationSlider_i(Fl_Value_Slider*, void*);
@@ -136,11 +141,6 @@ public:
 private:
   void cb_InfillDistanceSlider_i(Fl_Value_Slider*, void*);
   static void cb_InfillDistanceSlider(Fl_Value_Slider*, void*);
-public:
-  Fl_Value_Slider *LayerThicknessSlider;
-private:
-  void cb_LayerThicknessSlider_i(Fl_Value_Slider*, void*);
-  static void cb_LayerThicknessSlider(Fl_Value_Slider*, void*);
 public:
   Fl_Value_Slider *OptimizationSlider;
 private:

@@ -26,7 +26,7 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 			gui->ErrorLog->bottomline(gui->ErrorLog->size());
 		}
 		gui->CommunationLog->redraw();
-		Fl::check();
+//		Fl::check();
 	}
 	else
 		printf("%s", s.c_str());
@@ -168,7 +168,7 @@ void RepRapSerial::OnEvent (EEvent eEvent, EError eError)
 
 				if (command == "ok")	// most common, first
 				{
-					debugPrint("Recieved: Ok");
+//					debugPrint("Recieved: Ok");
 					if(m_bPrinting)
 					{
 						SendNextLine();
