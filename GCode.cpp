@@ -312,6 +312,7 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 			break;
 		case SETSPEED:
 			commands[i].where.z = LastPos.z;
+			commands[i].e = lastE;
 		case ZMOVE:
 			commands[i].where.x = LastPos.x;
 			commands[i].where.y = LastPos.y;

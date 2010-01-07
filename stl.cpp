@@ -413,7 +413,10 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSte
 			// Set start feedrage
 			command.Code = SETSPEED;
 			command.where = start;
-			command.e = 0.0f;		// move or extrude?
+			if(UseIncrementalEcode)
+				command.e = E;		// move or extrude?
+			else
+				command.e = 0.0f;		// move or extrude?
 			command.f = minSpeedXY;
 			code.commands.push_back(command);
 
@@ -567,11 +570,9 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSte
 
 }
 
-void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, bool UseAcceleration, bool UseIncrementalEcode, bool UseFirmwareAcceleration)
+void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float &E, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, bool UseAcceleration, bool UseIncrementalEcode, bool UseFirmwareAcceleration)
 {
 	// Make an array with all lines, then link'em
-
-	float E = 0.0f;
 
 	static Vector3f LastPosition;//	= Vector3f(0,0,z);
 	LastPosition.z = z;

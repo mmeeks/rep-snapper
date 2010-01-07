@@ -41,6 +41,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 		RaftCenter = MakeRaft(destinationZ);
 		stl.CenterAroundXY(RaftCenter);
 		}
+	float E=0.0f;
 	while(z<stl.Max.z+0.0001f)
 	{
 		if(gui)
@@ -77,7 +78,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 			infillCuttingPlane.CalcInFill(infill, LayerNr, destinationZ, InfillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
 			}
 		// Make the GCode from the plane and the infill
-		plane.MakeGcode(infill, gcode, destinationZ, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, accelerationSteps, distanceBetweenSpeedSteps, extrusionFactor, EnableAcceleration, UseIncrementalEcode, UseFirmwareAcceleration);
+		plane.MakeGcode(infill, gcode, E, destinationZ, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, accelerationSteps, distanceBetweenSpeedSteps, extrusionFactor, EnableAcceleration, UseIncrementalEcode, UseFirmwareAcceleration);
 		LayerNr++;
 		destinationZ += LayerThickness;
 		}
