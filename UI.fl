@@ -10,8 +10,8 @@ class GUI {open
   Function {GUI()} {open
   } {
     Fl_Window mainWindow {
-      label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {265 164 1379 842} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
+      label {RepSnapper by Kulitorum www.kulitorum.com}
+      xywh {370 196 1379 842} type Double box UP_BOX color 0 selection_color 0 labelsize 12 resizable visible
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -120,6 +120,20 @@ MVC->CalcBoundingBoxAndZoom();
 MVC->redraw();}
               xywh {1240 785 125 25}
             }
+          }
+          Fl_Button {} {
+            label {Save settings}
+            callback {Fl_Text_Buffer* buffer = GCodeStart->buffer();
+char* pText = buffer->text();
+MVC->ProcessControl.GCodeStartText = string(pText);
+buffer = GCodeLayer->buffer();
+pText = buffer->text();
+MVC->ProcessControl.GCodeLayerText = string(pText);
+buffer = GCodeEnd->buffer();
+pText = buffer->text();
+MVC->ProcessControl.GCodeEndText = string(pText);
+MVC->ProcessControl.SaveXML();}
+            xywh {1170 80 185 25}
           }
         }
         Fl_Group {} {
@@ -449,7 +463,7 @@ distanceBetweenSpeedStepsSlider->redraw();}
         }
         Fl_Group {} {
           label GCode open
-          xywh {830 40 545 795}
+          xywh {830 40 545 795} hide
         } {
           Fl_Button {} {
             label {Load Gcode}
@@ -485,7 +499,7 @@ MVC->redraw();
               label {Start code} open
               xywh {830 140 545 695}
             } {
-              Fl_Text_Editor GCodeStart {selected
+              Fl_Text_Editor GCodeStart {
                 xywh {830 140 530 605}
                 code0 {Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();}
                 code1 {o->buffer(startbuff);}
@@ -895,18 +909,18 @@ MVC->redraw();}
           }
         }
         Fl_Group {} {
-          label Debug open
-          xywh {830 40 550 795} color 47 hide
+          label Print open
+          xywh {830 40 550 795} color 47
         } {
           Fl_Value_Slider ExamineSlider {
             label Examine
             callback {MVC->SetExamine(o->value());}
-            xywh {895 810 475 20} type Horizontal align 4 step 0.001 value 0.098 textsize 14
+            xywh {895 810 200 20} type Horizontal align 4 step 0.001 value 0.098 textsize 14 hide
           }
           Fl_Light_Button DisplayDebuginFillButton {
             label {Display Debug inFill}
             callback {MVC->SetDisplayDebuginFill(o->value());}
-            xywh {910 790 145 20} selection_color 63
+            xywh {910 790 145 20} selection_color 63 hide
           }
           Fl_Light_Button DisplayDebugButton {
             label Debug
@@ -923,92 +937,138 @@ ExamineSlider->hide();
 
 
 MVC->redraw();}
-            xywh {835 790 70 20} selection_color 63
+            xywh {835 790 70 20} selection_color 63 hide
           }
           Fl_Light_Button DrawVertexNumbersButton {
             label {Draw vertex numbers}
             callback {MVC->SetDrawVertexNumbers(o->value());}
-            xywh {1060 790 155 20} selection_color 63
+            xywh {1060 790 155 20} selection_color 63 hide
           }
           Fl_Light_Button DrawLineNumbersButton {
             label {Draw line numbers}
             callback {MVC->SetDrawLineNumbers(o->value());}
-            xywh {1215 790 155 20} selection_color 63
+            xywh {1215 790 155 20} selection_color 63 hide
           }
           Fl_Light_Button ConnectToPrinterButton {
             label {Connect to printer}
             callback {MVC->ConnectToPrinter(o->value());}
-            xywh {850 40 220 25}
+            xywh {840 45 165 25}
           }
           Fl_Light_Button PrintButton {
             label Print
-            callback {MVC->Print();}
-            xywh {850 65 220 25}
-          }
-          Fl_Light_Button SwitchHeatOnButton {
-            label {Switch heat on}
-            callback {MVC->SwitchHeat(o->value(), TargetTempText->value());}
-            xywh {850 90 220 25}
-          }
-          Fl_Value_Input TargetTempText {
-            label {Target temp}
-            callback {MVC->SetTargetTemp(o->value());}
-            xywh {1305 91 55 24}
-          }
-          Fl_Value_Output CurrentTempText {
-            label {Current temp}
-            xywh {1160 91 55 24}
-          }
-          Fl_Light_Button RunExtruderButton {
-            label {Run extruder}
-            callback {MVC->RunExtruder();}
-            xywh {850 115 220 25}
-          }
-          Fl_Light_Button SetExtruderDirectionButton {
-            label Reverse
-            callback {MVC->SetExtruderDirection(o->value());}
-            xywh {1075 115 220 25}
+            callback {if(o->value())
+{
+o->label("Pause");
+MVC->Print();
+}
+else
+{
+o->label("Print");
+}}
+            xywh {1010 45 165 25}
           }
           Fl_Tabs {} {open
-            xywh {835 165 535 620}
+            xywh {835 85 535 745}
           } {
             Fl_Browser CommunationLog {
               label {Communication log}
-              xywh {840 190 530 595}
+              xywh {840 110 530 720} hide
               code0 {\#include <FL/Fl_Multi_Browser.h>}
               class Fl_Multi_Browser
             }
             Fl_Browser ErrorLog {
               label {Errors / warnings}
-              xywh {840 190 530 595} hide
+              xywh {840 110 530 720} hide
               code0 {\#include <FL/Fl_Multi_Browser.h>}
               class Fl_Multi_Browser
             }
             Fl_Browser Echo {
               label Echo
-              xywh {840 190 530 595} hide
+              xywh {840 110 530 720} hide
               code0 {\#include <FL/Fl_Multi_Browser.h>}
               class Fl_Multi_Browser
+            }
+            Fl_Group {} {
+              label {Interactive control} open
+              xywh {840 110 530 720}
+            } {
+              Fl_Slider {} {
+                label X
+                xywh {875 125 405 20} type {Horz Knob} color 39 selection_color 2 align 4 minimum -5000 maximum 5000 step 1
+              }
+              Fl_Light_Button SwitchHeatOnButton {
+                label {Switch heat on}
+                callback {MVC->SwitchHeat(o->value(), TargetTempText->value());}
+                xywh {845 300 220 25}
+              }
+              Fl_Value_Input TargetTempText {
+                label {Target temp}
+                callback {MVC->SetTargetTemp(o->value());}
+                xywh {1300 301 55 24} maximum 300 value 63
+              }
+              Fl_Light_Button RunExtruderButton {
+                label {Run extruder}
+                callback {MVC->RunExtruder();}
+                xywh {845 330 115 25}
+              }
+              Fl_Light_Button SetExtruderDirectionButton {
+                label Reverse
+                callback {MVC->SetExtruderDirection(o->value());}
+                xywh {965 330 100 25}
+              }
+              Fl_Slider {} {
+                label Y
+                xywh {875 150 405 20} type {Horz Knob} color 39 selection_color 2 align 4 minimum -5000 maximum 5000 step 1
+              }
+              Fl_Slider {} {
+                label Z
+                xywh {875 175 405 20} type {Horz Knob} color 39 selection_color 2 align 4 minimum -5000 maximum 5000 step 1
+              }
+              Fl_Button {} {
+                label Home
+                xywh {1285 125 68 20}
+              }
+              Fl_Button {} {
+                label Home
+                xywh {1285 150 68 20}
+              }
+              Fl_Button {} {
+                label Home
+                xywh {1285 175 68 20}
+              }
+              Fl_Button {} {
+                label {Find position in Gcode}
+                xywh {1180 200 173 20} deactivate
+              }
+              Fl_Value_Slider {} {
+                label Speed
+                callback {MVC->SetExtruderSpeed(o->value());}
+                xywh {1120 330 235 25} type {Horz Knob} align 4 minimum 100 maximum 9999 step 100 value 3000 textsize 14
+              }
+              Fl_Value_Slider {} {
+                label Length
+                callback {MVC->SetExtruderLength(o->value());}
+                xywh {1120 360 235 25} type {Horz Knob} align 4 minimum 10 maximum 9999 step 100 value 750 textsize 14
+              }
+              Fl_Input GCodeInput {
+                label GCode
+                xywh {895 225 385 20}
+              }
+              Fl_Button {} {
+                label Send
+                callback {MVC->SendNow(GCodeInput->value());}
+                xywh {1285 225 68 20}
+              }
+              Fl_Output CurrentTempText {
+                label {Current temp}
+                xywh {1160 301 55 24}
+              }
             }
           }
           Fl_Light_Button ContinueButton {
             label Nudge
             callback {MVC->Continue();}
-            xywh {1075 65 90 25}
-          }
-          Fl_Button {} {
-            label {Save settings}
-            callback {Fl_Text_Buffer* buffer = GCodeStart->buffer();
-char* pText = buffer->text();
-MVC->ProcessControl.GCodeStartText = string(pText);
-buffer = GCodeLayer->buffer();
-pText = buffer->text();
-MVC->ProcessControl.GCodeLayerText = string(pText);
-buffer = GCodeEnd->buffer();
-pText = buffer->text();
-MVC->ProcessControl.GCodeEndText = string(pText);
-MVC->ProcessControl.SaveXML();}
-            xywh {1070 40 185 25}
+            xywh {1180 45 165 25}
           }
         }
       }
@@ -1025,11 +1085,20 @@ Fl::scheme("plastic");
 mainWindow->show(argc, argv);
 //MVC->ReadStl("C:/box.stl");
 MVC->init();
-MVC->ReadStl("C:/\#Downloads/Reprap Exchange/N_DSL-Stylus.stl");
+//MVC->ReadStl("C:/\#Downloads/Reprap Exchange/N_DSL-Stylus.stl");
 //MVC->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
 MVC->CopySettingsToGUI();
 MVC->draw();
 MVC->redraw();
 MVC->redraw();} {}
+  }
+} 
+
+decl {extern GUI* gui;} {} 
+
+Function {TempReadTimer(void *)} {open return_type void
+} {
+  code {gui->MVC->serial.SendNow("M105");
+Fl::repeat_timeout(10.0f, &TempReadTimer);} {selected
   }
 } 

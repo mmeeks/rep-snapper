@@ -184,6 +184,8 @@ void RepRapSerial::OnEvent (EEvent eEvent, EError eError)
 				{
 					string parameter = command.substr(2,command.length()-2);
 					debugPrint( string("Received:") + command+ " with parameter " + parameter);
+
+					gui->CurrentTempText->value(parameter.c_str());
 					// Check parameter
 
 				}
@@ -287,7 +289,7 @@ void RepRapSerial::SendNextLine()
 		return;
 		}
 	if(gui)
-		gui->ProgressBar->value(m_iLineNr);
+		gui->ProgressBar->value((float)m_iLineNr);
 }
 
 void RepRapSerial::SendNow(string s)
@@ -308,4 +310,30 @@ void RepRapSerial::SendData(const string &s, const UINT lineNr)
 	debugPrint( string("SendData:") + buffer);
 	buffer += "\r\n";
 	Write(buffer.c_str());
+}
+
+
+extern void TempReadTimer(void *);
+
+void RepRapSerial::Connect()
+{
+	LONG error=ERROR_SUCCESS;
+	error = Open(_T("COM4"), 0, 0, true);
+	assert(error == 0);
+	error = Setup(CSerial::EBaud19200,CSerial::EData8,CSerial::EParNone,CSerial::EStop1);
+	assert(error == 0);
+	error = SetupHandshaking(CSerial::EHandshakeOff);//EHandshakeSoftware works with alot of errors;EHandshakeOff= works ok, sometimes there's comm. error (huh?) EHandshakeHardware = crash, reboot;
+	assert(error == 0);
+	error = StartListener();
+	assert(error == 0);
+	m_bConnected = true;
+
+	Fl::add_timeout(1.0f, &TempReadTimer);
+}
+
+
+void RepRapSerial::DisConnect()
+{
+	Close();
+	m_bConnected = false;
 }

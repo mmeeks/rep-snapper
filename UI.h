@@ -20,8 +20,8 @@ class ModelViewController;
 #include <FL/Fl_Text_Editor.H>
 #include <FL/Fl_Choice.H>
 #include <FL/Fl_Slider.H>
-#include <FL/Fl_Value_Output.H>
 #include <FL/Fl_Multi_Browser.h>
+#include <FL/Fl_Input.H>
 #include <FL/Fl_Progress.H>
 
 class GUI {
@@ -62,6 +62,8 @@ public:
 private:
   void cb_RotateZButton_i(Fl_Button*, void*);
   static void cb_RotateZButton(Fl_Button*, void*);
+  void cb_Save1_i(Fl_Button*, void*);
+  static void cb_Save1(Fl_Button*, void*);
 public:
   Fl_Value_Input *VolumeX;
   Fl_Value_Input *VolumeY;
@@ -284,8 +286,8 @@ public:
   Fl_Text_Editor *GCodeEnd;
   Fl_Text_Editor *GCodeResult;
 private:
-  void cb_Save1_i(Fl_Button*, void*);
-  static void cb_Save1(Fl_Button*, void*);
+  void cb_Save2_i(Fl_Button*, void*);
+  static void cb_Save2(Fl_Button*, void*);
 public:
   Fl_Text_Editor *NotesEditor;
   Fl_Light_Button *DisplayPolygonsButton;
@@ -510,6 +512,9 @@ private:
   void cb_PrintButton_i(Fl_Light_Button*, void*);
   static void cb_PrintButton(Fl_Light_Button*, void*);
 public:
+  Fl_Multi_Browser *CommunationLog;
+  Fl_Multi_Browser *ErrorLog;
+  Fl_Multi_Browser *Echo;
   Fl_Light_Button *SwitchHeatOnButton;
 private:
   void cb_SwitchHeatOnButton_i(Fl_Light_Button*, void*);
@@ -520,7 +525,6 @@ private:
   void cb_TargetTempText_i(Fl_Value_Input*, void*);
   static void cb_TargetTempText(Fl_Value_Input*, void*);
 public:
-  Fl_Value_Output *CurrentTempText;
   Fl_Light_Button *RunExtruderButton;
 private:
   void cb_RunExtruderButton_i(Fl_Light_Button*, void*);
@@ -530,18 +534,24 @@ public:
 private:
   void cb_SetExtruderDirectionButton_i(Fl_Light_Button*, void*);
   static void cb_SetExtruderDirectionButton(Fl_Light_Button*, void*);
+  void cb_Speed_i(Fl_Value_Slider*, void*);
+  static void cb_Speed(Fl_Value_Slider*, void*);
+  void cb_Length_i(Fl_Value_Slider*, void*);
+  static void cb_Length(Fl_Value_Slider*, void*);
 public:
-  Fl_Multi_Browser *CommunationLog;
-  Fl_Multi_Browser *ErrorLog;
-  Fl_Multi_Browser *Echo;
+  Fl_Input *GCodeInput;
+private:
+  void cb_Send_i(Fl_Button*, void*);
+  static void cb_Send(Fl_Button*, void*);
+public:
+  Fl_Output *CurrentTempText;
   Fl_Light_Button *ContinueButton;
 private:
   void cb_ContinueButton_i(Fl_Light_Button*, void*);
   static void cb_ContinueButton(Fl_Light_Button*, void*);
-  void cb_Save2_i(Fl_Button*, void*);
-  static void cb_Save2(Fl_Button*, void*);
 public:
   Fl_Progress *ProgressBar;
   void show(int argc, char **argv);
 };
+void TempReadTimer(void *);
 #endif

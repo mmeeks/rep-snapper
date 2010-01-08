@@ -160,23 +160,13 @@ public:
 	// Communication
 	void ConnectToPrinter(char on){
 		if(on)
-		{
-		LONG error=ERROR_SUCCESS;
-		error = serial.Open(_T("COM4"), 0, 0, true);
-		assert(error == 0);
-		error = serial.Setup(CSerial::EBaud19200,CSerial::EData8,CSerial::EParNone,CSerial::EStop1);
-		assert(error == 0);
-		error = serial.SetupHandshaking(CSerial::EHandshakeOff);//EHandshakeSoftware works with alot of errors;EHandshakeOff= works ok, sometimes there's comm. error (huh?) EHandshakeHardware = crash, reboot;
-		assert(error == 0);
-		error = serial.StartListener();
-		assert(error == 0);
-		m_bConnected = true;
-		}
+			{
+			serial.Connect();
+			}
 		else
-		{
-			serial.Close();
-			m_bConnected = false;
-		}
+			{
+			serial.DisConnect();
+			}
 
 	}
 	void Print();
@@ -185,12 +175,16 @@ public:
 	void SwitchHeat(bool on, float temp);
 	void SetTargetTemp(float temp);
 	void RunExtruder();
+	void SetExtruderSpeed(int speed);
+	void SetExtruderLength(int length);
 	void SetExtruderDirection(bool reverse);
+	void SendNow(string str);
 
 	RepRapSerial serial;
-	bool m_bConnected;
 	bool m_bExtruderDirection; // True = forwards
-	
+	int  m_iExtruderSpeed;
+	int m_iExtruderLength;
+	float m_fTargetTemp;
 
 	/*--------------ArcBall-------------------*/
 

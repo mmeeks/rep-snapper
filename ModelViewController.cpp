@@ -53,9 +53,12 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 	ProcessControl.LoadXML();
 	CopySettingsToGUI();
 
-	m_bConnected = false;
 	m_bExtruderDirection = true;
+	m_iExtruderSpeed = 3000;
+	m_iExtruderLength = 750;
+	m_fTargetTemp = 63.0f;
 }
+
 
 
 void ModelViewController::CalcBoundingBoxAndZoom()
@@ -474,26 +477,53 @@ void ModelViewController::Print()
 
 void ModelViewController::SwitchHeat(bool on, float temp)
 {
+	std::stringstream oss;
+	oss << "M104 S" <<temp;
+
 	if(on)
-		serial.SendNow("M104 S64");
+		serial.SendNow(oss.str());
 	else
 		serial.SendNow("M104 S0");
 }
 void ModelViewController::SetTargetTemp(float temp)
 {
+	m_fTargetTemp = temp;
+}
+void ModelViewController::SetExtruderSpeed(int speed)
+{
+	m_iExtruderSpeed = speed;
+}
+void ModelViewController::SetExtruderLength(int length)
+{
+	m_iExtruderLength = length;
 }
 void ModelViewController::RunExtruder()
 {
-	serial.SendNow("G1 F3000.0");
+	char speed[10];
+	itoa(m_iExtruderSpeed, speed, 10);
+	string command("G1 F");
+	command += speed;
+	serial.SendNow(command);
+
 	serial.SendNow("G92 E0");	// set extruder zero
 
-	if(m_bExtruderDirection)	// Forwards
-		serial.SendNow("G1 E250.0");
-	else
-		serial.SendNow("G1 E-250.0");
+	char length[10];
+	itoa(m_iExtruderLength, length, 10);
+	string command2("G1 E");
+
+	if(!m_bExtruderDirection)	// Forwards
+		command2+="-";
+	command2+=length;
+	serial.SendNow(command2);
 	serial.SendNow("G1 F1500.0");
+
+	serial.SendNow("G92 E0");	// set extruder zero
 }
 void ModelViewController::SetExtruderDirection(bool reverse)
 {
 	m_bExtruderDirection = !reverse;
+}
+void ModelViewController::SendNow(string str)
+{
+	serial.SendNow(str);
 }

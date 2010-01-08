@@ -9,7 +9,7 @@
 class RepRapSerial : public CSerialEx
 {
 public:
-	RepRapSerial(){m_bPrinting = false; m_iLineNr = 0; gui=0;}
+	RepRapSerial(){m_bPrinting = false; m_iLineNr = 0; gui=0;m_bConnected=false;}
 	// Event handler
 	virtual void OnEvent (EEvent eEvent, EError eError);
 
@@ -22,11 +22,15 @@ public:
 	void SendNextLine();
 	void test();
 	void SendData(const string &s, const UINT lineNr);
+	void Connect();
+	void DisConnect();
+
 private:
 	void debugPrint(string s, bool selectLine = false);
 	void echo(string s);
 	vector<string> buffer;
 	bool m_bPrinting;
+	bool m_bConnected;
 	UINT m_iLineNr;
 	string InBuffer;
 	
