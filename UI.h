@@ -287,6 +287,7 @@ private:
   void cb_Save1_i(Fl_Button*, void*);
   static void cb_Save1(Fl_Button*, void*);
 public:
+  Fl_Text_Editor *NotesEditor;
   Fl_Light_Button *DisplayPolygonsButton;
 private:
   void cb_DisplayPolygonsButton_i(Fl_Light_Button*, void*);
@@ -498,8 +499,6 @@ public:
 private:
   void cb_DrawLineNumbersButton_i(Fl_Light_Button*, void*);
   static void cb_DrawLineNumbersButton(Fl_Light_Button*, void*);
-  void cb_Save2_i(Fl_Button*, void*);
-  static void cb_Save2(Fl_Button*, void*);
 public:
   Fl_Light_Button *ConnectToPrinterButton;
 private:
@@ -539,6 +538,8 @@ public:
 private:
   void cb_ContinueButton_i(Fl_Light_Button*, void*);
   static void cb_ContinueButton(Fl_Light_Button*, void*);
+  void cb_Save2_i(Fl_Button*, void*);
+  static void cb_Save2(Fl_Button*, void*);
 public:
   Fl_Progress *ProgressBar;
   void show(int argc, char **argv);

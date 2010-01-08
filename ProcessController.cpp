@@ -253,6 +253,7 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("GCodeStartText", true,"[Empty]")->SetValue(GCodeStartText.c_str());	
 	x->FindVariableZ("GCodeLayerText", true,"[Empty]")->SetValue(GCodeLayerText.c_str());	
 	x->FindVariableZ("GCodeEndText", true,"[Empty]")->SetValue(GCodeEndText.c_str());	
+	x->FindVariableZ("Notes", true,"[Empty]")->SetValue(Notes.c_str());	
 	x->FindVariableZ("GCodeDrawStart", true, "190")->SetValueFloat(GCodeDrawStart);
 	x->FindVariableZ("GCodeDrawEnd", true, "190")->SetValueFloat(GCodeDrawEnd);
 	x->FindVariableZ("ShellOnly", true, "0.66")->SetValueInt((int)ShellOnly);
@@ -422,6 +423,9 @@ void ProcessController::LoadXML(XMLElement *e)
 	memset(buffer,0,10000);
 	x->FindVariableZ("GCodeEndText", true, "M107                            ;cooler off\nG1 X0 Y0 E0 F2000.0       ;feed for start of next move\nM104 S0.0                    ;Heater off\n")->GetValue(buffer);
 	GCodeEndText = string(buffer);
+	memset(buffer,0,10000);
+	x->FindVariableZ("Notes", true, "")->GetValue(buffer);
+	Notes = string(buffer);
 
 	y=x->FindVariableZ("GCodeDrawStart", true, "0");
 	if(y)	GCodeDrawStart = y->GetValueFloat();

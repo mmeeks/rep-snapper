@@ -297,6 +297,8 @@ void ModelViewController::init()
 	buffer->text(ProcessControl.GCodeLayerText.c_str());
 	buffer = gui->GCodeEnd->buffer();
 	buffer->text(ProcessControl.GCodeEndText.c_str());
+	buffer = gui->NotesEditor->buffer();
+	buffer->text(ProcessControl.Notes.c_str());
 
 //	buffer = gui->CommunationsLogText->buffer();
 //	buffer->text("Dump");
@@ -315,6 +317,8 @@ void ModelViewController::CopySettingsToGUI()
 	buffer->text(ProcessControl.GCodeLayerText.c_str());
 	buffer = gui->GCodeEnd->buffer();
 	buffer->text(ProcessControl.GCodeEndText.c_str());
+	buffer = gui->NotesEditor->buffer();
+	buffer->text(ProcessControl.Notes.c_str());
 
 	gui->RaftEnableButton->value(ProcessControl.RaftEnable);
 	gui->RaftSizeSlider->value(ProcessControl.RaftSize);

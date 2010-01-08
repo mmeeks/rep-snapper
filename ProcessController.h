@@ -204,6 +204,7 @@ public:
 	bool DisplayCuttingPlane;
 	bool DrawVertexNumbers;
 	bool DrawLineNumbers;
+	string Notes;
 
 	// Rendering
 	float PolygonVal;

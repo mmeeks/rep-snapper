@@ -8,11 +8,9 @@ Todo:
 Shrinking: look for minkowski sum
 
 Fix printing of objects where the called-for thickness of the part is less than twice the filament extrusion. - with one line only
-Auto-rotation, biggest surface down
 Batch conversion
 Load many objects, place them on as few prints as possible (considering the print surface size)
 Arrays of objects (load one, print 4)
-Shrink outline, to compensate for filament width
 
 
 [00:49]	<jonored>	(Find the convolution cycle, break all edges that intersect into edges that meet at the intersection point, and then use the winding number around a point on either side of each edge to determine whether to keep the edge.

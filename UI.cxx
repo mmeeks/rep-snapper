@@ -853,22 +853,6 @@ void GUI::cb_DrawLineNumbersButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DrawLineNumbersButton_i(o,v);
 }
 
-void GUI::cb_Save2_i(Fl_Button*, void*) {
-  Fl_Text_Buffer* buffer = GCodeStart->buffer();
-char* pText = buffer->text();
-MVC->ProcessControl.GCodeStartText = string(pText);
-buffer = GCodeLayer->buffer();
-pText = buffer->text();
-MVC->ProcessControl.GCodeLayerText = string(pText);
-buffer = GCodeEnd->buffer();
-pText = buffer->text();
-MVC->ProcessControl.GCodeEndText = string(pText);
-MVC->ProcessControl.SaveXML();
-}
-void GUI::cb_Save2(Fl_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Save2_i(o,v);
-}
-
 void GUI::cb_ConnectToPrinterButton_i(Fl_Light_Button* o, void*) {
   MVC->ConnectToPrinter(o->value());
 }
@@ -916,6 +900,25 @@ void GUI::cb_ContinueButton_i(Fl_Light_Button*, void*) {
 }
 void GUI::cb_ContinueButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_ContinueButton_i(o,v);
+}
+
+void GUI::cb_Save2_i(Fl_Button*, void*) {
+  Fl_Text_Buffer* buffer = GCodeStart->buffer();
+char* pText = buffer->text();
+MVC->ProcessControl.GCodeStartText = string(pText);
+buffer = GCodeLayer->buffer();
+pText = buffer->text();
+MVC->ProcessControl.GCodeLayerText = string(pText);
+buffer = GCodeEnd->buffer();
+pText = buffer->text();
+MVC->ProcessControl.GCodeEndText = string(pText);
+buffer = NotesEditor->buffer();
+pText = buffer->text();
+MVC->ProcessControl.Notes = string(pText);
+MVC->ProcessControl.SaveXML();
+}
+void GUI::cb_Save2(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Save2_i(o,v);
 }
 
 GUI::GUI() {
@@ -1129,6 +1132,7 @@ GUI::GUI() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(830, 40, 545, 795, "Infill");
+        o->hide();
         { Fl_Group* o = new Fl_Group(840, 65, 535, 215, "Infill");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
@@ -1460,7 +1464,6 @@ e rest of the print.");
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(830, 40, 545, 795, "GCode");
-        o->hide();
         { Fl_Button* o = new Fl_Button(835, 90, 145, 25, "Load Gcode");
           o->callback((Fl_Callback*)cb_Load1);
         } // Fl_Button* o
@@ -1508,6 +1511,29 @@ e rest of the print.");
         { new Fl_Button(840, 65, 535, 140, "Placeholder and reminder for antomatic Score\'ing of objects (see todo folder\
 )");
         } // Fl_Button* o
+        { new Fl_Button(840, 245, 535, 30, "Make custom buttons where you can store GCODE and run at will");
+        } // Fl_Button* o
+        { new Fl_Button(840, 315, 535, 30, "Add variables to start, layer and end gcode");
+        } // Fl_Button* o
+        { new Fl_Button(840, 350, 535, 30, "Avoid voids when moving - pathfinding");
+        } // Fl_Button* o
+        { new Fl_Button(840, 385, 535, 30, "Sliders to move head interactivily");
+        } // Fl_Button* o
+        { new Fl_Button(840, 210, 535, 30, "Type input where you can send gcode interactivly");
+        } // Fl_Button* o
+        { new Fl_Button(840, 280, 535, 30, "Temperature reading");
+        } // Fl_Button* o
+        { new Fl_Button(840, 420, 535, 30, "Speed input and interactive start/stop of extruder");
+        } // Fl_Button* o
+        { new Fl_Button(840, 455, 535, 30, "Fix shrink code");
+        } // Fl_Button* o
+        { new Fl_Button(840, 490, 535, 50, "Fix printing of objects where the called-for thickness of the part is less th\
+an twice the filament extrusion. - with one line only");
+        } // Fl_Button* o
+        { Fl_Text_Editor* o = NotesEditor = new Fl_Text_Editor(840, 560, 535, 270, "Notes");
+          Fl_Text_Buffer *NotesBuff = new Fl_Text_Buffer();
+          o->buffer(NotesBuff);
+        } // Fl_Text_Editor* NotesEditor
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(830, 40, 545, 795, "Rendering");
@@ -1840,36 +1866,28 @@ e rest of the print.");
           DrawLineNumbersButton->selection_color((Fl_Color)FL_GREEN);
           DrawLineNumbersButton->callback((Fl_Callback*)cb_DrawLineNumbersButton);
         } // Fl_Light_Button* DrawLineNumbersButton
-        { Fl_Group* o = new Fl_Group(835, 70, 535, 55, "Size");
-          o->box(FL_FLAT_BOX);
-          o->color((Fl_Color)FL_DARK3);
-          { Fl_Button* o = new Fl_Button(850, 80, 185, 30, "Save settings");
-            o->callback((Fl_Callback*)cb_Save2);
-          } // Fl_Button* o
-          o->end();
-        } // Fl_Group* o
-        { ConnectToPrinterButton = new Fl_Light_Button(850, 125, 220, 25, "Connect to printer");
+        { ConnectToPrinterButton = new Fl_Light_Button(850, 40, 220, 25, "Connect to printer");
           ConnectToPrinterButton->callback((Fl_Callback*)cb_ConnectToPrinterButton);
         } // Fl_Light_Button* ConnectToPrinterButton
-        { PrintButton = new Fl_Light_Button(850, 150, 220, 25, "Print");
+        { PrintButton = new Fl_Light_Button(850, 65, 220, 25, "Print");
           PrintButton->callback((Fl_Callback*)cb_PrintButton);
         } // Fl_Light_Button* PrintButton
-        { SwitchHeatOnButton = new Fl_Light_Button(850, 175, 220, 25, "Switch heat on");
+        { SwitchHeatOnButton = new Fl_Light_Button(850, 90, 220, 25, "Switch heat on");
           SwitchHeatOnButton->callback((Fl_Callback*)cb_SwitchHeatOnButton);
         } // Fl_Light_Button* SwitchHeatOnButton
-        { TargetTempText = new Fl_Value_Input(1305, 176, 55, 24, "Target temp");
+        { TargetTempText = new Fl_Value_Input(1305, 91, 55, 24, "Target temp");
           TargetTempText->callback((Fl_Callback*)cb_TargetTempText);
         } // Fl_Value_Input* TargetTempText
-        { CurrentTempText = new Fl_Value_Output(1160, 176, 55, 24, "Current temp");
+        { CurrentTempText = new Fl_Value_Output(1160, 91, 55, 24, "Current temp");
         } // Fl_Value_Output* CurrentTempText
-        { RunExtruderButton = new Fl_Light_Button(850, 200, 220, 25, "Run extruder");
+        { RunExtruderButton = new Fl_Light_Button(850, 115, 220, 25, "Run extruder");
           RunExtruderButton->callback((Fl_Callback*)cb_RunExtruderButton);
         } // Fl_Light_Button* RunExtruderButton
-        { SetExtruderDirectionButton = new Fl_Light_Button(1075, 200, 220, 25, "Reverse");
+        { SetExtruderDirectionButton = new Fl_Light_Button(1075, 115, 220, 25, "Reverse");
           SetExtruderDirectionButton->callback((Fl_Callback*)cb_SetExtruderDirectionButton);
         } // Fl_Light_Button* SetExtruderDirectionButton
-        { Fl_Tabs* o = new Fl_Tabs(835, 225, 535, 565);
-          { CommunationLog = new Fl_Multi_Browser(840, 250, 530, 540, "Communication log");
+        { Fl_Tabs* o = new Fl_Tabs(835, 165, 535, 620);
+          { CommunationLog = new Fl_Multi_Browser(840, 190, 530, 595, "Communication log");
             CommunationLog->box(FL_NO_BOX);
             CommunationLog->color((Fl_Color)FL_BACKGROUND2_COLOR);
             CommunationLog->selection_color((Fl_Color)FL_SELECTION_COLOR);
@@ -1880,7 +1898,7 @@ e rest of the print.");
             CommunationLog->align(FL_ALIGN_BOTTOM);
             CommunationLog->when(FL_WHEN_RELEASE_ALWAYS);
           } // Fl_Multi_Browser* CommunationLog
-          { ErrorLog = new Fl_Multi_Browser(840, 250, 530, 540, "Errors / warnings");
+          { ErrorLog = new Fl_Multi_Browser(840, 190, 530, 595, "Errors / warnings");
             ErrorLog->box(FL_NO_BOX);
             ErrorLog->color((Fl_Color)FL_BACKGROUND2_COLOR);
             ErrorLog->selection_color((Fl_Color)FL_SELECTION_COLOR);
@@ -1892,7 +1910,7 @@ e rest of the print.");
             ErrorLog->when(FL_WHEN_RELEASE_ALWAYS);
             ErrorLog->hide();
           } // Fl_Multi_Browser* ErrorLog
-          { Echo = new Fl_Multi_Browser(840, 250, 530, 540, "Echo");
+          { Echo = new Fl_Multi_Browser(840, 190, 530, 595, "Echo");
             Echo->box(FL_NO_BOX);
             Echo->color((Fl_Color)FL_BACKGROUND2_COLOR);
             Echo->selection_color((Fl_Color)FL_SELECTION_COLOR);
@@ -1906,9 +1924,12 @@ e rest of the print.");
           } // Fl_Multi_Browser* Echo
           o->end();
         } // Fl_Tabs* o
-        { ContinueButton = new Fl_Light_Button(1075, 150, 90, 25, "Nudge");
+        { ContinueButton = new Fl_Light_Button(1075, 65, 90, 25, "Nudge");
           ContinueButton->callback((Fl_Callback*)cb_ContinueButton);
         } // Fl_Light_Button* ContinueButton
+        { Fl_Button* o = new Fl_Button(1070, 40, 185, 25, "Save settings");
+          o->callback((Fl_Callback*)cb_Save2);
+        } // Fl_Button* o
         o->end();
       } // Fl_Group* o
       Tabs->end();

@@ -11,7 +11,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {265 164 1379 842} type Double box UP_BOX color 0 selection_color 0 labelsize 12 resizable visible
+      xywh {265 164 1379 842} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -258,8 +258,8 @@ distanceBetweenSpeedStepsSlider->redraw();}
           }
         }
         Fl_Group {} {
-          label Infill selected
-          xywh {830 40 545 795}
+          label Infill
+          xywh {830 40 545 795} hide
         } {
           Fl_Group {} {
             label Infill open
@@ -449,7 +449,7 @@ distanceBetweenSpeedStepsSlider->redraw();}
         }
         Fl_Group {} {
           label GCode open
-          xywh {830 40 545 795} hide
+          xywh {830 40 545 795}
         } {
           Fl_Button {} {
             label {Load Gcode}
@@ -485,7 +485,7 @@ MVC->redraw();
               label {Start code} open
               xywh {830 140 545 695}
             } {
-              Fl_Text_Editor GCodeStart {
+              Fl_Text_Editor GCodeStart {selected
                 xywh {830 140 530 605}
                 code0 {Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();}
                 code1 {o->buffer(startbuff);}
@@ -573,6 +573,48 @@ MVC->redraw();
           Fl_Button {} {
             label {Placeholder and reminder for antomatic Score'ing of objects (see todo folder)}
             xywh {840 65 535 140}
+          }
+          Fl_Button {} {
+            label {Make custom buttons where you can store GCODE and run at will}
+            xywh {840 245 535 30}
+          }
+          Fl_Button {} {
+            label {Add variables to start, layer and end gcode}
+            xywh {840 315 535 30}
+          }
+          Fl_Button {} {
+            label {Avoid voids when moving - pathfinding}
+            xywh {840 350 535 30}
+          }
+          Fl_Button {} {
+            label {Sliders to move head interactivily}
+            xywh {840 385 535 30}
+          }
+          Fl_Button {} {
+            label {Type input where you can send gcode interactivly}
+            xywh {840 210 535 30}
+          }
+          Fl_Button {} {
+            label {Temperature reading}
+            xywh {840 280 535 30}
+          }
+          Fl_Button {} {
+            label {Speed input and interactive start/stop of extruder}
+            xywh {840 420 535 30}
+          }
+          Fl_Button {} {
+            label {Fix shrink code}
+            xywh {840 455 535 30}
+          }
+          Fl_Button {} {
+            label {Fix printing of objects where the called-for thickness of the part is less than twice the filament extrusion. - with one line only}
+            xywh {840 490 535 50}
+          }
+          Fl_Text_Editor NotesEditor {
+            label Notes
+            xywh {840 560 535 270}
+            code0 {Fl_Text_Buffer *NotesBuff = new Fl_Text_Buffer();}
+            code1 {o->buffer(NotesBuff);}
           }
         }
         Fl_Group {} {
@@ -893,13 +935,70 @@ MVC->redraw();}
             callback {MVC->SetDrawLineNumbers(o->value());}
             xywh {1215 790 155 20} selection_color 63
           }
-          Fl_Group {} {
-            label Size open
-            xywh {835 70 535 55} box FLAT_BOX color 39
+          Fl_Light_Button ConnectToPrinterButton {
+            label {Connect to printer}
+            callback {MVC->ConnectToPrinter(o->value());}
+            xywh {850 40 220 25}
+          }
+          Fl_Light_Button PrintButton {
+            label Print
+            callback {MVC->Print();}
+            xywh {850 65 220 25}
+          }
+          Fl_Light_Button SwitchHeatOnButton {
+            label {Switch heat on}
+            callback {MVC->SwitchHeat(o->value(), TargetTempText->value());}
+            xywh {850 90 220 25}
+          }
+          Fl_Value_Input TargetTempText {
+            label {Target temp}
+            callback {MVC->SetTargetTemp(o->value());}
+            xywh {1305 91 55 24}
+          }
+          Fl_Value_Output CurrentTempText {
+            label {Current temp}
+            xywh {1160 91 55 24}
+          }
+          Fl_Light_Button RunExtruderButton {
+            label {Run extruder}
+            callback {MVC->RunExtruder();}
+            xywh {850 115 220 25}
+          }
+          Fl_Light_Button SetExtruderDirectionButton {
+            label Reverse
+            callback {MVC->SetExtruderDirection(o->value());}
+            xywh {1075 115 220 25}
+          }
+          Fl_Tabs {} {open
+            xywh {835 165 535 620}
           } {
-            Fl_Button {} {
-              label {Save settings}
-              callback {Fl_Text_Buffer* buffer = GCodeStart->buffer();
+            Fl_Browser CommunationLog {
+              label {Communication log}
+              xywh {840 190 530 595}
+              code0 {\#include <FL/Fl_Multi_Browser.h>}
+              class Fl_Multi_Browser
+            }
+            Fl_Browser ErrorLog {
+              label {Errors / warnings}
+              xywh {840 190 530 595} hide
+              code0 {\#include <FL/Fl_Multi_Browser.h>}
+              class Fl_Multi_Browser
+            }
+            Fl_Browser Echo {
+              label Echo
+              xywh {840 190 530 595} hide
+              code0 {\#include <FL/Fl_Multi_Browser.h>}
+              class Fl_Multi_Browser
+            }
+          }
+          Fl_Light_Button ContinueButton {
+            label Nudge
+            callback {MVC->Continue();}
+            xywh {1075 65 90 25}
+          }
+          Fl_Button {} {
+            label {Save settings}
+            callback {Fl_Text_Buffer* buffer = GCodeStart->buffer();
 char* pText = buffer->text();
 MVC->ProcessControl.GCodeStartText = string(pText);
 buffer = GCodeLayer->buffer();
@@ -909,69 +1008,7 @@ buffer = GCodeEnd->buffer();
 pText = buffer->text();
 MVC->ProcessControl.GCodeEndText = string(pText);
 MVC->ProcessControl.SaveXML();}
-              xywh {850 80 185 30}
-            }
-          }
-          Fl_Light_Button ConnectToPrinterButton {
-            label {Connect to printer}
-            callback {MVC->ConnectToPrinter(o->value());}
-            xywh {850 125 220 25}
-          }
-          Fl_Light_Button PrintButton {
-            label Print
-            callback {MVC->Print();}
-            xywh {850 150 220 25}
-          }
-          Fl_Light_Button SwitchHeatOnButton {
-            label {Switch heat on}
-            callback {MVC->SwitchHeat(o->value(), TargetTempText->value());}
-            xywh {850 175 220 25}
-          }
-          Fl_Value_Input TargetTempText {
-            label {Target temp}
-            callback {MVC->SetTargetTemp(o->value());}
-            xywh {1305 176 55 24}
-          }
-          Fl_Value_Output CurrentTempText {
-            label {Current temp}
-            xywh {1160 176 55 24}
-          }
-          Fl_Light_Button RunExtruderButton {
-            label {Run extruder}
-            callback {MVC->RunExtruder();}
-            xywh {850 200 220 25}
-          }
-          Fl_Light_Button SetExtruderDirectionButton {
-            label Reverse
-            callback {MVC->SetExtruderDirection(o->value());}
-            xywh {1075 200 220 25}
-          }
-          Fl_Tabs {} {open
-            xywh {835 225 535 565}
-          } {
-            Fl_Browser CommunationLog {
-              label {Communication log}
-              xywh {840 250 530 540}
-              code0 {\#include <FL/Fl_Multi_Browser.h>}
-              class Fl_Multi_Browser
-            }
-            Fl_Browser ErrorLog {
-              label {Errors / warnings}
-              xywh {840 250 530 540} hide
-              code0 {\#include <FL/Fl_Multi_Browser.h>}
-              class Fl_Multi_Browser
-            }
-            Fl_Browser Echo {
-              label Echo
-              xywh {840 250 530 540} hide
-              code0 {\#include <FL/Fl_Multi_Browser.h>}
-              class Fl_Multi_Browser
-            }
-          }
-          Fl_Light_Button ContinueButton {
-            label Nudge
-            callback {MVC->Continue();}
-            xywh {1075 150 90 25}
+            xywh {1070 40 185 25}
           }
         }
       }
