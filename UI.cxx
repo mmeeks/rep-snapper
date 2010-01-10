@@ -2035,9 +2035,9 @@ an twice the filament extrusion. - with one line only");
     { ProgressBar = new Fl_Progress(75, 5, 1300, 15, "Progress:");
       ProgressBar->selection_color((Fl_Color)FL_GREEN);
       ProgressBar->align(FL_ALIGN_LEFT);
+      Fl_Group::current()->resizable(ProgressBar);
     } // Fl_Progress* ProgressBar
     mainWindow->end();
-    mainWindow->resizable(mainWindow);
   } // Fl_Double_Window* mainWindow
 }
 

@@ -10,7 +10,7 @@ class GUI {open
   Function {GUI()} {open
   } {
     Fl_Window mainWindow {
-      label {RepSnapper by Kulitorum www.kulitorum.com}
+      label {RepSnapper by Kulitorum www.kulitorum.com} open selected
       xywh {370 196 1379 842} type Double box UP_BOX color 0 selection_color 0 labelsize 12 resizable visible
     } {
       Fl_Box MVC {
@@ -22,7 +22,7 @@ class GUI {open
 \#endif}
         class ModelViewController
       }
-      Fl_Tabs Tabs {open
+      Fl_Tabs Tabs {
         xywh {830 20 550 815} align 5
       } {
         Fl_Group {} {
@@ -1074,7 +1074,7 @@ o->label("Print");
       }
       Fl_Progress ProgressBar {
         label {Progress:}
-        xywh {75 5 1300 15} selection_color 63 align 4
+        xywh {75 5 1300 15} selection_color 63 align 4 resizable
       }
     }
   }
@@ -1099,6 +1099,5 @@ decl {extern GUI* gui;} {}
 Function {TempReadTimer(void *)} {open return_type void
 } {
   code {gui->MVC->serial.SendNow("M105");
-Fl::repeat_timeout(10.0f, &TempReadTimer);} {selected
-  }
+Fl::repeat_timeout(10.0f, &TempReadTimer);} {}
 } 
