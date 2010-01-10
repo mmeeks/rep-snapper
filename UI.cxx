@@ -968,7 +968,6 @@ GUI::GUI() {
     { Tabs = new Fl_Tabs(830, 20, 550, 815);
       Tabs->align(FL_ALIGN_TOP_LEFT);
       { Fl_Group* o = new Fl_Group(830, 40, 545, 795, "Input file");
-        o->hide();
         { Fl_Button* o = new Fl_Button(845, 50, 145, 25, "Load STL");
           o->callback((Fl_Callback*)cb_Load);
         } // Fl_Button* o
@@ -1871,6 +1870,7 @@ an twice the filament extrusion. - with one line only");
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(830, 40, 550, 795, "Print");
         o->color((Fl_Color)FL_DARK1);
+        o->hide();
         { ExamineSlider = new Fl_Value_Slider(895, 810, 200, 20, "Examine");
           ExamineSlider->type(1);
           ExamineSlider->step(0.001);

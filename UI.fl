@@ -10,8 +10,8 @@ class GUI {open
   Function {GUI()} {open
   } {
     Fl_Window mainWindow {
-      label {RepSnapper by Kulitorum www.kulitorum.com} open selected
-      xywh {370 196 1379 842} type Double box UP_BOX color 0 selection_color 0 labelsize 12 resizable visible
+      label {RepSnapper by Kulitorum www.kulitorum.com} open
+      xywh {370 196 1379 842} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -26,8 +26,8 @@ class GUI {open
         xywh {830 20 550 815} align 5
       } {
         Fl_Group {} {
-          label {Input file}
-          xywh {830 40 545 795} hide
+          label {Input file} selected
+          xywh {830 40 545 795}
         } {
           Fl_Button {} {
             label {Load STL}
@@ -910,7 +910,7 @@ MVC->redraw();}
         }
         Fl_Group {} {
           label Print open
-          xywh {830 40 550 795} color 47
+          xywh {830 40 550 795} color 47 hide
         } {
           Fl_Value_Slider ExamineSlider {
             label Examine
