@@ -17,6 +17,7 @@
 #include "gcode.h"
 #include "UI.h"
 #include "math.h"
+#include "pathfinder.h"
 
 #include <gl/glu.h>
 #include <glut.h>
@@ -582,15 +583,6 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 
 	if(lastLayerZ == 0)
 		lastLayerZ = z;
-/*
-	// Select Extruder (Reset XY pos?)
-	command.Code = RESET_XY_AXIES;
-	command.where = Vector3f(0,0,lastLayerZ);
-	command.e = E;					// move
-	command.f = MaxPrintSpeedXY;					// Use Max XY speed
-//	command.comment = "RESET_XY_AXIES";
-	code.commands.push_back(command);
-*/
 
 	// Set speed for next move
 	command.Code = SETSPEED;
@@ -660,8 +652,10 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 				{
 				command.Code = COORDINATEDMOTION;
 				command.where = lines[thisPoint];
-				//len = (LastPosition - command.where).length();
-				command.e = E;//len*extrusionFactor;		// move or extrude?
+				if(UseIncrementalEcode)
+					command.e = E;		// Same E as last time = no extrusion = move
+				else
+					command.e = 0.0f;
 				command.f = MinPrintSpeedXY;
 				code.commands.push_back(command);
 				}
@@ -760,8 +754,7 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 		{
 		Vector2f triangleNormal = Vector2f(triangles[i].N.x, triangles[i].N.y);
 		Vector2f p = plane.vertices[line.start];
-		Vector2f segmentNormal = (plane.vertices[line.end] - p);
-		segmentNormal = Vector2f(-segmentNormal.y, segmentNormal.x);
+		Vector2f segmentNormal = (plane.vertices[line.end] - p).normal();
 		triangleNormal.normalise();
 		segmentNormal.normalise();
 /*
@@ -1754,41 +1747,88 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 
 void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane)
 {
-	glColor4f(1,1,1,1);
 	for(int p=0; p<polygons.size();p++)
 		{
 		Poly offsetPoly;
-		if(DisplayCuttingPlane)
-			glBegin(GL_LINE_LOOP);
 		UINT count = polygons[p].points.size();
+		glColor3f(1,0.5,0);
 		for(int i=0; i<count;i++)
 			{
 			Vector2f Na = Vector2f(vertices[polygons[p].points[(i-1+count)%count]].x, vertices[polygons[p].points[(i-1+count)%count]].y);
-			Vector2f Nb = Vector2f(vertices[polygons[p].points[i]].x, vertices[polygons[p].points[i]].y);
-			Vector2f Nc = Vector2f(vertices[polygons[p].points[(i+1)%count]].x, vertices[polygons[p].points[(i+1)%count]].y);
-			
+			Vector2f Nb = Vector2f(vertices[polygons[p].points[i%count]].x, vertices[polygons[p].points[i%count]].y);
+			Vector2f Nc = Nb;
+			Vector2f center = Nb;
+			Vector2f Nd = Vector2f(vertices[polygons[p].points[(i+1)%count]].x, vertices[polygons[p].points[(i+1)%count]].y);
+
 			Vector2f V1 = (Nb-Na);
-			Vector2f V2 = (Nc-Nb);
+			Vector2f V2 = (Nd-Nc);
 			
-			Vector2f N1 = Vector2f(-V1.y, V1.x);
-			Vector2f N2 = Vector2f(-V2.y, V2.x);
+			Vector2f N1 = V1.normal();
+			Vector2f N2 = V2.normal();
 			
 			N1.normalise();
 			N2.normalise();
 
-			Vector2f Normal = N1+N2;
-			Normal.normalise();
-			
-			int vertexNr = polygons[p].points[i];
-			
-			Vector2f p = vertices[vertexNr] - (Normal * distance);
-			offsetPoly.points.push_back(offsetVertices.size());
-			offsetVertices.push_back(p);
-			if(DisplayCuttingPlane)
-				glVertex3f(p.x,p.y,z);
+			// Offset lines
+			Na -= N1*distance;
+			Nb -= N1*distance;
+			Nc -= N2*distance;
+			Nd -= N2*distance;
+/*
+			glLineWidth(5);
+			glBegin(GL_LINES);
+			glVertex3f(Na.x, Na.y, z);
+			glVertex3f(Nb.x, Nb.y, z);
+			glVertex3f(Nc.x, Nc.y, z);
+			glVertex3f(Nd.x, Nd.y, z);
+			glEnd();
+			glLineWidth(1);*/
+
+			Vector2f point = Nb;// vertices[vertexNr] - (Normal * distance);
+
+			InFillHit hit;
+			if(IntersectXY(Na,Nb,Nc,Nd,hit))	//If the segments intersect, it's a sub-180 degree corner.
+				{
+					point=hit.p;
+					glPointSize(10);
+					glBegin(GL_POINTS);
+					glVertex3f(point.x, point.y, z);
+					glEnd();
+
+					offsetPoly.points.push_back(offsetVertices.size());
+					offsetVertices.push_back(point);
+				}
+			else							// If not, make a arc
+				{
+				// From Nc to Nb with center as center
+					float start = atan2( Nb.y - center.y , Nb.x - center.x );
+					float end= atan2( Nc.y - center.y , Nc.x - center.x );
+
+					if(start > end)
+						start -= M_PI*2;
+
+					float r=distance;	// radius
+					while(start<end)
+						{
+						point.x = center.x+cos(start)*r;
+						point.y = center.y+sin(start)*r;
+
+						offsetPoly.points.push_back(offsetVertices.size());
+						offsetVertices.push_back(point);
+
+						start+= 0.3f;
+						}
+				}
+
 			}
 		if(DisplayCuttingPlane)
+			{
+			glColor3f(0,1,0);
+			glBegin(GL_LINE_LOOP);
+			for(UINT i=0;i<offsetPoly.points.size();i++)
+				glVertex3f(offsetVertices[offsetPoly.points[i]].x, offsetVertices[offsetPoly.points[i]].y, z);
 			glEnd();
+			}
 		offsetPolygons.push_back(offsetPoly);
 		}
 }
@@ -1852,6 +1892,10 @@ void CuttingPlane::Draw(float z, bool DrawVertexNumbers, bool DrawLineNumbers)
 			Vector2f Center = (vertices[lines[l].start]+vertices[lines[l].end]) *0.5f;
 			renderBitmapString(Vector3f (Center.x, Center.y, z) , GLUT_BITMAP_8_BY_13 , oss.str());
 		}
+
+
+//	Pathfinder a(offsetPolygons, offsetVertices);
+
 }
 
 void STL::OptimizeRotation()

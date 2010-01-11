@@ -822,53 +822,6 @@ void GUI::cb_Enable3(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Enable3_i(o,v);
 }
 
-void GUI::cb_ExamineSlider_i(Fl_Value_Slider* o, void*) {
-  MVC->SetExamine(o->value());
-}
-void GUI::cb_ExamineSlider(Fl_Value_Slider* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_ExamineSlider_i(o,v);
-}
-
-void GUI::cb_DisplayDebuginFillButton_i(Fl_Light_Button* o, void*) {
-  MVC->SetDisplayDebuginFill(o->value());
-}
-void GUI::cb_DisplayDebuginFillButton(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayDebuginFillButton_i(o,v);
-}
-
-void GUI::cb_DisplayDebugButton_i(Fl_Light_Button* o, void*) {
-  if(o->value())
-{
-DisplayDebuginFillButton->show();
-ExamineSlider->show();
-}
-else
-{
-DisplayDebuginFillButton->hide();
-ExamineSlider->hide();
-}
-
-
-MVC->redraw();
-}
-void GUI::cb_DisplayDebugButton(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayDebugButton_i(o,v);
-}
-
-void GUI::cb_DrawVertexNumbersButton_i(Fl_Light_Button* o, void*) {
-  MVC->SetDrawVertexNumbers(o->value());
-}
-void GUI::cb_DrawVertexNumbersButton(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DrawVertexNumbersButton_i(o,v);
-}
-
-void GUI::cb_DrawLineNumbersButton_i(Fl_Light_Button* o, void*) {
-  MVC->SetDrawLineNumbers(o->value());
-}
-void GUI::cb_DrawLineNumbersButton(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DrawLineNumbersButton_i(o,v);
-}
-
 void GUI::cb_ConnectToPrinterButton_i(Fl_Light_Button* o, void*) {
   MVC->ConnectToPrinter(o->value());
 }
@@ -940,6 +893,53 @@ void GUI::cb_Send(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_Send_i(o,v);
 }
 
+void GUI::cb_ExamineSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetExamine(o->value());
+}
+void GUI::cb_ExamineSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_ExamineSlider_i(o,v);
+}
+
+void GUI::cb_DisplayDebuginFillButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetDisplayDebuginFill(o->value());
+}
+void GUI::cb_DisplayDebuginFillButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_DisplayDebuginFillButton_i(o,v);
+}
+
+void GUI::cb_DisplayDebugButton_i(Fl_Light_Button* o, void*) {
+  if(o->value())
+{
+DisplayDebuginFillButton->show();
+ExamineSlider->show();
+}
+else
+{
+DisplayDebuginFillButton->hide();
+ExamineSlider->hide();
+}
+
+
+MVC->redraw();
+}
+void GUI::cb_DisplayDebugButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_DisplayDebugButton_i(o,v);
+}
+
+void GUI::cb_DrawVertexNumbersButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetDrawVertexNumbers(o->value());
+}
+void GUI::cb_DrawVertexNumbersButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_DrawVertexNumbersButton_i(o,v);
+}
+
+void GUI::cb_DrawLineNumbersButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetDrawLineNumbers(o->value());
+}
+void GUI::cb_DrawLineNumbersButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_DrawLineNumbersButton_i(o,v);
+}
+
 void GUI::cb_ContinueButton_i(Fl_Light_Button*, void*) {
   MVC->Continue();
 }
@@ -968,6 +968,7 @@ GUI::GUI() {
     { Tabs = new Fl_Tabs(830, 20, 550, 815);
       Tabs->align(FL_ALIGN_TOP_LEFT);
       { Fl_Group* o = new Fl_Group(830, 40, 545, 795, "Input file");
+        o->hide();
         { Fl_Button* o = new Fl_Button(845, 50, 145, 25, "Load STL");
           o->callback((Fl_Callback*)cb_Load);
         } // Fl_Button* o
@@ -1126,6 +1127,7 @@ GUI::GUI() {
           { ExtrudedMaterialWidthSlider = new Fl_Value_Slider(850, 190, 515, 20, "Extruded material width");
             ExtrudedMaterialWidthSlider->type(5);
             ExtrudedMaterialWidthSlider->selection_color((Fl_Color)2);
+            ExtrudedMaterialWidthSlider->maximum(8);
             ExtrudedMaterialWidthSlider->value(0.7);
             ExtrudedMaterialWidthSlider->textsize(14);
             ExtrudedMaterialWidthSlider->callback((Fl_Callback*)cb_ExtrudedMaterialWidthSlider);
@@ -1870,36 +1872,6 @@ an twice the filament extrusion. - with one line only");
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(830, 40, 550, 795, "Print");
         o->color((Fl_Color)FL_DARK1);
-        o->hide();
-        { ExamineSlider = new Fl_Value_Slider(895, 810, 200, 20, "Examine");
-          ExamineSlider->type(1);
-          ExamineSlider->step(0.001);
-          ExamineSlider->value(0.098);
-          ExamineSlider->textsize(14);
-          ExamineSlider->callback((Fl_Callback*)cb_ExamineSlider);
-          ExamineSlider->align(FL_ALIGN_LEFT);
-          ExamineSlider->hide();
-        } // Fl_Value_Slider* ExamineSlider
-        { DisplayDebuginFillButton = new Fl_Light_Button(910, 790, 145, 20, "Display Debug inFill");
-          DisplayDebuginFillButton->selection_color((Fl_Color)FL_GREEN);
-          DisplayDebuginFillButton->callback((Fl_Callback*)cb_DisplayDebuginFillButton);
-          DisplayDebuginFillButton->hide();
-        } // Fl_Light_Button* DisplayDebuginFillButton
-        { DisplayDebugButton = new Fl_Light_Button(835, 790, 70, 20, "Debug");
-          DisplayDebugButton->selection_color((Fl_Color)FL_GREEN);
-          DisplayDebugButton->callback((Fl_Callback*)cb_DisplayDebugButton);
-          DisplayDebugButton->hide();
-        } // Fl_Light_Button* DisplayDebugButton
-        { DrawVertexNumbersButton = new Fl_Light_Button(1060, 790, 155, 20, "Draw vertex numbers");
-          DrawVertexNumbersButton->selection_color((Fl_Color)FL_GREEN);
-          DrawVertexNumbersButton->callback((Fl_Callback*)cb_DrawVertexNumbersButton);
-          DrawVertexNumbersButton->hide();
-        } // Fl_Light_Button* DrawVertexNumbersButton
-        { DrawLineNumbersButton = new Fl_Light_Button(1215, 790, 155, 20, "Draw line numbers");
-          DrawLineNumbersButton->selection_color((Fl_Color)FL_GREEN);
-          DrawLineNumbersButton->callback((Fl_Callback*)cb_DrawLineNumbersButton);
-          DrawLineNumbersButton->hide();
-        } // Fl_Light_Button* DrawLineNumbersButton
         { ConnectToPrinterButton = new Fl_Light_Button(840, 45, 165, 25, "Connect to printer");
           ConnectToPrinterButton->callback((Fl_Callback*)cb_ConnectToPrinterButton);
         } // Fl_Light_Button* ConnectToPrinterButton
@@ -2021,6 +1993,30 @@ an twice the filament extrusion. - with one line only");
             } // Fl_Button* o
             { CurrentTempText = new Fl_Output(1160, 301, 55, 24, "Current temp");
             } // Fl_Output* CurrentTempText
+            { ExamineSlider = new Fl_Value_Slider(900, 815, 200, 20, "Examine");
+              ExamineSlider->type(1);
+              ExamineSlider->step(0.001);
+              ExamineSlider->value(0.098);
+              ExamineSlider->textsize(14);
+              ExamineSlider->callback((Fl_Callback*)cb_ExamineSlider);
+              ExamineSlider->align(FL_ALIGN_LEFT);
+            } // Fl_Value_Slider* ExamineSlider
+            { DisplayDebuginFillButton = new Fl_Light_Button(915, 795, 145, 20, "Display Debug inFill");
+              DisplayDebuginFillButton->selection_color((Fl_Color)FL_GREEN);
+              DisplayDebuginFillButton->callback((Fl_Callback*)cb_DisplayDebuginFillButton);
+            } // Fl_Light_Button* DisplayDebuginFillButton
+            { DisplayDebugButton = new Fl_Light_Button(840, 795, 70, 20, "Debug");
+              DisplayDebugButton->selection_color((Fl_Color)FL_GREEN);
+              DisplayDebugButton->callback((Fl_Callback*)cb_DisplayDebugButton);
+            } // Fl_Light_Button* DisplayDebugButton
+            { DrawVertexNumbersButton = new Fl_Light_Button(1065, 795, 155, 20, "Draw vertex numbers");
+              DrawVertexNumbersButton->selection_color((Fl_Color)FL_GREEN);
+              DrawVertexNumbersButton->callback((Fl_Callback*)cb_DrawVertexNumbersButton);
+            } // Fl_Light_Button* DrawVertexNumbersButton
+            { DrawLineNumbersButton = new Fl_Light_Button(1220, 795, 155, 20, "Draw line numbers");
+              DrawLineNumbersButton->selection_color((Fl_Color)FL_GREEN);
+              DrawLineNumbersButton->callback((Fl_Callback*)cb_DrawLineNumbersButton);
+            } // Fl_Light_Button* DrawLineNumbersButton
             o->end();
           } // Fl_Group* o
           o->end();
@@ -2035,7 +2031,6 @@ an twice the filament extrusion. - with one line only");
     { ProgressBar = new Fl_Progress(75, 5, 1300, 15, "Progress:");
       ProgressBar->selection_color((Fl_Color)FL_GREEN);
       ProgressBar->align(FL_ALIGN_LEFT);
-      Fl_Group::current()->resizable(ProgressBar);
     } // Fl_Progress* ProgressBar
     mainWindow->end();
   } // Fl_Double_Window* mainWindow
@@ -2048,7 +2043,7 @@ mainWindow->show(argc, argv);
 //MVC->ReadStl("C:/box.stl");
 MVC->init();
 //MVC->ReadStl("C:/#Downloads/Reprap Exchange/N_DSL-Stylus.stl");
-//MVC->ReadStl("C:/code/printed-parts/frame-vertex_6off.stl");
+MVC->ReadStl("C:/code/printed-parts/#poly.stl");
 MVC->CopySettingsToGUI();
 MVC->draw();
 MVC->redraw();

@@ -204,13 +204,15 @@ void GCode::draw(const ProcessController &PC)
 	float Mr,Mg,Mb;
 	HSVtoRGB(PC.GCodeMoveHue, PC.GCodeMoveSat, PC.GCodeMoveVal, Mr,Mg,Mb);
 
+	float LastE=0.0f;
+
 	for(UINT i=start;i<commands.size() && i < end ;i++)
 	{
 		switch(commands[i].Code)
 		{
 		case ZMOVE:
 		case COORDINATEDMOTION:
-			if(commands[i].e == 0)
+			if(commands[i].e == LastE)
 				{
 				glLineWidth(3);
 				float speed = commands[i].f;
@@ -238,6 +240,7 @@ void GCode::draw(const ProcessController &PC)
 			glVertex3fv((GLfloat*)&commands[i].where);
 			glEnd();
 			LastColor = Color;
+			LastE=commands[i].e;
 			break;
 		case RAPIDMOTION:
 			glLineWidth(1);

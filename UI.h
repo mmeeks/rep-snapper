@@ -477,31 +477,6 @@ private:
   void cb_Enable3_i(Fl_Light_Button*, void*);
   static void cb_Enable3(Fl_Light_Button*, void*);
 public:
-  Fl_Value_Slider *ExamineSlider;
-private:
-  void cb_ExamineSlider_i(Fl_Value_Slider*, void*);
-  static void cb_ExamineSlider(Fl_Value_Slider*, void*);
-public:
-  Fl_Light_Button *DisplayDebuginFillButton;
-private:
-  void cb_DisplayDebuginFillButton_i(Fl_Light_Button*, void*);
-  static void cb_DisplayDebuginFillButton(Fl_Light_Button*, void*);
-public:
-  Fl_Light_Button *DisplayDebugButton;
-private:
-  void cb_DisplayDebugButton_i(Fl_Light_Button*, void*);
-  static void cb_DisplayDebugButton(Fl_Light_Button*, void*);
-public:
-  Fl_Light_Button *DrawVertexNumbersButton;
-private:
-  void cb_DrawVertexNumbersButton_i(Fl_Light_Button*, void*);
-  static void cb_DrawVertexNumbersButton(Fl_Light_Button*, void*);
-public:
-  Fl_Light_Button *DrawLineNumbersButton;
-private:
-  void cb_DrawLineNumbersButton_i(Fl_Light_Button*, void*);
-  static void cb_DrawLineNumbersButton(Fl_Light_Button*, void*);
-public:
   Fl_Light_Button *ConnectToPrinterButton;
 private:
   void cb_ConnectToPrinterButton_i(Fl_Light_Button*, void*);
@@ -545,6 +520,31 @@ private:
   static void cb_Send(Fl_Button*, void*);
 public:
   Fl_Output *CurrentTempText;
+  Fl_Value_Slider *ExamineSlider;
+private:
+  void cb_ExamineSlider_i(Fl_Value_Slider*, void*);
+  static void cb_ExamineSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Light_Button *DisplayDebuginFillButton;
+private:
+  void cb_DisplayDebuginFillButton_i(Fl_Light_Button*, void*);
+  static void cb_DisplayDebuginFillButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *DisplayDebugButton;
+private:
+  void cb_DisplayDebugButton_i(Fl_Light_Button*, void*);
+  static void cb_DisplayDebugButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *DrawVertexNumbersButton;
+private:
+  void cb_DrawVertexNumbersButton_i(Fl_Light_Button*, void*);
+  static void cb_DrawVertexNumbersButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *DrawLineNumbersButton;
+private:
+  void cb_DrawLineNumbersButton_i(Fl_Light_Button*, void*);
+  static void cb_DrawLineNumbersButton(Fl_Light_Button*, void*);
+public:
   Fl_Light_Button *ContinueButton;
 private:
   void cb_ContinueButton_i(Fl_Light_Button*, void*);

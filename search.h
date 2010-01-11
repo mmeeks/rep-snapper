@@ -7,6 +7,9 @@
 * This file is part of RepSnapper and is made available under
 * the terms of the GNU General Public License, version 2, or at your
 * option, any later version, incorporated herein by reference.
+
+THIS CODE IS AS OF YET UNUSED
+
 *
 * ------------------------------------------------------------------------- */
 #pragma once
