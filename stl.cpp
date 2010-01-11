@@ -307,7 +307,7 @@ void STL::draw(const ProcessController &PC)
 				infillCuttingPlane.offsetVertices.clear();
 				if(PC.ShellOnly == false)
 					{
-					infillCuttingPlane.Shrink(PC.ExtrudedMaterialWidth*0.5f, z, PC.DisplayCuttingPlane);
+					infillCuttingPlane.Shrink(PC.ExtrudedMaterialWidth*0.5f, z, PC.DisplayCuttingPlane, false);
 					infillCuttingPlane.CalcInFill(infill, LayerNr, z, PC.InfillDistance, PC.InfillRotation, PC.InfillRotationPrLayer, PC.DisplayDebuginFill);
 					}
 				glColor4f(1,1,0,1);
@@ -1517,7 +1517,7 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 
 	// Cleanup polygons
 	CleanupPolygons(Optimization);
-	Shrink(ShrinkValue, z, DisplayCuttingPlane);
+	Shrink(ShrinkValue, z, DisplayCuttingPlane, true);
 	// Draw resulting poly
 	glColor3f(1,1,0);
 	for(int p=0; p<polygons.size();p++)
@@ -1745,7 +1745,7 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 
 */
 
-void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane)
+void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
 {
 	for(int p=0; p<polygons.size();p++)
 		{
@@ -1774,7 +1774,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane)
 			Nb -= N1*distance;
 			Nc -= N2*distance;
 			Nd -= N2*distance;
-/*
+
 			glLineWidth(5);
 			glBegin(GL_LINES);
 			glVertex3f(Na.x, Na.y, z);
@@ -1782,7 +1782,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane)
 			glVertex3f(Nc.x, Nc.y, z);
 			glVertex3f(Nd.x, Nd.y, z);
 			glEnd();
-			glLineWidth(1);*/
+			glLineWidth(1);
 
 			Vector2f point = Nb;// vertices[vertexNr] - (Normal * distance);
 
@@ -1800,6 +1800,8 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane)
 				}
 			else							// If not, make a arc
 				{
+					if(useFillets)
+					{
 				// From Nc to Nb with center as center
 					float start = atan2( Nb.y - center.y , Nb.x - center.x );
 					float end= atan2( Nc.y - center.y , Nc.x - center.x );
@@ -1818,6 +1820,14 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane)
 
 						start+= 0.3f;
 						}
+					}
+					else
+					{
+						point = (Na+Nd)/2;
+						offsetPoly.points.push_back(offsetVertices.size());
+						offsetVertices.push_back(point);
+					}
+
 				}
 
 			}

@@ -964,6 +964,7 @@ GUI::GUI() {
       MVC->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
       MVC->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
       MVC->when(FL_WHEN_RELEASE);
+      Fl_Group::current()->resizable(MVC);
     } // ModelViewController* MVC
     { Tabs = new Fl_Tabs(830, 20, 550, 815);
       Tabs->align(FL_ALIGN_TOP_LEFT);

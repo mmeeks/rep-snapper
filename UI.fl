@@ -11,11 +11,11 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {370 196 1379 842} type Double box UP_BOX color 0 selection_color 0 labelsize 12 visible
+      xywh {370 196 1379 842} type Double box UP_BOX color 0 selection_color 0 labelsize 12 resizable visible
     } {
       Fl_Box MVC {
-        label {An instace of ModelViewController}
-        xywh {10 20 815 815} box UP_BOX align 16
+        label {An instace of ModelViewController} selected
+        xywh {10 20 815 815} box UP_BOX align 16 resizable
         code0 {\#include "StdAfx.h"}
         code1 {\#ifndef M_PI
 \#define M_PI 3.14159265358979323846
@@ -1060,7 +1060,7 @@ MVC->redraw();}
               }
               Fl_Light_Button DrawLineNumbersButton {
                 label {Draw line numbers}
-                callback {MVC->SetDrawLineNumbers(o->value());} selected
+                callback {MVC->SetDrawLineNumbers(o->value());}
                 xywh {1220 795 155 20} selection_color 63
               }
             }

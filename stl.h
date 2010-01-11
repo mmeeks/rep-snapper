@@ -80,7 +80,7 @@ public:
 class  CuttingPlane{
 public:
 	CuttingPlane();
-	void Shrink(float distance, float z, bool DisplayCuttingPlane);		// Contracts polygons
+	void Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets);		// Contracts polygons
 	void CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill);	// Collide a infill-line with the polygons
 	void Draw(float z, bool DrawVertexNumbers, bool DrawLineNumbers);
 	bool LinkSegments(float z, float shrinkValue, float Optimization, bool DisplayCuttingPlane);		// Link Segments to form polygons

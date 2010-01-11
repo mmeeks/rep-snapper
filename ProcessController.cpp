@@ -74,7 +74,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 		infillCuttingPlane.offsetVertices.clear();
 		if(ShellOnly == false)
 			{
-			infillCuttingPlane.Shrink(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane);
+			infillCuttingPlane.Shrink(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false);
 			infillCuttingPlane.CalcInFill(infill, LayerNr, destinationZ, InfillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
 			}
 		// Make the GCode from the plane and the infill
