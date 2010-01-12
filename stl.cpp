@@ -17,7 +17,7 @@
 #include "gcode.h"
 #include "UI.h"
 #include "math.h"
-#include "pathfinder.h"
+//#include "pathfinder.h"
 
 #include <gl/glu.h>
 #include <glut.h>
@@ -145,6 +145,7 @@ void STL::draw(const ProcessController &PC)
 {
 	// polygons
 	glEnable(GL_LIGHTING);
+	glEnable(GL_POINT_SMOOTH);
 
 	float no_mat[] = {0.0f, 0.0f, 0.0f, 1.0f};
 	float mat_ambient[] = {0.7f, 0.7f, 0.7f, 1.0f};
@@ -1323,7 +1324,7 @@ public:
 			e = p1;
 		else if(t2 > 1)
 //			e = p2;
-
+/*
 			glPointSize(5);
 			glBegin(GL_POINTS);
 			glColor3f(1,0,0);
@@ -1331,7 +1332,7 @@ public:
 			glColor3f(0,1,0);
 			glVertex2f(e.x, e.y);
 			glEnd();
-		
+*/		
 			return true;
 		}
 
@@ -1526,13 +1527,13 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 		for(int v=0; v<polygons[p].points.size();v++)
 			glVertex3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, z);
 		glEnd();
-		glColor3f(1,0,1);
+		/*glColor3f(1,0,1);
 		glEnable(GL_POINT_SMOOTH);
 		glPointSize(10);
 		glBegin(GL_POINTS);
 		for(int v=0; v<polygons[p].points.size();v++)
 			glVertex3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, z);
-		glEnd();
+		glEnd();*/
 		}
 	return true;
 }
@@ -1745,13 +1746,64 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 
 */
 
+void CuttingPlane::selfIntersectAndDivide(float z)
+{
+	vector<Vector2f> result;
+	//for(UINT p=0; p<offsetPolygons.size();p++)
+	int p=0;
+	{
+		UINT count = offsetPolygons[p].points.size();
+		for(UINT v=0; v<count;v++)
+		{
+			for(int p2=0; p2<offsetPolygons.size();p2++)
+			{
+				UINT count2 = offsetPolygons[p2].points.size();
+				for(int v2=0; v2<count2;v2++)
+				{
+					if(v != v2)	// todo: only for same polygon
+					{
+						Vector2f P1 = offsetVertices[offsetPolygons[p].points[v]];
+						Vector2f P2 = offsetVertices[offsetPolygons[p].points[(v+1)%count]];
+						Vector2f P3 = offsetVertices[offsetPolygons[p2].points[v2]];
+						Vector2f P4 = offsetVertices[offsetPolygons[p2].points[(v2+1)%count2]];
+						InFillHit hit;
+						result.push_back(P1);
+						if(P1 != P3 && P2 != P3 && P1 != P4 && P2 != P4)
+							if(IntersectXY(P1,P2,P3,P4,hit))
+							{
+								result.push_back(hit.p);
+								glEnd();
+								glPointSize(10);
+								glColor3f(1,1,1);
+								glBegin(GL_POINTS);
+								glVertex3f(hit.p.x, hit.p.y, z);
+								glEnd();
+								glPointSize(1);
+								glColor3f(1,0,0);
+								glBegin(GL_LINE_LOOP);
+							}
+					}
+				}
+			}
+		}
+	}
+
+	glColor3f(1,0,0);
+	glLineWidth(5);
+	glBegin(GL_LINE_LOOP);
+//	for(UINT i=0;i<result.size();i++)
+//		glVertex3f(result[i].x, result[i].y, z);
+	glEnd();
+	glLineWidth(1);
+}
+
+
 void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
 {
 	for(int p=0; p<polygons.size();p++)
 		{
 		Poly offsetPoly;
 		UINT count = polygons[p].points.size();
-		glColor3f(1,0.5,0);
 		for(int i=0; i<count;i++)
 			{
 			Vector2f Na = Vector2f(vertices[polygons[p].points[(i-1+count)%count]].x, vertices[polygons[p].points[(i-1+count)%count]].y);
@@ -1777,10 +1829,12 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 
 			glLineWidth(5);
 			glBegin(GL_LINES);
+			glColor3f(1,0.5f,0);
 			glVertex3f(Na.x, Na.y, z);
+			glColor3f(0,0,0);
 			glVertex3f(Nb.x, Nb.y, z);
-			glVertex3f(Nc.x, Nc.y, z);
-			glVertex3f(Nd.x, Nd.y, z);
+//			glVertex3f(Nc.x, Nc.y, z);
+//			glVertex3f(Nd.x, Nd.y, z);
 			glEnd();
 			glLineWidth(1);
 
@@ -1806,8 +1860,13 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 					float start = atan2( Nb.y - center.y , Nb.x - center.x );
 					float end= atan2( Nc.y - center.y , Nc.x - center.x );
 
-					if(start > end)
-						start -= M_PI*2;
+					while(end-start > M_PI)
+						end -= M_PI;
+					while(end-start < 0)
+						end += M_PI;
+
+					assert(end-start > 0);
+					assert(end-start < M_PI);
 
 					float r=distance;	// radius
 					while(start<end)
@@ -1831,6 +1890,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 				}
 
 			}
+
 		if(DisplayCuttingPlane)
 			{
 			glColor3f(0,1,0);
@@ -1841,6 +1901,8 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 			}
 		offsetPolygons.push_back(offsetPoly);
 		}
+
+	selfIntersectAndDivide(z);
 }
 
 

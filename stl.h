@@ -73,7 +73,7 @@ public:
 	Poly(){};
 	void cleanup();				// Removed vertices that are on a straight line
 
-	vector<int> points;			// points, indices into ..... a CuttingPlane or a GCode object
+	vector<UINT> points;			// points, indices into ..... a CuttingPlane or a GCode object
 };
 
 // A (set of) 2D polygon extracted from a 3D model
@@ -81,6 +81,7 @@ class  CuttingPlane{
 public:
 	CuttingPlane();
 	void Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets);		// Contracts polygons
+	void selfIntersectAndDivide(float z);
 	void CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill);	// Collide a infill-line with the polygons
 	void Draw(float z, bool DrawVertexNumbers, bool DrawLineNumbers);
 	bool LinkSegments(float z, float shrinkValue, float Optimization, bool DisplayCuttingPlane);		// Link Segments to form polygons
