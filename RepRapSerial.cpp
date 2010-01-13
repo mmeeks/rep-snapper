@@ -300,12 +300,20 @@ void RepRapSerial::SendNow(string s)
 }
 void RepRapSerial::SendData(const string &s, const UINT lineNr)
 {
-	string buffer = s;
+	string buffer;
 	std::stringstream oss;
-	oss << " L" << lineNr << " C";
+	oss << " N" << lineNr << " ";//*";
 	buffer += oss.str();
+	buffer += s;
+	buffer += " *";
 	oss.str( "" );
-	oss << std::setfill('0') << std::setw(2) << buffer.length()+2;
+	// Calc checksum.
+	short checksum = 0;
+	unsigned char count=0;
+	while(buffer[count] != '*')
+		checksum = checksum^buffer[count++];
+
+	oss << checksum;//std::setfill('0') << std::setw(2) << buffer.length()+2;
 	buffer += oss.str();
 	debugPrint( string("SendData:") + buffer);
 	buffer += "\r\n";
@@ -318,7 +326,7 @@ extern void TempReadTimer(void *);
 void RepRapSerial::Connect()
 {
 	LONG error=ERROR_SUCCESS;
-	error = Open(_T("COM4"), 0, 0, true);
+	error = Open(_T("COM5"), 0, 0, true);
 	assert(error == 0);
 	error = Setup(CSerial::EBaud19200,CSerial::EData8,CSerial::EParNone,CSerial::EStop1);
 	assert(error == 0);

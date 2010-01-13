@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0110 
+version 1.0109 
 header_name {.h} 
 code_name {.cxx}
 decl {\#pragma warning( disable : 4311 4312 4244 4267 4800)} {public global
@@ -14,7 +14,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {54 24 1382 842} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
+      xywh {54 30 1382 842} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -29,7 +29,7 @@ class GUI {open
         xywh {830 20 550 815} align 5
       } {
         Fl_Group {} {
-          label {Input file} open
+          label {Input file} open selected
           xywh {830 40 545 795}
         } {
           Fl_Button {} {
@@ -140,7 +140,7 @@ MVC->ProcessControl.SaveXML();}
           }
         }
         Fl_Group {} {
-          label {Printer definition}
+          label {Printer definition} open
           xywh {830 40 545 795} hide
         } {
           Fl_Group {} {
@@ -255,7 +255,7 @@ distanceBetweenSpeedStepsSlider->redraw();}
             Fl_Value_Slider ExtrudedMaterialWidthSlider {
               label {Extruded material width}
               callback {MVC->SetExtrudedMaterialWidth(o->value());}
-              xywh {850 190 515 20} type {Horz Knob} selection_color 2 align 5 maximum 8 value 0.7 textsize 14
+              xywh {850 190 515 20} type {Horz Knob} selection_color 2 align 5 value 0.7 textsize 14
             }
             Fl_Value_Slider extrusionFactorSlider {
               label {Extrusion multiplier}
@@ -1094,8 +1094,7 @@ MVC->ReadStl("C:/code/printed-parts/\#dims.stl");
 MVC->CopySettingsToGUI();
 MVC->draw();
 MVC->redraw();
-MVC->redraw();} {selected
-    }
+MVC->redraw();} {}
   }
 } 
 

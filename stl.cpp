@@ -1796,7 +1796,48 @@ void CuttingPlane::selfIntersectAndDivide(float z)
 	glLineWidth(1);
 }
 
+#if(1)
+void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
+{
+	glColor4f(1,1,1,1);
+	for(int p=0; p<polygons.size();p++)
+	{
+		Poly offsetPoly;
+		if(DisplayCuttingPlane)
+			glBegin(GL_LINE_LOOP);
+		UINT count = polygons[p].points.size();
+		for(int i=0; i<count;i++)
+		{
+			Vector2f Na = Vector2f(vertices[polygons[p].points[(i-1+count)%count]].x, vertices[polygons[p].points[(i-1+count)%count]].y);
+			Vector2f Nb = Vector2f(vertices[polygons[p].points[i]].x, vertices[polygons[p].points[i]].y);
+			Vector2f Nc = Vector2f(vertices[polygons[p].points[(i+1)%count]].x, vertices[polygons[p].points[(i+1)%count]].y);
 
+			Vector2f V1 = (Nb-Na);
+			Vector2f V2 = (Nc-Nb);
+
+			Vector2f N1 = Vector2f(-V1.y, V1.x);
+			Vector2f N2 = Vector2f(-V2.y, V2.x);
+
+			N1.normalise();
+			N2.normalise();
+
+			Vector2f Normal = N1+N2;
+			Normal.normalise();
+
+			int vertexNr = polygons[p].points[i];
+
+			Vector2f p = vertices[vertexNr] - (Normal * distance);
+			offsetPoly.points.push_back(offsetVertices.size());
+			offsetVertices.push_back(p);
+			if(DisplayCuttingPlane)
+				glVertex3f(p.x,p.y,z);
+		}
+		if(DisplayCuttingPlane)
+			glEnd();
+		offsetPolygons.push_back(offsetPoly);
+	}
+}
+#else
 void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
 {
 	for(int p=0; p<polygons.size();p++)
@@ -1903,7 +1944,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 
 	selfIntersectAndDivide(z);
 }
-
+#endif
 
 void CuttingPlane::Draw(float z, bool DrawVertexNumbers, bool DrawLineNumbers)
 {
