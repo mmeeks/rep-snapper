@@ -79,7 +79,7 @@ void GUI::cb_AutoRotateButton(Fl_Button* o, void* v) {
 }
 
 void GUI::cb_RotateXButton_i(Fl_Button*, void*) {
-  MVC->RotateObject(1,0,0, M_PI/4);
+  MVC->RotateObject(1,0,0, (float)(M_PI/4));
 MVC->CalcBoundingBoxAndZoom();
 MVC->redraw();
 }
@@ -88,7 +88,7 @@ void GUI::cb_RotateXButton(Fl_Button* o, void* v) {
 }
 
 void GUI::cb_RotateYButton_i(Fl_Button*, void*) {
-  MVC->RotateObject(0,1,0, M_PI/4);
+  MVC->RotateObject(0,1,0, (float)(M_PI/4));
 MVC->CalcBoundingBoxAndZoom();
 MVC->redraw();
 }
@@ -97,7 +97,7 @@ void GUI::cb_RotateYButton(Fl_Button* o, void* v) {
 }
 
 void GUI::cb_RotateZButton_i(Fl_Button*, void*) {
-  MVC->RotateObject(0,0,1, M_PI/4);
+  MVC->RotateObject(0,0,1, (float)(M_PI/4));
 MVC->CalcBoundingBoxAndZoom();
 MVC->redraw();
 }
@@ -948,7 +948,7 @@ void GUI::cb_ContinueButton(Fl_Light_Button* o, void* v) {
 }
 
 GUI::GUI() {
-  { mainWindow = new Fl_Double_Window(1379, 842, "RepSnapper by Kulitorum www.kulitorum.com");
+  { mainWindow = new Fl_Double_Window(1382, 842, "RepSnapper by Kulitorum www.kulitorum.com");
     mainWindow->box(FL_UP_BOX);
     mainWindow->color((Fl_Color)FL_FOREGROUND_COLOR);
     mainWindow->selection_color((Fl_Color)FL_FOREGROUND_COLOR);
@@ -969,7 +969,6 @@ GUI::GUI() {
     { Tabs = new Fl_Tabs(830, 20, 550, 815);
       Tabs->align(FL_ALIGN_TOP_LEFT);
       { Fl_Group* o = new Fl_Group(830, 40, 545, 795, "Input file");
-        o->hide();
         { Fl_Button* o = new Fl_Button(845, 50, 145, 25, "Load STL");
           o->callback((Fl_Callback*)cb_Load);
         } // Fl_Button* o
@@ -1873,6 +1872,7 @@ an twice the filament extrusion. - with one line only");
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(830, 40, 550, 795, "Print");
         o->color((Fl_Color)FL_DARK1);
+        o->hide();
         { ConnectToPrinterButton = new Fl_Light_Button(840, 45, 165, 25, "Connect to printer");
           ConnectToPrinterButton->callback((Fl_Callback*)cb_ConnectToPrinterButton);
         } // Fl_Light_Button* ConnectToPrinterButton
@@ -2045,6 +2045,7 @@ mainWindow->show(argc, argv);
 MVC->init();
 //MVC->ReadStl("C:/#Downloads/Reprap Exchange/N_DSL-Stylus.stl");
 MVC->ReadStl("C:/code/printed-parts/#poly.stl");
+MVC->ReadStl("C:/code/printed-parts/#dims.stl");
 MVC->CopySettingsToGUI();
 MVC->draw();
 MVC->redraw();

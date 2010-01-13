@@ -141,13 +141,13 @@ public:
 
 	// Raft
 	float RaftSize;
-	int RaftBaseLayerCount;
+	UINT RaftBaseLayerCount;
 	float RaftMaterialPrDistanceRatio;
 	float RaftRotation;
 	float RaftBaseDistance;
 	float RaftBaseThickness;
 	float RaftBaseTemperature;
-	int RaftInterfaceLayerCount;
+	UINT RaftInterfaceLayerCount;
 	float RaftInterfaceMaterialPrDistanceRatio;
 	float RaftRotationPrLayer;
 	float RaftInterfaceDistance;

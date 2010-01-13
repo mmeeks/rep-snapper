@@ -27,11 +27,13 @@
 #include <algorithm>
 
 #include <ANN/ANN.h>
-/*
+
+#pragma warning( disable : 4018 4267)
+
 extern "C" {
 	#include "triangle.h"
 }
-*/
+
 #define MIN(A,B) ((A)<(B)? (A):(B))
 #define MAX(A,B) ((A)>(B)? (A):(B))
 
@@ -494,7 +496,6 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSte
 	else
 	{
 
-		float len;
 		Vector3f LastPosition = start;
 		Command command;
 		float accumulatedE = 0;
@@ -1580,7 +1581,7 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
   in.pointlist[1] = 0.0;
   in.pointlist[2] = 1.0;
   in.pointlist[3] = 0.0;
-	in.pointlist[4] = 1.0;
+  in.pointlist[4] = 1.0;
   in.pointlist[5] = 10.0;
   in.pointlist[6] = 0.0;
   in.pointlist[7] = 10.0;
@@ -1749,8 +1750,7 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 void CuttingPlane::selfIntersectAndDivide(float z)
 {
 	vector<Vector2f> result;
-	//for(UINT p=0; p<offsetPolygons.size();p++)
-	int p=0;
+	for(UINT p=0; p<offsetPolygons.size();p++)
 	{
 		UINT count = offsetPolygons[p].points.size();
 		for(UINT v=0; v<count;v++)
@@ -1787,11 +1787,11 @@ void CuttingPlane::selfIntersectAndDivide(float z)
 		}
 	}
 
-	glColor3f(1,0,0);
+	glColor3f(1,0,1);
 	glLineWidth(5);
 	glBegin(GL_LINE_LOOP);
-//	for(UINT i=0;i<result.size();i++)
-//		glVertex3f(result[i].x, result[i].y, z);
+	for(UINT i=0;i<result.size();i++)
+		glVertex3f(result[i].x, result[i].y, z);
 	glEnd();
 	glLineWidth(1);
 }

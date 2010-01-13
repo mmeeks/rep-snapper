@@ -25,6 +25,8 @@
 
 #include "RepRapSerial.h"
 
+#pragma warning( disable : 4244 4267)
+
 // Construct a model and a view, and link them together.
 
 class ModelViewController : public Fl_Gl_Window

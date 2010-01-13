@@ -10,6 +10,8 @@ Robert D. Miller
 
 #include <vector>
 
+#pragma warning( disable : 4244)
+
 #define pi        3.14159265358974
 #define halfpi    1.5707963267949
 #define threepi2  4.71238898038469

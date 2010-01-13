@@ -3,6 +3,7 @@
 #ifndef UI_h
 #define UI_h
 #include <FL/Fl.H>
+#pragma warning( disable : 4311 4312 4244 4267 4800)
 class ModelViewController;
 #include <FL/Fl_Double_Window.H>
 #include "StdAfx.h"

@@ -10,7 +10,7 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 {
 	if(gui)
 	{
-		int a=0;
+		UINT a=0;
 		while(a<s.length())
 		{
 			if(s[a] == '\r' || s[a] == '\n') s[a] = ' ';
@@ -36,7 +36,7 @@ void RepRapSerial::echo(string s)
 {
 	if(gui)
 	{
-		int a=0;
+		UINT a=0;
 		while(a<s.length())
 		{
 			if(s[a] == '\r' || s[a] == '\n') s[a] = ' ';

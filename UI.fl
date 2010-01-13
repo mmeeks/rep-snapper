@@ -1,7 +1,10 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109 
+version 1.0110 
 header_name {.h} 
 code_name {.cxx}
+decl {\#pragma warning( disable : 4311 4312 4244 4267 4800)} {public global
+} 
+
 decl {class ModelViewController;} {public global
 } 
 
@@ -11,10 +14,10 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {370 196 1379 842} type Double box UP_BOX color 0 selection_color 0 labelsize 12 resizable visible
+      xywh {54 24 1382 842} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
     } {
       Fl_Box MVC {
-        label {An instace of ModelViewController} selected
+        label {An instace of ModelViewController}
         xywh {10 20 815 815} box UP_BOX align 16 resizable
         code0 {\#include "StdAfx.h"}
         code1 {\#ifndef M_PI
@@ -26,8 +29,8 @@ class GUI {open
         xywh {830 20 550 815} align 5
       } {
         Fl_Group {} {
-          label {Input file}
-          xywh {830 40 545 795} hide
+          label {Input file} open
+          xywh {830 40 545 795}
         } {
           Fl_Button {} {
             label {Load STL}
@@ -101,21 +104,21 @@ MVC->redraw();}
             }
             Fl_Button RotateXButton {
               label {Rotate X}
-              callback {MVC->RotateObject(1,0,0, M_PI/4);
+              callback {MVC->RotateObject(1,0,0, (float)(M_PI/4));
 MVC->CalcBoundingBoxAndZoom();
 MVC->redraw();}
               xywh {980 785 125 25}
             }
             Fl_Button RotateYButton {
               label {Rotate Y}
-              callback {MVC->RotateObject(0,1,0, M_PI/4);
+              callback {MVC->RotateObject(0,1,0, (float)(M_PI/4));
 MVC->CalcBoundingBoxAndZoom();
 MVC->redraw();}
               xywh {1110 785 125 25}
             }
             Fl_Button RotateZButton {
               label {Rotate Z}
-              callback {MVC->RotateObject(0,0,1, M_PI/4);
+              callback {MVC->RotateObject(0,0,1, (float)(M_PI/4));
 MVC->CalcBoundingBoxAndZoom();
 MVC->redraw();}
               xywh {1240 785 125 25}
@@ -910,7 +913,7 @@ MVC->redraw();}
         }
         Fl_Group {} {
           label Print open
-          xywh {830 40 550 795} color 47
+          xywh {830 40 550 795} color 47 hide
         } {
           Fl_Light_Button ConnectToPrinterButton {
             label {Connect to printer}
@@ -1087,10 +1090,12 @@ mainWindow->show(argc, argv);
 MVC->init();
 //MVC->ReadStl("C:/\#Downloads/Reprap Exchange/N_DSL-Stylus.stl");
 MVC->ReadStl("C:/code/printed-parts/\#poly.stl");
+MVC->ReadStl("C:/code/printed-parts/\#dims.stl");
 MVC->CopySettingsToGUI();
 MVC->draw();
 MVC->redraw();
-MVC->redraw();} {}
+MVC->redraw();} {selected
+    }
   }
 } 
 

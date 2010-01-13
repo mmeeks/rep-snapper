@@ -32,7 +32,9 @@
 #ifdef _DEBUG
 # include "assert.h"
 #else
-# define assert(x) { }
+	#ifndef assert
+		# define assert(x) { }
+	#endif
 #endif
 
 //Math types derived from the KempoApi tMath library

@@ -500,7 +500,7 @@ void ModelViewController::SetExtruderLength(int length)
 void ModelViewController::RunExtruder()
 {
 	char speed[10];
-	itoa(m_iExtruderSpeed, speed, 10);
+	_itoa(m_iExtruderSpeed, speed, 10);
 	string command("G1 F");
 	command += speed;
 	serial.SendNow(command);
@@ -508,7 +508,7 @@ void ModelViewController::RunExtruder()
 	serial.SendNow("G92 E0");	// set extruder zero
 
 	char length[10];
-	itoa(m_iExtruderLength, length, 10);
+	_itoa(m_iExtruderLength, length, 10);
 	string command2("G1 E");
 
 	if(!m_bExtruderDirection)	// Forwards

@@ -25,9 +25,6 @@
 #define CLAMP(x, low, high) (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 #define LERP(a, b, t) ( a + t * (b - a) )
 
-#define WIN32_LEAN_AND_MEAN
-
-
 bool InFillHitCompareFunc(const InFillHit& d1, const InFillHit& d2)
 {
 	return d1.d < d2.d;

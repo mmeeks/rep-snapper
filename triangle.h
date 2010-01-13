@@ -1191,6 +1191,7 @@ Research credit:
 #endif
 
 #define ANSI_DECLARATORS
+#pragma warning( disable : 4311 4312 4244)
 
 struct triangulateio {
   REAL *pointlist;                                               /* In / out */
