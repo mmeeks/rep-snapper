@@ -304,7 +304,18 @@ void RepRapSerial::SendData(const string &s, const UINT lineNr)
 	std::stringstream oss;
 	oss << " N" << lineNr << " ";//*";
 	buffer += oss.str();
-	buffer += s;
+	// strip comments
+	
+	string tmp=s;
+	size_t found;
+	found=tmp.find_first_of(";");
+	if(found!=string::npos)
+		tmp=tmp.substr(0,found);
+	found=tmp.find_last_not_of(" ");
+	if(found!=string::npos)
+		tmp=tmp.substr(0,found+1);
+
+	buffer += tmp;
 	buffer += " *";
 	oss.str( "" );
 	// Calc checksum.
