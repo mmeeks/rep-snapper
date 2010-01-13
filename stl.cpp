@@ -1760,29 +1760,28 @@ void CuttingPlane::selfIntersectAndDivide(float z)
 				UINT count2 = offsetPolygons[p2].points.size();
 				for(int v2=0; v2<count2;v2++)
 				{
-					if(v != v2)	// todo: only for same polygon
-					{
-						Vector2f P1 = offsetVertices[offsetPolygons[p].points[v]];
-						Vector2f P2 = offsetVertices[offsetPolygons[p].points[(v+1)%count]];
-						Vector2f P3 = offsetVertices[offsetPolygons[p2].points[v2]];
-						Vector2f P4 = offsetVertices[offsetPolygons[p2].points[(v2+1)%count2]];
-						InFillHit hit;
-						result.push_back(P1);
-						if(P1 != P3 && P2 != P3 && P1 != P4 && P2 != P4)
-							if(IntersectXY(P1,P2,P3,P4,hit))
-							{
-								result.push_back(hit.p);
-								glEnd();
-								glPointSize(10);
-								glColor3f(1,1,1);
-								glBegin(GL_POINTS);
-								glVertex3f(hit.p.x, hit.p.y, z);
-								glEnd();
-								glPointSize(1);
-								glColor3f(1,0,0);
-								glBegin(GL_LINE_LOOP);
-							}
-					}
+					if((p==p2) && (v == v2))	// todo: only for same polygon
+						continue;
+					Vector2f P1 = offsetVertices[offsetPolygons[p].points[v]];
+					Vector2f P2 = offsetVertices[offsetPolygons[p].points[(v+1)%count]];
+					Vector2f P3 = offsetVertices[offsetPolygons[p2].points[v2]];
+					Vector2f P4 = offsetVertices[offsetPolygons[p2].points[(v2+1)%count2]];
+					InFillHit hit;
+					result.push_back(P1);
+					if(P1 != P3 && P2 != P3 && P1 != P4 && P2 != P4)
+						if(IntersectXY(P1,P2,P3,P4,hit))
+						{
+							result.push_back(hit.p);
+							glEnd();
+							glPointSize(10);
+							glColor3f(1,1,1);
+							glBegin(GL_POINTS);
+							glVertex3f(hit.p.x, hit.p.y, z);
+							glEnd();
+							glPointSize(1);
+							glColor3f(1,0,0);
+							glBegin(GL_LINE_LOOP);
+						}
 				}
 			}
 		}
