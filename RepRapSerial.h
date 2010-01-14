@@ -27,6 +27,7 @@ public:
 	void SendData(const string &s, const int lineNr);
 	void Connect();
 	void DisConnect();
+	bool isPrinting(){return m_bPrinting;}
 
 private:
 	void debugPrint(string s, bool selectLine = false);

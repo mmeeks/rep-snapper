@@ -850,6 +850,27 @@ void GUI::cb_SetExtruderDirectionButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_SetExtruderDirectionButton_i(o,v);
 }
 
+void GUI::cb_Home_i(Fl_Button*, void*) {
+  MVC->Home("X");
+}
+void GUI::cb_Home(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_Home_i(o,v);
+}
+
+void GUI::cb_Home1_i(Fl_Button*, void*) {
+  MVC->Home("Y");
+}
+void GUI::cb_Home1(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_Home1_i(o,v);
+}
+
+void GUI::cb_Home2_i(Fl_Button*, void*) {
+  MVC->Home("Z");
+}
+void GUI::cb_Home2(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_Home2_i(o,v);
+}
+
 void GUI::cb_Speed_i(Fl_Value_Slider* o, void*) {
   MVC->SetExtruderSpeed(o->value());
 }
@@ -916,6 +937,209 @@ void GUI::cb_DrawLineNumbersButton_i(Fl_Light_Button* o, void*) {
 }
 void GUI::cb_DrawLineNumbersButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_DrawLineNumbersButton_i(o,v);
+}
+
+void GUI::cb_Home3_i(Fl_Button*, void*) {
+  MVC->Home("ALL");
+}
+void GUI::cb_Home3(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_Home3_i(o,v);
+}
+
+void GUI::cb_10_i(Fl_Button*, void*) {
+  MVC->Move("X", -10);
+}
+void GUI::cb_10(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_10_i(o,v);
+}
+
+void GUI::cb_1_i(Fl_Button*, void*) {
+  MVC->Move("X", -1);
+}
+void GUI::cb_1(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_1_i(o,v);
+}
+
+void GUI::cb_0_i(Fl_Button*, void*) {
+  MVC->Move("X", -0.1f);
+}
+void GUI::cb_0(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_0_i(o,v);
+}
+
+void GUI::cb_01_i(Fl_Button*, void*) {
+  MVC->Move("X", 0.1f);
+}
+void GUI::cb_01(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_01_i(o,v);
+}
+
+void GUI::cb_11_i(Fl_Button*, void*) {
+  MVC->Move("X", 1);
+}
+void GUI::cb_11(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_11_i(o,v);
+}
+
+void GUI::cb_101_i(Fl_Button*, void*) {
+  MVC->Move("X", 10);
+}
+void GUI::cb_101(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_101_i(o,v);
+}
+
+void GUI::cb_100_i(Fl_Button*, void*) {
+  MVC->Move("X", -100);
+}
+void GUI::cb_100(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_100_i(o,v);
+}
+
+void GUI::cb_1001_i(Fl_Button*, void*) {
+  MVC->Move("X", 100);
+}
+void GUI::cb_1001(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_1001_i(o,v);
+}
+
+void GUI::cb_102_i(Fl_Button*, void*) {
+  MVC->Move("Y", -10);
+}
+void GUI::cb_102(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_102_i(o,v);
+}
+
+void GUI::cb_12_i(Fl_Button*, void*) {
+  MVC->Move("Y", -1);
+}
+void GUI::cb_12(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_12_i(o,v);
+}
+
+void GUI::cb_02_i(Fl_Button*, void*) {
+  MVC->Move("Y", -0.1f);
+}
+void GUI::cb_02(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_02_i(o,v);
+}
+
+void GUI::cb_03_i(Fl_Button*, void*) {
+  MVC->Move("Y", 0.1f);
+}
+void GUI::cb_03(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_03_i(o,v);
+}
+
+void GUI::cb_13_i(Fl_Button*, void*) {
+  MVC->Move("Y", 1);
+}
+void GUI::cb_13(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_13_i(o,v);
+}
+
+void GUI::cb_103_i(Fl_Button*, void*) {
+  MVC->Move("Y", 10);
+}
+void GUI::cb_103(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_103_i(o,v);
+}
+
+void GUI::cb_1002_i(Fl_Button*, void*) {
+  MVC->Move("Y", -100);
+}
+void GUI::cb_1002(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_1002_i(o,v);
+}
+
+void GUI::cb_1003_i(Fl_Button*, void*) {
+  MVC->Move("Y", 100);
+}
+void GUI::cb_1003(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_1003_i(o,v);
+}
+
+void GUI::cb_104_i(Fl_Button*, void*) {
+  MVC->Move("Z", -10);
+}
+void GUI::cb_104(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_104_i(o,v);
+}
+
+void GUI::cb_14_i(Fl_Button*, void*) {
+  MVC->Move("Z", -1);
+}
+void GUI::cb_14(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_14_i(o,v);
+}
+
+void GUI::cb_04_i(Fl_Button*, void*) {
+  MVC->Move("Z", -0.1f);
+}
+void GUI::cb_04(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_04_i(o,v);
+}
+
+void GUI::cb_05_i(Fl_Button*, void*) {
+  MVC->Move("Z", 0.1f);
+}
+void GUI::cb_05(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_05_i(o,v);
+}
+
+void GUI::cb_15_i(Fl_Button*, void*) {
+  MVC->Move("Z", 1);
+}
+void GUI::cb_15(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_15_i(o,v);
+}
+
+void GUI::cb_105_i(Fl_Button*, void*) {
+  MVC->Move("Z", 10);
+}
+void GUI::cb_105(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_105_i(o,v);
+}
+
+void GUI::cb_1004_i(Fl_Button*, void*) {
+  MVC->Move("Z", -100);
+}
+void GUI::cb_1004(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_1004_i(o,v);
+}
+
+void GUI::cb_1005_i(Fl_Button*, void*) {
+  MVC->Move("Z", 100);
+}
+void GUI::cb_1005(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_1005_i(o,v);
+}
+
+void GUI::cb_XposText_i(Fl_Value_Input* o, void*) {
+  MVC->Goto("X", o->value());
+}
+void GUI::cb_XposText(Fl_Value_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_XposText_i(o,v);
+}
+
+void GUI::cb_YposText_i(Fl_Value_Input* o, void*) {
+  MVC->Goto("Y", o->value());
+}
+void GUI::cb_YposText(Fl_Value_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_YposText_i(o,v);
+}
+
+void GUI::cb_ZposText_i(Fl_Value_Input* o, void*) {
+  MVC->Goto("Z", o->value());
+}
+void GUI::cb_ZposText(Fl_Value_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_ZposText_i(o,v);
+}
+
+void GUI::cb_STOP_i(Fl_Button*, void*) {
+  MVC->STOP();
+}
+void GUI::cb_STOP(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_STOP_i(o,v);
 }
 
 void GUI::cb_ConnectToPrinterButton_i(Fl_Light_Button* o, void*) {
@@ -1905,6 +2129,7 @@ an twice the filament extrusion. - with one line only");
             CommunationLog->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
             CommunationLog->align(FL_ALIGN_BOTTOM);
             CommunationLog->when(FL_WHEN_RELEASE_ALWAYS);
+            CommunationLog->hide();
           } // Fl_Multi_Browser* CommunationLog
           { ErrorLog = new Fl_Multi_Browser(840, 205, 530, 630, "Errors / warnings");
             ErrorLog->box(FL_NO_BOX);
@@ -1932,16 +2157,6 @@ an twice the filament extrusion. - with one line only");
           } // Fl_Multi_Browser* Echo
           { Fl_Group* o = new Fl_Group(840, 205, 535, 635, "Interactive control");
             o->selection_color((Fl_Color)FL_SELECTION_COLOR);
-            o->hide();
-            { Fl_Slider* o = new Fl_Slider(875, 220, 405, 20, "X");
-              o->type(5);
-              o->color((Fl_Color)FL_DARK3);
-              o->selection_color((Fl_Color)2);
-              o->minimum(-5000);
-              o->maximum(5000);
-              o->step(1);
-              o->align(FL_ALIGN_LEFT);
-            } // Fl_Slider* o
             { SwitchHeatOnButton = new Fl_Light_Button(845, 395, 220, 25, "Switch heat on");
               SwitchHeatOnButton->callback((Fl_Callback*)cb_SwitchHeatOnButton);
             } // Fl_Light_Button* SwitchHeatOnButton
@@ -1956,31 +2171,16 @@ an twice the filament extrusion. - with one line only");
             { SetExtruderDirectionButton = new Fl_Light_Button(965, 425, 100, 25, "Reverse");
               SetExtruderDirectionButton->callback((Fl_Callback*)cb_SetExtruderDirectionButton);
             } // Fl_Light_Button* SetExtruderDirectionButton
-            { Fl_Slider* o = new Fl_Slider(875, 245, 405, 20, "Y");
-              o->type(5);
-              o->color((Fl_Color)FL_DARK3);
-              o->selection_color((Fl_Color)2);
-              o->minimum(-5000);
-              o->maximum(5000);
-              o->step(1);
-              o->align(FL_ALIGN_LEFT);
-            } // Fl_Slider* o
-            { Fl_Slider* o = new Fl_Slider(875, 270, 405, 20, "Z");
-              o->type(5);
-              o->color((Fl_Color)FL_DARK3);
-              o->selection_color((Fl_Color)2);
-              o->minimum(-5000);
-              o->maximum(5000);
-              o->step(1);
-              o->align(FL_ALIGN_LEFT);
-            } // Fl_Slider* o
-            { new Fl_Button(1285, 220, 68, 20, "Home");
+            { Fl_Button* o = new Fl_Button(855, 215, 83, 25, "Home");
+              o->callback((Fl_Callback*)cb_Home);
             } // Fl_Button* o
-            { new Fl_Button(1285, 245, 68, 20, "Home");
+            { Fl_Button* o = new Fl_Button(855, 245, 83, 25, "Home");
+              o->callback((Fl_Callback*)cb_Home1);
             } // Fl_Button* o
-            { new Fl_Button(1285, 270, 68, 20, "Home");
+            { Fl_Button* o = new Fl_Button(855, 275, 83, 25, "Home");
+              o->callback((Fl_Callback*)cb_Home2);
             } // Fl_Button* o
-            { Fl_Button* o = new Fl_Button(1180, 295, 173, 20, "Find position in Gcode");
+            { Fl_Button* o = new Fl_Button(1175, 305, 173, 25, "Find position in Gcode");
               o->deactivate();
             } // Fl_Button* o
             { Fl_Value_Slider* o = new Fl_Value_Slider(1120, 425, 235, 25, "Speed");
@@ -2003,9 +2203,9 @@ an twice the filament extrusion. - with one line only");
               o->callback((Fl_Callback*)cb_Length);
               o->align(FL_ALIGN_LEFT);
             } // Fl_Value_Slider* o
-            { GCodeInput = new Fl_Input(895, 320, 385, 20, "GCode");
+            { GCodeInput = new Fl_Input(895, 350, 385, 25, "GCode");
             } // Fl_Input* GCodeInput
-            { Fl_Button* o = new Fl_Button(1285, 320, 68, 20, "Send");
+            { Fl_Button* o = new Fl_Button(1285, 350, 68, 25, "Send");
               o->callback((Fl_Callback*)cb_Send);
             } // Fl_Button* o
             { CurrentTempText = new Fl_Output(1160, 396, 55, 24, "Current temp");
@@ -2034,6 +2234,100 @@ an twice the filament extrusion. - with one line only");
               DrawLineNumbersButton->selection_color((Fl_Color)FL_GREEN);
               DrawLineNumbersButton->callback((Fl_Callback*)cb_DrawLineNumbersButton);
             } // Fl_Light_Button* DrawLineNumbersButton
+            { Fl_Button* o = new Fl_Button(855, 305, 85, 25, "Home all");
+              o->callback((Fl_Callback*)cb_Home3);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(995, 215, 40, 25, "-10");
+              o->callback((Fl_Callback*)cb_10);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(1040, 215, 40, 25, "-1");
+              o->callback((Fl_Callback*)cb_1);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(1085, 215, 40, 25, "-0.1");
+              o->callback((Fl_Callback*)cb_0);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(1175, 215, 40, 25, "+0.1");
+              o->callback((Fl_Callback*)cb_01);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(1220, 215, 40, 25, "+1");
+              o->callback((Fl_Callback*)cb_11);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(1265, 215, 40, 25, "+10");
+              o->callback((Fl_Callback*)cb_101);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(950, 215, 40, 25, "-100");
+              o->callback((Fl_Callback*)cb_100);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(1310, 215, 40, 25, "+100");
+              o->callback((Fl_Callback*)cb_1001);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(995, 245, 40, 25, "-10");
+              o->callback((Fl_Callback*)cb_102);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(1040, 245, 40, 25, "-1");
+              o->callback((Fl_Callback*)cb_12);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(1085, 245, 40, 25, "-0.1");
+              o->callback((Fl_Callback*)cb_02);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(1175, 245, 40, 25, "+0.1");
+              o->callback((Fl_Callback*)cb_03);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(1220, 245, 40, 25, "+1");
+              o->callback((Fl_Callback*)cb_13);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(1265, 245, 40, 25, "+10");
+              o->callback((Fl_Callback*)cb_103);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(950, 245, 40, 25, "-100");
+              o->callback((Fl_Callback*)cb_1002);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(1310, 245, 40, 25, "+100");
+              o->callback((Fl_Callback*)cb_1003);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(995, 275, 40, 25, "-10");
+              o->callback((Fl_Callback*)cb_104);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(1040, 275, 40, 25, "-1");
+              o->callback((Fl_Callback*)cb_14);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(1085, 275, 40, 25, "-0.1");
+              o->callback((Fl_Callback*)cb_04);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(1175, 275, 40, 25, "+0.1");
+              o->callback((Fl_Callback*)cb_05);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(1220, 275, 40, 25, "+1");
+              o->callback((Fl_Callback*)cb_15);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(1265, 275, 40, 25, "+10");
+              o->callback((Fl_Callback*)cb_105);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(950, 275, 40, 25, "-100");
+              o->callback((Fl_Callback*)cb_1004);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(1310, 275, 40, 25, "+100");
+              o->callback((Fl_Callback*)cb_1005);
+            } // Fl_Button* o
+            { XposText = new Fl_Value_Input(1130, 216, 40, 24);
+              XposText->maximum(500);
+              XposText->callback((Fl_Callback*)cb_XposText);
+            } // Fl_Value_Input* XposText
+            { YposText = new Fl_Value_Input(1130, 246, 40, 24);
+              YposText->maximum(500);
+              YposText->callback((Fl_Callback*)cb_YposText);
+            } // Fl_Value_Input* YposText
+            { ZposText = new Fl_Value_Input(1130, 276, 40, 24);
+              ZposText->maximum(500);
+              ZposText->callback((Fl_Callback*)cb_ZposText);
+            } // Fl_Value_Input* ZposText
+            { Fl_Button* o = new Fl_Button(855, 530, 495, 230, "STOP !!!!");
+              o->color((Fl_Color)1);
+              o->labelfont(1);
+              o->labelsize(64);
+              o->labelcolor((Fl_Color)1);
+              o->callback((Fl_Callback*)cb_STOP);
+            } // Fl_Button* o
             o->end();
           } // Fl_Group* o
           o->end();

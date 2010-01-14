@@ -500,6 +500,12 @@ public:
 private:
   void cb_SetExtruderDirectionButton_i(Fl_Light_Button*, void*);
   static void cb_SetExtruderDirectionButton(Fl_Light_Button*, void*);
+  void cb_Home_i(Fl_Button*, void*);
+  static void cb_Home(Fl_Button*, void*);
+  void cb_Home1_i(Fl_Button*, void*);
+  static void cb_Home1(Fl_Button*, void*);
+  void cb_Home2_i(Fl_Button*, void*);
+  static void cb_Home2(Fl_Button*, void*);
   void cb_Speed_i(Fl_Value_Slider*, void*);
   static void cb_Speed(Fl_Value_Slider*, void*);
   void cb_Length_i(Fl_Value_Slider*, void*);
@@ -535,6 +541,73 @@ public:
 private:
   void cb_DrawLineNumbersButton_i(Fl_Light_Button*, void*);
   static void cb_DrawLineNumbersButton(Fl_Light_Button*, void*);
+  void cb_Home3_i(Fl_Button*, void*);
+  static void cb_Home3(Fl_Button*, void*);
+  void cb_10_i(Fl_Button*, void*);
+  static void cb_10(Fl_Button*, void*);
+  void cb_1_i(Fl_Button*, void*);
+  static void cb_1(Fl_Button*, void*);
+  void cb_0_i(Fl_Button*, void*);
+  static void cb_0(Fl_Button*, void*);
+  void cb_01_i(Fl_Button*, void*);
+  static void cb_01(Fl_Button*, void*);
+  void cb_11_i(Fl_Button*, void*);
+  static void cb_11(Fl_Button*, void*);
+  void cb_101_i(Fl_Button*, void*);
+  static void cb_101(Fl_Button*, void*);
+  void cb_100_i(Fl_Button*, void*);
+  static void cb_100(Fl_Button*, void*);
+  void cb_1001_i(Fl_Button*, void*);
+  static void cb_1001(Fl_Button*, void*);
+  void cb_102_i(Fl_Button*, void*);
+  static void cb_102(Fl_Button*, void*);
+  void cb_12_i(Fl_Button*, void*);
+  static void cb_12(Fl_Button*, void*);
+  void cb_02_i(Fl_Button*, void*);
+  static void cb_02(Fl_Button*, void*);
+  void cb_03_i(Fl_Button*, void*);
+  static void cb_03(Fl_Button*, void*);
+  void cb_13_i(Fl_Button*, void*);
+  static void cb_13(Fl_Button*, void*);
+  void cb_103_i(Fl_Button*, void*);
+  static void cb_103(Fl_Button*, void*);
+  void cb_1002_i(Fl_Button*, void*);
+  static void cb_1002(Fl_Button*, void*);
+  void cb_1003_i(Fl_Button*, void*);
+  static void cb_1003(Fl_Button*, void*);
+  void cb_104_i(Fl_Button*, void*);
+  static void cb_104(Fl_Button*, void*);
+  void cb_14_i(Fl_Button*, void*);
+  static void cb_14(Fl_Button*, void*);
+  void cb_04_i(Fl_Button*, void*);
+  static void cb_04(Fl_Button*, void*);
+  void cb_05_i(Fl_Button*, void*);
+  static void cb_05(Fl_Button*, void*);
+  void cb_15_i(Fl_Button*, void*);
+  static void cb_15(Fl_Button*, void*);
+  void cb_105_i(Fl_Button*, void*);
+  static void cb_105(Fl_Button*, void*);
+  void cb_1004_i(Fl_Button*, void*);
+  static void cb_1004(Fl_Button*, void*);
+  void cb_1005_i(Fl_Button*, void*);
+  static void cb_1005(Fl_Button*, void*);
+public:
+  Fl_Value_Input *XposText;
+private:
+  void cb_XposText_i(Fl_Value_Input*, void*);
+  static void cb_XposText(Fl_Value_Input*, void*);
+public:
+  Fl_Value_Input *YposText;
+private:
+  void cb_YposText_i(Fl_Value_Input*, void*);
+  static void cb_YposText(Fl_Value_Input*, void*);
+public:
+  Fl_Value_Input *ZposText;
+private:
+  void cb_ZposText_i(Fl_Value_Input*, void*);
+  static void cb_ZposText(Fl_Value_Input*, void*);
+  void cb_STOP_i(Fl_Button*, void*);
+  static void cb_STOP(Fl_Button*, void*);
 public:
   Fl_Light_Button *ConnectToPrinterButton;
 private:

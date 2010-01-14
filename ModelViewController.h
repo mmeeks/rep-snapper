@@ -182,6 +182,11 @@ public:
 	void SetExtruderDirection(bool reverse);
 	void SendNow(string str);
 
+	void Home(string axis);
+	void Move(string axis, float distance);
+	void Goto(string axis, float position);
+	void STOP();
+
 	RepRapSerial serial;
 	bool m_bExtruderDirection; // True = forwards
 	int  m_iExtruderSpeed;

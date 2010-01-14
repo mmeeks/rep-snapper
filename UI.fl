@@ -14,7 +14,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {54 30 1382 839} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
+      xywh {444 221 1382 839} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -912,7 +912,7 @@ MVC->redraw();}
           }
         }
         Fl_Group {} {
-          label Print open selected
+          label Print open
           xywh {830 45 565 1045} color 47
         } {
           Fl_Tabs {} {open
@@ -920,7 +920,7 @@ MVC->redraw();}
           } {
             Fl_Browser CommunationLog {
               label {Communication log}
-              xywh {840 205 530 630}
+              xywh {840 205 530 630} hide
               code0 {\#include <FL/Fl_Multi_Browser.h>}
               class Fl_Multi_Browser
             }
@@ -938,12 +938,8 @@ MVC->redraw();}
             }
             Fl_Group {} {
               label {Interactive control} open
-              xywh {840 205 535 635} selection_color 15 hide
+              xywh {840 205 535 635} selection_color 15
             } {
-              Fl_Slider {} {
-                label X
-                xywh {875 220 405 20} type {Horz Knob} color 39 selection_color 2 align 4 minimum -5000 maximum 5000 step 1
-              }
               Fl_Light_Button SwitchHeatOnButton {
                 label {Switch heat on}
                 callback {MVC->SwitchHeat(o->value(), TargetTempText->value());}
@@ -964,29 +960,24 @@ MVC->redraw();}
                 callback {MVC->SetExtruderDirection(o->value());}
                 xywh {965 425 100 25}
               }
-              Fl_Slider {} {
-                label Y
-                xywh {875 245 405 20} type {Horz Knob} color 39 selection_color 2 align 4 minimum -5000 maximum 5000 step 1
-              }
-              Fl_Slider {} {
-                label Z
-                xywh {875 270 405 20} type {Horz Knob} color 39 selection_color 2 align 4 minimum -5000 maximum 5000 step 1
+              Fl_Button {} {
+                label Home
+                callback {MVC->Home("X");}
+                xywh {855 215 83 25}
               }
               Fl_Button {} {
                 label Home
-                xywh {1285 220 68 20}
+                callback {MVC->Home("Y");}
+                xywh {855 245 83 25}
               }
               Fl_Button {} {
                 label Home
-                xywh {1285 245 68 20}
-              }
-              Fl_Button {} {
-                label Home
-                xywh {1285 270 68 20}
+                callback {MVC->Home("Z");}
+                xywh {855 275 83 25}
               }
               Fl_Button {} {
                 label {Find position in Gcode}
-                xywh {1180 295 173 20} deactivate
+                xywh {1175 305 173 25} deactivate
               }
               Fl_Value_Slider {} {
                 label Speed
@@ -1000,12 +991,12 @@ MVC->redraw();}
               }
               Fl_Input GCodeInput {
                 label GCode
-                xywh {895 320 385 20}
+                xywh {895 350 385 25}
               }
               Fl_Button {} {
                 label Send
                 callback {MVC->SendNow(GCodeInput->value());}
-                xywh {1285 320 68 20}
+                xywh {1285 350 68 25}
               }
               Fl_Output CurrentTempText {
                 label {Current temp}
@@ -1047,6 +1038,148 @@ MVC->redraw();}
                 label {Draw line numbers}
                 callback {MVC->SetDrawLineNumbers(o->value());}
                 xywh {1220 820 155 20} selection_color 63
+              }
+              Fl_Button {} {
+                label {Home all}
+                callback {MVC->Home("ALL");}
+                xywh {855 305 85 25}
+              }
+              Fl_Button {} {
+                label {-10}
+                callback {MVC->Move("X", -10);}
+                xywh {995 215 40 25}
+              }
+              Fl_Button {} {
+                label {-1}
+                callback {MVC->Move("X", -1);}
+                xywh {1040 215 40 25}
+              }
+              Fl_Button {} {
+                label {-0.1}
+                callback {MVC->Move("X", -0.1f);}
+                xywh {1085 215 40 25}
+              }
+              Fl_Button {} {
+                label {+0.1}
+                callback {MVC->Move("X", 0.1f);}
+                xywh {1175 215 40 25}
+              }
+              Fl_Button {} {
+                label {+1}
+                callback {MVC->Move("X", 1);}
+                xywh {1220 215 40 25}
+              }
+              Fl_Button {} {
+                label {+10}
+                callback {MVC->Move("X", 10);}
+                xywh {1265 215 40 25}
+              }
+              Fl_Button {} {
+                label {-100}
+                callback {MVC->Move("X", -100);}
+                xywh {950 215 40 25}
+              }
+              Fl_Button {} {
+                label {+100}
+                callback {MVC->Move("X", 100);}
+                xywh {1310 215 40 25}
+              }
+              Fl_Button {} {
+                label {-10}
+                callback {MVC->Move("Y", -10);}
+                xywh {995 245 40 25}
+              }
+              Fl_Button {} {
+                label {-1}
+                callback {MVC->Move("Y", -1);}
+                xywh {1040 245 40 25}
+              }
+              Fl_Button {} {
+                label {-0.1}
+                callback {MVC->Move("Y", -0.1f);}
+                xywh {1085 245 40 25}
+              }
+              Fl_Button {} {
+                label {+0.1}
+                callback {MVC->Move("Y", 0.1f);}
+                xywh {1175 245 40 25}
+              }
+              Fl_Button {} {
+                label {+1}
+                callback {MVC->Move("Y", 1);}
+                xywh {1220 245 40 25}
+              }
+              Fl_Button {} {
+                label {+10}
+                callback {MVC->Move("Y", 10);}
+                xywh {1265 245 40 25}
+              }
+              Fl_Button {} {
+                label {-100}
+                callback {MVC->Move("Y", -100);}
+                xywh {950 245 40 25}
+              }
+              Fl_Button {} {
+                label {+100}
+                callback {MVC->Move("Y", 100);}
+                xywh {1310 245 40 25}
+              }
+              Fl_Button {} {
+                label {-10}
+                callback {MVC->Move("Z", -10);}
+                xywh {995 275 40 25}
+              }
+              Fl_Button {} {
+                label {-1}
+                callback {MVC->Move("Z", -1);}
+                xywh {1040 275 40 25}
+              }
+              Fl_Button {} {
+                label {-0.1}
+                callback {MVC->Move("Z", -0.1f);} selected
+                xywh {1085 275 40 25}
+              }
+              Fl_Button {} {
+                label {+0.1}
+                callback {MVC->Move("Z", 0.1f);}
+                xywh {1175 275 40 25}
+              }
+              Fl_Button {} {
+                label {+1}
+                callback {MVC->Move("Z", 1);}
+                xywh {1220 275 40 25}
+              }
+              Fl_Button {} {
+                label {+10}
+                callback {MVC->Move("Z", 10);}
+                xywh {1265 275 40 25}
+              }
+              Fl_Button {} {
+                label {-100}
+                callback {MVC->Move("Z", -100);}
+                xywh {950 275 40 25}
+              }
+              Fl_Button {} {
+                label {+100}
+                callback {MVC->Move("Z", 100);}
+                xywh {1310 275 40 25}
+              }
+              Fl_Value_Input XposText {
+                callback {MVC->Goto("X", o->value());}
+                xywh {1130 216 40 24} maximum 500
+              }
+              Fl_Value_Input YposText {
+                callback {MVC->Goto("Y", o->value());}
+                xywh {1130 246 40 24} maximum 500
+              }
+              Fl_Value_Input ZposText {
+                callback {MVC->Goto("Z", o->value());}
+                xywh {1130 276 40 24} maximum 500
+              }
+              Fl_Button {} {
+                label {STOP !!!!}
+                callback {MVC->STOP();}
+                xywh {855 530 495 230} color 1 labelfont 1 labelsize 64 labelcolor 1
               }
             }
           }

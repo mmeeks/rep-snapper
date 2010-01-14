@@ -529,3 +529,106 @@ void ModelViewController::SendNow(string str)
 {
 	serial.SendNow(str);
 }
+
+void ModelViewController::Home(string axis)
+{
+	if(serial.isPrinting())
+	{
+		fl_alert("Can't go home while printing");
+		return;
+	}
+	if(axis == "X" || axis == "Y" || axis == "Z")
+	{
+		string buffer="G1 F";
+		std::stringstream oss;
+		oss << ProcessControl.MaxPrintSpeedXY;
+		buffer+= oss.str();
+		SendNow(buffer);
+		buffer="G1 ";
+		buffer += axis;
+		buffer+="-250 F";
+		buffer+= oss.str();
+		SendNow(buffer);
+		SendNow("G92");	// Set this as home		
+		oss.str("");
+		oss << ProcessControl.MinPrintSpeedXY;
+		buffer="G1 ";
+		buffer += axis;
+		buffer+="1 F";
+		buffer+= oss.str();
+		SendNow(buffer);
+		buffer="G1 ";
+		buffer += axis;
+		buffer+="-10 F";
+		buffer+= oss.str();
+		SendNow(buffer);
+	}
+	else if(axis == "ALL")
+	{
+		SendNow("G28");
+	}
+	else
+		fl_alert("Home called with unknown axis");
+}
+
+void ModelViewController::Move(string axis, float distance)
+{
+	if(serial.isPrinting())
+	{
+		fl_alert("Can't move manually while printing");
+		return;
+	}
+	if(axis == "X" || axis == "Y" || axis == "Z")
+	{
+		SendNow("G91");	// relative positioning
+		string buffer="G1 F";
+		std::stringstream oss;
+		oss << ProcessControl.MaxPrintSpeedXY;
+		buffer+= oss.str();
+		SendNow(buffer);
+		buffer="G1 ";
+		buffer += axis;
+		oss.str("");
+		oss << distance;
+		buffer+= oss.str();
+		oss.str("");
+		oss << ProcessControl.MaxPrintSpeedXY;
+		buffer+=" F"+oss.str();
+		SendNow(buffer);
+		SendNow("G90");	// absolute positioning
+	}
+	else
+		fl_alert("Move called with unknown axis");
+}
+void ModelViewController::Goto(string axis, float position)
+{
+	if(serial.isPrinting())
+	{
+		fl_alert("Can't move manually while printing");
+		return;
+	}
+	if(axis == "X" || axis == "Y" || axis == "Z")
+	{
+		string buffer="G1 F";
+		std::stringstream oss;
+		oss << ProcessControl.MaxPrintSpeedXY;
+		buffer+= oss.str();
+		SendNow(buffer);
+		buffer="G1 ";
+		buffer += axis;
+		oss.str("");
+		oss << position;
+		buffer+= oss.str();
+		oss.str("");
+		oss << ProcessControl.MaxPrintSpeedXY;
+		buffer+=" F"+oss.str();
+		SendNow(buffer);
+	}
+	else
+		fl_alert("Goto called with unknown axis");
+}
+void ModelViewController::STOP()
+{
+	SendNow("M112");
+	serial.Clear();
+}
