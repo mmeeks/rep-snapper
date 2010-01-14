@@ -22,6 +22,10 @@
 
 #pragma warning( disable : 4311 4312 4244 4267 4800)
 
+#define DEBUG_ECHO (1<<0)
+#define DEBUG_INFO (1<<1)
+#define DEBUG_ERRORS (1<<2)
+
 #include <windows.h>											// Header File For Windows
 #include <stdio.h>
 #include <tchar.h>

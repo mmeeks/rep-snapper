@@ -478,16 +478,6 @@ private:
   void cb_Enable3_i(Fl_Light_Button*, void*);
   static void cb_Enable3(Fl_Light_Button*, void*);
 public:
-  Fl_Light_Button *ConnectToPrinterButton;
-private:
-  void cb_ConnectToPrinterButton_i(Fl_Light_Button*, void*);
-  static void cb_ConnectToPrinterButton(Fl_Light_Button*, void*);
-public:
-  Fl_Light_Button *PrintButton;
-private:
-  void cb_PrintButton_i(Fl_Light_Button*, void*);
-  static void cb_PrintButton(Fl_Light_Button*, void*);
-public:
   Fl_Multi_Browser *CommunationLog;
   Fl_Multi_Browser *ErrorLog;
   Fl_Multi_Browser *Echo;
@@ -546,10 +536,23 @@ private:
   void cb_DrawLineNumbersButton_i(Fl_Light_Button*, void*);
   static void cb_DrawLineNumbersButton(Fl_Light_Button*, void*);
 public:
-  Fl_Light_Button *ContinueButton;
+  Fl_Light_Button *ConnectToPrinterButton;
 private:
-  void cb_ContinueButton_i(Fl_Light_Button*, void*);
-  static void cb_ContinueButton(Fl_Light_Button*, void*);
+  void cb_ConnectToPrinterButton_i(Fl_Light_Button*, void*);
+  static void cb_ConnectToPrinterButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *PrintButton;
+private:
+  void cb_PrintButton_i(Fl_Light_Button*, void*);
+  static void cb_PrintButton(Fl_Light_Button*, void*);
+  void cb_Nudge_i(Fl_Button*, void*);
+  static void cb_Nudge(Fl_Button*, void*);
+  void cb_Errors_i(Fl_Light_Button*, void*);
+  static void cb_Errors(Fl_Light_Button*, void*);
+  void cb_Info_i(Fl_Light_Button*, void*);
+  static void cb_Info(Fl_Light_Button*, void*);
+  void cb_Echo_i(Fl_Light_Button*, void*);
+  static void cb_Echo(Fl_Light_Button*, void*);
 public:
   Fl_Progress *ProgressBar;
   void show(int argc, char **argv);

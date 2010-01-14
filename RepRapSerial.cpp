@@ -274,7 +274,8 @@ void RepRapSerial::test()
 
 void RepRapSerial::SendNextLine()
 {
-	assert(m_bPrinting == true);
+	if(m_bPrinting == false)
+		return;
 	if(m_iLineNr < buffer.size())
 		{
 		string a = buffer[m_iLineNr];
@@ -298,7 +299,7 @@ void RepRapSerial::SendNow(string s)
 	debugPrint( string("Sending:") + s);
 	Write(s.c_str());
 }
-void RepRapSerial::SendData(const string &s, const UINT lineNr)
+void RepRapSerial::SendData(const string &s, const int lineNr)
 {
 	string buffer;
 	std::stringstream oss;
@@ -355,4 +356,27 @@ void RepRapSerial::DisConnect()
 {
 	Close();
 	m_bConnected = false;
+}
+
+void RepRapSerial::SetLineNr(int nr)
+{
+	SendData("M110", nr);	// restart lineNr count
+}
+
+void RepRapSerial::SetDebugMask(int mask, bool on)
+{
+	if(on)
+		debugMask |= mask;
+	else
+		debugMask &=~mask;
+
+	SetDebugMask();
+}
+void RepRapSerial::SetDebugMask()
+{
+	std::stringstream oss;
+	string buffer="M111 S";
+	oss << debugMask;
+	buffer += oss.str();
+	SendNow(buffer);
 }

@@ -9,19 +9,22 @@
 class RepRapSerial : public CSerialEx
 {
 public:
-	RepRapSerial(){m_bPrinting = false; m_iLineNr = 0; gui=0;m_bConnected=false;}
+	RepRapSerial(){m_bPrinting = false; m_iLineNr = 0; gui=0;m_bConnected=false; debugMask =  DEBUG_ECHO | DEBUG_INFO | DEBUG_ERRORS;}
 	// Event handler
 	virtual void OnEvent (EEvent eEvent, EError eError);
 
 	void AddToBuffer(string s){buffer.push_back(s);}
 	void SendNow(string s);
-	void Clear() { m_bPrinting = false; m_iLineNr = 0; buffer.clear();}
+	void Clear() { m_bPrinting = false; m_iLineNr = 0; SetLineNr(-1); buffer.clear();}
 	UINT Length() { return buffer.size();}
 	void StartPrint();
+	void SetLineNr(int nr);
+	void SetDebugMask(int mask, bool on);
+	void SetDebugMask();
 	void setGUI(GUI* g){ gui=g;}
 	void SendNextLine();
 	void test();
-	void SendData(const string &s, const UINT lineNr);
+	void SendData(const string &s, const int lineNr);
 	void Connect();
 	void DisConnect();
 
@@ -33,7 +36,8 @@ private:
 	bool m_bConnected;
 	UINT m_iLineNr;
 	string InBuffer;
-	
+	short debugMask;
+
 	GUI* gui;
 /*
 	// Very private :P

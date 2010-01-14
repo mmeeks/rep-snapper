@@ -449,6 +449,8 @@ void ModelViewController::Print()
 		return;
 	}
 
+	serial.SetDebugMask();
+	serial.SetLineNr(-1);	// Reset LineNr Count
 	gui->CommunationLog->clear();
 	Fl_Text_Buffer* buffer = gui->GCodeResult->buffer();
 	char* pText = buffer->text();
