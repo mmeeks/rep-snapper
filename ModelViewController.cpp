@@ -541,7 +541,10 @@ void ModelViewController::Home(string axis)
 	{
 		string buffer="G1 F";
 		std::stringstream oss;
-		oss << ProcessControl.MaxPrintSpeedXY;
+		if(axis == "Z")
+			oss << ProcessControl.MaxPrintSpeedZ;
+		else
+			oss << ProcessControl.MaxPrintSpeedXY;
 		buffer+= oss.str();
 		SendNow(buffer);
 		buffer="G1 ";
@@ -549,19 +552,33 @@ void ModelViewController::Home(string axis)
 		buffer+="-250 F";
 		buffer+= oss.str();
 		SendNow(buffer);
-		SendNow("G92");	// Set this as home		
+		buffer="G92 ";
+		buffer += axis;
+		buffer+="0";
+		SendNow(buffer);	// Set this as home		
 		oss.str("");
-		oss << ProcessControl.MinPrintSpeedXY;
 		buffer="G1 ";
 		buffer += axis;
 		buffer+="1 F";
 		buffer+= oss.str();
 		SendNow(buffer);
+		if(axis == "Z")
+			oss << ProcessControl.MinPrintSpeedZ;
+		else
+			oss << ProcessControl.MinPrintSpeedXY;
+		buffer="G1 ";
+		buffer+="F";
+		buffer+= oss.str();
+		SendNow(buffer);	// set slow speed
 		buffer="G1 ";
 		buffer += axis;
 		buffer+="-10 F";
 		buffer+= oss.str();
 		SendNow(buffer);
+		buffer="G92 ";
+		buffer += axis;
+		buffer+="0";
+		SendNow(buffer);	// Set this as home		
 	}
 	else if(axis == "ALL")
 	{
@@ -583,7 +600,10 @@ void ModelViewController::Move(string axis, float distance)
 		SendNow("G91");	// relative positioning
 		string buffer="G1 F";
 		std::stringstream oss;
-		oss << ProcessControl.MaxPrintSpeedXY;
+		if(axis == "Z")
+			oss << ProcessControl.MaxPrintSpeedZ;
+		else
+			oss << ProcessControl.MaxPrintSpeedXY;
 		buffer+= oss.str();
 		SendNow(buffer);
 		buffer="G1 ";
@@ -592,7 +612,10 @@ void ModelViewController::Move(string axis, float distance)
 		oss << distance;
 		buffer+= oss.str();
 		oss.str("");
-		oss << ProcessControl.MaxPrintSpeedXY;
+		if(axis == "Z")
+			oss << ProcessControl.MaxPrintSpeedZ;
+		else
+			oss << ProcessControl.MaxPrintSpeedXY;
 		buffer+=" F"+oss.str();
 		SendNow(buffer);
 		SendNow("G90");	// absolute positioning

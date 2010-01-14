@@ -338,7 +338,7 @@ extern void TempReadTimer(void *);
 void RepRapSerial::Connect()
 {
 	LONG error=ERROR_SUCCESS;
-	error = Open(_T("COM5"), 0, 0, true);
+	error = Open(_T("COM4"), 0, 0, true);
 	assert(error == 0);
 	error = Setup(CSerial::EBaud19200,CSerial::EData8,CSerial::EParNone,CSerial::EStop1);
 	assert(error == 0);
