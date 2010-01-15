@@ -301,8 +301,7 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 	Vector3f LastPos(-10,-10,-10);
 	float lastE = -10;
 
-	GcodeTxt += GcodeStart;
-	GcodeTxt += "\n";
+	GcodeTxt += GcodeStart + "\n";
 
 	for(UINT i=0;i<commands.size() ;i++)
 	{
@@ -345,6 +344,8 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 			GcodeTxt += oss.str();
 			LastPos = commands[i].where;
 			lastE = commands[i].e;
+			if(commands[i].Code == ZMOVE)
+				GcodeTxt += GcodeLayer + "\n";
 			break;
 		case RAPIDMOTION:
 			oss  << "G0 X" << commands[i].where.x << " Y" << commands[i].where.y << " Z" << commands[i].where.z  << " E0\n";
@@ -356,7 +357,6 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 		pos = commands[i].where;
 	}
 
-	GcodeTxt += GcodeEnd;
-	GcodeTxt += "\n";
+	GcodeTxt += GcodeEnd + "\n";
 }
 
