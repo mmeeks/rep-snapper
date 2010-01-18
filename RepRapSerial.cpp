@@ -129,7 +129,8 @@ void RepRapSerial::OnEvent (EEvent eEvent, EError eError)
 			lLastError = Read(szBuffer,sizeof(szBuffer)-1,&dwBytesRead);
 			if (lLastError != ERROR_SUCCESS)
 			{
-				ShowError(GetLastError(), _T("Unable to read from COM-port."));
+				debugPrint("Unable to read from COM-port", true);
+				//ShowError(GetLastError(), _T("Unable to read from COM-port."));
 				return;
 			}
 
@@ -158,6 +159,12 @@ void RepRapSerial::OnEvent (EEvent eEvent, EError eError)
 
 			while(InBuffer.length() > 0 && (InBuffer.substr(0,1) == "\n" ||  InBuffer.substr(0,1) == "\r"))
 				InBuffer = InBuffer.substr(1, InBuffer.length()-1);
+
+			if(InBuffer[0] == 1)	// Ctrl
+			{
+				InBuffer = InBuffer.substr(2, InBuffer.length()-2);
+				debugPrint("Recieved a Ctrl character", true);
+			}
 
 			size_t found;
 			found=InBuffer.find_first_of("\r");

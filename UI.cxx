@@ -1194,7 +1194,7 @@ void GUI::cb_Echo(Fl_Light_Button* o, void* v) {
 }
 
 GUI::GUI() {
-  { mainWindow = new Fl_Double_Window(1382, 839, "RepSnapper by Kulitorum www.kulitorum.com");
+  { mainWindow = new Fl_Double_Window(1398, 839, "RepSnapper by Kulitorum www.kulitorum.com");
     mainWindow->box(FL_UP_BOX);
     mainWindow->color((Fl_Color)FL_FOREGROUND_COLOR);
     mainWindow->selection_color((Fl_Color)FL_FOREGROUND_COLOR);
@@ -1255,7 +1255,6 @@ GUI::GUI() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(830, 40, 545, 755, "Printer definition");
-        o->hide();
         { Fl_Group* o = new Fl_Group(840, 65, 230, 40, "Build volume (mm)");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
@@ -1374,6 +1373,7 @@ GUI::GUI() {
           { ExtrudedMaterialWidthSlider = new Fl_Value_Slider(850, 190, 515, 20, "Extruded material width");
             ExtrudedMaterialWidthSlider->type(5);
             ExtrudedMaterialWidthSlider->selection_color((Fl_Color)2);
+            ExtrudedMaterialWidthSlider->maximum(2);
             ExtrudedMaterialWidthSlider->value(0.7);
             ExtrudedMaterialWidthSlider->textsize(14);
             ExtrudedMaterialWidthSlider->callback((Fl_Callback*)cb_ExtrudedMaterialWidthSlider);
@@ -2118,6 +2118,7 @@ an twice the filament extrusion. - with one line only");
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(830, 45, 565, 1045, "Print");
         o->color((Fl_Color)FL_DARK1);
+        o->hide();
         { Fl_Tabs* o = new Fl_Tabs(835, 180, 540, 660);
           { CommunationLog = new Fl_Multi_Browser(840, 205, 530, 630, "Communication log");
             CommunationLog->box(FL_NO_BOX);
