@@ -1746,9 +1746,67 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
   free(out.triangleattributelist);
 
 */
+UINT CuttingPlane::selfIntersectAndDivideRecursive(float z, UINT startPolygon, UINT startVertex, vector<outline> &outlines, const Vector2f endVertex, UINT &level)
+{
+	level++;	
+	outline result;
+	for(UINT p=startPolygon; p<offsetPolygons.size();p++)
+	{
+		UINT count = offsetPolygons[p].points.size();
+		for(UINT v=startVertex; v<count;v++)
+		{
+			for(int p2=0; p2<offsetPolygons.size();p2++)
+			{
+				UINT count2 = offsetPolygons[p2].points.size();
+				for(int v2=0; v2<count2;v2++)
+				{
+					if((p==p2) && (v == v2))	// Dont check a point against itself
+						continue;
+					Vector2f P1 = offsetVertices[offsetPolygons[p].points[v]];
+					Vector2f P2 = offsetVertices[offsetPolygons[p].points[(v+1)%count]];
+					Vector2f P3 = offsetVertices[offsetPolygons[p2].points[v2]];
+					Vector2f P4 = offsetVertices[offsetPolygons[p2].points[(v2+1)%count2]];
+					InFillHit hit;
+					result.push_back(P1);
+					if(P1 != P3 && P2 != P3 && P1 != P4 && P2 != P4)
+						if(IntersectXY(P1,P2,P3,P4,hit))
+							{
+							if( (hit.p-endVertex).length() < 0.01)
+								{
+								outlines.push_back(result);
+								return (v+1)%count;
+								}
+							result.push_back(hit.p);
+//							selfIntersectAndDivideRecursive(z, p, v, outlines, hit.p);
+							v=selfIntersectAndDivideRecursive(z, p2, (v2+1)%count2, outlines, hit.p, level);
+//							outlines.push_back(result);
+//							return;
+							}
+				}
+			}
+		}
+	}	
+	outlines.push_back(result);
+	level--;
+	return startVertex;
+}
 
 void CuttingPlane::selfIntersectAndDivide(float z)
 {
+	vector<outline> outlines;
+
+	glPointSize(10);
+	glBegin(GL_POINTS);
+	glVertex3f(offsetVertices[offsetPolygons[0].points[0]].x, offsetVertices[offsetPolygons[0].points[0]].y,z);
+	glEnd();
+	glPointSize(1);
+
+	UINT level=0;
+
+	for(UINT p=0; p<offsetPolygons.size();p++)
+			for(UINT v=0; v<offsetPolygons[p].points.size();v++)
+				selfIntersectAndDivideRecursive(z, p, v, outlines, offsetPolygons[p].points[0], level);
+/*
 	vector<Vector2f> result;
 	for(UINT p=0; p<offsetPolygons.size();p++)
 	{
@@ -1760,7 +1818,7 @@ void CuttingPlane::selfIntersectAndDivide(float z)
 				UINT count2 = offsetPolygons[p2].points.size();
 				for(int v2=0; v2<count2;v2++)
 				{
-					if((p==p2) && (v == v2))	// todo: only for same polygon
+					if((p==p2) && (v == v2))	// Dont check a point against itself
 						continue;
 					Vector2f P1 = offsetVertices[offsetPolygons[p].points[v]];
 					Vector2f P2 = offsetVertices[offsetPolygons[p].points[(v+1)%count]];
@@ -1786,17 +1844,32 @@ void CuttingPlane::selfIntersectAndDivide(float z)
 			}
 		}
 	}
-
+*/
 	glColor3f(1,0,1);
 	glLineWidth(5);
-	glBegin(GL_LINE_LOOP);
-	for(UINT i=0;i<result.size();i++)
-		glVertex3f(result[i].x, result[i].y, z);
-	glEnd();
+	for(UINT i=0;i<outlines.size();i++)
+		{
+		z+=1;
+			switch(i%6)
+				{
+				case 0:	glColor4f(1,0,0,1); break;
+				case 1:	glColor4f(0.5f,0,0,1); break;
+				case 2:	glColor4f(0,1,0,1); break;
+				case 3:	glColor4f(0,0.5f,0,1); break;
+				case 4:	glColor4f(0,0,1,1); break;
+				case 5:	glColor4f(0,0,0.3f,1); break;
+				default: glColor4f(0.2f,0.2f,0.2f,1); break;
+				}
+
+		glBegin(GL_LINE_LOOP);
+		for(UINT v=0;v<outlines[i].size();v++)
+			glVertex3f(outlines[i][v].x, outlines[i][v].y, z);
+		glEnd();
+		}
 	glLineWidth(1);
 }
 
-#if(1)
+#if(0)
 void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
 {
 	glColor4f(1,1,1,1);
@@ -1905,8 +1978,8 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 					while(end-start < 0)
 						end += M_PI;
 
-					assert(end-start > 0);
-					assert(end-start < M_PI);
+					assert(end-start > 0);		// Must be between 0
+					assert(end-start < M_PI);	// and 180 degrees
 
 					float r=distance;	// radius
 					while(start<end)

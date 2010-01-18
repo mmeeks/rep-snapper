@@ -40,6 +40,8 @@ glVertex3fv( position.xyz );
 using namespace std;
 using namespace vmml;
 
+typedef vector<Vector2f> outline;
+
 enum AXIS {NEGX, POSX, NEGY, POSY, NEGZ, POSZ, NOT_ALIGNED};
 
 class Triangle
@@ -82,6 +84,7 @@ public:
 	CuttingPlane();
 	void Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets);		// Contracts polygons
 	void selfIntersectAndDivide(float z);
+	UINT selfIntersectAndDivideRecursive(float z, UINT startPolygon, UINT startVertex, vector<outline> &outlines, const Vector2f endVertex, UINT &level);
 	void CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill);	// Collide a infill-line with the polygons
 	void Draw(float z, bool DrawVertexNumbers, bool DrawLineNumbers);
 	bool LinkSegments(float z, float shrinkValue, float Optimization, bool DisplayCuttingPlane);		// Link Segments to form polygons
