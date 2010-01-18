@@ -308,6 +308,23 @@ void RepRapSerial::SendNow(string s)
 }
 void RepRapSerial::SendData(const string &s, const int lineNr)
 {
+	// Apply Downstream Multiplier
+
+	float DSMultiplier = 1.0f;
+	if(gui)
+		DSMultiplier = gui->DownstreamMultiplierSlider->value();
+/*
+	if(DSMultiplier != 1.0f)
+	{
+		size_t pos = s.find( "E", 0);
+		if( pos != string::npos )	//string::npos means not defined
+		{
+			string number = buffer.substr(1,buffer.length()-1);				// 16 characters
+			command.where.x = ToFloat(number);
+		}
+	}
+*/
+
 	string buffer;
 	std::stringstream oss;
 	oss << " N" << lineNr << " ";//*";

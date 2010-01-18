@@ -121,6 +121,20 @@ void GUI::cb_Save1(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Save1_i(o,v);
 }
 
+void GUI::cb_MarginX_i(Fl_Value_Input* o, void*) {
+  MVC->SetPrintMargin("X", o->value());
+}
+void GUI::cb_MarginX(Fl_Value_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_MarginX_i(o,v);
+}
+
+void GUI::cb_MarginY_i(Fl_Value_Input* o, void*) {
+  MVC->SetPrintMargin("Y", o->value());
+}
+void GUI::cb_MarginY(Fl_Value_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_MarginY_i(o,v);
+}
+
 void GUI::cb_accelerationStepsSlider_i(Fl_Value_Slider* o, void*) {
   MVC->NumAccelerationSteps(o->value());
 }
@@ -1194,7 +1208,7 @@ void GUI::cb_Echo(Fl_Light_Button* o, void* v) {
 }
 
 GUI::GUI() {
-  { mainWindow = new Fl_Double_Window(1398, 839, "RepSnapper by Kulitorum www.kulitorum.com");
+  { mainWindow = new Fl_Double_Window(1399, 839, "RepSnapper by Kulitorum www.kulitorum.com");
     mainWindow->box(FL_UP_BOX);
     mainWindow->color((Fl_Color)FL_FOREGROUND_COLOR);
     mainWindow->selection_color((Fl_Color)FL_FOREGROUND_COLOR);
@@ -1280,11 +1294,13 @@ GUI::GUI() {
             MarginX->maximum(100);
             MarginX->step(1);
             MarginX->value(10);
+            MarginX->callback((Fl_Callback*)cb_MarginX);
           } // Fl_Value_Input* MarginX
           { MarginY = new Fl_Value_Input(1320, 76, 45, 23, "Y");
             MarginY->maximum(100);
             MarginY->step(1);
             MarginY->value(10);
+            MarginY->callback((Fl_Callback*)cb_MarginY);
           } // Fl_Value_Input* MarginY
           o->end();
         } // Fl_Group* o

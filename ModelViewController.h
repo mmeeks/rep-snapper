@@ -159,6 +159,8 @@ public:
 	void SetNormalsLength(float val){ProcessControl.NormalsLength = val;}
 	void SetEndPointSize(float val){ProcessControl.EndPointSize = val;}
 
+	void SetPrintMargin(string Axis, float value);
+
 	// Communication
 	void ConnectToPrinter(char on){
 		if(on)

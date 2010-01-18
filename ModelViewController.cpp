@@ -655,3 +655,13 @@ void ModelViewController::STOP()
 	SendNow("M112");
 	serial.Clear();
 }
+
+void ModelViewController::SetPrintMargin(string Axis, float value)
+{
+	if(Axis == "X")
+		ProcessControl.PrintMargin.x = value;
+	else if(Axis == "Y")
+		ProcessControl.PrintMargin.y = value;
+	ProcessControl.stl.MoveIntoPrintingArea(ProcessControl.PrintMargin);
+	redraw();
+}

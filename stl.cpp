@@ -1869,7 +1869,7 @@ void CuttingPlane::selfIntersectAndDivide(float z)
 	glLineWidth(1);
 }
 
-#if(0)
+#if(1)
 void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
 {
 	glColor4f(1,1,1,1);

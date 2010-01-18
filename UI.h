@@ -70,7 +70,15 @@ public:
   Fl_Value_Input *VolumeY;
   Fl_Value_Input *VolumeZ;
   Fl_Value_Input *MarginX;
+private:
+  void cb_MarginX_i(Fl_Value_Input*, void*);
+  static void cb_MarginX(Fl_Value_Input*, void*);
+public:
   Fl_Value_Input *MarginY;
+private:
+  void cb_MarginY_i(Fl_Value_Input*, void*);
+  static void cb_MarginY(Fl_Value_Input*, void*);
+public:
   Fl_Value_Slider *accelerationStepsSlider;
 private:
   void cb_accelerationStepsSlider_i(Fl_Value_Slider*, void*);
