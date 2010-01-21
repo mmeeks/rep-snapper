@@ -306,24 +306,33 @@ void RepRapSerial::SendNow(string s)
 	debugPrint( string("Sending:") + s);
 	Write(s.c_str());
 }
-void RepRapSerial::SendData(const string &s, const int lineNr)
+void RepRapSerial::SendData(string s, const int lineNr)
 {
 	// Apply Downstream Multiplier
 
 	float DSMultiplier = 1.0f;
 	if(gui)
 		DSMultiplier = gui->DownstreamMultiplierSlider->value();
-/*
+
 	if(DSMultiplier != 1.0f)
 	{
-		size_t pos = s.find( "E", 0);
+		size_t pos = s.find( "F", 0);
 		if( pos != string::npos )	//string::npos means not defined
 		{
-			string number = buffer.substr(1,buffer.length()-1);				// 16 characters
-			command.where.x = ToFloat(number);
+			size_t end = s.find( " ", pos);
+			if(end == string::npos)
+				end = s.length()-1;
+			string number = s.substr(pos+1,end);
+			string start = s.substr(0,pos+1);
+			string after = s.substr(end+1,s.length()-1);
+			float old_speed = ToFloat(number);
+			s.clear();
+			std::stringstream oss;
+			oss << start << old_speed*DSMultiplier << after;
+			s=oss.str();
 		}
 	}
-*/
+
 
 	string buffer;
 	std::stringstream oss;

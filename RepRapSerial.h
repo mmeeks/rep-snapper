@@ -24,7 +24,7 @@ public:
 	void setGUI(GUI* g){ gui=g;}
 	void SendNextLine();
 	void test();
-	void SendData(const string &s, const int lineNr);
+	void SendData(string s, const int lineNr);
 	void Connect();
 	void DisConnect();
 	bool isPrinting(){return m_bPrinting;}

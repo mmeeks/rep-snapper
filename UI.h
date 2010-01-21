@@ -617,6 +617,7 @@ private:
   void cb_STOP_i(Fl_Button*, void*);
   static void cb_STOP(Fl_Button*, void*);
 public:
+  Fl_Value_Slider *DownstreamMultiplierSlider;
   Fl_Light_Button *ConnectToPrinterButton;
 private:
   void cb_ConnectToPrinterButton_i(Fl_Light_Button*, void*);
