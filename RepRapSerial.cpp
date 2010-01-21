@@ -8,7 +8,7 @@ enum { EOF_Char = 27 };
 
 void RepRapSerial::debugPrint(string s, bool selectLine)
 {
-#ifdef win32
+#ifdef WIN32
 	if(gui)
 	{
 		uint a=0;
@@ -36,7 +36,7 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 };
 void RepRapSerial::echo(string s)
 {
-#ifdef win32
+#ifdef WIN32
 	if(gui)
 	{
 		uint a=0;
@@ -57,23 +57,9 @@ void RepRapSerial::echo(string s)
 };
 
 
-int ShowError (long lError, LPCTSTR lptszMessage)
-{
-#ifdef win32
-	// Generate a message text
-	TCHAR tszMessage[256];
-	wsprintf(tszMessage,_T("%s\n(error code %d)"), lptszMessage, lError);
-
-	// Display message-box and return with an error-code
-	::MessageBox(0,tszMessage,_T("Listener"), MB_ICONSTOP|MB_OK);
-	return 1;
-#endif
-}
-
-
 void RepRapSerial::OnEvent (EEvent eEvent, EError eError)
 {
-#ifdef win32
+#ifdef WIN32
 	LONG    lLastError = ERROR_SUCCESS;
 
 	// Handle break event
@@ -269,7 +255,7 @@ void RepRapSerial::OnEvent (EEvent eEvent, EError eError)
 
 void RepRapSerial::StartPrint()
 {
-#ifdef win32
+#ifdef WIN32
 	m_iLineNr = 0;
 	m_bPrinting = true;
 	SendNextLine();
@@ -282,7 +268,7 @@ void RepRapSerial::StartPrint()
 
 void RepRapSerial::test()
 {
-#ifdef win32
+#ifdef WIN32
 	for(uint i=0;i<100;i++)
 	{
 	string a("test:" + stringify(i));
@@ -295,7 +281,7 @@ void RepRapSerial::test()
 
 void RepRapSerial::SendNextLine()
 {
-#ifdef win32
+#ifdef WIN32
 	if(m_bPrinting == false)
 		return;
 	if(m_iLineNr < buffer.size())
@@ -318,7 +304,7 @@ void RepRapSerial::SendNextLine()
 
 void RepRapSerial::SendNow(string s)
 {
-#ifdef win32
+#ifdef WIN32
 	s+= "\n";
 	debugPrint( string("Sending:") + s);
 	Write(s.c_str());
@@ -326,7 +312,7 @@ void RepRapSerial::SendNow(string s)
 }
 void RepRapSerial::SendData(string s, const int lineNr)
 {
-#ifdef win32
+#ifdef WIN32
 	// Apply Downstream Multiplier
 
 	float DSMultiplier = 1.0f;
@@ -390,7 +376,7 @@ extern void TempReadTimer(void *);
 
 void RepRapSerial::Connect()
 {
-#ifdef win32
+#ifdef WIN32
 	LONG error=ERROR_SUCCESS;
 	error = Open(_T("COM4"), 0, 0, true);
 	assert(error == 0);
@@ -409,7 +395,7 @@ void RepRapSerial::Connect()
 
 void RepRapSerial::DisConnect()
 {
-#ifdef win32
+#ifdef WIN32
 	Close();
 	m_bConnected = false;
 #endif
@@ -417,14 +403,14 @@ void RepRapSerial::DisConnect()
 
 void RepRapSerial::SetLineNr(int nr)
 {
-#ifdef win32
+#ifdef WIN32
 	SendData("M110", nr);	// restart lineNr count
 #endif
 }
 
 void RepRapSerial::SetDebugMask(int mask, bool on)
 {
-#ifdef win32
+#ifdef WIN32
 	if(on)
 		debugMask |= mask;
 	else
@@ -435,7 +421,7 @@ void RepRapSerial::SetDebugMask(int mask, bool on)
 }
 void RepRapSerial::SetDebugMask()
 {
-#ifdef win32
+#ifdef WIN32
 	std::stringstream oss;
 	string buffer="M111 S";
 	oss << debugMask;

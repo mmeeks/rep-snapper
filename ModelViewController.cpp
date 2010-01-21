@@ -537,21 +537,20 @@ void ModelViewController::SetExtruderLength(int length)
 }
 void ModelViewController::RunExtruder()
 {
-	char speed[10];
-	itoa(m_iExtruderSpeed, speed, 10);
+	std::stringstream oss;
 	string command("G1 F");
-	command += speed;
+	oss << m_iExtruderSpeed;
+	command += oss.str();
 	serial.SendNow(command);
+	oss.str("");
 
 	serial.SendNow("G92 E0");	// set extruder zero
-
-	char length[10];
-	itoa(m_iExtruderLength, length, 10);
+	oss << m_iExtruderLength;
 	string command2("G1 E");
 
 	if(!m_bExtruderDirection)	// Forwards
 		command2+="-";
-	command2+=length;
+	command2+=oss.str();
 	serial.SendNow(command2);
 	serial.SendNow("G1 F1500.0");
 

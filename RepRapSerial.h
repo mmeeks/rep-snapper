@@ -2,7 +2,7 @@
 
 //From http://www.codeproject.com/KB/system/serial.aspx
 
-#ifdef win32
+#ifdef WIN32
 #include "Serial/SerialEx.h"
 #endif
 
@@ -10,7 +10,7 @@
 //#include "ftd2xx.h"
 
 
-#ifndef win32
+#ifndef WIN32
 
 #include "fakeserialex.h"
 #define EEvent int

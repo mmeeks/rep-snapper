@@ -25,10 +25,12 @@
 #define DEBUG_ECHO (1<<0)
 #define DEBUG_INFO (1<<1)
 #define DEBUG_ERRORS (1<<2)
-
-//#include <windows.h>											// Header File For Windows
+#ifdef WIN32
+	#include <windows.h>											// Header File For Windows
+	#include <tchar.h>
+typedef unsigned int        uint;
+#endif
 #include <stdio.h>
-//#include <tchar.h>
 #include <FL/Fl.H>
 #include <vmmlib/vmmlib.h>
 #include <GL/gl.h>												// Header File For The OpenGL32 Library
