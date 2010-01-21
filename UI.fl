@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0110 
+version 1.0109 
 header_name {.h} 
 code_name {.cxx}
 decl {\#pragma warning( disable : 4311 4312 4244 4267 4800)} {public global
@@ -14,7 +14,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {-479 175 1400 839} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
+      xywh {8 175 1400 839} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -29,8 +29,8 @@ class GUI {open
         xywh {830 20 565 1070} align 5
       } {
         Fl_Group {} {
-          label {Input file} open
-          xywh {830 40 545 785} hide
+          label {Input file} open selected
+          xywh {830 40 545 785}
         } {
           Fl_Button {} {
             label {Load STL}
@@ -915,14 +915,14 @@ MVC->redraw();}
         }
         Fl_Group {} {
           label Print open
-          xywh {830 45 565 1045} color 47
+          xywh {830 45 565 1045} color 47 hide
         } {
           Fl_Tabs {} {open
             xywh {835 180 540 660}
           } {
             Fl_Browser CommunationLog {
               label {Communication log}
-              xywh {840 205 530 630} hide
+              xywh {840 205 530 630}
               code0 {\#include <FL/Fl_Multi_Browser.h>}
               class Fl_Multi_Browser
             }
@@ -940,7 +940,7 @@ MVC->redraw();}
             }
             Fl_Group {} {
               label {Interactive control} open
-              xywh {840 205 535 635} selection_color 15
+              xywh {840 205 535 635} selection_color 15 hide
             } {
               Fl_Light_Button SwitchHeatOnButton {
                 label {Switch heat on}
@@ -989,7 +989,7 @@ MVC->redraw();}
               Fl_Value_Slider {} {
                 label Length
                 callback {MVC->SetExtruderLength(o->value());}
-                xywh {1120 455 235 25} type {Horz Knob} align 4 minimum 10 maximum 9999 step 100 value 750 textsize 14
+                xywh {1120 455 235 25} type {Horz Knob} align 4 minimum 10 maximum 850 step 100 value 150 textsize 14
               }
               Fl_Input GCodeInput {
                 label GCode
@@ -1184,8 +1184,8 @@ MVC->redraw();}
                 xywh {855 530 495 230} color 1 labelfont 1 labelsize 64 labelcolor 1
               }
               Fl_Value_Slider DownstreamMultiplierSlider {
-                label {Downstream speed multiplier} selected
-                xywh {905 490 450 25} type {Horz Knob} align 4 minimum 0.01 maximum 5 value 1 textsize 14
+                label {Downstream speed multiplier}
+                xywh {845 490 510 25} type {Horz Knob} align 5 minimum 0.01 maximum 5 value 1 textsize 14
               }
             }
           }
