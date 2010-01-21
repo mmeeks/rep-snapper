@@ -9,7 +9,7 @@
 * option, any later version, incorporated herein by reference.
 *
 * ------------------------------------------------------------------------- */
-#include "Stdafx.h"
+#include "stdafx.h"
 #include "Printer.h"
 
 // Draw grid
@@ -17,7 +17,7 @@ void Printer::Draw(const ProcessController &PC)
 {
 	glColor3f(0.5f, 0.5f, 0.5f);
 	glBegin(GL_LINES);
-	for(UINT x=0;x<PC.m_fVolume.x;x+=10)
+	for(uint x=0;x<PC.m_fVolume.x;x+=10)
 		{
 		glVertex3f(x, 0.0f, 0.0f);
 		glVertex3f(x, PC.m_fVolume.y, 0.0f);
@@ -25,7 +25,7 @@ void Printer::Draw(const ProcessController &PC)
 	glVertex3f(PC.m_fVolume.x, 0.0f, 0.0f);
 	glVertex3f(PC.m_fVolume.x, PC.m_fVolume.y, 0.0f);
 	
-	for(UINT y=0;y<PC.m_fVolume.y;y+=10)
+	for(uint y=0;y<PC.m_fVolume.y;y+=10)
 	{
 	glVertex3f(0.0f, y, 0.0f);
 	glVertex3f(PC.m_fVolume.x, y, 0.0f);

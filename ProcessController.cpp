@@ -9,13 +9,13 @@
 * option, any later version, incorporated herein by reference.
 *
 * ------------------------------------------------------------------------- */
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ProcessController.h"
 
-ProcessController::~ProcessController()
+/*ProcessController::~ProcessController()
 {
 	SaveXML();
-}
+}*/
 
 void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd)
 {
@@ -27,7 +27,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 	}
 
 	// Make Layers
-	UINT LayerNr = 0;
+	uint LayerNr = 0;
 
 	float z=stl.Min.z+0.0001f;				// Offset it a bit in Z, z=0 gives a empty slice because no triangles crosses this Z value
 
@@ -95,7 +95,7 @@ Vector3f ProcessController::MakeRaft(float &z)
 {
 	vector<InFillHit> HitsBuffer;
 
-	UINT LayerNr = 0;
+	uint LayerNr = 0;
 
 	float step;
 
@@ -601,7 +601,7 @@ void ProcessController::LoadXML(XMLElement *e)
 	memset(buffer,0,100);
 	x->FindVariableZ("GammaCurve", true, "None")->GetValue(buffer);
 	string GammaC(buffer);
-	for(UINT i=0;i<ImageProcessingLimits::GammaCurveCount;i++)
+	for(uint i=0;i<ImageProcessingLimits::GammaCurveCount;i++)
 	{
 		string ThisCurveName(ImageProcessingLimits::GammaCurveLabels[i]);
 		if(GammaC == ThisCurveName)
@@ -611,7 +611,7 @@ void ProcessController::LoadXML(XMLElement *e)
 	memset(buffer,0,100);
 	x->FindVariableZ("ColorSpace", true, "None")->GetValue(buffer);
 	string ColSp(buffer);
-	for(UINT i=0;i<ImageProcessingLimits::ColorSpaceCount;i++)
+	for(uint i=0;i<ImageProcessingLimits::ColorSpaceCount;i++)
 	{
 		string ThisCurveName(ImageProcessingLimits::ColorSpaceLabels[i]);
 		if(ColSp == ThisCurveName)

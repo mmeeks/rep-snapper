@@ -13,7 +13,7 @@
 #include "stdafx.h"
 
 #include "gcode.h"
-#include "FL/FL.h"
+#include "FL/Fl.H"
 
 #include <iostream>
 #include <sstream>
@@ -43,7 +43,7 @@ void GCode::Read(string filename)
 		return;
 	}
 
-	UINT LineNr = 0;
+	uint LineNr = 0;
 
 	string s;
 
@@ -196,8 +196,8 @@ void GCode::draw(const ProcessController &PC)
 	Vector3f Color = Vector3f(0.0f,0.0f,0.0f);
 	float	Distance = 0.0f;
 	Vector3f pos(0,0,0);
-	UINT start = (UINT)(PC.GCodeDrawStart*(float)(commands.size()));
-	UINT end = (UINT)(PC.GCodeDrawEnd*(float)(commands.size()));
+	uint start = (uint)(PC.GCodeDrawStart*(float)(commands.size()));
+	uint end = (uint)(PC.GCodeDrawEnd*(float)(commands.size()));
 
 	float Er,Eg,Eb;
 	HSVtoRGB(PC.GCodeExtrudeHue, PC.GCodeExtrudeSat, PC.GCodeExtrudeVal, Er,Eg,Eb);
@@ -206,7 +206,7 @@ void GCode::draw(const ProcessController &PC)
 
 	float LastE=0.0f;
 
-	for(UINT i=start;i<commands.size() && i < end ;i++)
+	for(uint i=start;i<commands.size() && i < end ;i++)
 	{
 		switch(commands[i].Code)
 		{
@@ -303,7 +303,7 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 
 	GcodeTxt += GcodeStart + "\n";
 
-	for(UINT i=0;i<commands.size() ;i++)
+	for(uint i=0;i<commands.size() ;i++)
 	{
 		oss.str( "" );
 		switch(commands[i].Code)

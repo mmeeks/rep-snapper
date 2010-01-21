@@ -11,9 +11,9 @@
 * ------------------------------------------------------------------------- */
 #include "stdafx.h"
 
-#include <windows.h>													// Header File For The Windows Library
-#include <gl/gl.h>														// Header File For The OpenGL32 Library
-#include <gl/glu.h>														// Header File For The GLu32 Library
+//#include <windows.h>													// Header File For The Windows Library
+#include <GL/gl.h>														// Header File For The OpenGL32 Library
+#include <GL/glu.h>														// Header File For The GLu32 Library
 
 #include "ModelViewController.h"
 
@@ -22,7 +22,7 @@
 
 GUI *gui;
 
-int _tmain(int argc, _TCHAR* argv[])
+int main(int argc, char* argv[])
 {
 	gui = new GUI();
 

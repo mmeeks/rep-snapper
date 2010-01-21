@@ -105,7 +105,7 @@ public:
 	void SetDrawLineNumbers(bool val){ProcessControl.DrawLineNumbers = val; redraw();}
 
 	void SetShellOnly(bool val) {ProcessControl.ShellOnly = val; redraw();}
-	void SetShellCount(UINT val) {ProcessControl.ShellCount = val; redraw();}
+	void SetShellCount(uint val) {ProcessControl.ShellCount = val; redraw();}
 
 	void SetEnableAcceleration(bool val) {ProcessControl.EnableAcceleration = val; redraw();}
 	

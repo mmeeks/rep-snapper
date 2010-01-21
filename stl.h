@@ -11,9 +11,9 @@
 * ------------------------------------------------------------------------- */
 #pragma once
 #include <vector>
-#include <windows.h>											// Header File For Windows
-#include <gl\gl.h>												// Header File For The OpenGL32 Library
-#include <gl\glu.h>												// Header File For The GLu32 Library
+//#include <windows.h>											// Header File For Windows
+#include <GL/gl.h>												// Header File For The OpenGL32 Library
+#include <GL/glu.h>												// Header File For The GLu32 Library
 //#include <gl\glaux.h>											// Header File For The GLaux Library
 
 #include "math.h"                                               // Needed for sqrtf
@@ -65,7 +65,7 @@ struct InFillHit{
 };
 
 struct Segment{
-	Segment(UINT s, UINT e){start = s; end = e;}
+	Segment(uint s, uint e){start = s; end = e;}
 	int start;		// Vertex index of start point
 	int end;		// Vertex index of end point
 };
@@ -75,7 +75,7 @@ public:
 	Poly(){};
 	void cleanup();				// Removed vertices that are on a straight line
 
-	vector<UINT> points;			// points, indices into ..... a CuttingPlane or a GCode object
+	vector<uint> points;			// points, indices into ..... a CuttingPlane or a GCode object
 };
 
 // A (set of) 2D polygon extracted from a 3D model
@@ -84,12 +84,12 @@ public:
 	CuttingPlane();
 	void Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets);		// Contracts polygons
 	void selfIntersectAndDivide(float z);
-	UINT selfIntersectAndDivideRecursive(float z, UINT startPolygon, UINT startVertex, vector<outline> &outlines, const Vector2f endVertex, UINT &level);
-	void CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill);	// Collide a infill-line with the polygons
+	uint selfIntersectAndDivideRecursive(float z, uint startPolygon, uint startVertex, vector<outline> &outlines, const Vector2f endVertex, uint &level);
+	void CalcInFill(vector<Vector2f> &infill, uint LayerNr, float z, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill);	// Collide a infill-line with the polygons
 	void Draw(float z, bool DrawVertexNumbers, bool DrawLineNumbers);
 	bool LinkSegments(float z, float shrinkValue, float Optimization, bool DisplayCuttingPlane);		// Link Segments to form polygons
 	void CleanupPolygons(float Optimization);			// remove redudant points
-	void MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float &E, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, bool UseAcceleration, bool UseIncrementalEcode, bool UseFirmwareAcceleration);	// Convert Cuttingplane to GCode
+	void MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float &E, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, uint accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, bool UseAcceleration, bool UseIncrementalEcode, bool UseFirmwareAcceleration);	// Convert Cuttingplane to GCode
 
 	Vector2f Min, Max;				// Bounding box
 	vector<Segment> lines;			// Segments - 2 points pr. line-segment

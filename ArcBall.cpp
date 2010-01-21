@@ -18,9 +18,9 @@
 /*************************************************************/
 #include "stdafx.h"
 
-#include <windows.h>											// Header File For Windows
-#include <gl\gl.h>												// Header File For The OpenGL32 Library
-#include <gl\glu.h>												// Header File For The GLu32 Library
+//#include <windows.h>											// Header File For Windows
+#include <GL/gl.h>												// Header File For The OpenGL32 Library
+#include <GL/glu.h>												// Header File For The GLu32 Library
 //#include <gl\glaux.h>											// Header File For The GLaux Library
 
 #include "math.h"                                               // Needed for sqrtf

@@ -11,7 +11,7 @@
 * ------------------------------------------------------------------------- */
 #pragma once
 
-#include "StdAfx.h"
+#include "stdafx.h"
 
 class ProcessController;
 

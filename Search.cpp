@@ -9,7 +9,7 @@
 * option, any later version, incorporated herein by reference.
 *
 * ------------------------------------------------------------------------- */
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "search.h"
 

@@ -11,9 +11,9 @@
 * ------------------------------------------------------------------------- */
 #pragma once
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Printer.h"
-#include "xml/xml.h"
+#include "xml/XML.H"
 #include <vmmlib/vmmlib.h>
 #include "UI.h"
 #include "stl.h"
@@ -98,7 +98,7 @@ public:
 
 };
 
-	ProcessController::~ProcessController();
+//	ProcessController::~ProcessController();
 
 	void Draw();
 	
@@ -141,13 +141,13 @@ public:
 
 	// Raft
 	float RaftSize;
-	UINT RaftBaseLayerCount;
+	uint RaftBaseLayerCount;
 	float RaftMaterialPrDistanceRatio;
 	float RaftRotation;
 	float RaftBaseDistance;
 	float RaftBaseThickness;
 	float RaftBaseTemperature;
-	UINT RaftInterfaceLayerCount;
+	uint RaftInterfaceLayerCount;
 	float RaftInterfaceMaterialPrDistanceRatio;
 	float RaftRotationPrLayer;
 	float RaftInterfaceDistance;
@@ -162,7 +162,7 @@ public:
 	float MinPrintSpeedZ;
 	float MaxPrintSpeedZ;
 
-	UINT accelerationSteps;
+	uint accelerationSteps;
 	float distanceBetweenSpeedSteps;
 	float extrusionFactor;
 	bool UseFirmwareAcceleration;
@@ -186,7 +186,7 @@ public:
 	float Examine;
 
 	bool ShellOnly;
-	UINT ShellCount;
+	uint ShellCount;
 
 	bool EnableAcceleration;
 

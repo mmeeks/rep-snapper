@@ -19,14 +19,14 @@
 #include "math.h"
 //#include "pathfinder.h"
 
-#include <gl/glu.h>
-#include <glut.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
 
 #include <iostream>
 #include <fstream>
 #include <algorithm>
 
-#include <ANN/ANN.h>
+//#include <ANN/ANN.h>
 
 #pragma warning( disable : 4018 4267)
 
@@ -93,7 +93,7 @@ bool STL::Read(string filename, const Vector3f &PrintingMargin)
 		infile.read(reinterpret_cast < char * > (&count), sizeof(unsigned int));	// N_Triangles
 		triangles.reserve(count);
 
-		for(UINT i = 0; i < count; i++)
+		for(uint i = 0; i < count; i++)
 		{
 			float a,b,c;
 			infile.read(reinterpret_cast < char * > (&a), sizeof(float));
@@ -183,7 +183,7 @@ void STL::draw(const ProcessController &PC)
 //		glDepthMask(GL_TRUE);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  //define blending factors
 		glBegin(GL_TRIANGLES);
-		for(UINT i=0;i<triangles.size();i++)
+		for(uint i=0;i<triangles.size();i++)
 		{
 /*			switch(triangles[i].axis)
 				{
@@ -218,7 +218,7 @@ void STL::draw(const ProcessController &PC)
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
 
 		glColor3f(r,g,b);
-		for(UINT i=0;i<triangles.size();i++)
+		for(uint i=0;i<triangles.size();i++)
 		{
 			glBegin(GL_LINE_LOOP);
 			glNormal3f(triangles[i].N.x, triangles[i].N.y, triangles[i].N.z);
@@ -238,7 +238,7 @@ void STL::draw(const ProcessController &PC)
 		HSVtoRGB(PC.NormalsHue, PC.NormalsSat, PC.NormalsVal, r,g,b);
 		glColor3f(r,g,b);
 		glBegin(GL_LINES);
-		for(UINT i=0;i<triangles.size();i++)
+		for(uint i=0;i<triangles.size();i++)
 		{
 			Vector3f center = (triangles[i].A+triangles[i].B+triangles[i].C)/3.0f;
 			glVertex3fv((GLfloat*)&center);
@@ -257,7 +257,7 @@ void STL::draw(const ProcessController &PC)
 		glPointSize(PC.EndPointSize);
 		glEnable(GL_POINT_SMOOTH);
 		glBegin(GL_POINTS);
-		for(UINT i=0;i<triangles.size();i++)
+		for(uint i=0;i<triangles.size();i++)
 		{
 			glVertex3f(triangles[i].A.x, triangles[i].A.y, triangles[i].A.z);
 			glVertex3f(triangles[i].B.x, triangles[i].B.y, triangles[i].B.z);
@@ -268,7 +268,7 @@ void STL::draw(const ProcessController &PC)
 	glDisable(GL_DEPTH_TEST);
 
 	// Make Layers
-	UINT LayerNr = 0;
+	uint LayerNr = 0;
 
 	float zSize = (Max.z-Min.z);
 	float z=PC.CuttingPlaneValue*zSize+Min.z;
@@ -316,7 +316,7 @@ void STL::draw(const ProcessController &PC)
 				glColor4f(1,1,0,1);
 				glPointSize(5);
 				glBegin(GL_LINES);
-				for(UINT i=0;i<infill.size();i+=2)
+				for(uint i=0;i<infill.size();i+=2)
 				{
 					if(infill.size() > i+1)
 					{
@@ -364,14 +364,14 @@ void STL::draw(const ProcessController &PC)
 
 }
 
-UINT findClosestUnused(std::vector<Vector3f> lines, Vector3f point, std::vector<bool> &used)
+uint findClosestUnused(std::vector<Vector3f> lines, Vector3f point, std::vector<bool> &used)
 {
-	UINT closest = -1;
+	uint closest = -1;
 	float closestDist = 9999999999999;
 	
-	UINT count = lines.size();
+	uint count = lines.size();
 	
-	for(UINT i=0;i<count;i++)
+	for(uint i=0;i<count;i++)
 	{
 		if(used[i] == false)
 			{
@@ -387,9 +387,9 @@ UINT findClosestUnused(std::vector<Vector3f> lines, Vector3f point, std::vector<
 	return closest;
 }
 
-UINT findOtherEnd(UINT p)
+uint findOtherEnd(uint p)
 {
-	UINT a = p%2;
+	uint a = p%2;
 	if(a == 0)
 		return p+1;
 	return p-1;
@@ -399,7 +399,7 @@ CuttingPlane::CuttingPlane()
 {
 }
 
-void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, GCode &code, float z, float minSpeedXY, float maxSpeedXY, float minSpeedZ, float maxSpeedZ, bool UseIncrementalEcode, float &E, bool UseFirmwareAcceleration)
+void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, uint accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, GCode &code, float z, float minSpeedXY, float maxSpeedXY, float minSpeedZ, float maxSpeedZ, bool UseIncrementalEcode, float &E, bool UseFirmwareAcceleration)
 {
 	if(UseFirmwareAcceleration)
 	{
@@ -511,8 +511,8 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSte
 			direction.normalize();
 
 			Vector3f pos = start;
-			UINT currrentAccelerationLevel = accelerationSteps;
-			for(UINT i=0;i<accelerationSteps;i++)
+			uint currrentAccelerationLevel = accelerationSteps;
+			for(uint i=0;i<accelerationSteps;i++)
 			{
 				pos = start+(direction*distanceBetweenSpeedSteps*(float)(i+1));	// Go somewhere else, if i==0 we goto same position as where we are
 				float speed = deltaSpeed*(float)i+minSpeedXY;
@@ -549,7 +549,7 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSte
 				}
 			}
 			// Deacceleration
-			for(int i=currrentAccelerationLevel;i>=0;i--)	// Don't use UINT, it needs to go below zero
+			for(int i=currrentAccelerationLevel;i>=0;i--)	// Don't use uint, it needs to go below zero
 			{
 				pos = end-(direction*distanceBetweenSpeedSteps*(float)i);
 				float speed = deltaSpeed*(float)i+minSpeedXY;
@@ -573,7 +573,7 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSte
 
 }
 
-void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float &E, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, bool UseAcceleration, bool UseIncrementalEcode, bool UseFirmwareAcceleration)
+void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float &E, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, uint accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, bool UseAcceleration, bool UseIncrementalEcode, bool UseFirmwareAcceleration)
 {
 	// Make an array with all lines, then link'em
 
@@ -612,15 +612,15 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 
 	std::vector<Vector3f> lines;
 
-	for(UINT i=0;i<infill.size();i++)
+	for(uint i=0;i<infill.size();i++)
 		lines.push_back(Vector3f(infill[i].x, infill[i].y, z));
 
 	// Copy polygons
 	if(offsetPolygons.size() != 0)
 		{
-		for(UINT p=0;p<offsetPolygons.size();p++)
+		for(uint p=0;p<offsetPolygons.size();p++)
 			{
-			for(UINT i=0;i<offsetPolygons[p].points.size();i++)
+			for(uint i=0;i<offsetPolygons[p].points.size();i++)
 				{
 				Vector2f P3 = offsetVertices[offsetPolygons[p].points[i]];
 				Vector2f P4 = offsetVertices[offsetPolygons[p].points[(i+1)%offsetPolygons[p].points.size()]];
@@ -633,11 +633,11 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 
 	std::vector<bool> used;
 	used.resize(lines.size());
-	for(UINT i=0;i<used.size();i++)
+	for(uint i=0;i<used.size();i++)
 		used[i] = false;
 
 
-	UINT thisPoint = findClosestUnused(lines, LastPosition, used);
+	uint thisPoint = findClosestUnused(lines, LastPosition, used);
 	if(thisPoint == -1)	// No lines = no gcode
 		return;
 	used[thisPoint] = true;
@@ -707,9 +707,9 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 	plane.Max.x = Max.x;
 	plane.Max.y = Max.y;
 
-	UINT pointNr = 0;
+	uint pointNr = 0;
 	bool foundOne = false;
-	for(UINT i=0;i<triangles.size();i++)
+	for(uint i=0;i<triangles.size();i++)
 	{
 		foundOne=false;
 		Segment line(-1,-1);
@@ -805,7 +805,7 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 vector<InFillHit> HitsBuffer;
 
 
-void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill)
+void CuttingPlane::CalcInFill(vector<Vector2f> &infill, uint LayerNr, float z, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill)
 {
 	int c=0;
 
@@ -850,9 +850,9 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z, f
 */
 			if(offsetPolygons.size() != 0)
 				{
-				for(UINT p=0;p<offsetPolygons.size();p++)
+				for(uint p=0;p<offsetPolygons.size();p++)
 					{
-					for(UINT i=0;i<offsetPolygons[p].points.size();i++)
+					for(uint i=0;i<offsetPolygons[p].points.size();i++)
 						{
 						Vector2f P3 = offsetVertices[offsetPolygons[p].points[i]];
 						Vector2f P4 = offsetVertices[offsetPolygons[p].points[(i+1)%offsetPolygons[p].points.size()]];
@@ -871,7 +871,7 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z, f
 			else
 				{
 				// Fallback, collide with lines rather then polygons
-				for(UINT i=0;i<lines.size();i++)
+				for(uint i=0;i<lines.size();i++)
 					{
 					Vector2f P3 = vertices[lines[i].start];
 					Vector2f P4 = vertices[lines[i].end];
@@ -894,7 +894,7 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z, f
 				{
 				glPointSize(4);
 				glBegin(GL_POINTS);
-				for(UINT i=0;i<HitsBuffer.size();i++)
+				for(uint i=0;i<HitsBuffer.size();i++)
 					glVertex3f(HitsBuffer[0].p.x, HitsBuffer[0].p.y, z);
 				glEnd();
 				glPointSize(1);
@@ -903,13 +903,13 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, UINT LayerNr, float z, f
 			// Verify hits intregrety
 			// Check if hit extists in table
 restart_check:
-			for(UINT i=0;i<HitsBuffer.size();i++)
+			for(uint i=0;i<HitsBuffer.size();i++)
 				{
 				if(examineThis)
 					int a=0;
 				bool found = false;
 
-				for(UINT j=i+1;j<HitsBuffer.size();j++)
+				for(uint j=i+1;j<HitsBuffer.size();j++)
 					if( abs(HitsBuffer[i].d - HitsBuffer[j].d) < 0.0001)
 						{
 						found = true;
@@ -1560,13 +1560,13 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 		
 		for(unsigned int p=0; p<polygons.size();p++)
 			{
-			UINT count = polygons[p].points.size();
+			uint count = polygons[p].points.size();
 			in.numberofpoints = count;
 			in.pointlist = (REAL *) malloc(in.numberofpoints * 2 * sizeof(REAL));
 			in.numberofsegments = count;
 			in.numberofpointattributes = 0;
 			in.segmentlist = (int *) malloc(in.numberofpoints * 2 * sizeof(int));
-			UINT v=0;
+			uint v=0;
 			for(unsigned int i=0; i<count;i++)
 				{
 				in.segmentlist[v] = i;
@@ -1746,18 +1746,18 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
   free(out.triangleattributelist);
 
 */
-UINT CuttingPlane::selfIntersectAndDivideRecursive(float z, UINT startPolygon, UINT startVertex, vector<outline> &outlines, const Vector2f endVertex, UINT &level)
+uint CuttingPlane::selfIntersectAndDivideRecursive(float z, uint startPolygon, uint startVertex, vector<outline> &outlines, const Vector2f endVertex, uint &level)
 {
 	level++;	
 	outline result;
-	for(UINT p=startPolygon; p<offsetPolygons.size();p++)
+	for(uint p=startPolygon; p<offsetPolygons.size();p++)
 	{
-		UINT count = offsetPolygons[p].points.size();
-		for(UINT v=startVertex; v<count;v++)
+		uint count = offsetPolygons[p].points.size();
+		for(uint v=startVertex; v<count;v++)
 		{
 			for(int p2=0; p2<offsetPolygons.size();p2++)
 			{
-				UINT count2 = offsetPolygons[p2].points.size();
+				uint count2 = offsetPolygons[p2].points.size();
 				for(int v2=0; v2<count2;v2++)
 				{
 					if((p==p2) && (v == v2))	// Dont check a point against itself
@@ -1801,21 +1801,21 @@ void CuttingPlane::selfIntersectAndDivide(float z)
 	glEnd();
 	glPointSize(1);
 
-	UINT level=0;
+	uint level=0;
 
-	for(UINT p=0; p<offsetPolygons.size();p++)
-			for(UINT v=0; v<offsetPolygons[p].points.size();v++)
+	for(uint p=0; p<offsetPolygons.size();p++)
+			for(uint v=0; v<offsetPolygons[p].points.size();v++)
 				selfIntersectAndDivideRecursive(z, p, v, outlines, offsetPolygons[p].points[0], level);
 /*
 	vector<Vector2f> result;
-	for(UINT p=0; p<offsetPolygons.size();p++)
+	for(uint p=0; p<offsetPolygons.size();p++)
 	{
-		UINT count = offsetPolygons[p].points.size();
-		for(UINT v=0; v<count;v++)
+		uint count = offsetPolygons[p].points.size();
+		for(uint v=0; v<count;v++)
 		{
 			for(int p2=0; p2<offsetPolygons.size();p2++)
 			{
-				UINT count2 = offsetPolygons[p2].points.size();
+				uint count2 = offsetPolygons[p2].points.size();
 				for(int v2=0; v2<count2;v2++)
 				{
 					if((p==p2) && (v == v2))	// Dont check a point against itself
@@ -1847,7 +1847,7 @@ void CuttingPlane::selfIntersectAndDivide(float z)
 */
 	glColor3f(1,0,1);
 	glLineWidth(5);
-	for(UINT i=0;i<outlines.size();i++)
+	for(uint i=0;i<outlines.size();i++)
 		{
 		z+=1;
 			switch(i%6)
@@ -1862,7 +1862,7 @@ void CuttingPlane::selfIntersectAndDivide(float z)
 				}
 
 		glBegin(GL_LINE_LOOP);
-		for(UINT v=0;v<outlines[i].size();v++)
+		for(uint v=0;v<outlines[i].size();v++)
 			glVertex3f(outlines[i][v].x, outlines[i][v].y, z);
 		glEnd();
 		}
@@ -1878,7 +1878,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 		Poly offsetPoly;
 		if(DisplayCuttingPlane)
 			glBegin(GL_LINE_LOOP);
-		UINT count = polygons[p].points.size();
+		uint count = polygons[p].points.size();
 		for(int i=0; i<count;i++)
 		{
 			Vector2f Na = Vector2f(vertices[polygons[p].points[(i-1+count)%count]].x, vertices[polygons[p].points[(i-1+count)%count]].y);
@@ -1916,7 +1916,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 	for(int p=0; p<polygons.size();p++)
 		{
 		Poly offsetPoly;
-		UINT count = polygons[p].points.size();
+		uint count = polygons[p].points.size();
 		for(int i=0; i<count;i++)
 			{
 			Vector2f Na = Vector2f(vertices[polygons[p].points[(i-1+count)%count]].x, vertices[polygons[p].points[(i-1+count)%count]].y);
@@ -2008,7 +2008,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 			{
 			glColor3f(0,1,0);
 			glBegin(GL_LINE_LOOP);
-			for(UINT i=0;i<offsetPoly.points.size();i++)
+			for(uint i=0;i<offsetPoly.points.size();i++)
 				glVertex3f(offsetVertices[offsetPoly.points[i]].x, offsetVertices[offsetPoly.points[i]].y, z);
 			glEnd();
 			}
@@ -2025,7 +2025,7 @@ void CuttingPlane::Draw(float z, bool DrawVertexNumbers, bool DrawLineNumbers)
 		{
 		glColor4f(1,0,0,1);
 		glBegin(GL_LINES);
-		for(UINT i=0;i<lines.size();i++)
+		for(uint i=0;i<lines.size();i++)
 			{
 /*				if(DisplayDebug && (int)(Examine*((float)lines.size()-1)) == i)
 				{
@@ -2052,7 +2052,7 @@ void CuttingPlane::Draw(float z, bool DrawVertexNumbers, bool DrawLineNumbers)
 		glColor4f(1,1,0,1);
 		glPointSize(2);
 		glBegin(GL_POINTS);
-		for(UINT i=0;i<lines.size();i++)
+		for(uint i=0;i<lines.size();i++)
 		{
 				glVertex3f(vertices[lines[i].start].x, vertices[lines[i].start].y, z);
 				glVertex3f(vertices[lines[i].end].x, vertices[lines[i].end].y, z);
@@ -2096,13 +2096,13 @@ void STL::OptimizeRotation()
 	AXIS_VECTORS[2] = Vector3f(0,0,1);
 
 	float area[6];
-	for(UINT i=0;i<6;i++)
+	for(uint i=0;i<6;i++)
 		area[i] = 0.0f;
 
-	for(UINT i=0;i<triangles.size();i++)
+	for(uint i=0;i<triangles.size();i++)
 		{
 		triangles[i].axis = NOT_ALIGNED;				
-		for(UINT triangleAxis=0;triangleAxis<3;triangleAxis++)
+		for(uint triangleAxis=0;triangleAxis<3;triangleAxis++)
 			{
 			if (  triangles[i].N.cross(AXIS_VECTORS[triangleAxis]).length() < 0.1)
 				{
@@ -2125,7 +2125,7 @@ void STL::OptimizeRotation()
 
 	AXIS down = NOT_ALIGNED;
 	float LargestArea = 0;
-	for(UINT i=0;i<6;i++)
+	for(uint i=0;i<6;i++)
 	{
 	if(area[i] > LargestArea)
 		{
@@ -2152,7 +2152,7 @@ void STL::RotateObject(Vector3f axis, float angle)
 	min.x = min.y = min.z = 99999999.0f;
 	max.x = max.y = max.z = -99999999.0f;
 
-	for(UINT i=0; i<triangles.size() ; i++)
+	for(uint i=0; i<triangles.size() ; i++)
 	{
 	triangles[i].N = triangles[i].N.rotate(angle, axis.x, axis.y, axis.z);
 	triangles[i].A = triangles[i].A.rotate(angle, axis.x, axis.y, axis.z);
@@ -2216,7 +2216,7 @@ void CuttingPlane::CleanupPolygons(float Optimization)
 void STL::MoveIntoPrintingArea(const Vector3f &PrintingMargin)
 {
 
-	for(UINT i=0; i<triangles.size() ; i++)
+	for(uint i=0; i<triangles.size() ; i++)
 	{
 		triangles[i].A = triangles[i].A - Min + PrintingMargin;
 		triangles[i].B = triangles[i].B - Min + PrintingMargin;
@@ -2235,7 +2235,7 @@ void STL::CenterAroundXY(const Vector3f &Point)
 	Vector3f displacement = Point - MyCenter;
 	displacement.z = 0.0f;
 
-	for(UINT i=0; i<triangles.size() ; i++)
+	for(uint i=0; i<triangles.size() ; i++)
 	{
 		triangles[i].A = triangles[i].A + displacement;
 		triangles[i].B = triangles[i].B + displacement;

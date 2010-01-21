@@ -133,7 +133,7 @@ void RGBtoHSV 	(const float &r, const float &g, const float &b, float &h, float 
 }
 
 
-void RGBTOHSL(float red, float green, float blue, float &hue, float &sat, FLOAT &lightness)
+void RGBTOHSL(float red, float green, float blue, float &hue, float &sat, float &lightness)
 {
 	double min, max;
 	double delta;

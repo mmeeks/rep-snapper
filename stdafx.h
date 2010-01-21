@@ -26,13 +26,13 @@
 #define DEBUG_INFO (1<<1)
 #define DEBUG_ERRORS (1<<2)
 
-#include <windows.h>											// Header File For Windows
+//#include <windows.h>											// Header File For Windows
 #include <stdio.h>
-#include <tchar.h>
-#include <fl/Fl.H>
+//#include <tchar.h>
+#include <FL/Fl.H>
 #include <vmmlib/vmmlib.h>
-#include <gl\gl.h>												// Header File For The OpenGL32 Library
-#include <gl\glu.h>												// Header File For The GLu32 Library
+#include <GL/gl.h>												// Header File For The OpenGL32 Library
+#include <GL/glu.h>												// Header File For The GLu32 Library
 //#include <gl\glaux.h>											// Header File For The GLaux Library
 #include "math.h"                                               // Needed for sqrtf
 #include "ArcBall.h"
@@ -40,18 +40,20 @@
 #include "ModelViewController.h"
 #include "Printer.h"
 #include "ProcessController.h"
-#include "search.h"
+//#include "search.h"
 #include "stl.h"
 #include "UI.h"
-#include "xml/XML.h"
+#include "xml/XML.H"
 
-void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, UINT accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, GCode &code, float z, float minSpeedXY, float maxSpeedXY, float minSpeedZ, float maxSpeedZ, bool UseIncrementalECode, float &E, bool UseFirmwareAcceleration);
+typedef unsigned int uint;
+
+void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, uint accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, GCode &code, float z, float minSpeedXY, float maxSpeedXY, float minSpeedZ, float maxSpeedZ, bool UseIncrementalECode, float &E, bool UseFirmwareAcceleration);
 bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, InFillHit &hit);	// Utilityfunction for CalcInFill
 bool InFillHitCompareFunc(const InFillHit& d1, const InFillHit& d2);
 
 extern void HSVtoRGB 	(const float &h, const float &s, const float &v, float &r,float &g,float &b);			
 extern void RGBtoHSV 	(const float &r, const float &g, const float &b, float &h, float &s, float &v);
-extern void RGBTOHSL	(float red, float green, float blue, float &hue, float &sat, FLOAT &lightness);
+extern void RGBTOHSL	(float red, float green, float blue, float &hue, float &sat, float &lightness);
 extern void	RGBTOYUV	(float r, float g, float b, float &y, float &u, float &v);
 extern void YUVTORGB	(float y, float u, float v, float &r, float &g, float &b);
 
@@ -59,3 +61,5 @@ extern void YUVTORGB	(float y, float u, float v, float &r, float &g, float &b);
 #include "ModelViewController.h"
 
 // TODO: reference additional headers your program requires here
+
+

@@ -9,8 +9,44 @@
 * option, any later version, incorporated herein by reference.
 *
 * ------------------------------------------------------------------------- */
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ModelViewController.h"
+
+
+#ifndef win32
+
+/**
+ * C++ version 0.4 char* style "itoa":
+ * Written by Lukás Chmela
+ * Released under GPLv3.
+ */
+char* itoa(int value, char* result, int base) {
+	// check that the base if valid
+	if (base < 2 || base > 36) { *result = '\0'; return result; }
+
+	char* ptr = result, *ptr1 = result, tmp_char;
+	int tmp_value;
+
+	do {
+		tmp_value = value;
+		value /= base;
+		*ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
+	} while ( value );
+
+	// Apply negative sign
+	if (tmp_value < 0) *ptr++ = '-';
+	*ptr-- = '\0';
+	while(ptr1 < ptr) {
+		tmp_char = *ptr;
+		*ptr--= *ptr1;
+		*ptr1++ = tmp_char;
+	}
+	return result;
+}
+	
+#endif
+
+
 
 ModelViewController::~ModelViewController()
 {
@@ -454,9 +490,9 @@ void ModelViewController::Print()
 	gui->CommunationLog->clear();
 	Fl_Text_Buffer* buffer = gui->GCodeResult->buffer();
 	char* pText = buffer->text();
-	UINT length = buffer->length();
+	uint length = buffer->length();
 
-	UINT pos = 2;
+	uint pos = 2;
 	while(pos < length)
 		{
 		char* line = buffer->line_text(pos);
@@ -502,7 +538,7 @@ void ModelViewController::SetExtruderLength(int length)
 void ModelViewController::RunExtruder()
 {
 	char speed[10];
-	_itoa(m_iExtruderSpeed, speed, 10);
+	itoa(m_iExtruderSpeed, speed, 10);
 	string command("G1 F");
 	command += speed;
 	serial.SendNow(command);
@@ -510,7 +546,7 @@ void ModelViewController::RunExtruder()
 	serial.SendNow("G92 E0");	// set extruder zero
 
 	char length[10];
-	_itoa(m_iExtruderLength, length, 10);
+	itoa(m_iExtruderLength, length, 10);
 	string command2("G1 E");
 
 	if(!m_bExtruderDirection)	// Forwards

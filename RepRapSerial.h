@@ -2,9 +2,22 @@
 
 //From http://www.codeproject.com/KB/system/serial.aspx
 
+#ifdef win32
 #include "Serial/SerialEx.h"
+#endif
+
 #include "UI.h"
 //#include "ftd2xx.h"
+
+
+#ifndef win32
+
+#include "fakeserialex.h"
+#define EEvent int
+#define EError int
+#define LPCTSTR int
+
+#endif
 
 class RepRapSerial : public CSerialEx
 {
@@ -16,7 +29,7 @@ public:
 	void AddToBuffer(string s){buffer.push_back(s);}
 	void SendNow(string s);
 	void Clear() { m_bPrinting = false; m_iLineNr = 0; SetLineNr(-1); buffer.clear();}
-	UINT Length() { return buffer.size();}
+	uint Length() { return buffer.size();}
 	void StartPrint();
 	void SetLineNr(int nr);
 	void SetDebugMask(int mask, bool on);
@@ -35,7 +48,7 @@ private:
 	vector<string> buffer;
 	bool m_bPrinting;
 	bool m_bConnected;
-	UINT m_iLineNr;
+	uint m_iLineNr;
 	string InBuffer;
 	short debugMask;
 
