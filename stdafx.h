@@ -62,6 +62,9 @@ extern void YUVTORGB	(float y, float u, float v, float &r, float &g, float &b);
 
 #include "ModelViewController.h"
 
+#include "Serial.h"
+#include "AsyncSerial.h"
+
 // TODO: reference additional headers your program requires here
 
 

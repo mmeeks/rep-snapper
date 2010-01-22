@@ -6,7 +6,7 @@
 #pragma warning( disable : 4311 4312 4244 4267 4800)
 class ModelViewController;
 #include <FL/Fl_Double_Window.H>
-#include "stdafx.h"
+#include "StdAfx.h"
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -21,7 +21,7 @@ class ModelViewController;
 #include <FL/Fl_Text_Editor.H>
 #include <FL/Fl_Choice.H>
 #include <FL/Fl_Slider.H>
-#include <FL/Fl_Multi_Browser.H>
+#include <FL/Fl_Multi_Browser.h>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Progress.H>
 

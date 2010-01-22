@@ -2,29 +2,49 @@
 
 //From http://www.codeproject.com/KB/system/serial.aspx
 
+#undef WIN32
+
 #ifdef WIN32
 #include "Serial/SerialEx.h"
 #endif
 
 #include "UI.h"
+#include "AsyncSerial.h"
 //#include "ftd2xx.h"
 
 
-#ifndef WIN32
+//BufferedAsyncSerial serial("/dev/ttyUSB0",115200);
+/*
+class FooClass
+{
+public:
+	void Print( int a )
+	{
+		std::cout << "A FooClass, param = "<< a <<" this = " << this << std::endl;
+	}
+};
+void main()
+{
+	FooClass *myFoo = new FooClass();
+	void( FooClass::* oldFunc )(int) = &FooClass::Print; //C style function pointer (myFoo->*oldFunc)( 5 );
+	
+	boost::function<void(int)> newFunc = boost::bind( &FooClass::Print, myFoo, _1 ); //boost function
+	newFunc( 5 );
+}
+*/
 
-#include "fakeserialex.h"
-#define EEvent int
-#define EError int
-#define LPCTSTR int
-
-#endif
-
-class RepRapSerial : public CSerialEx
+class RepRapSerial : public BufferedAsyncSerial
 {
 public:
 	RepRapSerial(){m_bPrinting = false; m_iLineNr = 0; gui=0;m_bConnected=false; debugMask =  DEBUG_ECHO | DEBUG_INFO | DEBUG_ERRORS;}
+	void open(const std::string& devname, unsigned int baud_rate)
+	{
+		BufferedAsyncSerial::open(devname, baud_rate);
+	}
 	// Event handler
-	virtual void OnEvent (EEvent eEvent, EError eError);
+//	virtual void OnEvent (EEvent eEvent, EError eError);
+
+	void OnEvent(char* data, size_t size);
 
 	void AddToBuffer(string s){buffer.push_back(s);}
 	void SendNow(string s);

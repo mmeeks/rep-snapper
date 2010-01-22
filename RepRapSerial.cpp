@@ -2,13 +2,15 @@
 #include "RepRapSerial.h"
 #include "Convert.h"
 
+#undef WIN32	// remove this code
+
 enum { EOF_Char = 27 };
 
 //From http://www.codeproject.com/KB/system/serial.aspx
 
 void RepRapSerial::debugPrint(string s, bool selectLine)
 {
-#ifdef WIN32
+
 	if(gui)
 	{
 		uint a=0;
@@ -32,11 +34,11 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 	else
 		printf("%s", s.c_str());
 
-#endif
+
 };
 void RepRapSerial::echo(string s)
 {
-#ifdef WIN32
+
 	if(gui)
 	{
 		uint a=0;
@@ -53,13 +55,13 @@ void RepRapSerial::echo(string s)
 	else
 		printf("%s", s.c_str());
 
-#endif
-};
 
+};
+/*
 
 void RepRapSerial::OnEvent (EEvent eEvent, EError eError)
 {
-#ifdef WIN32
+
 	LONG    lLastError = ERROR_SUCCESS;
 
 	// Handle break event
@@ -250,12 +252,12 @@ void RepRapSerial::OnEvent (EEvent eEvent, EError eError)
 		}
 	}
 
-#endif
-}
 
+}
+*/
 void RepRapSerial::StartPrint()
 {
-#ifdef WIN32
+
 	m_iLineNr = 0;
 	m_bPrinting = true;
 	SendNextLine();
@@ -263,12 +265,12 @@ void RepRapSerial::StartPrint()
 	SendNextLine();
 	SendNextLine();
 
-#endif
+
 }
 
 void RepRapSerial::test()
 {
-#ifdef WIN32
+
 	for(uint i=0;i<100;i++)
 	{
 	string a("test:" + stringify(i));
@@ -276,12 +278,12 @@ void RepRapSerial::test()
 	SendData(a.c_str(), i);
 	Sleep(21);
 	}
-#endif
+
 }
 
 void RepRapSerial::SendNextLine()
 {
-#ifdef WIN32
+
 	if(m_bPrinting == false)
 		return;
 	if(m_iLineNr < buffer.size())
@@ -299,20 +301,20 @@ void RepRapSerial::SendNextLine()
 		}
 	if(gui)
 		gui->ProgressBar->value((float)m_iLineNr);
-#endif
+
 }
 
 void RepRapSerial::SendNow(string s)
 {
-#ifdef WIN32
+
 	s+= "\n";
 	debugPrint( string("Sending:") + s);
-	Write(s.c_str());
-#endif
+	write(s);
+
 }
 void RepRapSerial::SendData(string s, const int lineNr)
 {
-#ifdef WIN32
+
 	// Apply Downstream Multiplier
 
 	float DSMultiplier = 1.0f;
@@ -367,8 +369,7 @@ void RepRapSerial::SendData(string s, const int lineNr)
 	buffer += oss.str();
 	debugPrint( string("SendData:") + buffer);
 	buffer += "\r\n";
-	Write(buffer.c_str());
-#endif
+	write(buffer);
 }
 
 
@@ -376,56 +377,169 @@ extern void TempReadTimer(void *);
 
 void RepRapSerial::Connect()
 {
-#ifdef WIN32
-	LONG error=ERROR_SUCCESS;
-	error = Open(_T("COM4"), 0, 0, true);
-	assert(error == 0);
-	error = Setup(CSerial::EBaud19200,CSerial::EData8,CSerial::EParNone,CSerial::EStop1);
-	assert(error == 0);
-	error = SetupHandshaking(CSerial::EHandshakeOff);//EHandshakeSoftware works with alot of errors;EHandshakeOff= works ok, sometimes there's comm. error (huh?) EHandshakeHardware = crash, reboot;
-	assert(error == 0);
-	error = StartListener();
-	assert(error == 0);
-	m_bConnected = true;
-
+	open("COM5", 19200);
 	Fl::add_timeout(1.0f, &TempReadTimer);
-#endif
 }
 
 
 void RepRapSerial::DisConnect()
 {
-#ifdef WIN32
-	Close();
+
+	close();
 	m_bConnected = false;
-#endif
+
 }
 
 void RepRapSerial::SetLineNr(int nr)
 {
-#ifdef WIN32
+
 	SendData("M110", nr);	// restart lineNr count
-#endif
+
 }
 
 void RepRapSerial::SetDebugMask(int mask, bool on)
 {
-#ifdef WIN32
+
 	if(on)
 		debugMask |= mask;
 	else
 		debugMask &=~mask;
 
 	SetDebugMask();
-#endif
+
 }
 void RepRapSerial::SetDebugMask()
 {
-#ifdef WIN32
 	std::stringstream oss;
 	string buffer="M111 S";
 	oss << debugMask;
 	buffer += oss.str();
 	SendNow(buffer);
-#endif
+}
+
+void RepRapSerial::OnEvent(char* data, size_t dwBytesRead)
+{
+
+	int a=0;
+	// Read data, until there is nothing left
+	data[dwBytesRead] = '\0';
+	InBuffer += data;		// Buffer data for later analysis
+
+	// Endchars = \r\n
+
+	//		debugPrint( string("Received:\"") + szBuffer +"\" (" + stringify(dwBytesRead));
+	{
+		// Check inbuffer for good stuff
+
+		if(0)
+		{
+		stringstream oss;
+		oss << "Check:" << InBuffer;
+		debugPrint(oss.str(), true);
+		}
+		// remove leading \n and \r
+		while(InBuffer.length() > 0 && (InBuffer.substr(0,1) == "\n" ||  InBuffer.substr(0,1) == "\r"))
+			InBuffer = InBuffer.substr(1, InBuffer.length()-1);
+
+		if(InBuffer[0] == 1)	// Ctrl
+		{
+			InBuffer = InBuffer.substr(2, InBuffer.length()-2);
+			debugPrint("Recieved a Ctrl character", true);
+		}
+		if(InBuffer.size() == 0)
+			return;
+		size_t found;
+		found=InBuffer.find_first_of("\r");
+
+		while (found!=string::npos && found != 0)
+		{
+			string command = InBuffer.substr(0,found);
+			if(0)
+			{
+				stringstream oss;
+				oss << "Command:" << command;
+				debugPrint(oss.str(), true);
+			}
+			if (command == "ok")	// most common, first
+			{
+				//					debugPrint("Recieved: Ok");
+				if(m_bPrinting)
+				{
+					SendNextLine();
+				}
+			}
+			else if(command.substr(0,5) == "Echo:") // search, there's a parameter int (temperature)
+			{
+				string parameter = command.substr(5,command.length()-5);
+				echo( string("Echo:") + parameter);
+				// Check parameter
+			}
+			else if(command.substr(0,2) == "T:") // search, there's a parameter int (temperature)
+			{
+				string parameter = command.substr(2,command.length()-2);
+				debugPrint( string("Received:") + command+ " with parameter " + parameter);
+
+				gui->CurrentTempText->value(parameter.c_str());
+				// Check parameter
+
+			}
+			else if(command == "start")
+			{
+				debugPrint( string("Received: start"));
+				// Tell GUI we are ready to go.
+				int a=0;
+			}
+			else if(command.substr(0,3) == "E: ") // search, there's a parameter int (temperature_error, wait_till_hot)
+			{
+				string parameter = command.substr(3,command.length()-3);
+				debugPrint( string("Received:") + command+ " with parameter " + parameter);
+				// Check parameter
+
+			}
+			else if(command.substr(0,3) == "ok ") // search, there's a parameter string (debugstring)
+			{
+				string parameter = command.substr(3,command.length()-3);
+				debugPrint( string("Received:") + command+ " with parameter " + parameter + "**************************************", true);
+			}
+			else if(command.substr(0,5) == "huh? ") // search, there's a parameter string (unknown command)
+			{
+				string parameter = command.substr(6,command.length()-5);
+				debugPrint( string("Received:") + command+ " with parameter " + parameter, true);
+
+				if(m_bPrinting)
+				{
+					SendNextLine();
+				}
+
+			}
+			else if(command.substr(0,7) == "Resend:") // search, there's a parameter string (unknown command)
+			{
+				string parameter = command.substr(7,command.length()-7);
+				debugPrint( string("Received:") + command+ " with parameter " + parameter, true);
+
+				std::stringstream iss(parameter);
+				iss >> m_iLineNr;	// Rewind to requested line
+
+				if(m_bPrinting)
+				{
+					SendNextLine();
+				}
+
+			}
+			else if(command.substr(0,45) == "[FIRMWARE WARNING] invalid M-Code received: M") // search, there's a parameter string (unknown Mcode)
+			{
+				string parameter = command.substr(45,command.length()-45);
+				debugPrint( string("Received:") + command+ " with parameter " + parameter, true);
+			}
+			else	// Unknown response
+			{
+				debugPrint( string("Received:") + command+"\n", true);
+			}
+			InBuffer = InBuffer.substr(found);	// 2 end-line characters, \n\r
+			// Empty eol crap
+			while(InBuffer.length() > 0 && (InBuffer.substr(0,1) == "\n" ||  InBuffer.substr(0,1) == "\r"))
+				InBuffer = InBuffer.substr(1, InBuffer.length()-1);
+			found=InBuffer.find_first_of("\r");
+		}
+	}
 }

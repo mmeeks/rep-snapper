@@ -93,6 +93,8 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 	m_iExtruderSpeed = 3000;
 	m_iExtruderLength = 750;
 	m_fTargetTemp = 63.0f;
+
+	serial.open("COM5", 19200);
 }
 
 
