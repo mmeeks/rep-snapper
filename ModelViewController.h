@@ -175,7 +175,6 @@ public:
 	}
 	void Print();
 	void Continue();
-	void TestSerial();
 	void SwitchHeat(bool on, float temp);
 	void SetTargetTemp(float temp);
 	void RunExtruder();

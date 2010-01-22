@@ -56,7 +56,6 @@ public:
 	void SetDebugMask();
 	void setGUI(GUI* g){ gui=g;}
 	void SendNextLine();
-	void test();
 	void SendData(string s, const int lineNr);
 	void Connect();
 	void DisConnect();

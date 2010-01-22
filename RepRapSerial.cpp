@@ -268,19 +268,6 @@ void RepRapSerial::StartPrint()
 
 }
 
-void RepRapSerial::test()
-{
-
-	for(uint i=0;i<100;i++)
-	{
-	string a("test:" + stringify(i));
-	a+= "\n";
-	SendData(a.c_str(), i);
-	Sleep(21);
-	}
-
-}
-
 void RepRapSerial::SendNextLine()
 {
 

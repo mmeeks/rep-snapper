@@ -472,10 +472,6 @@ void ModelViewController::Continue()
 	serial.SendNextLine();
 }
 
-void ModelViewController::TestSerial()
-{
-	serial.test();
-}
 
 void ModelViewController::Print()
 {
