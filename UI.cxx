@@ -1229,6 +1229,7 @@ GUI::GUI() {
     { Tabs = new Fl_Tabs(830, 20, 565, 1070);
       Tabs->align(FL_ALIGN_TOP_LEFT);
       { Fl_Group* o = new Fl_Group(830, 40, 545, 785, "Input file");
+        o->hide();
         { Fl_Button* o = new Fl_Button(845, 50, 145, 25, "Load STL");
           o->callback((Fl_Callback*)cb_Load);
         } // Fl_Button* o
@@ -2134,7 +2135,6 @@ an twice the filament extrusion. - with one line only");
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(830, 45, 565, 1045, "Print");
         o->color((Fl_Color)FL_DARK1);
-        o->hide();
         { Fl_Tabs* o = new Fl_Tabs(835, 180, 540, 660);
           { CommunationLog = new Fl_Multi_Browser(840, 205, 530, 630, "Communication log");
             CommunationLog->box(FL_NO_BOX);
@@ -2146,6 +2146,7 @@ an twice the filament extrusion. - with one line only");
             CommunationLog->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
             CommunationLog->align(FL_ALIGN_BOTTOM);
             CommunationLog->when(FL_WHEN_RELEASE_ALWAYS);
+            CommunationLog->hide();
           } // Fl_Multi_Browser* CommunationLog
           { ErrorLog = new Fl_Multi_Browser(840, 205, 530, 630, "Errors / warnings");
             ErrorLog->box(FL_NO_BOX);
@@ -2169,7 +2170,6 @@ an twice the filament extrusion. - with one line only");
             Echo->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
             Echo->align(FL_ALIGN_BOTTOM);
             Echo->when(FL_WHEN_RELEASE_ALWAYS);
-            Echo->hide();
           } // Fl_Multi_Browser* Echo
           { Fl_Group* o = new Fl_Group(840, 205, 535, 635, "Interactive control");
             o->selection_color((Fl_Color)FL_SELECTION_COLOR);

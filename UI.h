@@ -21,7 +21,7 @@ class ModelViewController;
 #include <FL/Fl_Text_Editor.H>
 #include <FL/Fl_Choice.H>
 #include <FL/Fl_Slider.H>
-#include <FL/Fl_Multi_Browser.h>
+#include <FL/Fl_Multi_Browser.H>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Progress.H>
 

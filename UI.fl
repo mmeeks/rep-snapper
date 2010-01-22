@@ -29,8 +29,8 @@ class GUI {open
         xywh {830 20 565 1070} align 5
       } {
         Fl_Group {} {
-          label {Input file} open selected
-          xywh {830 40 545 785}
+          label {Input file} open
+          xywh {830 40 545 785} hide
         } {
           Fl_Button {} {
             label {Load STL}
@@ -915,27 +915,27 @@ MVC->redraw();}
         }
         Fl_Group {} {
           label Print open
-          xywh {830 45 565 1045} color 47 hide
+          xywh {830 45 565 1045} color 47
         } {
           Fl_Tabs {} {open
             xywh {835 180 540 660}
           } {
             Fl_Browser CommunationLog {
               label {Communication log}
-              xywh {840 205 530 630}
-              code0 {\#include <FL/Fl_Multi_Browser.h>}
+              xywh {840 205 530 630} hide
+              code0 {\#include <FL/Fl_Multi_Browser.H>}
               class Fl_Multi_Browser
             }
             Fl_Browser ErrorLog {
               label {Errors / warnings}
               xywh {840 205 530 630} hide
-              code0 {\#include <FL/Fl_Multi_Browser.h>}
+              code0 {\#include <FL/Fl_Multi_Browser.H>}
               class Fl_Multi_Browser
             }
             Fl_Browser Echo {
-              label Echo
-              xywh {840 205 530 630} hide
-              code0 {\#include <FL/Fl_Multi_Browser.h>}
+              label Echo selected
+              xywh {840 205 530 630}
+              code0 {\#include <FL/Fl_Multi_Browser.H>}
               class Fl_Multi_Browser
             }
             Fl_Group {} {
