@@ -94,7 +94,12 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 	m_iExtruderLength = 750;
 	m_fTargetTemp = 63.0f;
 
-	serial.open("COM5", 19200);
+
+	#ifdef win32
+        serial.open("COM5", 19200);
+        #elsif
+	serial.open("/dev/ttyUSB0",19200);
+	#endif
 }
 
 
