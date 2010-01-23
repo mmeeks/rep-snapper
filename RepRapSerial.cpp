@@ -2,15 +2,12 @@
 #include "RepRapSerial.h"
 #include "Convert.h"
 
-#undef WIN32	// remove this code
-
 enum { EOF_Char = 27 };
 
 //From http://www.codeproject.com/KB/system/serial.aspx
 
 void RepRapSerial::debugPrint(string s, bool selectLine)
 {
-
 	if(gui)
 	{
 		uint a=0;
@@ -19,22 +16,21 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 			if(s[a] == '\r' || s[a] == '\n') s[a] = ' ';
 			a++;
 		}
-
+		Fl::lock();
 		gui->CommunationLog->add(s.c_str());
-		gui->CommunationLog->bottomline(gui->CommunationLog->size());
+		if(gui->AutoscrollButton->value())
+			gui->CommunationLog->bottomline(gui->CommunationLog->size());
 		if(selectLine)
-		{
+			{
 			gui->CommunationLog->select(gui->CommunationLog->size());
 			gui->ErrorLog->add(s.c_str());
-			gui->ErrorLog->bottomline(gui->ErrorLog->size());
-		}
-		gui->CommunationLog->redraw();
-//		Fl::check();
+			if(gui->AutoscrollButton->value())
+				gui->ErrorLog->bottomline(gui->ErrorLog->size());
+			}
+		Fl::unlock();
 	}
 	else
 		printf("%s", s.c_str());
-
-
 };
 void RepRapSerial::echo(string s)
 {
@@ -48,14 +44,17 @@ void RepRapSerial::echo(string s)
 			a++;
 		}
 		s+='\n';
+		Fl::lock();
 		gui->Echo->add(s.c_str());
-		gui->Echo->bottomline(gui->Echo->size());
-		gui->Echo->redraw();
+		if(gui->AutoscrollButton->value())
+		{
+			gui->Echo->bottomline(gui->Echo->size());
+			gui->Echo->redraw();
+		}
+		Fl::unlock();
 	}
 	else
 		printf("%s", s.c_str());
-
-
 };
 /*
 
@@ -364,12 +363,9 @@ extern void TempReadTimer(void *);
 
 void RepRapSerial::Connect()
 {
-	cout<< "Connect\n";
-
-#ifdef win32
+#ifdef WIN32
 	open("COM5", 19200);
 #else
-	cout<< "Linux\n";
 	open("/dev/ttyUSB0",19200);
 #endif
 	Fl::add_timeout(1.0f, &TempReadTimer);
@@ -413,7 +409,6 @@ void RepRapSerial::SetDebugMask()
 
 void RepRapSerial::OnEvent(char* data, size_t dwBytesRead)
 {
-
 	int a=0;
 	// Read data, until there is nothing left
 	data[dwBytesRead] = '\0';
@@ -504,7 +499,6 @@ void RepRapSerial::OnEvent(char* data, size_t dwBytesRead)
 				{
 					SendNextLine();
 				}
-
 			}
 			else if(command.substr(0,7) == "Resend:") // search, there's a parameter string (unknown command)
 			{

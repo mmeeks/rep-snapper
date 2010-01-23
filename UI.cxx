@@ -2393,6 +2393,10 @@ an twice the filament extrusion. - with one line only");
           } // Fl_Light_Button* o
           o->end();
         } // Fl_Group* o
+        { AutoscrollButton = new Fl_Light_Button(1270, 180, 105, 25, "Auto scroll");
+          AutoscrollButton->value(1);
+          AutoscrollButton->selection_color((Fl_Color)2);
+        } // Fl_Light_Button* AutoscrollButton
         o->end();
       } // Fl_Group* o
       Tabs->end();

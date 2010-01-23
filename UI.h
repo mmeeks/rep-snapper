@@ -6,7 +6,7 @@
 #pragma warning( disable : 4311 4312 4244 4267 4800)
 class ModelViewController;
 #include <FL/Fl_Double_Window.H>
-#include "stdafx.h"
+#include "StdAfx.h"
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -636,6 +636,7 @@ private:
   void cb_Echo_i(Fl_Light_Button*, void*);
   static void cb_Echo(Fl_Light_Button*, void*);
 public:
+  Fl_Light_Button *AutoscrollButton;
   Fl_Progress *ProgressBar;
   void show(int argc, char **argv);
 };

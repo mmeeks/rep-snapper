@@ -13,7 +13,7 @@
 #include "ModelViewController.h"
 
 
-#ifndef win32
+#ifndef WIN32
 
 /**
  * C++ version 0.4 char* style "itoa":
@@ -94,12 +94,6 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 	m_iExtruderLength = 750;
 	m_fTargetTemp = 63.0f;
 
-
-	#ifdef win32
-	serial.open("COM5", 19200);
-        #else
-//	serial.open("/dev/ttyUSB0",19200);
-	#endif
 }
 
 

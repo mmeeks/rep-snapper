@@ -39,7 +39,13 @@ public:
 	RepRapSerial(){m_bPrinting = false; m_iLineNr = 0; gui=0;m_bConnected=false; debugMask =  DEBUG_ECHO | DEBUG_INFO | DEBUG_ERRORS;}
 	void open(const std::string& devname, unsigned int baud_rate)
 	{
-		BufferedAsyncSerial::open(devname, baud_rate);
+		try{
+			BufferedAsyncSerial::open(devname, baud_rate);
+		} catch (std::exception& e) {
+			stringstream oss;
+			oss<<"Exception: " << e.what() << ":" << devname << endl;
+			debugPrint(oss.str(), true);
+		}
 	}
 	// Event handler
 //	virtual void OnEvent (EEvent eEvent, EError eError);
