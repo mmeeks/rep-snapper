@@ -1,6 +1,6 @@
 
 CC=gcc
-CFLAGS=-c 
+CFLAGS=-c -ggdb
 INC=-I/usr/include -I/usr/include/CGAL -I../Libraries/vmmlib/include -I../Libraries -I../Libraries/ann_1.1.1/include -I/usr/include/boost
 LDFLAGS=-L/usr/lib -L../Libraries/xml -lfltk -lfltk_gl -lfltk_forms -lglut -lcustomxml -lboost_thread-mt -lboost_system-mt
 SOURCES=AsyncSerial.cpp RepSnapper.cpp stl.cpp RepRapSerial.cpp ProcessController.cpp Printer.cpp ModelViewController.cpp glutils.cpp GCode.cpp ArcBall.cpp stdafx.cpp UI.cxx

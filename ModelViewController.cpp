@@ -98,7 +98,7 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 	#ifdef win32
 	serial.open("COM5", 19200);
         #else
-	serial.open("/dev/ttyUSB0",19200);
+//	serial.open("/dev/ttyUSB0",19200);
 	#endif
 }
 
