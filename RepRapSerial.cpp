@@ -364,10 +364,12 @@ extern void TempReadTimer(void *);
 
 void RepRapSerial::Connect()
 {
+	cout<< "Connect\n";
 
 #ifdef win32
 	open("COM5", 19200);
-#elsif
+#else
+	cout<< "Linux\n";
 	open("/dev/ttyUSB0",19200);
 #endif
 	Fl::add_timeout(1.0f, &TempReadTimer);

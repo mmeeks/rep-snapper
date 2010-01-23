@@ -36,6 +36,7 @@ void AsyncSerial::open(const std::string& devname, unsigned int baud_rate,
         asio::serial_port_base::flow_control opt_flow,
         asio::serial_port_base::stop_bits opt_stop)
 {
+	cout<< "Open\n";
     if(isOpen()) close();
 
     setErrorStatus(true);//If an exception is thrown, error_ remains true
@@ -50,6 +51,7 @@ void AsyncSerial::open(const std::string& devname, unsigned int baud_rate,
 
     thread t(bind(&asio::io_service::run, &io_));
     thread_.swap(t);
+	cout<< "Port opened\n";
     setErrorStatus(false);//If we get here, no error
 }
 

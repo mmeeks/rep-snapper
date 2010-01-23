@@ -326,16 +326,17 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 				oss << "Y" << commands[i].where.y << " ";
 			if(commands[i].where.z != LastPos.z)
 				oss << "Z" << commands[i].where.z << " ";
-			if(UseIncrementalEcode)	// in incremental mode, the same is nothing
-				{
-				if(commands[i].e != lastE)
-					oss << "E" << commands[i].e << " ";
-				}
-			else
-				{
-				if(commands[i].e != 0.0f)
-					oss << "E" << commands[i].e << " ";
-				}
+			if(commands[i].e != lastE)
+				if(UseIncrementalEcode)	// in incremental mode, the same is nothing
+					{
+					if(commands[i].e != lastE)
+						oss << "E" << commands[i].e << " ";
+					}
+				else
+					{
+					if(commands[i].e != 0.0f)
+						oss << "E" << commands[i].e << " ";
+					}
 			oss << " F" << commands[i].f;
 			if(commands[i].comment.length() != 0)
 				oss << "	;" << commands[i].comment << "\n";
