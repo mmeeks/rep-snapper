@@ -109,16 +109,26 @@ void GUI::cb_Save1_i(Fl_Button*, void*) {
   Fl_Text_Buffer* buffer = GCodeStart->buffer();
 char* pText = buffer->text();
 MVC->ProcessControl.GCodeStartText = string(pText);
+free(pText);
 buffer = GCodeLayer->buffer();
 pText = buffer->text();
 MVC->ProcessControl.GCodeLayerText = string(pText);
+free(pText);
 buffer = GCodeEnd->buffer();
 pText = buffer->text();
 MVC->ProcessControl.GCodeEndText = string(pText);
+free(pText);
 MVC->ProcessControl.SaveXML();
 }
 void GUI::cb_Save1(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Save1_i(o,v);
+}
+
+void GUI::cb_RunLuaButton_i(Fl_Button*, void*) {
+  MVC->RunLua(LuaScriptEditor->buffer()->text());
+}
+void GUI::cb_RunLuaButton(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_RunLuaButton_i(o,v);
 }
 
 void GUI::cb_MarginX_i(Fl_Value_Input* o, void*) {
@@ -1228,8 +1238,7 @@ GUI::GUI() {
     } // ModelViewController* MVC
     { Tabs = new Fl_Tabs(830, 20, 565, 1070);
       Tabs->align(FL_ALIGN_TOP_LEFT);
-      { Fl_Group* o = new Fl_Group(830, 40, 545, 785, "Input file");
-        o->hide();
+      { Fl_Group* o = new Fl_Group(830, 40, 550, 785, "Input file");
         { Fl_Button* o = new Fl_Button(845, 50, 145, 25, "Load STL");
           o->callback((Fl_Callback*)cb_Load);
         } // Fl_Button* o
@@ -1266,6 +1275,19 @@ GUI::GUI() {
         { Fl_Button* o = new Fl_Button(1170, 80, 185, 25, "Save settings");
           o->callback((Fl_Callback*)cb_Save1);
         } // Fl_Button* o
+        { Fl_Group* o = new Fl_Group(845, 150, 535, 600, "Lua script");
+          o->box(FL_FLAT_BOX);
+          o->color((Fl_Color)FL_DARK3);
+          { Fl_Text_Editor* o = LuaScriptEditor = new Fl_Text_Editor(850, 200, 525, 545, "LUA script:");
+            LuaScriptEditor->align(FL_ALIGN_TOP_LEFT);
+            Fl_Text_Buffer *luascript = new Fl_Text_Buffer();
+            o->buffer(luascript);
+          } // Fl_Text_Editor* LuaScriptEditor
+          { RunLuaButton = new Fl_Button(1240, 160, 125, 25, "Run");
+            RunLuaButton->callback((Fl_Callback*)cb_RunLuaButton);
+          } // Fl_Button* RunLuaButton
+          o->end();
+        } // Fl_Group* o
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(830, 40, 545, 755, "Printer definition");
@@ -2135,6 +2157,7 @@ an twice the filament extrusion. - with one line only");
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(830, 45, 565, 1045, "Print");
         o->color((Fl_Color)FL_DARK1);
+        o->hide();
         { Fl_Tabs* o = new Fl_Tabs(835, 180, 540, 660);
           { CommunationLog = new Fl_Multi_Browser(840, 205, 530, 630, "Communication log");
             CommunationLog->box(FL_NO_BOX);

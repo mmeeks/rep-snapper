@@ -14,11 +14,11 @@ class ModelViewController;
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Light_Button.H>
+#include <FL/Fl_Text_Editor.H>
 #include <FL/Fl_Value_Input.H>
 #include <FL/Fl_Value_Slider.H>
 #include <FL/Fl_File_Chooser.H>
 #include <FL/Fl_Output.H>
-#include <FL/Fl_Text_Editor.H>
 #include <FL/Fl_Choice.H>
 #include <FL/Fl_Slider.H>
 #include <FL/Fl_Multi_Browser.H>
@@ -65,6 +65,12 @@ private:
   static void cb_RotateZButton(Fl_Button*, void*);
   void cb_Save1_i(Fl_Button*, void*);
   static void cb_Save1(Fl_Button*, void*);
+public:
+  Fl_Text_Editor *LuaScriptEditor;
+  Fl_Button *RunLuaButton;
+private:
+  void cb_RunLuaButton_i(Fl_Button*, void*);
+  static void cb_RunLuaButton(Fl_Button*, void*);
 public:
   Fl_Value_Input *VolumeX;
   Fl_Value_Input *VolumeY;

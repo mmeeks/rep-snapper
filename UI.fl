@@ -30,7 +30,7 @@ class GUI {open
       } {
         Fl_Group {} {
           label {Input file} open
-          xywh {830 40 545 785} hide
+          xywh {830 40 550 785}
         } {
           Fl_Button {} {
             label {Load STL}
@@ -129,14 +129,33 @@ MVC->redraw();}
             callback {Fl_Text_Buffer* buffer = GCodeStart->buffer();
 char* pText = buffer->text();
 MVC->ProcessControl.GCodeStartText = string(pText);
+free(pText);
 buffer = GCodeLayer->buffer();
 pText = buffer->text();
 MVC->ProcessControl.GCodeLayerText = string(pText);
+free(pText);
 buffer = GCodeEnd->buffer();
 pText = buffer->text();
 MVC->ProcessControl.GCodeEndText = string(pText);
-MVC->ProcessControl.SaveXML();}
+free(pText);
+MVC->ProcessControl.SaveXML();} selected
             xywh {1170 80 185 25}
+          }
+          Fl_Group {} {
+            label {Lua script} open
+            xywh {845 150 535 600} box FLAT_BOX color 39
+          } {
+            Fl_Text_Editor LuaScriptEditor {
+              label {LUA script:}
+              xywh {850 200 525 545} align 5
+              code0 {Fl_Text_Buffer *luascript = new Fl_Text_Buffer();}
+              code1 {o->buffer(luascript);}
+            }
+            Fl_Button RunLuaButton {
+              label Run
+              callback {MVC->RunLua(LuaScriptEditor->buffer()->text());}
+              xywh {1240 160 125 25}
+            }
           }
         }
         Fl_Group {} {
@@ -467,7 +486,7 @@ distanceBetweenSpeedStepsSlider->redraw();}
           }
         }
         Fl_Group {} {
-          label GCode
+          label GCode open
           xywh {830 40 545 755} hide
         } {
           Fl_Button {} {
@@ -915,7 +934,7 @@ MVC->redraw();}
         }
         Fl_Group {} {
           label Print open
-          xywh {830 45 565 1045} color 47
+          xywh {830 45 565 1045} color 47 hide
         } {
           Fl_Tabs {} {open
             xywh {835 180 540 660}
@@ -1239,7 +1258,7 @@ o->label("Print");
             }
           }
           Fl_Light_Button AutoscrollButton {
-            label {Auto scroll} selected
+            label {Auto scroll}
             xywh {1270 180 105 25} value 1 selection_color 2
           }
         }
