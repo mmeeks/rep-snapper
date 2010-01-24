@@ -85,6 +85,11 @@ private:
   void cb_MarginY_i(Fl_Value_Input*, void*);
   static void cb_MarginY(Fl_Value_Input*, void*);
 public:
+  Fl_Value_Input *MarginZ;
+private:
+  void cb_MarginZ_i(Fl_Value_Input*, void*);
+  static void cb_MarginZ(Fl_Value_Input*, void*);
+public:
   Fl_Value_Slider *accelerationStepsSlider;
 private:
   void cb_accelerationStepsSlider_i(Fl_Value_Slider*, void*);

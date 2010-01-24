@@ -145,6 +145,13 @@ void GUI::cb_MarginY(Fl_Value_Input* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_MarginY_i(o,v);
 }
 
+void GUI::cb_MarginZ_i(Fl_Value_Input* o, void*) {
+  MVC->SetPrintMargin("Z", o->value());
+}
+void GUI::cb_MarginZ(Fl_Value_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_MarginZ_i(o,v);
+}
+
 void GUI::cb_accelerationStepsSlider_i(Fl_Value_Slider* o, void*) {
   MVC->NumAccelerationSteps(o->value());
 }
@@ -1239,6 +1246,7 @@ GUI::GUI() {
     { Tabs = new Fl_Tabs(830, 20, 565, 1070);
       Tabs->align(FL_ALIGN_TOP_LEFT);
       { Fl_Group* o = new Fl_Group(830, 40, 550, 785, "Input file");
+        o->hide();
         { Fl_Button* o = new Fl_Button(845, 50, 145, 25, "Load STL");
           o->callback((Fl_Callback*)cb_Load);
         } // Fl_Button* o
@@ -1290,8 +1298,7 @@ GUI::GUI() {
         } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(830, 40, 545, 755, "Printer definition");
-        o->hide();
+      { Fl_Group* o = new Fl_Group(830, 40, 555, 755, "Printer definition");
         { Fl_Group* o = new Fl_Group(840, 65, 230, 40, "Build volume (mm)");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
@@ -1310,21 +1317,27 @@ GUI::GUI() {
           } // Fl_Value_Input* VolumeZ
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(1220, 65, 155, 40, "Print margin  (mm)");
+        { Fl_Group* o = new Fl_Group(1150, 65, 235, 40, "Print margin  (mm)");
           o->box(FL_FLAT_BOX);
           o->color((Fl_Color)FL_DARK3);
-          { MarginX = new Fl_Value_Input(1245, 76, 45, 23, "X");
+          { MarginX = new Fl_Value_Input(1175, 76, 45, 23, "X");
             MarginX->maximum(100);
             MarginX->step(1);
             MarginX->value(10);
             MarginX->callback((Fl_Callback*)cb_MarginX);
           } // Fl_Value_Input* MarginX
-          { MarginY = new Fl_Value_Input(1320, 76, 45, 23, "Y");
+          { MarginY = new Fl_Value_Input(1250, 76, 45, 23, "Y");
             MarginY->maximum(100);
             MarginY->step(1);
             MarginY->value(10);
             MarginY->callback((Fl_Callback*)cb_MarginY);
           } // Fl_Value_Input* MarginY
+          { MarginZ = new Fl_Value_Input(1320, 77, 45, 23, "Y");
+            MarginZ->minimum(-50);
+            MarginZ->maximum(100);
+            MarginZ->step(0.01);
+            MarginZ->callback((Fl_Callback*)cb_MarginZ);
+          } // Fl_Value_Input* MarginZ
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(840, 530, 535, 120, "Acceleration");

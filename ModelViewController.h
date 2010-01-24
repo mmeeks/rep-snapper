@@ -22,10 +22,6 @@
 #include "stl.h"
 #include "ProcessController.h"
 #include "glutils.h"
-extern "C"{
-#include <lua-5.1.4/src/lua.h>
-#include <lua-5.1.4/src/lauxlib.h>
-}
 #include "RepRapSerial.h"
 
 #pragma warning( disable : 4244 4267)

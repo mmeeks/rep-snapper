@@ -398,6 +398,7 @@ void ModelViewController::CopySettingsToGUI()
 	gui->VolumeZ->value(ProcessControl.m_fVolume.z);
 	gui->MarginX->value(ProcessControl.PrintMargin.x);
 	gui->MarginY->value(ProcessControl.PrintMargin.y);
+	gui->MarginZ->value(ProcessControl.PrintMargin.z);
 
 	gui->ExtrudedMaterialWidthSlider->value(ProcessControl.ExtrudedMaterialWidth);
 
@@ -697,100 +698,14 @@ void ModelViewController::SetPrintMargin(string Axis, float value)
 		ProcessControl.PrintMargin.x = value;
 	else if(Axis == "Y")
 		ProcessControl.PrintMargin.y = value;
+	else if(Axis == "Z")
+		ProcessControl.PrintMargin.z = value;
 	ProcessControl.stl.MoveIntoPrintingArea(ProcessControl.PrintMargin);
 	redraw();
 }
 
-typedef struct luaMemFile
-{
-	const char *text;
-	size_t size;
-} luaMemFile;
-
-static const char *readMemFile(lua_State *, void *ud, size_t *size)
-{
-	// Convert the ud pointer (UserData) to a pointer of our structure
-	luaMemFile *luaMF = (luaMemFile *) ud;
-
-	// Are we done?
-	if(luaMF->size == 0)
-		return NULL;
-
-	// Read everything at once
-	// And set size to zero to tell the next call we're done
-	*size = luaMF->size;
-	luaMF->size = 0;
-
-	// Return a pointer to the readed text
-	return luaMF->text;
-}
-
-inline LUA_API lua_Number lua_popnumber(lua_State *L)
-{
-	register lua_Number tmp = lua_tonumber(L, lua_gettop(L));
-	lua_pop(L, 1);
-	return tmp;
-}
-
 void ModelViewController::RunLua(char* buffer)
 {
-
-	// Initialize LUA
-	lua_State *L = lua_open();
-
-	//
-	luaMemFile luaMF;
-
-	// Load the command and try to execute it...
-	luaMF.text = buffer;
-	luaMF.size = strlen(luaMF.text);
-	if(lua_load(L, readMemFile, &luaMF, "test function") == 0)
-	{
-		// Execute the loaded command...
-		// The function takes 0 parameters and will always return 1 result
-		if(lua_pcall(L, 0, 1, 0) == 0)
-		{
-			// There was no error
-			// Let's get the result from the stack
-			lua_Number result = lua_tonumber(L, lua_gettop(L));
-
-			// Some output
-//			char tmp[64];
-			cout << "The result was " << result << "\n";
-//			wsprintf(tmp, "The result was : %u!", (int) result);
-//			MessageBox(HWND_DESKTOP, testscript, tmp, MB_OK);
-		}
-		else
-		{
-			// Some output
-			cout << "lua_call error \n";
-/*
-#define LUA_YIELD	1
-#define LUA_ERRRUN	2
-#define LUA_ERRSYNTAX	3
-#define LUA_ERRMEM	4
-#define LUA_ERRERR	5
-*/
-			//			MessageBox(HWND_DESKTOP, testscript, "lua_call error!", MB_OK);
-		}
-
-		// Clean-up the stack
-		lua_pop(L, 1);
-	}
-	else
-	{
-		// There was a lua_load error...
-		// Pop the error value from the stack
-		lua_pop(L, 1);
-
-		// Some output
-		cout << "lua_load error \n";
-//		MessageBox(HWND_DESKTOP, testscript, "lua_load error!", MB_OK);
-	}
-
-	// Verify the stack and clean-up the LUA state
-	_ASSERT(lua_gettop(L) == 0);
-	lua_close(L);
 
 }
 

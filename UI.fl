@@ -30,7 +30,7 @@ class GUI {open
       } {
         Fl_Group {} {
           label {Input file} open
-          xywh {830 40 550 785}
+          xywh {830 40 550 785} hide
         } {
           Fl_Button {} {
             label {Load STL}
@@ -138,7 +138,7 @@ buffer = GCodeEnd->buffer();
 pText = buffer->text();
 MVC->ProcessControl.GCodeEndText = string(pText);
 free(pText);
-MVC->ProcessControl.SaveXML();} selected
+MVC->ProcessControl.SaveXML();}
             xywh {1170 80 185 25}
           }
           Fl_Group {} {
@@ -160,7 +160,7 @@ MVC->ProcessControl.SaveXML();} selected
         }
         Fl_Group {} {
           label {Printer definition} open
-          xywh {830 40 545 755} hide
+          xywh {830 40 555 755}
         } {
           Fl_Group {} {
             label {Build volume (mm)} open
@@ -181,17 +181,22 @@ MVC->ProcessControl.SaveXML();} selected
           }
           Fl_Group {} {
             label {Print margin  (mm)} open
-            xywh {1220 65 155 40} box FLAT_BOX color 39
+            xywh {1150 65 235 40} box FLAT_BOX color 39
           } {
             Fl_Value_Input MarginX {
               label X
               callback {MVC->SetPrintMargin("X", o->value());}
-              xywh {1245 76 45 23} maximum 100 step 1 value 10
+              xywh {1175 76 45 23} maximum 100 step 1 value 10
             }
             Fl_Value_Input MarginY {
               label Y
               callback {MVC->SetPrintMargin("Y", o->value());}
-              xywh {1320 76 45 23} maximum 100 step 1 value 10
+              xywh {1250 76 45 23} maximum 100 step 1 value 10
+            }
+            Fl_Value_Input MarginZ {
+              label Y
+              callback {MVC->SetPrintMargin("Z", o->value());} selected
+              xywh {1320 77 45 23} minimum -50 maximum 100 step 0.01
             }
           }
           Fl_Group {} {

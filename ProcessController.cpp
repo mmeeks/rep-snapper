@@ -29,11 +29,11 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 	// Make Layers
 	uint LayerNr = 0;
 
-	float z=stl.Min.z+0.0001f;				// Offset it a bit in Z, z=0 gives a empty slice because no triangles crosses this Z value
+	float z=stl.Min.z+0.001f;				// Offset it a bit in Z, z=0 gives a empty slice because no triangles crosses this Z value
 
 	gcode.commands.clear();
 
-	float destinationZ=0.0f;
+	float destinationZ=PrintMargin.z;
 
 	Vector3f RaftCenter = Vector3f(0,0,0);
 	if(RaftEnable)
@@ -276,7 +276,7 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("m_fVolume.z", true, "140")->SetValueFloat(m_fVolume.z);
 	x->FindVariableZ("PrintMargin.x", true, "10")->SetValueFloat(PrintMargin.x);
 	x->FindVariableZ("PrintMargin.y", true, "10")->SetValueFloat(PrintMargin.y);
-	PrintMargin.z = 0.0f;
+	x->FindVariableZ("PrintMargin.z", true, "0")->SetValueFloat(PrintMargin.z);
 	x->FindVariableZ("extrusionFactor", true, "1")->SetValueFloat(extrusionFactor);
 	x->FindVariableZ("ExtrudedMaterialWidth", true, "0.66")->SetValueFloat(ExtrudedMaterialWidth);
 	x->FindVariableZ("LayerThickness", true, "0.4")->SetValueFloat(LayerThickness);
@@ -460,6 +460,8 @@ void ProcessController::LoadXML(XMLElement *e)
 	if(y)	PrintMargin.x = y->GetValueFloat();
 	y=x->FindVariableZ("PrintMargin.y", true, "10");
 	if(y)	PrintMargin.y = y->GetValueFloat();
+	y=x->FindVariableZ("PrintMargin.z", true, "0");
+	if(y)	PrintMargin.z = y->GetValueFloat();
 	y=x->FindVariableZ("ExtrudedMaterialWidth", true, "0.7");
 	if(y)	ExtrudedMaterialWidth = y->GetValueFloat();
 
