@@ -27,6 +27,8 @@ class ProcessController
 {
 public:
 	ProcessController(){
+
+		// default parameters (are overwritten by the xml loading)
 		RaftSize = 1.33f;
 		RaftBaseLayerCount = 1;
 		RaftMaterialPrDistanceRatio = 1.8f;
@@ -123,6 +125,10 @@ public:
 	void SaveXML(string filename);
 	void LoadXML(XMLElement *e);
 	void SaveXML(XMLElement *e);
+
+	// LUA
+
+
 
 	// Process functions
 	string m_Filename;
@@ -244,4 +250,6 @@ public:
 
 	// Maybe a pointer to the gui
 	GUI *gui;
+protected:
+	int m_iMethodBase;
 };
