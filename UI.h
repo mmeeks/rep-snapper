@@ -6,7 +6,7 @@
 #pragma warning( disable : 4311 4312 4244 4267 4800)
 class ModelViewController;
 #include <FL/Fl_Double_Window.H>
-#include "StdAfx.h"
+#include "stdafx.h"
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -17,12 +17,12 @@ class ModelViewController;
 #include <FL/Fl_Text_Editor.H>
 #include <FL/Fl_Value_Input.H>
 #include <FL/Fl_Value_Slider.H>
+#include <FL/Fl_Input.H>
 #include <FL/Fl_File_Chooser.H>
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Choice.H>
 #include <FL/Fl_Slider.H>
 #include <FL/Fl_Multi_Browser.H>
-#include <FL/Fl_Input.H>
 #include <FL/Fl_Progress.H>
 
 class GUI {
@@ -149,6 +149,11 @@ public:
 private:
   void cb_LayerThicknessSlider_i(Fl_Value_Slider*, void*);
   static void cb_LayerThicknessSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Input *portInput;
+private:
+  void cb_portInput_i(Fl_Input*, void*);
+  static void cb_portInput(Fl_Input*, void*);
 public:
   Fl_Value_Slider *InfillRotationSlider;
 private:

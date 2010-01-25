@@ -63,7 +63,7 @@ public:
 	void setGUI(GUI* g){ gui=g;}
 	void SendNextLine();
 	void SendData(string s, const int lineNr);
-	void Connect();
+	void Connect(string port);
 	void DisConnect();
 	bool isPrinting(){return m_bPrinting;}
 

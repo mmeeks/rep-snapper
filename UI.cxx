@@ -261,6 +261,13 @@ void GUI::cb_LayerThicknessSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_LayerThicknessSlider_i(o,v);
 }
 
+void GUI::cb_portInput_i(Fl_Input* o, void*) {
+  MVC->setPort(o->value());
+}
+void GUI::cb_portInput(Fl_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_portInput_i(o,v);
+}
+
 void GUI::cb_InfillRotationSlider_i(Fl_Value_Slider* o, void*) {
   MVC->SetInfillRotation(o->value());
 }
@@ -1455,6 +1462,15 @@ GUI::GUI() {
             LayerThicknessSlider->callback((Fl_Callback*)cb_LayerThicknessSlider);
             LayerThicknessSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* LayerThicknessSlider
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(840, 670, 535, 45, "Port");
+          o->box(FL_FLAT_BOX);
+          o->color((Fl_Color)FL_DARK3);
+          { portInput = new Fl_Input(1010, 681, 205, 24, "Port:");
+            portInput->tooltip("COM3 or  /dev/ttyUSB0 or something to that effect");
+            portInput->callback((Fl_Callback*)cb_portInput);
+          } // Fl_Input* portInput
           o->end();
         } // Fl_Group* o
         o->end();

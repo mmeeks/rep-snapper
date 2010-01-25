@@ -361,13 +361,9 @@ void RepRapSerial::SendData(string s, const int lineNr)
 
 extern void TempReadTimer(void *);
 
-void RepRapSerial::Connect()
+void RepRapSerial::Connect(string port)
 {
-#ifdef WIN32
-	open("COM5", 19200);
-#else
-	open("/dev/ttyUSB0",19200);
-#endif
+	open(port.c_str(), 19200);
 	Fl::add_timeout(1.0f, &TempReadTimer);
 }
 

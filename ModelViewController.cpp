@@ -377,6 +377,8 @@ void ModelViewController::CopySettingsToGUI()
 	gui->RaftInterfaceThicknessSlider->value(ProcessControl.RaftInterfaceThickness);
 	gui->RaftInterfaceTemperatureSlider->value(ProcessControl.RaftInterfaceTemperature);
 
+	gui->portInput->value(ProcessControl.m_sPortName.c_str());
+
 	// GCode
 	gui->GCodeDrawStartSlider->value(ProcessControl.GCodeDrawStart);
 	gui->GCodeDrawEndSlider->value(ProcessControl.GCodeDrawEnd);

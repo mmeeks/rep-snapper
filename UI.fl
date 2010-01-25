@@ -19,7 +19,7 @@ class GUI {open
       Fl_Box MVC {
         label {An instace of ModelViewController}
         xywh {10 20 815 815} box UP_BOX align 16 resizable
-        code0 {\#include "StdAfx.h"}
+        code0 {\#include "stdafx.h"}
         code1 {\#ifndef M_PI
 \#define M_PI 3.14159265358979323846
 \#endif}
@@ -195,7 +195,7 @@ MVC->ProcessControl.SaveXML();}
             }
             Fl_Value_Input MarginZ {
               label Y
-              callback {MVC->SetPrintMargin("Z", o->value());} selected
+              callback {MVC->SetPrintMargin("Z", o->value());}
               xywh {1320 77 45 23} minimum -50 maximum 100 step 0.01
             }
           }
@@ -297,6 +297,16 @@ distanceBetweenSpeedStepsSlider->redraw();}
               label {Layer Thickness}
               callback {MVC->SetLayerThickness(o->value());}
               xywh {850 270 515 20} type {Horz Knob} selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 0.4 textsize 14
+            }
+          }
+          Fl_Group {} {
+            label Port open
+            xywh {840 670 535 45} box FLAT_BOX color 39
+          } {
+            Fl_Input portInput {
+              label {Port:}
+              callback {MVC->setPort(o->value());} selected
+              tooltip {COM3 or  /dev/ttyUSB0 or something to that effect} xywh {1010 681 205 24}
             }
           }
         }

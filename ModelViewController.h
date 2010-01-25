@@ -167,7 +167,7 @@ public:
 	void ConnectToPrinter(char on){
 		if(on)
 			{
-			serial.Connect();
+			serial.Connect(ProcessControl.m_sPortName);
 			}
 		else
 			{
@@ -184,6 +184,7 @@ public:
 	void SetExtruderLength(int length);
 	void SetExtruderDirection(bool reverse);
 	void SendNow(string str);
+	void setPort(string s){ProcessControl.m_sPortName = s;}
 
 	void Home(string axis);
 	void Move(string axis, float distance);

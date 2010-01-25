@@ -140,6 +140,7 @@ public:
 
 	/*--------------Models-------------------*/
 	Printer printer;					// Printer settings and functions
+	string m_sPortName;
 	STL stl;							// A STL file
 	CuttingPlane previewCuttingPlane;	//The cuttingplane that's drawn as a live preview
 	GCode gcode;						// Gcode as binary data
