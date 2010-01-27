@@ -29,11 +29,11 @@
 //#include <ANN/ANN.h>
 
 #pragma warning( disable : 4018 4267)
-
+/*
 extern "C" {
 	#include "triangle.h"
 }
-
+*/
 #define MIN(A,B) ((A)<(B)? (A):(B))
 #define MAX(A,B) ((A)>(B)? (A):(B))
 
@@ -195,7 +195,7 @@ void STL::draw(const ProcessController &PC)
 				case POSZ:	glColor4f(0,0,0.3f,PC.PolygonOpasity); break;
 				default: glColor4f(0.2f,0.2f,0.2f,PC.PolygonOpasity); break;
 				}*/
-			glNormal3fv((GLfloat*)&triangles[i].N);
+			glNormal3fv((GLfloat*)&triangles[i].Normal);
 			glVertex3fv((GLfloat*)&triangles[i].A);
 			glVertex3fv((GLfloat*)&triangles[i].B);
 			glVertex3fv((GLfloat*)&triangles[i].C);
@@ -221,10 +221,10 @@ void STL::draw(const ProcessController &PC)
 		for(uint i=0;i<triangles.size();i++)
 		{
 			glBegin(GL_LINE_LOOP);
-			glNormal3f(triangles[i].N.x, triangles[i].N.y, triangles[i].N.z);
-			glVertex3f(triangles[i].A.x, triangles[i].A.y, triangles[i].A.z);
-			glVertex3f(triangles[i].B.x, triangles[i].B.y, triangles[i].B.z);
-			glVertex3f(triangles[i].C.x, triangles[i].C.y, triangles[i].C.z);
+			glNormal3fv((GLfloat*)&triangles[i].Normal);
+			glVertex3fv((GLfloat*)&triangles[i].A);
+			glVertex3fv((GLfloat*)&triangles[i].B);
+			glVertex3fv((GLfloat*)&triangles[i].C);
 			glEnd();
 		}
 	}
@@ -242,7 +242,7 @@ void STL::draw(const ProcessController &PC)
 		{
 			Vector3f center = (triangles[i].A+triangles[i].B+triangles[i].C)/3.0f;
 			glVertex3fv((GLfloat*)&center);
-			Vector3f N = center + (triangles[i].N*PC.NormalsLength);
+			Vector3f N = center + (triangles[i].Normal*PC.NormalsLength);
 			glVertex3fv((GLfloat*)&N);
 		}
 		glEnd();
@@ -754,7 +754,7 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 	// Check segment normal against triangle normal. Flip segment, as needed.
 	if(line.start != -1 && line.end != -1)	// if we found a intersecting triangle
 		{
-		Vector2f triangleNormal = Vector2f(triangles[i].N.x, triangles[i].N.y);
+		Vector2f triangleNormal = Vector2f(triangles[i].Normal.x, triangles[i].Normal.y);
 		Vector2f p = plane.vertices[line.start];
 		Vector2f segmentNormal = (plane.vertices[line.end] - p).normal();
 		triangleNormal.normalise();
@@ -781,7 +781,7 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 
 /*	if(1)
 	{
-		Vector2f triangleNormal = Vector2f(triangles[i].N.x, triangles[i].N.y);
+		Vector2f triangleNormal = Vector2f(triangles[i].Normal.x, triangles[i].Normal.y);
 		Vector2f p = plane.vertices[line.start];
 		Vector2f segmentNormal = (plane.vertices[line.end] - p);
 		segmentNormal = Vector2f(-segmentNormal.y, segmentNormal.x);
@@ -2104,10 +2104,10 @@ void STL::OptimizeRotation()
 		triangles[i].axis = NOT_ALIGNED;				
 		for(uint triangleAxis=0;triangleAxis<3;triangleAxis++)
 			{
-			if (  triangles[i].N.cross(AXIS_VECTORS[triangleAxis]).length() < 0.1)
+			if (  triangles[i].Normal.cross(AXIS_VECTORS[triangleAxis]).length() < 0.1)
 				{
 				int positive=0;
-				if(triangles[i].N[triangleAxis] > 0)// positive
+				if(triangles[i].Normal[triangleAxis] > 0)// positive
 					positive=1;
 				AXIS axisNr = (AXIS)(triangleAxis*2+positive);
 				triangles[i].axis = axisNr;
@@ -2154,7 +2154,7 @@ void STL::RotateObject(Vector3f axis, float angle)
 
 	for(uint i=0; i<triangles.size() ; i++)
 	{
-	triangles[i].N = triangles[i].N.rotate(angle, axis.x, axis.y, axis.z);
+	triangles[i].Normal = triangles[i].Normal.rotate(angle, axis.x, axis.y, axis.z);
 	triangles[i].A = triangles[i].A.rotate(angle, axis.x, axis.y, axis.z);
 	triangles[i].B = triangles[i].B.rotate(angle, axis.x, axis.y, axis.z);
 	triangles[i].C = triangles[i].C.rotate(angle, axis.x, axis.y, axis.z);

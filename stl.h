@@ -47,15 +47,15 @@ enum AXIS {NEGX, POSX, NEGY, POSY, NEGZ, POSZ, NOT_ALIGNED};
 class Triangle
 {
 public:
-	Triangle(const Vector3f &Normal, const Vector3f &Point1, const Vector3f &Point2, const Vector3f &Point3){ N = Normal ; A=Point1;B=Point2;C=Point3;}
+	Triangle(const Vector3f &Norml, const Vector3f &Point1, const Vector3f &Point2, const Vector3f &Point3){ Normal = Norml ; A=Point1;B=Point2;C=Point3;}
 	Triangle(){};
 
 	void SetPoints(const Vector3f &P1, const Vector3f &P2, const Vector3f &P3) { A=P1;B=P2;C=P3; }
-	void SetNormal(const Vector3f &Normal) { N = Normal;}
+	void SetNormal(const Vector3f &Norml) { Normal=Norml;}
 	float area();
 
 	AXIS axis;			// Used for auto-rotation
-	Vector3f A,B,C,N;	// p1,p2,p3, Normal
+	Vector3f A,B,C,Normal;	// p1,p2,p3, Normal
 };
 
 

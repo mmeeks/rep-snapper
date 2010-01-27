@@ -44,5 +44,3 @@ private:
 	ANNdistArray		dists;					// near neighbor distances
 	ANNkd_tree*			kdTree;					// search structure
 };
-
-

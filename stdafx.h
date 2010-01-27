@@ -42,7 +42,7 @@ typedef unsigned int        uint;
 #include "ModelViewController.h"
 #include "Printer.h"
 #include "ProcessController.h"
-//#include "search.h"
+#include "search.h"
 #include "stl.h"
 #include "UI.h"
 #include "xml/XML.H"
@@ -63,6 +63,16 @@ extern void YUVTORGB	(float y, float u, float v, float &r, float &g, float &b);
 #include "ModelViewController.h"
 
 #include "AsyncSerial.h"
+
+extern "C"
+{
+#include <lua.h>
+}
+
+#include <luabind/luabind.hpp>
+
+using namespace luabind;
+
 
 // TODO: reference additional headers your program requires here
 

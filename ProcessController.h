@@ -20,7 +20,7 @@
 #include "gcode.h"
 
 class GCode;
-
+struct lua_State;
 using namespace std;
 
 class ProcessController
@@ -102,10 +102,12 @@ public:
 
 //	ProcessController::~ProcessController();
 
+	void SetFilename(string filename) { m_Filename = filename;}
+
 	void Draw();
 	
 	// STL Functions
-	void ReadStl(string filename, const Vector3f &PrintingMargin) {stl.Read(filename, PrintingMargin);};
+	void ReadStl(string filename, const Vector3f &PrintingMargin=Vector3f(10,10,0)) {stl.Read(filename, PrintingMargin);};
 	void OptimizeRotation() { stl.OptimizeRotation();}
 	void RotateObject(float x, float y, float z, float a) {stl.RotateObject(Vector3f(x,y,z),a);}
 
@@ -127,6 +129,7 @@ public:
 	void SaveXML(XMLElement *e);
 
 	// LUA
+	void BindLua(lua_State *myLuaState);
 
 
 
@@ -251,6 +254,4 @@ public:
 
 	// Maybe a pointer to the gui
 	GUI *gui;
-protected:
-	int m_iMethodBase;
 };

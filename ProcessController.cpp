@@ -714,3 +714,136 @@ void ProcessController::SaveXML()
 		xml->Save(); // Saves back to file
 	delete xml;
 }
+
+void ProcessController::BindLua(lua_State *myLuaState)
+{
+	// Export our class with LuaBind
+	luabind::module(myLuaState)
+		[
+			//		luabind::class_<NumberPrinter>("NumberPrinter")
+			//		.def(luabind::constructor<int>())
+			//		.def("print", &NumberPrinter::print)
+
+//			luabind::def ("OptimizeRotation", &stl.OptimizeRotation());
+
+			// Process functions
+			class_<ProcessController>("ProcessController")
+			.def ("setFilename", &ProcessController::SetFilename)
+			.def( "ReadStl",  &ProcessController::ReadStl)
+/*
+			// Start, layer, end GCode
+			.def ("GCodeStartText", GCodeStartText)
+			.def ("GCodeLayerText", GCodeLayerText)
+			.def ("GCodeEndText", GCodeEndText)
+
+			//--------------Models-------------------
+			.def ("printer", printer)
+			.def ("m_sPortName", m_sPortName)
+			.def ("stl", stl)
+			.def ("previewCuttingPlane", previewCuttingPlane)
+			.def ("gcode", gcode)
+			.def ("GcodeTxt", GcodeTxt)
+
+			// Raft
+			.def ("RaftSize", RaftSize)
+			.def ("RaftBaseLayerCount", RaftBaseLayerCount)
+			.def ("RaftMaterialPrDistanceRatio", RaftMaterialPrDistanceRatio)
+			.def ("RaftRotation", RaftRotation)
+			.def ("RaftBaseDistance", RaftBaseDistance)
+			.def ("RaftBaseThickness", RaftBaseThickness)
+			.def ("RaftBaseTemperature", RaftBaseTemperature)
+			.def ("RaftInterfaceLayerCount", RaftInterfaceLayerCount)
+			.def ("RaftInterfaceMaterialPrDistanceRatio", RaftInterfaceMaterialPrDistanceRatio)
+			.def ("RaftRotationPrLayer", RaftRotationPrLayer)
+			.def ("RaftInterfaceDistance", RaftInterfaceDistance)
+			.def ("RaftInterfaceThickness", RaftInterfaceThickness)
+			.def ("RaftInterfaceTemperature", RaftInterfaceTemperature)
+
+			// GCode
+			.def ("GCodeDrawStart", GCodeDrawStart)
+			.def ("GCodeDrawEnd", GCodeDrawEnd)
+			.def ("MinPrintSpeedXY", MinPrintSpeedXY)
+			.def ("MaxPrintSpeedXY", MaxPrintSpeedXY)
+			.def ("MinPrintSpeedZ", MinPrintSpeedZ)
+			.def ("MaxPrintSpeedZ", MaxPrintSpeedZ)
+
+			.def ("accelerationSteps", accelerationSteps)
+			.def ("distanceBetweenSpeedSteps", distanceBetweenSpeedSteps)
+			.def ("extrusionFactor", extrusionFactor)
+			.def ("UseFirmwareAcceleration", UseFirmwareAcceleration)
+
+			// Printer
+			.def ("m_fVolume", m_fVolume)
+			.def ("PrintMargin", PrintMargin)
+			.def ("ExtrudedMaterialWidth", ExtrudedMaterialWidth)
+			.def ("UseIncrementalEcode", UseIncrementalEcode)
+
+			// STL 
+			.def ("LayerThickness", LayerThickness)
+			.def ("CuttingPlaneValue", CuttingPlaneValue)
+
+			// CuttingPlane
+			.def ("InfillDistance", InfillDistance)
+			.def ("InfillRotation", InfillRotation)
+			.def ("InfillRotationPrLayer", InfillRotationPrLayer)
+			.def ("Optimization", Optimization)
+			.def ("Examine", Examine)
+
+			.def ("ShellOnly", ShellOnly)
+			.def ("ShellCount", ShellCount)
+
+			.def ("EnableAcceleration", EnableAcceleration)
+
+			// GUI... ?
+			.def ("DisplayEndpoints", DisplayEndpoints)
+			.def ("DisplayNormals", DisplayNormals)
+			.def ("DisplayBBox", DisplayBBox)
+			.def ("DisplayWireframe", DisplayWireframe)
+			.def ("DisplayWireframeShaded", DisplayWireframeShaded)
+			.def ("DisplayPolygons", DisplayPolygons)
+			.def ("DisplayAllLayers", DisplayAllLayers)
+			.def ("DisplayinFill", DisplayinFill)
+			.def ("DisplayDebuginFill", DisplayDebuginFill)
+			.def ("DisplayDebug", DisplayDebug)
+			.def ("DisplayCuttingPlane", DisplayCuttingPlane)
+			.def ("DrawVertexNumbers", DrawVertexNumbers)
+			.def ("DrawLineNumbers", DrawLineNumbers)
+			.def ("Notes", Notes)
+
+			// Rendering
+			.def ("PolygonVal", PolygonVal)
+			.def ("PolygonSat", PolygonSat)
+			.def ("PolygonHue", PolygonHue)
+			.def ("WireframeVal", WireframeVal)
+			.def ("WireframeSat", WireframeSat)
+			.def ("WireframeHue", WireframeHue)
+			.def ("NormalsSat", NormalsSat)
+			.def ("NormalsVal", NormalsVal)
+			.def ("NormalsHue", NormalsHue)
+			.def ("EndpointsSat", EndpointsSat)
+			.def ("EndpointsVal", EndpointsVal)
+			.def ("EndpointsHue", EndpointsHue)
+			.def ("GCodeExtrudeHue", GCodeExtrudeHue)
+			.def ("GCodeExtrudeSat", GCodeExtrudeSat)
+			.def ("GCodeExtrudeVal", GCodeExtrudeVal)
+			.def ("GCodeMoveHue", GCodeMoveHue)
+			.def ("GCodeMoveSat", GCodeMoveSat)
+			.def ("GCodeMoveVal", GCodeMoveVal)
+			.def ("Highlight", Highlight)
+			.def ("NormalsLength", NormalsLength)
+			.def ("EndPointSize", EndPointSize)
+
+			.def ("LuminanceShowsSpeed", LuminanceShowsSpeed)
+			.def ("DisplayGCode", DisplayGCode)
+
+			.def ("ApronEnable", ApronEnable)
+			.def ("ApronPreview", ApronPreview)
+			.def ("RaftEnable", RaftEnable)
+			.def ("ApronSize", ApronSize)
+			.def ("ApronHeight", ApronHeight)
+			.def ("ApronCoverageX", ApronCoverageX)
+			.def ("ApronCoverageY", ApronCoverageY)
+			.def ("ApronDistanceToObject", ApronDistanceToObject)
+			.def ("ApronInfillDistance", ApronInfillDistance)*/
+		];
+}

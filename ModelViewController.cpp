@@ -93,6 +93,10 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 	m_iExtruderSpeed = 3000;
 	m_iExtruderLength = 750;
 	m_fTargetTemp = 63.0f;
+
+
+	
+
 }
 
 
@@ -705,8 +709,53 @@ void ModelViewController::SetPrintMargin(string Axis, float value)
 	redraw();
 }
 
-void ModelViewController::RunLua(char* buffer)
-{
 
+class NumberPrinter {
+public:
+NumberPrinter(int number) :
+m_number(number) {}
+
+void print() {
+cout << m_number << endl;
 }
 
+private:
+int m_number;
+};
+
+ProcessController &ModelViewController::getProcessController()
+{
+	return ProcessControl;
+}
+
+
+void ModelViewController::RunLua(char* script)
+{
+	// Create a new lua state
+	lua_State *myLuaState = lua_open();
+
+	// Connect LuaBind to this lua state
+	luabind::open(myLuaState);
+
+	try {
+		luabind::module(myLuaState)
+			[
+				class_ <ModelViewController>("ModelViewController")
+				.def("ReadStl", &ModelViewController::ReadStl)
+			];
+			//		ProcessControl.BindLua(myLuaState);
+
+		luabind::globals(myLuaState)["base"] = this;
+
+		luaL_dostring(myLuaState, script);
+		// Read a global from the lua script
+//		size_t ResourceCount = luabind::object_cast<size_t>(luabind::globals(myLuaState)["ResourceCount"]);
+//		cout << ResourceCount << endl;
+	}// try
+	catch(const std::exception &TheError)
+	{
+		cerr << TheError.what() << endl;
+	}
+
+	lua_close(myLuaState);
+}

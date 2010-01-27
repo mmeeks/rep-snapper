@@ -163,6 +163,9 @@ public:
 
 	void SetPrintMargin(string Axis, float value);
 
+	// LUA
+	ProcessController &getProcessController();
+
 	// Communication
 	void ConnectToPrinter(char on){
 		if(on)
