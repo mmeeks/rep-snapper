@@ -112,6 +112,18 @@ bool STL::Read(string filename, const Vector3f &PrintingMargin)
 			infile.read(reinterpret_cast < char * > (&b), sizeof(float));
 			infile.read(reinterpret_cast < char * > (&c), sizeof(float));
 			Vector3f Cx(a,b,c);
+
+//			if(N.lengthSquared() != 1.0f)
+				{
+				Vector3f AA=Cx-Ax;
+				Vector3f BB=Cx-Bx;
+				N.x = AA.y * BB.z - BB.y * AA.z;
+				N.y = AA.z * BB.x - BB.z * AA.x;
+				N.z = AA.x * BB.y - BB.x * AA.y;
+				N.normalize();
+				}
+
+
 			unsigned short xxx;
 			infile.read(reinterpret_cast < char * > (&xxx), sizeof(unsigned short));
 
