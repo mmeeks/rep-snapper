@@ -717,6 +717,7 @@ void ProcessController::SaveXML()
 
 void ProcessController::BindLua(lua_State *myLuaState)
 {
+#ifdef WIN32
 	// Export our class with LuaBind
 	luabind::module(myLuaState)
 		[
@@ -846,4 +847,5 @@ void ProcessController::BindLua(lua_State *myLuaState)
 			.def ("ApronDistanceToObject", ApronDistanceToObject)
 			.def ("ApronInfillDistance", ApronInfillDistance)*/
 		];
+#endif
 }

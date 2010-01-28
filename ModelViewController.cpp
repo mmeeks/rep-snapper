@@ -731,6 +731,7 @@ ProcessController &ModelViewController::getProcessController()
 
 void ModelViewController::RunLua(char* script)
 {
+#ifdef WIN32
 	// Create a new lua state
 	lua_State *myLuaState = lua_open();
 
@@ -758,4 +759,5 @@ void ModelViewController::RunLua(char* script)
 	}
 
 	lua_close(myLuaState);
+#endif
 }
