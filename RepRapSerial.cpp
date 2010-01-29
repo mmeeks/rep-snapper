@@ -365,6 +365,7 @@ void RepRapSerial::Connect(string port)
 {
 	open(port.c_str(), 19200);
 	Fl::add_timeout(1.0f, &TempReadTimer);
+	m_bConnected = true;
 }
 
 
