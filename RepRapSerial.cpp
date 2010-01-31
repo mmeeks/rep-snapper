@@ -16,7 +16,7 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 			if(s[a] == '\r' || s[a] == '\n') s[a] = ' ';
 			a++;
 		}
-		Fl::lock();
+		//Fl::lock();
 		gui->CommunationLog->add(s.c_str());
 		if(gui->AutoscrollButton->value())
 			gui->CommunationLog->bottomline(gui->CommunationLog->size());
@@ -27,7 +27,7 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 			if(gui->AutoscrollButton->value())
 				gui->ErrorLog->bottomline(gui->ErrorLog->size());
 			}
-		Fl::unlock();
+		//Fl::unlock();
 	}
 	else
 		printf("%s", s.c_str());
