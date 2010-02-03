@@ -29,7 +29,7 @@ class GUI {open
         xywh {830 20 565 815} align 5
       } {
         Fl_Group {} {
-          label {Input file} open selected
+          label {Input file} open
           xywh {830 40 555 785}
         } {
           Fl_Button {} {
@@ -158,7 +158,7 @@ MVC->redraw();
             xywh {845 80 130 25}
           }
           Fl_Box RFP_Browser {
-            label {RFO file}
+            label {RFO file} selected
             xywh {845 110 355 440} box UP_BOX align 16 resizable
             code0 {\#include "Flu_Tree_Browser.h"}
             class Flu_Tree_Browser

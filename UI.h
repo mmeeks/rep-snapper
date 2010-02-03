@@ -15,7 +15,7 @@ class ModelViewController;
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Light_Button.H>
 #include <FL/Fl_Text_Editor.H>
-//#include "Flu_Tree_Browser.h"
+#include "Flu_Tree_Browser.h"
 #include <FL/Fl_Value_Input.H>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Value_Slider.H>
@@ -73,7 +73,7 @@ private:
   void cb_Load1_i(Fl_Button*, void*);
   static void cb_Load1(Fl_Button*, void*);
 public:
-//  Flu_Tree_Browser *RFP_Browser;
+  Flu_Tree_Browser *RFP_Browser;
   Fl_Value_Input *TranslateX;
 private:
   void cb_TranslateX_i(Fl_Value_Input*, void*);
