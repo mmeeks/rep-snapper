@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Libraries/FLU_2.14/FLU/Flu_Tree_Browser.h"
+#include "Flu_Tree_Browser.h"
 
 /*
 <!--

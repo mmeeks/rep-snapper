@@ -15,7 +15,7 @@ class ModelViewController;
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Light_Button.H>
 #include <FL/Fl_Text_Editor.H>
-#include "../Libraries/FLU_2.14/FLU/Flu_Tree_Browser.h"
+#include "Flu_Tree_Browser.h"
 #include <FL/Fl_Value_Input.H>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Value_Slider.H>
