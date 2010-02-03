@@ -139,7 +139,7 @@ void RepRapSerial::SendData(string s, const int lineNr)
 	if(found!=string::npos)
 		tmp=tmp.substr(0,found+1);
 
-	for(UINT i=0;i<tmp.length();i++)
+	for(uint i=0;i<tmp.length();i++)
 		if((tmp[i] < '*' || tmp[i] > 'z') && tmp[i] != ' ')	// *-z (ascii 42-122)
 			tmp.erase(tmp.begin()+i--);
 

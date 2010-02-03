@@ -84,12 +84,12 @@ void STL::GetObjectsFromIvcon()
 	// Vertices in cor3[i][cor3_num] = temp[i];
 
 	triangles.reserve(face_num);
-	for(UINT i=0;i<face_num;i++)
+	for(uint i=0;i<face_num;i++)
 	{
 	Triangle Tri;
-	UINT v1 = face[0][i];
-	UINT v2 = face[1][i];
-	UINT v3 = face[2][i];
+	uint v1 = face[0][i];
+	uint v2 = face[1][i];
+	uint v3 = face[2][i];
 	Tri.A = Vector3f(cor3[0][v1], cor3[1][v1], cor3[2][v1]);
 	Tri.B = Vector3f(cor3[0][v2], cor3[1][v2], cor3[2][v2]);
 	Tri.C = Vector3f(cor3[0][v3], cor3[1][v3], cor3[2][v3]);

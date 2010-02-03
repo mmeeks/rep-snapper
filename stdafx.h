@@ -30,6 +30,7 @@
 	#include <tchar.h>
 typedef unsigned int        uint;
 #endif
+typedef unsigned int        UINT;
 #include <stdio.h>
 #include <FL/Fl.H>
 #include <vmmlib/vmmlib.h>

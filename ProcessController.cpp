@@ -49,8 +49,8 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 			gui->ProgressBar->redraw();
 			Fl::check();
 		}
-		for(UINT o=0;o<rfo.Objects.size();o++)
-			for(UINT f=0;f<rfo.Objects[o].files.size();f++)
+		for(uint o=0;o<rfo.Objects.size();o++)
+			for(uint f=0;f<rfo.Objects[o].files.size();f++)
 				{
 				STL* stl = &rfo.Objects[o].files[f].stl;	// Get a pointer to the object
 				Matrix4f T = GetSTLTransformationMatrix(o,f);
@@ -120,9 +120,9 @@ void ProcessController::CalcBoundingBoxAndZoom()
 	Max = Vector3f(-500,-500,-500);
 	Min = Vector3f(500,500,500);
 
-	for(UINT o=0;o<rfo.Objects.size();o++)
+	for(uint o=0;o<rfo.Objects.size();o++)
 	{
-		for(UINT f=0;f<rfo.Objects[o].files.size();f++)
+		for(uint f=0;f<rfo.Objects[o].files.size();f++)
 		{
 			Matrix4f M = GetSTLTransformationMatrix(o,f);
 			Vector3f stlMin = M*rfo.Objects[o].files[f].stl.Min;
@@ -286,7 +286,7 @@ void ProcessController::RotateObject(Vector3f axis, float a)
 {
 	Flu_Tree_Browser::Node *node=MVC->gui->RFP_Browser->get_selected( 1 );
 	// first check files
-	for(UINT o=0;o<rfo.Objects.size();o++)
+	for(uint o=0;o<rfo.Objects.size();o++)
 	{
 /*		if(Objects[o].node == node)
 		{
@@ -295,7 +295,7 @@ void ProcessController::RotateObject(Vector3f axis, float a)
 			MVC->redraw();
 			return;
 		}*/
-		for(UINT f=0;f<rfo.Objects[o].files.size();f++)
+		for(uint f=0;f<rfo.Objects[o].files.size();f++)
 		{
 			if(rfo.Objects[o].files[f].node == node)
 			{

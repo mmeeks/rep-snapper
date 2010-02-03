@@ -10,9 +10,9 @@
  * Attn: Jason Bryan Re: FLU 1224 Kinnear Rd, Columbus, Ohio 43212
  * 
  ***************************************************************/
-
-
-
+/* davekw7x: Changed lines 349,439,443,447,451,455,1080,1081,
+ * 1085,1089,1093 to make it compatible with g++ version 4
+ * 64-bit compiler */
 #ifndef _FLU_TREE_BROWSER_H
 #define _FLU_TREE_BROWSER_H
 
@@ -20,7 +20,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define USE_FLU_DND
+//#define USE_FLU_DND
 
 /* fltk includes */
 #include <FL/Fl.H>
@@ -346,7 +346,7 @@ class FLU_EXPORT Flu_Tree_Browser : public Fl_Group
     { return rdata.insertionMode; }
 
   //! \return whether the point \c (x,y) is inside the entry area (not on the scrollbars)
-  bool Flu_Tree_Browser :: inside_entry_area( int x, int y );
+  bool inside_entry_area( int x, int y );
 
   //! Set the title of the Tree (also the label for the root entry)
   inline void label( const char *l )
@@ -436,23 +436,23 @@ class FLU_EXPORT Flu_Tree_Browser : public Fl_Group
 
   //! Remove the entry identified by path \b fullpath from the tree
   /*! \return the unique id of the removed entry, or \c 0 if no matching entry was found */
-  unsigned int remove( const char *fullpath );
+  unsigned long remove( const char *fullpath );
 
   //! Remove entry \b name in path \b path from the tree
   /*! \return the unique id of the removed entry, or \c 0 if no matching entry was found */
-  unsigned int remove( const char *path, const char *name );
+  unsigned long remove( const char *path, const char *name );
 
   //! Remove the entry identified by unique id \b id from the tree
   /*! \return the unique id of the removed entry, or \c 0 if no matching entry was found */
-  unsigned int remove( unsigned int id );
+  unsigned long remove( unsigned int id );
 
   //! Remove the entry containing the widget \b w from the tree. Note that the widget is automatically destroyed
   /*! \return the unique id of the removed entry, or \c 0 if no matching entry was found */
-  unsigned int remove( Fl_Widget *w );
+  unsigned long remove( Fl_Widget *w );
 
   //! Remove Node \b n from the tree
   /*! \return the id of \b n on successful removal, or \c 0 if \b n is not in the tree */
-  inline unsigned int remove( Node* n )
+  inline unsigned long remove( Node* n )
     { if( !n ) return 0; else return remove( n->id() ); }
 
   //! Override of Fl_Widget::resize
@@ -1077,20 +1077,20 @@ class FLU_EXPORT Flu_Tree_Browser : public Fl_Group
 
       //! Remove the entry identified by path \b fullpath from this node
       /*! \return the unique id of the removed entry, or \c 0 if no matching entry was found */
-      inline unsigned int remove( const char *fullpath )
-	{ return( (unsigned int)modify( fullpath, REMOVE, tree->rdata ) ); }
+      inline unsigned long remove( const char *fullpath )
+	{ return( (unsigned long )modify( fullpath, REMOVE, tree->rdata ) ); }
 
       //! Remove the entry identified by unique id \b id from this node
       /*! \return the unique id of the removed entry, or \c 0 if no matching entry was found */
-      unsigned int remove( unsigned int id );
+      unsigned long remove( unsigned int id );
 
       //! Remove the node containing the widget \b w from this node. Note that the widget is automatically destroyed
       /*! \return the unique id of the removed entry, or \c 0 if no matching entry was found */
-      unsigned int remove( Fl_Widget *w );
+      unsigned long remove( Fl_Widget *w );
 
       //! Remove Node \b n
       /*! \return the id of \b n on successful removal, or \c 0 if \b n is present */
-      inline unsigned int remove( Node* n )
+      inline unsigned long remove( Node* n )
 	{ if( !n ) return 0; else return remove( n->id() ); }
 
       //! Select this entry and all child entries

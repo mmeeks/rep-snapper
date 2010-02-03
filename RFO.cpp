@@ -2,6 +2,8 @@
 #include "stdafx.h"
 #include "RFO.h"
 #include "flu_pixmaps.h"
+#include <exception>
+#include <stdexcept>
 
 Fl_Pixmap plus((char * const*)plus_xpm),
 minus((char * const*)minus_xpm),
@@ -150,7 +152,7 @@ void RFO_Transform3D::SaveXML(XMLElement* x)
 
 }
 
-bool RFO::Save(string &filename, ProcessController &PC)
+bool RFO::Save(string filename, ProcessController &PC)
 {
 	if(filename.find( ".xml", 0) == string::npos)	// has XML extension
 		string filename = filename+".xml";
@@ -192,7 +194,7 @@ bool RFO::Save(string &filename, ProcessController &PC)
 }
 
 
-bool RFO::Open(string &filename, ProcessController &PC)
+bool RFO::Open(string filename, ProcessController &PC)
 {
 	clear(PC);
 	try{
@@ -207,19 +209,23 @@ bool RFO::Open(string &filename, ProcessController &PC)
 		y=e->FindVariableZ("version", false);
 		if(y)	version = y->GetValueFloat();
 		else
-			throw(std::exception("Malformed xml file, version nr missing"));
+			throw std::runtime_error("Malformed xml file, version nr missing");
 		if(version == 0.1f)
 			ReadVersion0x1(e);
 		//		else if(version == 0.2f)
 		//			return ReadVersion0x2(e);
 		else
-			throw(std::exception("Unknown RFO version number, canceling load."));
+			throw std::runtime_error("Unknown RFO version number, canceling load.");
 
 	}// try
-	catch(std::exception &e)
-	{
-		cout << "Exception:" << e.what();
-	}
+	catch ( const std::exception& err )
+		{
+		std::cout << err.what() << std::endl;
+		}
+	catch ( ... )
+		{
+		std::cout << " unknown-bad " << std::endl;
+		}
 	return true;
 }
 
@@ -328,7 +334,7 @@ void RFO_Transform3D::Read(XMLElement* e)
 		ch->GetElementName(n);
 		// rwo
 		if(string(n) != "row")
-			throw(std::exception("Malformed xml:Transform3D children not named \"row\" "));
+			throw std::runtime_error("Malformed xml:Transform3D children not named \"row\" ");
 
 		XMLVariable* y;
 		for(int x=0;x<4;x++)
