@@ -11,7 +11,7 @@
 * ------------------------------------------------------------------------- */
 #include "stdafx.h"
 #include "ModelViewController.h"
-
+#include "RFO.h"
 
 #ifndef WIN32
 
@@ -47,6 +47,84 @@ char* itoa(int value, char* result, int base) {
 #endif
 
 
+void tree_callback( Fl_Widget* w, void* )
+{
+	Flu_Tree_Browser *t = (Flu_Tree_Browser*)w;
+	int reason = t->callback_reason();
+
+	Flu_Tree_Browser::Node *n = t->callback_node();
+
+	Matrix4f &transform = MVC->SelectedNodeMatrix();
+	Vector3f translate = transform.getTranslation();
+	RFO_Object *selectedObject=0;
+	RFO_File *selectedFile=0;
+	MVC->GetSelectedRFO(&selectedObject, &selectedFile);
+
+	switch( reason )
+	{
+	case FLU_HILIGHTED:
+		printf( "%s hilighted\n", n->label() );
+		break;
+
+	case FLU_UNHILIGHTED:
+		printf( "%s unhilighted\n", n->label() );
+		break;
+
+	case FLU_SELECTED:
+		MVC->gui->TranslateX->value(translate.x);
+		MVC->gui->TranslateY->value(translate.y);
+		MVC->gui->TranslateZ->value(translate.z);
+
+		if(selectedObject)
+			MVC->gui->ObjectNameInput->value(selectedObject->name.c_str());
+		else
+			MVC->gui->ObjectNameInput->value("no selection");
+		if(selectedFile)
+		{
+		MVC->gui->FileLocationInput->value(selectedFile->location.c_str());
+		MVC->gui->FileTypeInput->value(selectedFile->filetype.c_str());
+		MVC->gui->FileMaterialInput->value(selectedFile->material.c_str());
+		}
+		else
+		{
+			MVC->gui->FileLocationInput->value("no file selected");
+			MVC->gui->FileTypeInput->value("no file selected");
+			MVC->gui->FileMaterialInput->value("no file selected");
+		}
+
+		printf( "%s selected\n", n->label() );
+		//transform
+		break;
+
+	case FLU_UNSELECTED:
+		printf( "%s unselected\n", n->label() );
+		break;
+
+	case FLU_OPENED:
+		printf( "%s opened\n", n->label() );
+		break;
+
+	case FLU_CLOSED:
+		printf( "%s closed\n", n->label() );
+		break;
+
+	case FLU_DOUBLE_CLICK:
+		printf( "%s double-clicked\n", n->label() );
+		break;
+
+	case FLU_WIDGET_CALLBACK:
+		printf( "%s widget callback\n", n->label() );
+		break;
+
+	case FLU_MOVED_NODE:
+		printf( "%s moved\n", n->label() );
+		break;
+
+	case FLU_NEW_NODE:
+		printf( "node '%s' added to the tree\n", n->label() );
+		break;
+	}
+}
 
 ModelViewController::~ModelViewController()
 {
@@ -55,10 +133,6 @@ ModelViewController::~ModelViewController()
 ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) : Fl_Gl_Window(x,y,w,h,l)
 {
 	gui = 0;
-	Min = Vector3f(0, 0, 0);
-	Max = Vector3f(200,200,200);
-	Center.x = Center.y = 100.0f;
-	Center.z = 0.0f;
 	zoom = 100.0f;
 
 	glClearColor (0.0f, 0.0f, 0.0f, 0.5f);							// Black Background
@@ -94,33 +168,6 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 	m_iExtruderLength = 750;
 	m_fTargetTemp = 63.0f;
 
-
-	
-
-}
-
-
-
-void ModelViewController::CalcBoundingBoxAndZoom()
-{
-	ProcessControl.stl.CalcBoundingBoxAndZoom();
-	
-	Max = ProcessControl.stl.Max;
-	Min = ProcessControl.stl.Min;
-	Center = ProcessControl.stl.Center;
-
-	if((Max-Min).length() > 0)
-		{
-		// Find zoom
-		float L=0;
-		if(Max.x - Min.x > L)	L = Max.x - Min.x;
-		if(Max.y - Min.y > L)	L = Max.y - Min.y;
-		if(Max.z - Min.z > L)	L = Max.z - Min.z;
-
-		zoom= L;
-		}
-	else
-		zoom = 100.0f;
 }
 
 void ModelViewController::resize(int x,int y, int width, int height)					// Reshape The Window When It's Moved Or Resized
@@ -130,13 +177,16 @@ void ModelViewController::resize(int x,int y, int width, int height)					// Resh
 
 void ModelViewController::CenterView()
 {
-	glTranslatef(-Center.x, -Center.y, -Center.z);
+	glTranslatef(-ProcessControl.Center.x-ProcessControl.printOffset.x, -ProcessControl.Center.y-ProcessControl.printOffset.y, -ProcessControl.Center.z);
 }
 
 void ModelViewController::draw()
 {
     if (!valid())
 		{
+		gui->RFP_Browser->callback( &tree_callback );
+		gui->RFP_Browser->redraw();
+
 		glLoadIdentity();
 		glViewport (0, 0, w(),h());											// Reset The Current Viewport
 		glMatrixMode (GL_PROJECTION);										// Select The Projection Matrix
@@ -236,9 +286,12 @@ int ModelViewController::handle(int event)
 					ArcBall->click(&MousePt);								// Update Start Vector And Prepare For Dragging
 					break;
 				case FL_MIDDLE_MOUSE:
+					downPoint = Clickpoint;
+					/*
 					Matrix3fSetIdentity(&LastRot);								// Reset Rotation
 					Matrix3fSetIdentity(&ThisRot);								// Reset Rotation
 					Matrix4fSetRotationFromMatrix3f(&Transform, &ThisRot);		// Reset Rotation
+					*/
 					break;
 				case FL_RIGHT_MOUSE:
 					Click_y = Clickpoint.y;
@@ -265,6 +318,21 @@ int ModelViewController::handle(int event)
 					redraw();
 					break;
 				case FL_MIDDLE_MOUSE:
+					{
+					Vector2f    dragp = Clickpoint;
+					Vector2f delta = downPoint-dragp;
+					Matrix4f matrix;
+					memcpy(&matrix.m00, &Transform.M[0], sizeof(Matrix4f));
+					Vector3f X(delta.x,0,0);
+					X = matrix * X;
+					Vector3f Y(0,-delta.y,0);
+					Y = matrix * Y;
+					ProcessControl.Center += X*delta.length()*0.01f;
+					ProcessControl.Center += Y*delta.length()*0.01f;
+					MVC->redraw();
+					downPoint=Clickpoint;
+					}
+
 					break;				
 				case FL_RIGHT_MOUSE:
 					float y = 	Click_y - Clickpoint.y;
@@ -396,6 +464,8 @@ void ModelViewController::CopySettingsToGUI()
 	gui->UseFirmwareAccelerationButton->value(ProcessControl.UseFirmwareAcceleration);
 	gui->extrusionFactorSlider->value(ProcessControl.extrusionFactor);
 	gui->UseIncrementalEcodeButton->value(ProcessControl.UseIncrementalEcode);
+	gui->Use3DGcodeButton->value(ProcessControl.Use3DGcode);
+	
 
 	// Printer
 	gui->VolumeX->value(ProcessControl.m_fVolume.x);
@@ -410,7 +480,7 @@ void ModelViewController::CopySettingsToGUI()
 	// STL 
 	gui->LayerThicknessSlider->value(ProcessControl.LayerThickness);
 	gui->CuttingPlaneValueSlider->value(ProcessControl.CuttingPlaneValue);
-//	gui->PolygonOpasitySlider->value(ProcessControl.PolygonOpasity);
+	gui->PolygonOpasitySlider->value(ProcessControl.PolygonOpasity);
 	// CuttingPlane
 	gui->InfillDistanceSlider->value(ProcessControl.InfillDistance);
 	gui->InfillRotationSlider->value(ProcessControl.InfillRotation);
@@ -705,7 +775,9 @@ void ModelViewController::SetPrintMargin(string Axis, float value)
 		ProcessControl.PrintMargin.y = value;
 	else if(Axis == "Z")
 		ProcessControl.PrintMargin.z = value;
-	ProcessControl.stl.MoveIntoPrintingArea(ProcessControl.PrintMargin);
+
+	cout << "ModelViewController::SetPrintMargin NON-WORKING";
+//	ProcessControl.stl.MoveIntoPrintingArea(ProcessControl.PrintMargin);
 	redraw();
 }
 
@@ -760,4 +832,216 @@ void ModelViewController::RunLua(char* script)
 
 	lua_close(myLuaState);
 #endif
+}
+void ModelViewController::ReadRFO(string filename)
+{
+	ProcessControl.rfo.Open(filename, ProcessControl);
+	string path;
+
+	size_t found;
+	cout << "Splitting: " << filename << endl;
+	found=filename.find_last_of("/\\");
+	cout << " folder: " << filename.substr(0,found) << endl;
+	cout << " file: " << filename.substr(found+1) << endl;
+
+	path=filename.substr(0,found);
+
+	ProcessControl.rfo.Load(path, ProcessControl);
+	ProcessControl.CalcBoundingBoxAndZoom();
+}
+
+void ModelViewController::GetSelectedRFO(RFO_Object **selectedObject, RFO_File **selectedFile)
+{
+	Flu_Tree_Browser::Node *node=gui->RFP_Browser->get_selected( 1 );
+	if(node==0)
+		node = gui->RFP_Browser->get_root();
+	// Check for selected file (use the object)
+	for(UINT o=0;o<ProcessControl.rfo.Objects.size();o++)
+	{
+		for(UINT f=0;f<ProcessControl.rfo.Objects[o].files.size();f++)
+		{
+			if(ProcessControl.rfo.Objects[o].files[f].node == node)
+			{
+				*selectedObject = &ProcessControl.rfo.Objects[o];
+				*selectedFile = &ProcessControl.rfo.Objects[o].files[f];
+				return;
+			}
+		}
+	}
+	// Check for selected object
+	for(UINT o=0;o<ProcessControl.rfo.Objects.size();o++)
+	{
+		if(ProcessControl.rfo.Objects[o].node == node)
+		{
+			*selectedObject = &ProcessControl.rfo.Objects[o];
+//			*selectedFile = 0;
+			return;
+		}
+	}
+	if(ProcessControl.rfo.Objects.size())
+	{
+		*selectedObject = &ProcessControl.rfo.Objects[0];
+//		*selectedFile = 0;
+		return;
+	}
+//	*selectedObject = 0;
+//	*selectedFile = 0;
+}
+
+
+RFO_Object* ModelViewController::SelectedParent()
+{
+	Flu_Tree_Browser::Node *node=gui->RFP_Browser->get_selected( 1 );
+	if(node==0)
+		node = gui->RFP_Browser->get_root();
+	// Check for selected object
+	for(UINT o=0;o<ProcessControl.rfo.Objects.size();o++)
+	{
+		if(ProcessControl.rfo.Objects[o].node == node)
+			return &ProcessControl.rfo.Objects[o];
+	}
+	// Check for selected file (use the object)
+	for(UINT o=0;o<ProcessControl.rfo.Objects.size();o++)
+	{
+		for(UINT f=0;f<ProcessControl.rfo.Objects[o].files.size();f++)
+		{
+			if(ProcessControl.rfo.Objects[o].files[f].node == node)
+				return &ProcessControl.rfo.Objects[o];
+		}
+	}
+	if(ProcessControl.rfo.Objects.size())
+		return &ProcessControl.rfo.Objects[0];
+	return 0;
+}
+Matrix4f &ModelViewController::SelectedNodeMatrix(uint objectNr)
+{
+	Flu_Tree_Browser::Node *node=gui->RFP_Browser->get_selected( objectNr );
+	for(UINT o=0;o<ProcessControl.rfo.Objects.size();o++)
+	{
+		if(ProcessControl.rfo.Objects[o].node == node)
+			return ProcessControl.rfo.Objects[o].transform3D.transform;
+		for(UINT f=0;f<ProcessControl.rfo.Objects[o].files.size();f++)
+		{
+			if(ProcessControl.rfo.Objects[o].files[f].node == node)
+				return ProcessControl.rfo.Objects[o].files[f].transform3D.transform;
+		}
+	}
+	return ProcessControl.rfo.transform3D.transform;
+}
+void ModelViewController::SelectedNodeMatrices(vector<Matrix4f *> &result )
+{
+	result.clear();
+	UINT i=1;
+	Flu_Tree_Browser::Node *node;
+	node=gui->RFP_Browser->get_selected( i++ );
+	while(node)
+	{
+		for(UINT o=0;o<ProcessControl.rfo.Objects.size();o++)
+		{
+			if(ProcessControl.rfo.Objects[o].node == node)
+				result.push_back(&ProcessControl.rfo.Objects[o].transform3D.transform);
+			for(UINT f=0;f<ProcessControl.rfo.Objects[o].files.size();f++)
+			{
+				if(ProcessControl.rfo.Objects[o].files[f].node == node)
+					result.push_back(&ProcessControl.rfo.Objects[o].files[f].transform3D.transform);
+			}
+		}
+//		return ProcessControl.rfo.transform3D.transform;
+		node=gui->RFP_Browser->get_selected( i++ );	// next selected
+	}
+}
+
+void ModelViewController::Translate(string axis, float distance)
+{
+	vector<Matrix4f *> pMatrices;
+	SelectedNodeMatrices(pMatrices);
+
+	for(UINT i=0;i<pMatrices.size();i++)
+		{
+		Vector3f Tr = pMatrices[i]->getTranslation();
+		if(axis == "X")
+			Tr.x = distance;
+		if(axis == "Y")
+			Tr.y = distance;
+		if(axis == "Z")
+			Tr.z = distance;
+		pMatrices[i]->setTranslation(Tr);
+		}
+	ProcessControl.CalcBoundingBoxAndZoom();
+	redraw();
+}
+
+void ModelViewController::Scale(string axis, float distance)
+{
+
+}
+
+void ModelViewController::ReadStl(string filename)
+{
+	STL stl;
+	bool ok = ProcessControl.ReadStl(filename, stl);
+	if(ok)
+		{
+		RFO_Object *parent = SelectedParent();
+		if(parent == 0)
+		{
+			ProcessControl.rfo.Objects.push_back(RFO_Object());
+			ProcessControl.rfo.BuildBrowser(ProcessControl);
+			parent = SelectedParent();
+		}
+		assert(parent != 0);
+
+		RFO_File r;
+		r.stl = stl;
+
+		size_t found;
+		found=filename.find_last_of("/\\");
+		r.location = filename.substr(found+1);
+		//r.filetype = "";
+		//string material;
+		r.node = 0;	//???
+		parent->files.push_back(r);
+		ProcessControl.rfo.BuildBrowser(ProcessControl);
+		}
+
+	ProcessControl.CalcBoundingBoxAndZoom();
+}
+
+void ModelViewController::newObject()
+{
+	ProcessControl.rfo.Objects.push_back(RFO_Object());
+	ProcessControl.rfo.BuildBrowser(ProcessControl);
+}
+
+void ModelViewController::setObjectname(string name)
+{
+	RFO_Object *selectedObject=0;
+	RFO_File *selectedFile=0;
+	MVC->GetSelectedRFO(&selectedObject, &selectedFile);
+	if(selectedObject)
+		selectedObject->name = name;
+}
+void ModelViewController::setFileMaterial(string material)
+{
+	RFO_Object *selectedObject=0;
+	RFO_File *selectedFile=0;
+	MVC->GetSelectedRFO(&selectedObject, &selectedFile);
+	if(selectedFile)
+		selectedFile->material = material;
+}
+void ModelViewController::setFileType(string type)
+{
+	RFO_Object *selectedObject=0;
+	RFO_File *selectedFile=0;
+	MVC->GetSelectedRFO(&selectedObject, &selectedFile);
+	if(selectedFile)
+		selectedFile->filetype = type;
+}
+void ModelViewController::setFileLocation(string location)
+{
+	RFO_Object *selectedObject=0;
+	RFO_File *selectedFile=0;
+	MVC->GetSelectedRFO(&selectedObject, &selectedFile);
+	if(selectedFile)
+		selectedFile->location = location;
 }

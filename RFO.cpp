@@ -1,7 +1,7 @@
 
 #include "stdafx.h"
 #include "RFO.h"
-#include <FLU/flu_pixmaps.h>
+#include "flu_pixmaps.h"
 
 Fl_Pixmap plus((char * const*)plus_xpm),
 minus((char * const*)minus_xpm),

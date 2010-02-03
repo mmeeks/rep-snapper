@@ -62,7 +62,10 @@ public:
 
 	void CenterView();
 	int  handle(int);
-	
+	void Translate(string axis, float distance);
+	void Scale(string axis, float distance);
+	void Rotate(string axis, float distance);
+
 	// Callback functions
 	void resize (int x,int y, int width, int height);		// Reshape The Window When It's Moved Or Resized
 
@@ -207,10 +210,6 @@ public:
 	RFO_Object* SelectedParent();
 	void GetSelectedRFO(RFO_Object **selectedObject, RFO_File **selectedFile);
 	void newObject();
-
-	void Translate(string axis, float distance);
-	void Rotate(string axis, float distance);
-	void Scale(string axis, float distance);
 
 	RepRapSerial serial;
 	bool m_bExtruderDirection; // True = forwards
