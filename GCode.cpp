@@ -34,6 +34,13 @@ void GCode::Read(string filename)
 {
 	commands.clear();
 
+	if(MVC->gui)
+	{
+	Fl_Text_Buffer* buffer = MVC->gui->GCodeResult->buffer();
+	buffer->remove(0, buffer->length());
+	}
+
+
 	ifstream file;
 	file.open(filename.c_str());		//open a file
 
@@ -58,6 +65,11 @@ void GCode::Read(string filename)
 		string buffer;
 //		char charBuffer[1000];
 		line >> buffer;	// read something
+
+		if(MVC->gui)
+		{
+			MVC->gui->GCodeResult->buffer()->append((s+"\n").c_str());
+		}
 
 		if(buffer.find( ";", 0) != string::npos)	// COMMENT
 			continue;
@@ -205,12 +217,34 @@ void GCode::draw(const ProcessController &PC)
 	HSVtoRGB(PC.GCodeMoveHue, PC.GCodeMoveSat, PC.GCodeMoveVal, Mr,Mg,Mb);
 
 	float LastE=0.0f;
-
+	bool extruderon = false;
 	for(uint i=start;i<commands.size() && i < end ;i++)
 	{
 		switch(commands[i].Code)
 		{
 		case ZMOVE:
+		case EXTRUDERON:
+			extruderon = true;
+			break;
+		case EXTRUDEROFF:
+			extruderon = false;
+			break;
+		case COORDINATEDMOTION3D:
+			if(extruderon)
+				Color=Vector3f(Er,Eg,Eb);
+			else
+				Color=Vector3f(Mr,Mg,Mb);
+			LastColor = Color;
+			Distance += (commands[i].where-pos).length();
+			glLineWidth(3);
+			glBegin(GL_LINES);
+			glColor3fv(&Color[0]);
+			glVertex3fv((GLfloat*)&pos);
+			glVertex3fv((GLfloat*)&commands[i].where);
+			glEnd();
+			LastColor = Color;
+			LastE=commands[i].e;
+			break;
 		case COORDINATEDMOTION:
 			if(commands[i].e == LastE)
 				{
@@ -252,6 +286,7 @@ void GCode::draw(const ProcessController &PC)
 			glEnd();
 			break;
 		}
+		if(commands[i].Code != EXTRUDERON && commands[i].Code != EXTRUDEROFF)
 		pos = commands[i].where;
 	}
 
@@ -291,7 +326,7 @@ void GCode::draw(const ProcessController &PC)
 
 }
 
-void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, bool UseIncrementalEcode)
+void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, bool UseIncrementalEcode, bool Use3DGcode)
 {
 	Vector3f pos(0,0,0);
 	
@@ -339,7 +374,7 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 					}
 			oss << " F" << commands[i].f;
 			if(commands[i].comment.length() != 0)
-				oss << "	;" << commands[i].comment << "\n";
+				oss << " ;" << commands[i].comment << "\n";
 			else
 				oss <<  "\n";
 			GcodeTxt += oss.str();
@@ -347,6 +382,29 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 			lastE = commands[i].e;
 			if(commands[i].Code == ZMOVE)
 				GcodeTxt += GcodeLayer + "\n";
+			break;
+
+		case EXTRUDERON:
+			if(i != 0 && commands[i-1].Code == EXTRUDEROFF) continue;	// Dont switch extruder on/off right after eachother
+			oss  << "M101\n";
+			GcodeTxt += oss.str();
+			break;
+		case EXTRUDEROFF:
+			if(i != 0 && (i+1) < commands.size() && commands[i+1].Code == EXTRUDERON) continue;	// Dont switch extruder on/off right after eachother
+			if(i != 0 && (i+1) < commands.size() && commands[i+1].Code == EXTRUDEROFF) continue;	// don't switch extruder off twize
+			oss  << "M103\n";
+			GcodeTxt += oss.str();
+			break;
+		case COORDINATEDMOTION3D:
+			oss  << "G1 X" << commands[i].where.x << " Y" << commands[i].where.y << " Z" << commands[i].where.z;
+			oss << " F" << commands[i].f;
+			if(commands[i].comment.length() != 0)
+				oss << " ;" << commands[i].comment << "\n";
+			else
+				oss <<  "\n";
+			GcodeTxt += oss.str();
+			LastPos = commands[i].where;
+			lastE = commands[i].e;
 			break;
 		case RAPIDMOTION:
 			oss  << "G0 X" << commands[i].where.x << " Y" << commands[i].where.y << " Z" << commands[i].where.z  << " E0\n";

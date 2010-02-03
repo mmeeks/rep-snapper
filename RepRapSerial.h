@@ -10,28 +10,6 @@
 
 #include "UI.h"
 #include "AsyncSerial.h"
-//#include "ftd2xx.h"
-
-
-//BufferedAsyncSerial serial("/dev/ttyUSB0",115200);
-/*
-class FooClass
-{
-public:
-	void Print( int a )
-	{
-		std::cout << "A FooClass, param = "<< a <<" this = " << this << std::endl;
-	}
-};
-void main()
-{
-	FooClass *myFoo = new FooClass();
-	void( FooClass::* oldFunc )(int) = &FooClass::Print; //C style function pointer (myFoo->*oldFunc)( 5 );
-	
-	boost::function<void(int)> newFunc = boost::bind( &FooClass::Print, myFoo, _1 ); //boost function
-	newFunc( 5 );
-}
-*/
 
 class RepRapSerial : public BufferedAsyncSerial
 {

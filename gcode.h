@@ -135,7 +135,7 @@ inline string FromFloat(const float i)
 }
 
 
-enum GCodes{GOTO, DRAWTO, MILLIMETERSASUNITS, RAPIDMOTION, COORDINATEDMOTION, ARCCLOCKWISE, ARCCOUNTERCLOCKWISE, DWELL, INCHESASUNITS, GOHOME, GOHOMEVIAINTERMEDIATEPOINT, ABSOLUTEPOSITIONING, INCREMENTALPOSITIONING, SETCURRENTASHOME, SELECTEXTRUDER, ZMOVE, SETSPEED};
+enum GCodes{GOTO, DRAWTO, MILLIMETERSASUNITS, RAPIDMOTION, COORDINATEDMOTION, COORDINATEDMOTION3D,  EXTRUDERON, EXTRUDEROFF, ARCCLOCKWISE, ARCCOUNTERCLOCKWISE, DWELL, INCHESASUNITS, GOHOME, GOHOMEVIAINTERMEDIATEPOINT, ABSOLUTEPOSITIONING, INCREMENTALPOSITIONING, SETCURRENTASHOME, SELECTEXTRUDER, ZMOVE, SETSPEED};
 
 class Command
 {
@@ -154,7 +154,7 @@ public:
 
 	void Read(string filename);
 	void draw(const ProcessController &PC);
-	void MakeText(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, bool UseIncrementalEcode);
+	void MakeText(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, bool UseIncrementalEcode, bool Use3DGcode);
 
 
 	/*--------------GCode-------------------*/

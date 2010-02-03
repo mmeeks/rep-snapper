@@ -30,14 +30,15 @@ using namespace std;
 int main(int argc, char* argv[])
 {
 	gui = new GUI();
+	MVC = gui->MVC;
 
 	Fl::visual(FL_DOUBLE|FL_INDEX);
 
 	char WindowTitle[100] = "GCodeView";
 	char* W = &WindowTitle[0];
-	gui->MVC->gui = gui;
-	gui->MVC->serial.setGUI(gui);
-	gui->MVC->ProcessControl.gui = gui;
+	MVC->gui = gui;
+	MVC->serial.setGUI(gui);
+	MVC->ProcessControl.gui = gui;
 	gui->show(1,&W);
 	return Fl::run();
 }

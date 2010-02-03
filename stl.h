@@ -89,7 +89,7 @@ public:
 	void Draw(float z, bool DrawVertexNumbers, bool DrawLineNumbers);
 	bool LinkSegments(float z, float shrinkValue, float Optimization, bool DisplayCuttingPlane);		// Link Segments to form polygons
 	void CleanupPolygons(float Optimization);			// remove redudant points
-	void MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float &E, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, uint accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, bool UseAcceleration, bool UseIncrementalEcode, bool UseFirmwareAcceleration);	// Convert Cuttingplane to GCode
+	void MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float &E, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, uint accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, bool UseAcceleration, bool UseIncrementalEcode, bool Use3DGcode, bool UseFirmwareAcceleration, bool EnableAcceleration);	// Convert Cuttingplane to GCode
 
 	Vector2f Min, Max;				// Bounding box
 	vector<Segment> lines;			// Segments - 2 points pr. line-segment
@@ -107,11 +107,12 @@ class STL
 public:
 	STL();
 
-	bool Read(string filename, const Vector3f &PrintingMargin);
-	void draw(const ProcessController &PC);
-	void MoveIntoPrintingArea(const Vector3f &PrintingMargin);
-	void CenterAroundXY(const Vector3f &Point);
-	void CalcCuttingPlane(float where, CuttingPlane &plane);	// Extract a 2D polygonset from a 3D model
+	bool Read(string filename);
+	void GetObjectsFromIvcon();
+	void clear(){triangles.clear();}
+	void draw(const ProcessController &PC, float opasity = 1.0f);
+	void CenterAroundXY();
+	void CalcCuttingPlane(float where, CuttingPlane &plane, const Matrix4f &T);	// Extract a 2D polygonset from a 3D model
 	void OptimizeRotation();									// Auto-Rotate object to have the largest area surface down for printing
 	void CalcBoundingBoxAndZoom();
 	void RotateObject(Vector3f axis, float angle);				// Rotation for manual rotate and used by OptimizeRotation

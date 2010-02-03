@@ -20,29 +20,28 @@
 void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd)
 {
 	if(gui)
-	{
-		gui->ProgressBar->value(0);
+	{gui->ProgressBar->value(0);
 		gui->ProgressBar->label("Converting");
-		gui->ProgressBar->maximum(stl.Max.z);
+		gui->ProgressBar->maximum(Max.z);
 	}
 
 	// Make Layers
 	uint LayerNr = 0;
+	printOffset = PrintMargin;
 
-	float z=stl.Min.z+0.001f;				// Offset it a bit in Z, z=0 gives a empty slice because no triangles crosses this Z value
+	float z=Min.z+0.001f;				// Offset it a bit in Z, z=0 gives a empty slice because no triangles crosses this Z value
 
 	gcode.commands.clear();
 
 	float destinationZ=PrintMargin.z;
 
-	Vector3f RaftCenter = Vector3f(0,0,0);
 	if(RaftEnable)
 		{
-		RaftCenter = MakeRaft(destinationZ);
-		stl.CenterAroundXY(RaftCenter);
+		printOffset += Vector3f(RaftSize, RaftSize, 0);
+		MakeRaft(destinationZ);
 		}
 	float E=0.0f;
-	while(z<stl.Max.z+0.0001f)
+	while(z<Max.z+0.0001f)
 	{
 		if(gui)
 		{
@@ -50,48 +49,111 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 			gui->ProgressBar->redraw();
 			Fl::check();
 		}
-		{
-		CuttingPlane plane;
-		stl.CalcCuttingPlane(z, plane);	// output is alot of un-connected line segments with individual vertices
+		for(UINT o=0;o<rfo.Objects.size();o++)
+			for(UINT f=0;f<rfo.Objects[o].files.size();f++)
+				{
+				STL* stl = &rfo.Objects[o].files[f].stl;	// Get a pointer to the object
+				Matrix4f T = GetSTLTransformationMatrix(o,f);
+				Vector3f t = T.getTranslation();
+				t+= Vector3f(PrintMargin.x+RaftSize*RaftEnable, PrintMargin.y+RaftSize*RaftEnable, 0);
+				T.setTranslation(t);
+				CuttingPlane plane;
+				stl->CalcCuttingPlane(z, plane, T);	// output is alot of un-connected line segments with individual vertices
 
-		float hackedZ = z;
-		while(plane.LinkSegments(hackedZ, ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
-			{										// This happens when there's triangles missing in the input STL
-			hackedZ+= 0.1f;
-			plane.polygons.clear();
-			stl.CalcCuttingPlane(hackedZ, plane);	// output is alot of un-connected line segments with individual vertices
-			}
+				float hackedZ = z;
+				while(plane.LinkSegments(hackedZ, ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
+					{										// This happens when there's triangles missing in the input STL
+					hackedZ+= 0.1f;
+					plane.polygons.clear();
+					stl->CalcCuttingPlane(hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices
+					}
 
-//		plane.Draw(z);
+		//		plane.Draw(z);
 
-		// inFill
-		vector<Vector2f> infill;
+				// inFill
+				vector<Vector2f> infill;
 
-		CuttingPlane infillCuttingPlane = plane;
-		infillCuttingPlane.polygons = infillCuttingPlane.offsetPolygons;
-		infillCuttingPlane.vertices = infillCuttingPlane.offsetVertices;
-		infillCuttingPlane.offsetPolygons.clear();
-		infillCuttingPlane.offsetVertices.clear();
-		if(ShellOnly == false)
-			{
-			infillCuttingPlane.Shrink(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false);
-			infillCuttingPlane.CalcInFill(infill, LayerNr, destinationZ, InfillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
-			}
-		// Make the GCode from the plane and the infill
-		plane.MakeGcode(infill, gcode, E, destinationZ, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, accelerationSteps, distanceBetweenSpeedSteps, extrusionFactor, EnableAcceleration, UseIncrementalEcode, UseFirmwareAcceleration);
-		LayerNr++;
-		destinationZ += LayerThickness;
-		}
+				CuttingPlane infillCuttingPlane = plane;
+				infillCuttingPlane.polygons = infillCuttingPlane.offsetPolygons;
+				infillCuttingPlane.vertices = infillCuttingPlane.offsetVertices;
+				infillCuttingPlane.offsetPolygons.clear();
+				infillCuttingPlane.offsetVertices.clear();
+				if(ShellOnly == false)
+					{
+					infillCuttingPlane.Shrink(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false);
+					infillCuttingPlane.CalcInFill(infill, LayerNr, destinationZ, InfillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
+					}
+				// Make the GCode from the plane and the infill
+				plane.MakeGcode(infill, gcode, E, destinationZ, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, accelerationSteps, distanceBetweenSpeedSteps, extrusionFactor, EnableAcceleration, UseIncrementalEcode, Use3DGcode, UseFirmwareAcceleration, EnableAcceleration);
+				LayerNr++;
+				}
+	destinationZ += LayerThickness;
 	z+=LayerThickness;
 	}
 
 	GcodeTxt.clear();
-	gcode.MakeText(GcodeTxt, GcodeStart, GcodeLayer, GcodeEnd, UseIncrementalEcode);
+	gcode.MakeText(GcodeTxt, GcodeStart, GcodeLayer, GcodeEnd, UseIncrementalEcode, Use3DGcode);
 	gui->ProgressBar->label("Done");
 }
 
+Matrix4f ProcessController::GetSTLTransformationMatrix(int object, int file)
+{
+	Matrix4f result = rfo.transform3D.transform;
+	Vector3f translation = result.getTranslation();
+//	result.setTranslation(translation+PrintMargin);
 
-Vector3f ProcessController::MakeRaft(float &z)
+	if(object >= 0)
+		result *= rfo.Objects[object].transform3D.transform;
+	if(file >= 0)
+		result *= rfo.Objects[object].files[file].transform3D.transform;
+	return result;
+}
+#ifndef MIN
+	#define MIN(a, b)  (((a) < (b)) ? (a) : (b))
+#endif
+#ifndef MAX
+	#define MAX(a, b)  (((a) > (b)) ? (a) : (b))
+#endif
+
+void ProcessController::CalcBoundingBoxAndZoom()
+{
+	Max = Vector3f(-500,-500,-500);
+	Min = Vector3f(500,500,500);
+
+	for(UINT o=0;o<rfo.Objects.size();o++)
+	{
+		for(UINT f=0;f<rfo.Objects[o].files.size();f++)
+		{
+			Matrix4f M = GetSTLTransformationMatrix(o,f);
+			Vector3f stlMin = M*rfo.Objects[o].files[f].stl.Min;
+			Vector3f stlMax = M*rfo.Objects[o].files[f].stl.Max;
+			Min.x = MIN(stlMin.x, Min.x);
+			Min.y = MIN(stlMin.y, Min.y);
+			Min.z = MIN(stlMin.z, Min.z);
+			Max.x = MAX(stlMax.x, Max.x);
+			Max.y = MAX(stlMax.y, Max.y);
+			Max.z = MAX(stlMax.z, Max.z);
+		}
+	}
+
+	if((Max-Min).length() > 0)
+	{
+		// Find zoom
+		float L=0;
+		if(Max.x - Min.x > L)	L = Max.x - Min.x;
+		if(Max.y - Min.y > L)	L = Max.y - Min.y;
+		if(Max.z - Min.z > L)	L = Max.z - Min.z;
+		if(MVC)
+			MVC->zoom= L;
+	}
+	else
+		if(MVC)
+			MVC->zoom = 100.0f;
+
+	Center = (Max-Min)*0.5f;
+}
+
+void ProcessController::MakeRaft(float &z)
 {
 	vector<InFillHit> HitsBuffer;
 
@@ -99,17 +161,15 @@ Vector3f ProcessController::MakeRaft(float &z)
 
 	float step;
 
-	Vector2f StlCenter( (stl.Min.x+stl.Max.x)/2.0f, (stl.Min.y+stl.Max.y)/2.0f);
-	Vector2f stlSize( (stl.Max.x-stl.Min.x)/2.0f, (stl.Max.y-stl.Min.y)/2.0f);
 
-	Vector2f Min = -stlSize*RaftSize;
-	Vector2f Max = stlSize*RaftSize;
+	float size = RaftSize;
 
-	Max = Max - Min + Vector2f(PrintMargin.x, PrintMargin.y);
-	Min = Vector2f(PrintMargin.x, PrintMargin.y);
-	Vector2f Center = (Max+Min)*0.5f;
+	Vector2f raftMin =  Vector2f(Min.x - size+printOffset.x, Min.y - size+printOffset.y);
+	Vector2f raftMax =  Vector2f(Max.x + size+printOffset.x, Max.y + size+printOffset.y);
 
-	float Length = sqrtf(2)*(   ((Max.x)>(Max.y)? (Max.x):(Max.y))  -  ((Min.x)<(Min.y)? (Min.x):(Min.y))  )/2.0f;	// bbox of object
+	Vector2f Center = (Vector2f(Max.x + size, Max.y + size)-Vector2f(Min.x + size, Min.y + size))/2+Vector2f(printOffset.x, printOffset.y);
+
+	float Length = sqrtf(2)*(   ((raftMax.x)>(raftMax.y)? (raftMax.x):(raftMax.y))  -  ((raftMin.x)<(raftMin.y)? (raftMin.x):(raftMin.y))  )/2.0f;	// bbox of object
 
 	float E = 0.0f;
 
@@ -132,7 +192,7 @@ Vector3f ProcessController::MakeRaft(float &z)
 		for(float x = -Length ; x < Length ; x+=step)
 		{
 			P1 = (InfillDirX * Length)+(InfillDirY*x)+ Center;
-			P2 = (InfillDirX * -Length)+(InfillDirY*x) + Center;
+			P2 = (InfillDirX * -Length)+(InfillDirY*x)+ Center;
 
 			if(reverseLines)
 			{
@@ -141,26 +201,41 @@ Vector3f ProcessController::MakeRaft(float &z)
 				P2 = tmp;
 			}
 
+//			glBegin(GL_LINES);
+//			glVertex2fv(&P1.x);
+//			glVertex2fv(&P2.x);
+
 			// Crop lines to bbox*size
 			Vector3f point;
 			InFillHit hit;
 			HitsBuffer.clear();
-			Vector2f P3(Min.x, Min.y);
-			Vector2f P4(Min.x, Max.y);
+			Vector2f P3(raftMin.x, raftMin.y);
+			Vector2f P4(raftMin.x, raftMax.y);
+//			glVertex2fv(&P3.x);
+//			glVertex2fv(&P4.x);
 			if(IntersectXY(P1,P2,P3,P4,hit))	//Intersect edges of bbox
 				HitsBuffer.push_back(hit);
-			P3 = Vector2f(Max.x,Max.y);
+			P3 = Vector2f(raftMax.x,raftMax.y);
+//			glVertex2fv(&P3.x);
+//			glVertex2fv(&P4.x);
 			if(IntersectXY(P1,P2,P3,P4,hit))
 				HitsBuffer.push_back(hit);
-			P4 = Vector2f(Max.x,Min.y);
+			P4 = Vector2f(raftMax.x,raftMin.y);
+//			glVertex2fv(&P3.x);
+//			glVertex2fv(&P4.x);
 			if(IntersectXY(P1,P2,P3,P4,hit))
 				HitsBuffer.push_back(hit);
-			P3 = Vector2f(Min.x,Min.y);
+			P3 = Vector2f(raftMin.x,raftMin.y);
+//			glVertex2fv(&P3.x);
+//			glVertex2fv(&P4.x);
 			if(IntersectXY(P1,P2,P3,P4,hit))
 				HitsBuffer.push_back(hit);
+//			glEnd();
+
 			if(HitsBuffer.size() == 0)	// it can only be 2 or zero
 				continue;
-
+			if(HitsBuffer.size() != 2)
+				continue;
 
 			std::sort(HitsBuffer.begin(), HitsBuffer.end(), InFillHitCompareFunc);
 
@@ -173,7 +248,7 @@ Vector3f ProcessController::MakeRaft(float &z)
 			else
 				materialRatio = RaftInterfaceMaterialPrDistanceRatio;		// move or extrude?
 
-			MakeAcceleratedGCodeLine(Vector3f(P1.x,P1.y,z), Vector3f(P2.x,P2.y,z), accelerationSteps, distanceBetweenSpeedSteps, materialRatio, gcode, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, UseIncrementalEcode, E, UseFirmwareAcceleration);
+			MakeAcceleratedGCodeLine(Vector3f(P1.x,P1.y,z), Vector3f(P2.x,P2.y,z), accelerationSteps, distanceBetweenSpeedSteps, materialRatio, gcode, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, UseIncrementalEcode, Use3DGcode, E, UseFirmwareAcceleration, EnableAcceleration);
 
 			reverseLines = !reverseLines;
 		}
@@ -199,18 +274,95 @@ Vector3f ProcessController::MakeRaft(float &z)
 
 		LayerNr++;
 	}
-	return Vector3f(Center.x, Center.y, 0);
 }
 
+void ProcessController::OptimizeRotation()
+{
+//	stl.OptimizeRotation();
+	cout << "Reimplementate ProcessController::OptimizeRotation";
+}
+
+void ProcessController::RotateObject(Vector3f axis, float a)
+{
+	Flu_Tree_Browser::Node *node=MVC->gui->RFP_Browser->get_selected( 1 );
+	// first check files
+	for(UINT o=0;o<rfo.Objects.size();o++)
+	{
+/*		if(Objects[o].node == node)
+		{
+			ProcessControl.RotateObject(x,y,z,a);
+			BuildBrowser(MVC->ProcessControl);
+			MVC->redraw();
+			return;
+		}*/
+		for(UINT f=0;f<rfo.Objects[o].files.size();f++)
+		{
+			if(rfo.Objects[o].files[f].node == node)
+			{
+				rfo.Objects[o].files[f].stl.RotateObject(axis,a);
+				MVC->redraw();
+				return;
+			}
+		}
+	}
+	cout << "Reimplementate ProcessController::RotateObject";
+}
 
 void ProcessController::Draw()
 {
+	printOffset = PrintMargin;
+	if(RaftEnable)
+		printOffset += Vector3f(RaftSize, RaftSize, 0);
+
+	Vector3f translation = rfo.transform3D.transform.getTranslation();
+
 	printer.Draw(*this);
-	stl.draw(*this);
+	// Move objects
+	glTranslatef(translation.x+printOffset.x, translation.y+printOffset.y, translation.z+PrintMargin.z);
+	glPolygonOffset (0.5f, 0.5f);
+	rfo.Draw(*this);
 	if(DisplayCuttingPlane)
 		previewCuttingPlane.Draw(CuttingPlaneValue, DrawVertexNumbers, DrawLineNumbers);
 	if(DisplayGCode)
+	{
+		glTranslatef(-(translation.x+printOffset.x), -(translation.y+printOffset.y), -(translation.z+PrintMargin.z));
 		gcode.draw(*this);
+	}
+	glTranslatef(translation.x+printOffset.x, translation.y+printOffset.y, translation.z+PrintMargin.z);
+	
+	glPolygonOffset (-0.5f, -0.5f);
+	rfo.Draw(*this, PolygonOpasity);
+//	float z=0;
+//	MakeRaft(z);
+
+	if(DisplayBBox)
+	{
+		// Draw bbox
+		glColor3f(1,0,0);
+		glBegin(GL_LINE_LOOP);
+		glVertex3f(Min.x, Min.y, Min.z);
+		glVertex3f(Min.x, Max.y, Min.z);
+		glVertex3f(Max.x, Max.y, Min.z);
+		glVertex3f(Max.x, Min.y, Min.z);
+		glEnd();
+		glBegin(GL_LINE_LOOP);
+		glVertex3f(Min.x, Min.y, Max.z);
+		glVertex3f(Min.x, Max.y, Max.z);
+		glVertex3f(Max.x, Max.y, Max.z);
+		glVertex3f(Max.x, Min.y, Max.z);
+		glEnd();
+		glBegin(GL_LINES);
+		glVertex3f(Min.x, Min.y, Min.z);
+		glVertex3f(Min.x, Min.y, Max.z);
+		glVertex3f(Min.x, Max.y, Min.z);
+		glVertex3f(Min.x, Max.y, Max.z);
+		glVertex3f(Max.x, Max.y, Min.z);
+		glVertex3f(Max.x, Max.y, Max.z);
+		glVertex3f(Max.x, Min.y, Min.z);
+		glVertex3f(Max.x, Min.y, Max.z);
+		glEnd();
+	}
+
 }
 void WriteGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, string filename)
 {
@@ -235,7 +387,7 @@ void ProcessController::SaveXML(XMLElement *e)
 
 	// Raft parameters
 	x->FindVariableZ("RaftSize", true, "1.7")->SetValueFloat(RaftSize);
-	x->FindVariableZ("RaftBaseLayerCount", true, "1")->SetValueInt(RaftSize);
+	x->FindVariableZ("RaftBaseLayerCount", true, "1")->SetValueInt(RaftBaseLayerCount);
 	x->FindVariableZ("RaftMaterialPrDistanceRatio", true, "1.7")->SetValueFloat(RaftMaterialPrDistanceRatio);
 	x->FindVariableZ("RaftRotation", true, "90")->SetValueFloat(RaftRotation);
 	x->FindVariableZ("RaftBaseDistance", true, "2.5")->SetValueFloat(RaftBaseDistance);
@@ -271,7 +423,9 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("UseFirmwareAcceleration", true, "5")->SetValueInt(UseFirmwareAcceleration);
 	x->FindVariableZ("extrusionFactor", true, "0.66")->SetValueFloat(extrusionFactor);
 	x->FindVariableZ("EnableAcceleration", true, "0.66")->SetValueInt((int)EnableAcceleration);
-	x->FindVariableZ("UseIncrementalEcode", true, "0.66")->SetValueInt((int)UseIncrementalEcode);
+	x->FindVariableZ("UseIncrementalEcode", true, "1")->SetValueInt((int)UseIncrementalEcode);
+	x->FindVariableZ("Use3DGcode", true, "0")->SetValueInt((int)Use3DGcode);
+	
 
 	x->FindVariableZ("m_fVolume.x", true, "200")->SetValueFloat(m_fVolume.x);
 	x->FindVariableZ("m_fVolume.y", true, "200")->SetValueFloat(m_fVolume.y);
@@ -288,7 +442,7 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("InfillRotation", true, "90")->SetValueFloat(InfillRotation);
 	x->FindVariableZ("InfillRotationPrLayer", true, "90")->SetValueFloat(InfillRotationPrLayer);
 	x->FindVariableZ("Optimization", true, "0.05")->SetValueFloat(Optimization);
-//	x->FindVariableZ("PolygonOpasity", true, "0.66")->SetValueFloat(PolygonOpasity);
+	x->FindVariableZ("PolygonOpasity", true, "0.66")->SetValueFloat(PolygonOpasity);
 
 
 	// GUI parameters
@@ -495,6 +649,9 @@ void ProcessController::LoadXML(XMLElement *e)
 	if(y)	EnableAcceleration = (bool)y->GetValueInt();
 	y=x->FindVariableZ("UseIncrementalEcode", true, "0");
 	if(y)	UseIncrementalEcode= (bool)y->GetValueInt();
+	y=x->FindVariableZ("Use3DGcode", true, "0");
+	if(y)	Use3DGcode= (bool)y->GetValueInt();
+	
 
 	// GUI... ?
 	y=x->FindVariableZ("DisplayEndpoints", true, "0");

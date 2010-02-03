@@ -34,16 +34,25 @@ public:
 	ModelViewController(int x,int y,int w,int h,const char *l);
 	~ModelViewController();
 
+	// RFO Functions
+	void ReadRFO(string filename);
+
 	// STL Functions
-	void ReadStl(string filename) {if(ProcessControl.stl.Read(filename, ProcessControl.PrintMargin)) CalcBoundingBoxAndZoom();};
-	void OptimizeRotation() { ProcessControl.stl.OptimizeRotation();}
-	void RotateObject(float x, float y, float z, float a) {ProcessControl.stl.RotateObject(Vector3f(x,y,z),a); ProcessControl.stl.MoveIntoPrintingArea(ProcessControl.PrintMargin);}
+	void ReadStl(string filename);
+	void OptimizeRotation() { ProcessControl.OptimizeRotation();}
+	void RotateObject(float x, float y, float z, float a) {ProcessControl.RotateObject(Vector3f(x,y,z),a);}
+
+	void setObjectname(string name);
+	void setFileMaterial(string material);
+	void setFileType(string type);
+	void setFileLocation(string location);
 
 	// GCode Functions
 	void ReadGCode(string filename) {ProcessControl.gcode.Read(filename);}
 	void ConvertToGCode();
 	void init();
 	void SetUseIncrementalEcode(bool val) {ProcessControl.UseIncrementalEcode = val;}
+	void SetUse3DGcode(bool val) {ProcessControl.Use3DGcode = val;}
 
 	// My own view functions
 	void draw();
@@ -60,10 +69,9 @@ public:
 	// LUA
 	void RunLua(char* buffer);
 
-	void CalcBoundingBoxAndZoom();
-
 	void SetDisplayGCode(bool val){ProcessControl.DisplayGCode = val;}
 	void SetLuminanceShowsSpeed(bool val){ProcessControl.LuminanceShowsSpeed = val;}
+	void CalcBoundingBoxAndZoom(){ProcessControl.CalcBoundingBoxAndZoom();}
 
 	// GCode GUI Values
 	void SetGCodeDrawStart(float val){ProcessControl.GCodeDrawStart = val; redraw();}
@@ -90,7 +98,7 @@ public:
 	void SetDisplayPolygons(bool val){ProcessControl.DisplayPolygons = val; redraw();}
 	void SetDisplayAllLayers(bool val){ProcessControl.DisplayAllLayers = val; redraw();}
 	void SetDisplayinFill(bool val){ProcessControl.DisplayinFill = val; redraw();}
-//	void SetPolygonOpasity(float val){ProcessControl.PolygonOpasity = val; redraw();}
+	void SetPolygonOpasity(float val){ProcessControl.PolygonOpasity = val; redraw();}
 
 	// CuttingPlane GUI values
 	void SetInfillDistance(float val){ProcessControl.InfillDistance = val; redraw();}
@@ -112,7 +120,7 @@ public:
 	void SetEnableAcceleration(bool val) {ProcessControl.EnableAcceleration = val; redraw();}
 	
 	// Raft GUI values
-	void SetRaftSize(float val){ProcessControl.RaftSize=val;}
+	void SetRaftSize(float val){ProcessControl.RaftSize=val; redraw();}
 	void SetRaftBaseLayerCount(int val){ProcessControl.RaftBaseLayerCount=val;}
 	void SetRaftMaterialPrDistanceRatio(float val){ProcessControl.RaftMaterialPrDistanceRatio=val;}
 	void SetRaftRotation(float val){ProcessControl.RaftRotation=val;}
@@ -194,6 +202,16 @@ public:
 	void Goto(string axis, float position);
 	void STOP();
 
+	Matrix4f &SelectedNodeMatrix(uint objectNr = 1);
+	void SelectedNodeMatrices(vector<Matrix4f *> &result );
+	RFO_Object* SelectedParent();
+	void GetSelectedRFO(RFO_Object **selectedObject, RFO_File **selectedFile);
+	void newObject();
+
+	void Translate(string axis, float distance);
+	void Rotate(string axis, float distance);
+	void Scale(string axis, float distance);
+
 	RepRapSerial serial;
 	bool m_bExtruderDirection; // True = forwards
 	int  m_iExtruderSpeed;
@@ -209,11 +227,9 @@ public:
 	Matrix3fT   ThisRot;
 	ArcBallT    *ArcBall;								                // NEW: ArcBall Instance
 	Vector2fT    MousePt;												// NEW: Current Mouse Point
+	Vector2f	downPoint;
 	/*--------------View-------------------*/
 
-	Vector3f Center;
-	Vector3f Min;
-	Vector3f Max;
 	float zoom;
 	void SetEnableLight(int lightNr, bool on){ if(on) lights[lightNr].TurnOn(); else lights[lightNr].TurnOff(); redraw(); }
 	CGL_Light3D lights[4];

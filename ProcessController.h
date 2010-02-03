@@ -19,6 +19,8 @@
 #include "stl.h"
 #include "gcode.h"
 
+#include "RFO.h"
+
 class GCode;
 struct lua_State;
 using namespace std;
@@ -62,11 +64,12 @@ public:
 		distanceBetweenSpeedSteps= 0.5f;
 		extrusionFactor = 1.0f;
 		UseIncrementalEcode = false;
+		Use3DGcode = false;
 		UseFirmwareAcceleration = true;
 
 		LayerThickness = 0.4f;
 		CuttingPlaneValue = 0.5f;
-//		PolygonOpasity = 0.5f;
+		PolygonOpasity = 0.5f;
 
 		DisplayEndpoints = false;
 		DisplayNormals = false;
@@ -96,6 +99,11 @@ public:
 		DisplayDebuginFill = true;
 		DisplayCuttingPlane = true;
 
+		Min = Vector3f(0, 0, 0);
+		Max = Vector3f(200,200,200);
+		Center.x = Center.y = 100.0f;
+		Center.z = 0.0f;
+
 		gui = 0;
 
 };
@@ -107,9 +115,11 @@ public:
 	void Draw();
 	
 	// STL Functions
-	void ReadStl(string filename, const Vector3f &PrintingMargin=Vector3f(10,10,0)) {stl.Read(filename, PrintingMargin);};
-	void OptimizeRotation() { stl.OptimizeRotation();}
-	void RotateObject(float x, float y, float z, float a) {stl.RotateObject(Vector3f(x,y,z),a);}
+	bool ReadStl(string filename, STL &newstl) { return newstl.Read(filename);};
+	void OptimizeRotation();
+	void RotateObject(Vector3f axis, float a);
+	Matrix4f GetSTLTransformationMatrix(int object=-1, int file=-1);
+	void CalcBoundingBoxAndZoom();
 
 	void ConvertToGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd);
 
@@ -117,7 +127,7 @@ public:
 	void ReadGCode(string filename) {gcode.Read(filename);};
 	void WriteGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, string filename);
 
-	Vector3f MakeRaft(float &z);	// Returns center of raft
+	void MakeRaft(float &z);
 	//Printer
 	void SetVolume(float x, float y, float z) { m_fVolume = Vector3f(x,y,z);}
 
@@ -144,7 +154,8 @@ public:
 	/*--------------Models-------------------*/
 	Printer printer;					// Printer settings and functions
 	string m_sPortName;
-	STL stl;							// A STL file
+//	STL stl;							// A STL file
+	RFO rfo;
 	CuttingPlane previewCuttingPlane;	//The cuttingplane that's drawn as a live preview
 	GCode gcode;						// Gcode as binary data
 	string GcodeTxt;					// Final GCode as text
@@ -180,13 +191,15 @@ public:
 	// Printer
 	Vector3f	m_fVolume;				// Max print volume
 	Vector3f	PrintMargin;
+	Vector3f	printOffset;			// Summed up margin+raft+Apron etc.
 	float		ExtrudedMaterialWidth;	// Width of extruded material
 	bool		UseIncrementalEcode;
+	bool		Use3DGcode;
 
 	// STL 
 	float LayerThickness;
 	float CuttingPlaneValue;
-//	float PolygonOpasity;
+	float PolygonOpasity;
 
 	// CuttingPlane
 	float InfillDistance;
@@ -251,6 +264,11 @@ public:
 	float ApronCoverageY;
 	float ApronDistanceToObject;
 	float ApronInfillDistance;
+
+	// Bounding box info
+	Vector3f Center;
+	Vector3f Min;
+	Vector3f Max;
 
 	// Maybe a pointer to the gui
 	GUI *gui;

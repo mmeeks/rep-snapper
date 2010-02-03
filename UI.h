@@ -15,9 +15,10 @@ class ModelViewController;
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Light_Button.H>
 #include <FL/Fl_Text_Editor.H>
+#include "../Libraries/FLU_2.14/FLU/Flu_Tree_Browser.h"
 #include <FL/Fl_Value_Input.H>
-#include <FL/Fl_Value_Slider.H>
 #include <FL/Fl_Input.H>
+#include <FL/Fl_Value_Slider.H>
 #include <FL/Fl_File_Chooser.H>
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Choice.H>
@@ -41,8 +42,6 @@ private:
   static void cb_FixSTLerrorsButton(Fl_Light_Button*, void*);
   void cb_Save_i(Fl_Button*, void*);
   static void cb_Save(Fl_Button*, void*);
-  void cb_Scale_i(Fl_Button*, void*);
-  static void cb_Scale(Fl_Button*, void*);
 public:
   Fl_Button *AutoRotateButton;
 private:
@@ -71,6 +70,81 @@ public:
 private:
   void cb_RunLuaButton_i(Fl_Button*, void*);
   static void cb_RunLuaButton(Fl_Button*, void*);
+  void cb_Load1_i(Fl_Button*, void*);
+  static void cb_Load1(Fl_Button*, void*);
+public:
+  Flu_Tree_Browser *RFP_Browser;
+  Fl_Value_Input *TranslateX;
+private:
+  void cb_TranslateX_i(Fl_Value_Input*, void*);
+  static void cb_TranslateX(Fl_Value_Input*, void*);
+public:
+  Fl_Value_Input *TranslateY;
+private:
+  void cb_TranslateY_i(Fl_Value_Input*, void*);
+  static void cb_TranslateY(Fl_Value_Input*, void*);
+public:
+  Fl_Value_Input *TranslateZ;
+private:
+  void cb_TranslateZ_i(Fl_Value_Input*, void*);
+  static void cb_TranslateZ(Fl_Value_Input*, void*);
+public:
+  Fl_Value_Input *RotateX;
+private:
+  void cb_RotateX_i(Fl_Value_Input*, void*);
+  static void cb_RotateX(Fl_Value_Input*, void*);
+public:
+  Fl_Value_Input *RotateY;
+private:
+  void cb_RotateY_i(Fl_Value_Input*, void*);
+  static void cb_RotateY(Fl_Value_Input*, void*);
+public:
+  Fl_Value_Input *RotateZ;
+private:
+  void cb_RotateZ_i(Fl_Value_Input*, void*);
+  static void cb_RotateZ(Fl_Value_Input*, void*);
+public:
+  Fl_Value_Input *ScaleX;
+private:
+  void cb_ScaleX_i(Fl_Value_Input*, void*);
+  static void cb_ScaleX(Fl_Value_Input*, void*);
+public:
+  Fl_Value_Input *ScaleY;
+private:
+  void cb_ScaleY_i(Fl_Value_Input*, void*);
+  static void cb_ScaleY(Fl_Value_Input*, void*);
+public:
+  Fl_Value_Input *ScaleZ;
+private:
+  void cb_ScaleZ_i(Fl_Value_Input*, void*);
+  static void cb_ScaleZ(Fl_Value_Input*, void*);
+public:
+  Fl_Light_Button *ScaleAllAxies;
+  Fl_Input *FileLocationInput;
+private:
+  void cb_FileLocationInput_i(Fl_Input*, void*);
+  static void cb_FileLocationInput(Fl_Input*, void*);
+public:
+  Fl_Input *FileTypeInput;
+private:
+  void cb_FileTypeInput_i(Fl_Input*, void*);
+  static void cb_FileTypeInput(Fl_Input*, void*);
+public:
+  Fl_Input *FileMaterialInput;
+private:
+  void cb_FileMaterialInput_i(Fl_Input*, void*);
+  static void cb_FileMaterialInput(Fl_Input*, void*);
+public:
+  Fl_Input *ObjectNameInput;
+private:
+  void cb_ObjectNameInput_i(Fl_Input*, void*);
+  static void cb_ObjectNameInput(Fl_Input*, void*);
+  void cb_New_i(Fl_Button*, void*);
+  static void cb_New(Fl_Button*, void*);
+  void cb_Save2_i(Fl_Button*, void*);
+  static void cb_Save2(Fl_Button*, void*);
+  void cb_Delete_i(Fl_Button*, void*);
+  static void cb_Delete(Fl_Button*, void*);
 public:
   Fl_Value_Input *VolumeX;
   Fl_Value_Input *VolumeY;
@@ -149,6 +223,11 @@ public:
 private:
   void cb_LayerThicknessSlider_i(Fl_Value_Slider*, void*);
   static void cb_LayerThicknessSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Light_Button *Use3DGcodeButton;
+private:
+  void cb_Use3DGcodeButton_i(Fl_Light_Button*, void*);
+  static void cb_Use3DGcodeButton(Fl_Light_Button*, void*);
 public:
   Fl_Input *portInput;
 private:
@@ -296,8 +375,8 @@ private:
   static void cb_RaftEnableButton(Fl_Light_Button*, void*);
   void cb_Preview_i(Fl_Light_Button*, void*);
   static void cb_Preview(Fl_Light_Button*, void*);
-  void cb_Load1_i(Fl_Button*, void*);
-  static void cb_Load1(Fl_Button*, void*);
+  void cb_Load2_i(Fl_Button*, void*);
+  static void cb_Load2(Fl_Button*, void*);
 public:
   Fl_Output *GCodeLengthText;
 private:
@@ -311,8 +390,8 @@ public:
   Fl_Text_Editor *GCodeEnd;
   Fl_Text_Editor *GCodeResult;
 private:
-  void cb_Save2_i(Fl_Button*, void*);
-  static void cb_Save2(Fl_Button*, void*);
+  void cb_Save3_i(Fl_Button*, void*);
+  static void cb_Save3(Fl_Button*, void*);
 public:
   Fl_Text_Editor *NotesEditor;
   Fl_Light_Button *DisplayPolygonsButton;
@@ -419,6 +498,11 @@ public:
 private:
   void cb_DisplayWireframeShadedButton_i(Fl_Light_Button*, void*);
   static void cb_DisplayWireframeShadedButton(Fl_Light_Button*, void*);
+public:
+  Fl_Value_Slider *PolygonOpasitySlider;
+private:
+  void cb_PolygonOpasitySlider_i(Fl_Value_Slider*, void*);
+  static void cb_PolygonOpasitySlider(Fl_Value_Slider*, void*);
 public:
   Fl_Light_Button *DisplayGCodeButton;
 private:

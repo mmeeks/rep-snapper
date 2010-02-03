@@ -19,6 +19,8 @@
 // TODO: reference any additional headers you need in STDAFX.H
 // and not in this file
 
+ModelViewController *MVC;
+
 #define MIN(a, b)  (((a) < (b)) ? (a) : (b))
 #define MAX(a, b)  (((a) > (b)) ? (a) : (b))
 #define ABS(a)	   (((a) < 0) ? -(a) : (a))

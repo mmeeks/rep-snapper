@@ -49,7 +49,7 @@ typedef unsigned int        uint;
 
 typedef unsigned int uint;
 
-void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, uint accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, GCode &code, float z, float minSpeedXY, float maxSpeedXY, float minSpeedZ, float maxSpeedZ, bool UseIncrementalECode, float &E, bool UseFirmwareAcceleration);
+void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, uint accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, GCode &code, float z, float minSpeedXY, float maxSpeedXY, float minSpeedZ, float maxSpeedZ, bool UseIncrementalECode, bool Use3DGcode, float &E, bool UseFirmwareAcceleration, bool EnableAcceleration);
 bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, InFillHit &hit);	// Utilityfunction for CalcInFill
 bool InFillHitCompareFunc(const InFillHit& d1, const InFillHit& d2);
 
@@ -74,6 +74,9 @@ extern "C"
 using namespace luabind;
 #endif
 
+extern ModelViewController *MVC;
+
 // TODO: reference additional headers your program requires here
 
-
+// ivconv
+#include "ivcon.h"

@@ -26,6 +26,8 @@
 #include <fstream>
 #include <algorithm>
 
+#include "ivcon.h"
+
 //#include <ANN/ANN.h>
 
 #pragma warning( disable : 4018 4267)
@@ -62,11 +64,51 @@ STL::STL()
 	CalcBoundingBoxAndZoom();
 }
 
-bool STL::Read(string filename, const Vector3f &PrintingMargin)
+# define COR3_MAX 200000
+# define FACE_MAX 200000
+# define ORDER_MAX 10
+
+extern float cor3[3][COR3_MAX];
+extern float  face_normal[3][FACE_MAX];
+extern int face[ORDER_MAX][FACE_MAX];
+extern int    face_num;
+
+
+void STL::GetObjectsFromIvcon()
+{
+	//face_num = count
+	//face_normal[0][face nr]
+	//face_normal[1][face nr]
+	//face_normal[2][face nr]
+	//face[ivert][face_num] = icor3;
+	// Vertices in cor3[i][cor3_num] = temp[i];
+
+	triangles.reserve(face_num);
+	for(UINT i=0;i<face_num;i++)
+	{
+	Triangle Tri;
+	UINT v1 = face[0][i];
+	UINT v2 = face[1][i];
+	UINT v3 = face[2][i];
+	Tri.A = Vector3f(cor3[0][v1], cor3[1][v1], cor3[2][v1]);
+	Tri.B = Vector3f(cor3[0][v2], cor3[1][v2], cor3[2][v2]);
+	Tri.C = Vector3f(cor3[0][v3], cor3[1][v3], cor3[2][v3]);
+	Min.x = MIN(Min.x, Tri.A.x); Min.x = MIN(Min.x, Tri.B.x); Min.x = MIN(Min.x, Tri.C.x);
+	Min.y = MIN(Min.y, Tri.A.y); Min.y = MIN(Min.y, Tri.B.y); Min.y = MIN(Min.y, Tri.C.y);
+	Min.z = MIN(Min.z, Tri.A.z); Min.z = MIN(Min.z, Tri.B.z); Min.z = MIN(Min.z, Tri.C.z);
+	Max.x = MAX(Max.x, Tri.A.x); Max.x = MAX(Max.x, Tri.B.x); Max.x = MAX(Max.x, Tri.C.x);
+	Max.y = MAX(Max.y, Tri.A.y); Max.y = MAX(Max.y, Tri.B.y); Max.y = MAX(Max.y, Tri.C.y);
+	Max.z = MAX(Max.z, Tri.A.z); Max.z = MAX(Max.z, Tri.B.z); Max.z = MAX(Max.z, Tri.C.z);
+	Tri.Normal= Vector3f(face_normal[0][i], face_normal[1][i], face_normal[2][i]);
+	triangles.push_back(Tri);
+	}
+}
+
+bool STL::Read(string filename)
 {
 	triangles.clear();
-	Min.x = Min.y = Min.z = 0.0f;
-	Max.x = Max.y = Max.z = 200.0f;
+	Min.x = Min.y = Min.z = 500.0f;
+	Max.x = Max.y = Max.z = -500.0f;
 
 	unsigned int count;
 	ifstream infile;
@@ -78,64 +120,75 @@ bool STL::Read(string filename, const Vector3f &PrintingMargin)
 		// Ascii ot binary?
 		long header;
 		infile.read(reinterpret_cast < char * > (&header), sizeof(long));	// Header
-		//Check if the header is "soli"
-		if(header == 0x696c6f73)
-		{
-		infile.close();
-//		ReadAsciiFile();
-		return false;	// no can read ascii
-		}
-		
 		Min.x = Min.y = Min.z = 99999999.0f;
 		Max.x = Max.y = Max.z = -99999999.0f;
 
-		infile.seekg(80, ios_base::beg);
-		infile.read(reinterpret_cast < char * > (&count), sizeof(unsigned int));	// N_Triangles
-		triangles.reserve(count);
+		//Check if the header is "soli"
+		if(header == 0x696c6f73)
+			{
+			infile.close();
+			FILE* file = fopen(filename.c_str(), "r");
+			int result = stla_read(file);
+			if(result)
+			{
+				stringstream error;
+				error << "Error reading file: " << filename;
+				fl_alert(error.str().c_str());
+				return false;
+			}
+			fclose(file);
+			GetObjectsFromIvcon();
+			//		ReadAsciiFile();
+			}
+		else
+			{
+			infile.seekg(80, ios_base::beg);
+			infile.read(reinterpret_cast < char * > (&count), sizeof(unsigned int));	// N_Triangles
+			triangles.reserve(count);
 
-		for(uint i = 0; i < count; i++)
-		{
-			float a,b,c;
-			infile.read(reinterpret_cast < char * > (&a), sizeof(float));
-			infile.read(reinterpret_cast < char * > (&b), sizeof(float));
-			infile.read(reinterpret_cast < char * > (&c), sizeof(float));
-			Vector3f N(a,b,c);
-			infile.read(reinterpret_cast < char * > (&a), sizeof(float));
-			infile.read(reinterpret_cast < char * > (&b), sizeof(float));
-			infile.read(reinterpret_cast < char * > (&c), sizeof(float));
-			Vector3f Ax(a,b,c);
-			infile.read(reinterpret_cast < char * > (&a), sizeof(float));
-			infile.read(reinterpret_cast < char * > (&b), sizeof(float));
-			infile.read(reinterpret_cast < char * > (&c), sizeof(float));
-			Vector3f Bx(a,b,c);
-			infile.read(reinterpret_cast < char * > (&a), sizeof(float));
-			infile.read(reinterpret_cast < char * > (&b), sizeof(float));
-			infile.read(reinterpret_cast < char * > (&c), sizeof(float));
-			Vector3f Cx(a,b,c);
-
-//			if(N.lengthSquared() != 1.0f)
+			for(uint i = 0; i < count; i++)
 				{
-				Vector3f AA=Cx-Ax;
-				Vector3f BB=Cx-Bx;
-				N.x = AA.y * BB.z - BB.y * AA.z;
-				N.y = AA.z * BB.x - BB.z * AA.x;
-				N.z = AA.x * BB.y - BB.x * AA.y;
-				N.normalize();
+					float a,b,c;
+					infile.read(reinterpret_cast < char * > (&a), sizeof(float));
+					infile.read(reinterpret_cast < char * > (&b), sizeof(float));
+					infile.read(reinterpret_cast < char * > (&c), sizeof(float));
+					Vector3f N(a,b,c);
+					infile.read(reinterpret_cast < char * > (&a), sizeof(float));
+					infile.read(reinterpret_cast < char * > (&b), sizeof(float));
+					infile.read(reinterpret_cast < char * > (&c), sizeof(float));
+					Vector3f Ax(a,b,c);
+					infile.read(reinterpret_cast < char * > (&a), sizeof(float));
+					infile.read(reinterpret_cast < char * > (&b), sizeof(float));
+					infile.read(reinterpret_cast < char * > (&c), sizeof(float));
+					Vector3f Bx(a,b,c);
+					infile.read(reinterpret_cast < char * > (&a), sizeof(float));
+					infile.read(reinterpret_cast < char * > (&b), sizeof(float));
+					infile.read(reinterpret_cast < char * > (&c), sizeof(float));
+					Vector3f Cx(a,b,c);
+
+		//			if(N.lengthSquared() != 1.0f)
+						{
+						Vector3f AA=Cx-Ax;
+						Vector3f BB=Cx-Bx;
+						N.x = AA.y * BB.z - BB.y * AA.z;
+						N.y = AA.z * BB.x - BB.z * AA.x;
+						N.z = AA.x * BB.y - BB.x * AA.y;
+						N.normalize();
+						}
+
+
+					unsigned short xxx;
+					infile.read(reinterpret_cast < char * > (&xxx), sizeof(unsigned short));
+
+					Triangle T(N,Ax,Bx,Cx);
+
+					triangles.push_back(T);
+
+					Min.x = MIN(Ax.x, Min.x);			Min.y = MIN(Ax.y, Min.y);			Min.z = MIN(Ax.z, Min.z);			Max.x = MAX(Ax.x, Max.x);			Max.y = MAX(Ax.y, Max.y);			Max.z = MAX(Ax.z, Max.z);			Min.x = MIN(Bx.x, Min.x);			Min.y = MIN(Bx.y, Min.y);
+					Min.z = MIN(Bx.z, Min.z);			Max.x = MAX(Bx.x, Max.x);			Max.y = MAX(Bx.y, Max.y);			Max.z = MAX(Bx.z, Max.z);			Min.x = MIN(Cx.x, Min.x);			Min.y = MIN(Cx.y, Min.y);			Min.z = MIN(Cx.z, Min.z);			Max.x = MAX(Cx.x, Max.x);
+					Max.y = MAX(Cx.y, Max.y);			Max.z = MAX(Cx.z, Max.z);
 				}
-
-
-			unsigned short xxx;
-			infile.read(reinterpret_cast < char * > (&xxx), sizeof(unsigned short));
-
-			Triangle T(N,Ax,Bx,Cx);
-
-			triangles.push_back(T);
-
-			Min.x = MIN(Ax.x, Min.x);			Min.y = MIN(Ax.y, Min.y);			Min.z = MIN(Ax.z, Min.z);			Max.x = MAX(Ax.x, Max.x);			Max.y = MAX(Ax.y, Max.y);			Max.z = MAX(Ax.z, Max.z);			Min.x = MIN(Bx.x, Min.x);			Min.y = MIN(Bx.y, Min.y);
-			Min.z = MIN(Bx.z, Min.z);			Max.x = MAX(Bx.x, Max.x);			Max.y = MAX(Bx.y, Max.y);			Max.z = MAX(Bx.z, Max.z);			Min.x = MIN(Cx.x, Min.x);			Min.y = MIN(Cx.y, Min.y);			Min.z = MIN(Cx.z, Min.z);			Max.x = MAX(Cx.x, Max.x);
-			Max.y = MAX(Cx.y, Max.y);			Max.z = MAX(Cx.z, Max.z);
-		}
-
+			}// binary
 	}
 	catch (ifstream::failure e)
 	{
@@ -145,7 +198,6 @@ bool STL::Read(string filename, const Vector3f &PrintingMargin)
 	
 	OptimizeRotation();
 	CalcBoundingBoxAndZoom();
-	MoveIntoPrintingArea(PrintingMargin);
 	return true;
 }
 
@@ -155,7 +207,7 @@ void STL::CalcBoundingBoxAndZoom()
 }
 
 
-void STL::draw(const ProcessController &PC)
+void STL::draw(const ProcessController &PC, float opasity)
 {
 	// polygons
 	glEnable(GL_LIGHTING);
@@ -164,7 +216,7 @@ void STL::draw(const ProcessController &PC)
 	float no_mat[] = {0.0f, 0.0f, 0.0f, 1.0f};
 	float mat_ambient[] = {0.7f, 0.7f, 0.7f, 1.0f};
 	float mat_ambient_color[] = {0.8f, 0.8f, 0.2f, 1.0f};
-	float mat_diffuse[] = {0.1f, 0.5f, 0.8f, 1.0f};
+	float mat_diffuse[] = {0.1f, 0.5f, 0.8f, opasity};
 	float mat_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
 	float no_shininess = 0.0f;
 	float low_shininess = 5.0f;
@@ -185,7 +237,6 @@ void STL::draw(const ProcessController &PC)
 	glMaterialfv(GL_FRONT, GL_EMISSION, no_mat);
 
 	glEnable (GL_POLYGON_OFFSET_FILL);
-	glPolygonOffset (0.5f, 0.5f);
 
 	if(PC.DisplayPolygons)
 	{
@@ -295,7 +346,7 @@ void STL::draw(const ProcessController &PC)
 	{
 	while(z<Max.z)
 		{
-			{
+			/*{
 			CuttingPlane plane;
 			CalcCuttingPlane(z, plane);	// output is a lot of unconnected line segments with individual vertices
 
@@ -340,7 +391,7 @@ void STL::draw(const ProcessController &PC)
 				}
 			
 			LayerNr++;
-			}
+			}*/
 		z+=zStep;
 		}
 	}// If display cuttingplane
@@ -411,9 +462,9 @@ CuttingPlane::CuttingPlane()
 {
 }
 
-void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, uint accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, GCode &code, float z, float minSpeedXY, float maxSpeedXY, float minSpeedZ, float maxSpeedZ, bool UseIncrementalEcode, float &E, bool UseFirmwareAcceleration)
+void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, uint accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, GCode &code, float z, float minSpeedXY, float maxSpeedXY, float minSpeedZ, float maxSpeedZ, bool UseIncrementalEcode, bool Use3DGcode, float &E, bool UseFirmwareAcceleration, bool EnableAcceleration)
 {
-	if(UseFirmwareAcceleration)
+	if(UseFirmwareAcceleration && EnableAcceleration)
 	{
 		if(end != start) //If we are going to somewhere else
 		{
@@ -438,7 +489,7 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, uint accelerationSte
 
 			if(len < distanceBetweenSpeedSteps*2)
 			{
-				// First point of acceleration is the middle of the line segment
+				// TODO: First point of acceleration is the middle of the line segment
 				command.Code = COORDINATEDMOTION;
 				command.where = (start+end)*0.5f;
 				float extrudedMaterial = (LastPosition - command.where).length()*extrusionFactor;
@@ -462,7 +513,7 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, uint accelerationSte
 				command.e = E;		// move or extrude?
 				command.f = minSpeedXY;
 				code.commands.push_back(command);
-			}
+			}// if we will never reach full speed
 			else
 			{
 				// Move to max speed
@@ -502,90 +553,119 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, uint accelerationSte
 				command.e = E;		// move or extrude?
 				command.f = minSpeedXY;
 				code.commands.push_back(command);
-			}
-		}
-	}
-	else
+			} // if we will reach full speed
+		}// if we are going somewhere
+	} // Firmware acceleration
+	else	// No accleration
 	{
-
-		Vector3f LastPosition = start;
 		Command command;
 		float accumulatedE = 0;
-
-
 		// Make a accelerated line from LastPosition to lines[thisPoint]
 		if(end != start) //If we are going to somewhere else
 		{
-			float speed = minSpeedXY;
-			float deltaSpeed = (maxSpeedXY-minSpeedXY)/accelerationSteps;	// 1000-4000 = 3000/5 = 600
-
-			Vector3f direction = end-start;
-			direction.normalize();
-
-			Vector3f pos = start;
-			uint currrentAccelerationLevel = accelerationSteps;
-			for(uint i=0;i<accelerationSteps;i++)
+			Vector3f LastPosition = start;
+			if(Use3DGcode)
 			{
-				pos = start+(direction*distanceBetweenSpeedSteps*(float)(i+1));	// Go somewhere else, if i==0 we goto same position as where we are
-				float speed = deltaSpeed*(float)i+minSpeedXY;
+//				if(start != LastPosition)	// we need to move before extruding
+					{
+					command.Code = EXTRUDEROFF;
+					code.commands.push_back(command);
+					float speed = minSpeedXY;
+					command.Code = COORDINATEDMOTION3D;
+					command.where = start;
+					command.e = E;		// move or extrude?
+					command.f = speed;
+					code.commands.push_back(command);
+					LastPosition = start;
+					}	// we need to move before extruding
 
-				float distRemain = (end - pos).length();
-				float distTraveled = (pos-start).length();
+				command.Code = EXTRUDERON;
+				code.commands.push_back(command);
 
-				// store thisPoint
-				command.Code = COORDINATEDMOTION;
-				command.where = pos;
-				float extrudedMaterial = (LastPosition - command.where).length()*extrusionFactor;
-				/*			if(extrudedMaterial < 1.0f)
-				{
-				accumulatedE += extrudedMaterial;		// Gather untill we have a real amount
-				extrudedMaterial = 0.0f;				// and don't extrude anything this move (ooze takes care of it)
-				if(accumulatedE > 1.0f)					// Unless we are ready to extrude again
-				{
-				extrudedMaterial = (float)(int)accumulatedE;	// Extrude the int value of the collected material
-				accumulatedE -= extrudedMaterial;				// and remove it from the buffer
-				}
-				}*/
-				if(UseIncrementalEcode)
-					E+=extrudedMaterial;
-				else
-					E = extrudedMaterial;
+				float speed = minSpeedXY;
+				command.Code = COORDINATEDMOTION3D;
+				command.where = end;
 				command.e = E;		// move or extrude?
 				command.f = speed;
 				code.commands.push_back(command);
-				LastPosition = pos;
-				if(distRemain < distTraveled)	// Start deacceleration?
-				{
-					currrentAccelerationLevel = i;
-					break;						// break loop, start deacceleration
-				}
-			}
-			// Deacceleration
-			for(int i=currrentAccelerationLevel;i>=0;i--)	// Don't use uint, it needs to go below zero
-			{
-				pos = end-(direction*distanceBetweenSpeedSteps*(float)i);
-				float speed = deltaSpeed*(float)i+minSpeedXY;
-
-				// store thisPoint
-				command.Code = COORDINATEDMOTION;
-				command.where = pos;
-				float len = (LastPosition - command.where).length();
-				float extrudedMaterial = len*extrusionFactor;
-				if(UseIncrementalEcode)
-					E+=extrudedMaterial;
-				else
-					E = extrudedMaterial;
-				command.e = E;		// move or extrude?
-				command.f = speed;
+				LastPosition = end;
+				// Done, switch extruder off
+				command.Code = EXTRUDEROFF;
 				code.commands.push_back(command);
-				LastPosition = pos;
 			}
+			else	// 5d gcode
+				{
+				float speed = minSpeedXY;
+				float deltaSpeed = (maxSpeedXY-minSpeedXY)/accelerationSteps;	// 1000-4000 = 3000/5 = 600
+
+				Vector3f direction = end-start;
+				direction.normalize();
+
+				Vector3f pos = start;
+				uint currrentAccelerationLevel = accelerationSteps;
+				for(uint i=0;i<accelerationSteps;i++)
+				{
+					pos = start+(direction*distanceBetweenSpeedSteps*(float)(i+1));	// Go somewhere else, if i==0 we goto same position as where we are
+					float speed = deltaSpeed*(float)i+minSpeedXY;
+
+					float distRemain = (end - pos).length();
+					float distTraveled = (pos-start).length();
+
+					// store thisPoint
+					command.Code = COORDINATEDMOTION;
+					command.where = pos;
+					float extrudedMaterial = (LastPosition - command.where).length()*extrusionFactor;
+					/*			if(extrudedMaterial < 1.0f)
+					{
+					accumulatedE += extrudedMaterial;		// Gather untill we have a real amount
+					extrudedMaterial = 0.0f;				// and don't extrude anything this move (ooze takes care of it)
+					if(accumulatedE > 1.0f)					// Unless we are ready to extrude again
+					{
+					extrudedMaterial = (float)(int)accumulatedE;	// Extrude the int value of the collected material
+					accumulatedE -= extrudedMaterial;				// and remove it from the buffer
+					}
+					}*/
+					if(UseIncrementalEcode)
+						E+=extrudedMaterial;
+					else
+						E = extrudedMaterial;
+					command.e = E;		// move or extrude?
+					command.f = speed;
+					code.commands.push_back(command);
+					LastPosition = pos;
+					if(distRemain < distTraveled)	// Start deacceleration?
+					{
+						currrentAccelerationLevel = i;
+						break;						// break loop, start deacceleration
+					}
+				}
+				// Deacceleration
+				for(int i=currrentAccelerationLevel;i>=0;i--)	// Don't use uint, it needs to go below zero
+				{
+					pos = end-(direction*distanceBetweenSpeedSteps*(float)i);
+					float speed = deltaSpeed*(float)i+minSpeedXY;
+
+					// store thisPoint
+					command.Code = COORDINATEDMOTION;
+					command.where = pos;
+					float len = (LastPosition - command.where).length();
+					float extrudedMaterial = len*extrusionFactor;
+					if(UseIncrementalEcode)
+						E+=extrudedMaterial;
+					else
+						E = extrudedMaterial;
+					command.e = E;		// move or extrude?
+					command.f = speed;
+					code.commands.push_back(command);
+					LastPosition = pos;
+				}
+			}	// 5D gcode
 		}// If we are going to somewhere else*/
 	}// If using firmware acceleration
 
 }
 
-void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float &E, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, uint accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, bool UseAcceleration, bool UseIncrementalEcode, bool UseFirmwareAcceleration)
+void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float &E, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, uint accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, bool UseAcceleration, bool UseIncrementalEcode, bool Use3DGcode, bool UseFirmwareAcceleration, bool EnableAcceleration)
 {
 	// Make an array with all lines, then link'em
 
@@ -660,19 +740,23 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 		// Make a accelerated line from LastPosition to lines[thisPoint]
 		if(LastPosition != lines[thisPoint]) //If we are going to somewhere else
 			{
-			if(UseAcceleration)
-				MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], accelerationSteps,distanceBetweenSpeedSteps, 0.0f, code, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, UseIncrementalEcode, E, UseFirmwareAcceleration);
-			else
+//			if(UseAcceleration)
+				MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], accelerationSteps,distanceBetweenSpeedSteps, 0.0f, code, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, UseIncrementalEcode, Use3DGcode, E, UseFirmwareAcceleration, EnableAcceleration);
+/*			else
 				{
-				command.Code = COORDINATEDMOTION;
-				command.where = lines[thisPoint];
-				if(UseIncrementalEcode)
-					command.e = E;		// Same E as last time = no extrusion = move
-				else
-					command.e = 0.0f;
-				command.f = MinPrintSpeedXY;
-				code.commands.push_back(command);
-				}
+					if(EnableAcceleration)
+					{
+					command.Code = COORDINATEDMOTION;
+					command.where = lines[thisPoint];
+					if(UseIncrementalEcode)
+						command.e = E;		// Same E as last time = no extrusion = move
+					else
+						command.e = 0.0f;
+					command.f = MinPrintSpeedXY;
+					code.commands.push_back(command);
+					}
+
+				}*/
 			}// If we are going to somewhere else
 			
 		LastPosition = lines[thisPoint];
@@ -683,7 +767,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 		// store thisPoint
 
 		if(UseAcceleration)
-			MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], accelerationSteps, distanceBetweenSpeedSteps, extrusionFactor, code, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, UseIncrementalEcode, E, UseFirmwareAcceleration);
+			MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], accelerationSteps, distanceBetweenSpeedSteps, extrusionFactor, code, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, UseIncrementalEcode, Use3DGcode, E, UseFirmwareAcceleration, EnableAcceleration);
 		else
 			{
 			command.Code = COORDINATEDMOTION;
@@ -706,7 +790,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 }
 
 
-void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
+void STL::CalcCuttingPlane(float where, CuttingPlane &plane, const Matrix4f &T)
 {
 	// intersect lines with plane
 	
@@ -714,10 +798,13 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 	plane.vertices.clear();
 	plane.polygons.clear();
 	
-	plane.Min.x = Min.x;
-	plane.Min.y = Min.y;
-	plane.Max.x = Max.x;
-	plane.Max.y = Max.y;
+	Vector3f min = T*Min;
+	Vector3f max = T*Max;
+
+	plane.Min.x = min.x;
+	plane.Min.y = min.y;
+	plane.Max.x = max.x;
+	plane.Max.y = max.y;
 
 	uint pointNr = 0;
 	bool foundOne = false;
@@ -725,8 +812,8 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 	{
 		foundOne=false;
 		Segment line(-1,-1);
-		Vector3f P1 = triangles[i].A;
-		Vector3f P2 = triangles[i].B;
+		Vector3f P1 = T*triangles[i].A;
+		Vector3f P2 = T*triangles[i].B;
 		if(where <= P1.z != where <= P2.z)
 		{
 			float t = (where-P1.z)/(float)(P2.z-P1.z);
@@ -735,8 +822,8 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 			plane.vertices.push_back(Vector2f(p.x,p.y));;
 			foundOne = true;
 		}
-		P1 = triangles[i].B;
-		P2 = triangles[i].C;
+		P1 = T*triangles[i].B;
+		P2 = T*triangles[i].C;
 		if(where <= P1.z != where <= P2.z)
 		{
 			float t = (where-P1.z)/(float)(P2.z-P1.z);
@@ -753,8 +840,8 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 			}
 			foundOne=true;
 		}
-		P1 = triangles[i].C;
-		P2 = triangles[i].A;
+		P1 = T*triangles[i].C;
+		P2 = T*triangles[i].A;
 		if(where <= P1.z != where <= P2.z)
 		{
 			float t = (where-P1.z)/(P2.z-P1.z);
@@ -766,7 +853,8 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 	// Check segment normal against triangle normal. Flip segment, as needed.
 	if(line.start != -1 && line.end != -1)	// if we found a intersecting triangle
 		{
-		Vector2f triangleNormal = Vector2f(triangles[i].Normal.x, triangles[i].Normal.y);
+		Vector3f Norm = triangles[i].Normal;
+		Vector2f triangleNormal = Vector2f(Norm.x, Norm.y);
 		Vector2f p = plane.vertices[line.start];
 		Vector2f segmentNormal = (plane.vertices[line.end] - p).normal();
 		triangleNormal.normalise();
@@ -811,7 +899,6 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane)
 			}
 		}
 	}
-
 }
 
 vector<InFillHit> HitsBuffer;
@@ -2154,7 +2241,7 @@ void STL::OptimizeRotation()
 	case POSY: RotateObject(Vector3f(-1,0,0), M_PI/2.0f); break;
 	case POSZ: RotateObject(Vector3f(1,0,0), M_PI); break;
 	}
-
+	CenterAroundXY();
 }
 
 void STL::RotateObject(Vector3f axis, float angle)
@@ -2225,27 +2312,9 @@ void CuttingPlane::CleanupPolygons(float Optimization)
 	}
 }
 
-void STL::MoveIntoPrintingArea(const Vector3f &PrintingMargin)
+void STL::CenterAroundXY()
 {
-
-	for(uint i=0; i<triangles.size() ; i++)
-	{
-		triangles[i].A = triangles[i].A - Min + PrintingMargin;
-		triangles[i].B = triangles[i].B - Min + PrintingMargin;
-		triangles[i].C = triangles[i].C - Min + PrintingMargin;
-	}
-
-	Max = Max - Min + PrintingMargin;
-	Min = PrintingMargin;
-	CalcBoundingBoxAndZoom();
-}
-
-void STL::CenterAroundXY(const Vector3f &Point)
-{
-	Vector3f MyCenter((Max+Min)*0.5f);
-
-	Vector3f displacement = Point - MyCenter;
-	displacement.z = 0.0f;
+	Vector3f displacement = -Min;
 
 	for(uint i=0; i<triangles.size() ; i++)
 	{

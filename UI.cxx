@@ -49,26 +49,6 @@ void GUI::cb_Save(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Save_i(o,v);
 }
 
-void GUI::cb_Scale_i(Fl_Button*, void*) {
-  Fl_File_Chooser chooser("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose GCode");
-chooser.show();
-while (chooser.shown())
-	Fl::wait();
-if(chooser.value() == 0)
-	return;
-std::string dir(chooser.value());
-
-
-if(dir.length())
-{
-MVC->ReadStl(dir);
-MVC->redraw();
-};
-}
-void GUI::cb_Scale(Fl_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Scale_i(o,v);
-}
-
 void GUI::cb_AutoRotateButton_i(Fl_Button*, void*) {
   MVC->OptimizeRotation();
 MVC->CalcBoundingBoxAndZoom();
@@ -129,6 +109,138 @@ void GUI::cb_RunLuaButton_i(Fl_Button*, void*) {
 }
 void GUI::cb_RunLuaButton(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_RunLuaButton_i(o,v);
+}
+
+void GUI::cb_Load1_i(Fl_Button*, void*) {
+  Fl_File_Chooser chooser("C:/code/printed-parts", "*.xml", Fl_File_Chooser::SINGLE, "Choose RFO file");
+chooser.show();
+while (chooser.shown())
+	Fl::wait();
+if(chooser.value() == 0)
+	return;
+std::string dir(chooser.value());
+
+
+if(dir.length())
+{
+MVC->ReadRFO(dir);
+MVC->redraw();
+};
+}
+void GUI::cb_Load1(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load1_i(o,v);
+}
+
+void GUI::cb_TranslateX_i(Fl_Value_Input* o, void*) {
+  MVC->Translate("X", o->value());
+}
+void GUI::cb_TranslateX(Fl_Value_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_TranslateX_i(o,v);
+}
+
+void GUI::cb_TranslateY_i(Fl_Value_Input* o, void*) {
+  MVC->Translate("Y", o->value());
+}
+void GUI::cb_TranslateY(Fl_Value_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_TranslateY_i(o,v);
+}
+
+void GUI::cb_TranslateZ_i(Fl_Value_Input* o, void*) {
+  MVC->Translate("Z", o->value());
+}
+void GUI::cb_TranslateZ(Fl_Value_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_TranslateZ_i(o,v);
+}
+
+void GUI::cb_RotateX_i(Fl_Value_Input* o, void*) {
+  MVC->RotateObject(1,0,0, o->value());
+}
+void GUI::cb_RotateX(Fl_Value_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_RotateX_i(o,v);
+}
+
+void GUI::cb_RotateY_i(Fl_Value_Input* o, void*) {
+  MVC->RotateObject(0,1,0, o->value());
+}
+void GUI::cb_RotateY(Fl_Value_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_RotateY_i(o,v);
+}
+
+void GUI::cb_RotateZ_i(Fl_Value_Input* o, void*) {
+  MVC->RotateObject(0,0,1, o->value());
+}
+void GUI::cb_RotateZ(Fl_Value_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_RotateZ_i(o,v);
+}
+
+void GUI::cb_ScaleX_i(Fl_Value_Input* o, void*) {
+  MVC->Scale("X", o->value());
+}
+void GUI::cb_ScaleX(Fl_Value_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ScaleX_i(o,v);
+}
+
+void GUI::cb_ScaleY_i(Fl_Value_Input* o, void*) {
+  MVC->Scale("Y", o->value());
+}
+void GUI::cb_ScaleY(Fl_Value_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ScaleY_i(o,v);
+}
+
+void GUI::cb_ScaleZ_i(Fl_Value_Input* o, void*) {
+  MVC->Scale("Z", o->value());
+}
+void GUI::cb_ScaleZ(Fl_Value_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ScaleZ_i(o,v);
+}
+
+void GUI::cb_FileLocationInput_i(Fl_Input* o, void*) {
+  MVC->setFileLocation(o->value());
+}
+void GUI::cb_FileLocationInput(Fl_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_FileLocationInput_i(o,v);
+}
+
+void GUI::cb_FileTypeInput_i(Fl_Input* o, void*) {
+  MVC->setFileType(o->value());
+}
+void GUI::cb_FileTypeInput(Fl_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_FileTypeInput_i(o,v);
+}
+
+void GUI::cb_FileMaterialInput_i(Fl_Input* o, void*) {
+  MVC->setFileMaterial(o->value());
+}
+void GUI::cb_FileMaterialInput(Fl_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_FileMaterialInput_i(o,v);
+}
+
+void GUI::cb_ObjectNameInput_i(Fl_Input* o, void*) {
+  MVC->setObjectname(o->value());
+}
+void GUI::cb_ObjectNameInput(Fl_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_ObjectNameInput_i(o,v);
+}
+
+void GUI::cb_New_i(Fl_Button*, void*) {
+  MVC->newObject();
+}
+void GUI::cb_New(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_New_i(o,v);
+}
+
+void GUI::cb_Save2_i(Fl_Button*, void*) {
+  MVC->ProcessControl.rfo.Save(string("test.xml"), MVC->ProcessControl);
+}
+void GUI::cb_Save2(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Save2_i(o,v);
+}
+
+void GUI::cb_Delete_i(Fl_Button*, void*) {
+  MVC->ProcessControl.rfo.DeleteSelected();
+}
+void GUI::cb_Delete(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Delete_i(o,v);
 }
 
 void GUI::cb_MarginX_i(Fl_Value_Input* o, void*) {
@@ -259,6 +371,13 @@ void GUI::cb_LayerThicknessSlider_i(Fl_Value_Slider* o, void*) {
 }
 void GUI::cb_LayerThicknessSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_LayerThicknessSlider_i(o,v);
+}
+
+void GUI::cb_Use3DGcodeButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetUse3DGcode(o->value());
+}
+void GUI::cb_Use3DGcodeButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Use3DGcodeButton_i(o,v);
 }
 
 void GUI::cb_portInput_i(Fl_Input* o, void*) {
@@ -459,6 +578,7 @@ void GUI::cb_RaftInterfaceTemperatureSlider(Fl_Value_Slider* o, void* v) {
 
 void GUI::cb_RaftEnableButton_i(Fl_Light_Button* o, void*) {
   MVC->SetRaftEnable(o->value());
+MVC->redraw();
 }
 void GUI::cb_RaftEnableButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_RaftEnableButton_i(o,v);
@@ -471,7 +591,7 @@ void GUI::cb_Preview(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Preview_i(o,v);
 }
 
-void GUI::cb_Load1_i(Fl_Button*, void*) {
+void GUI::cb_Load2_i(Fl_Button*, void*) {
   Fl_File_Chooser chooser("\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
 chooser.show();
 while (chooser.shown())
@@ -487,8 +607,8 @@ MVC->ReadGCode(dir);
 MVC->redraw();
 };
 }
-void GUI::cb_Load1(Fl_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load1_i(o,v);
+void GUI::cb_Load2(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load2_i(o,v);
 }
 
 void GUI::cb_Convert_i(Fl_Button*, void*) {
@@ -507,7 +627,7 @@ Fl_Menu_Item GUI::menu_Printer[] = {
 };
 Fl_Menu_Item* GUI::MinSpeedXY = GUI::menu_Printer + 0;
 
-void GUI::cb_Save2_i(Fl_Button*, void*) {
+void GUI::cb_Save3_i(Fl_Button*, void*) {
   Fl_File_Chooser chooser("\\", "*.gcode", Fl_File_Chooser::CREATE, "Choose filename");
 chooser.show();
 while (chooser.shown())
@@ -538,8 +658,8 @@ break;
 MVC->redraw();
 };
 }
-void GUI::cb_Save2(Fl_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Save2_i(o,v);
+void GUI::cb_Save3(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Save3_i(o,v);
 }
 
 void GUI::cb_DisplayPolygonsButton_i(Fl_Light_Button* o, void*) {
@@ -702,6 +822,14 @@ void GUI::cb_DisplayWireframeShadedButton_i(Fl_Light_Button* o, void*) {
 }
 void GUI::cb_DisplayWireframeShadedButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_DisplayWireframeShadedButton_i(o,v);
+}
+
+void GUI::cb_PolygonOpasitySlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetPolygonOpasity(o->value());
+MVC->redraw();
+}
+void GUI::cb_PolygonOpasitySlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_PolygonOpasitySlider_i(o,v);
 }
 
 void GUI::cb_DisplayGCodeButton_i(Fl_Light_Button* o, void*) {
@@ -1232,7 +1360,7 @@ void GUI::cb_Echo(Fl_Light_Button* o, void* v) {
 }
 
 GUI::GUI() {
-  { mainWindow = new Fl_Double_Window(1400, 839, "RepSnapper by Kulitorum www.kulitorum.com");
+  { mainWindow = new Fl_Double_Window(1400, 840, "RepSnapper by Kulitorum www.kulitorum.com");
     mainWindow->box(FL_UP_BOX);
     mainWindow->color((Fl_Color)FL_FOREGROUND_COLOR);
     mainWindow->selection_color((Fl_Color)FL_FOREGROUND_COLOR);
@@ -1248,26 +1376,20 @@ GUI::GUI() {
       MVC->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
       MVC->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
       MVC->when(FL_WHEN_RELEASE);
-      Fl_Group::current()->resizable(MVC);
     } // ModelViewController* MVC
-    { Tabs = new Fl_Tabs(830, 20, 565, 1070);
+    { Tabs = new Fl_Tabs(830, 20, 565, 815);
       Tabs->align(FL_ALIGN_TOP_LEFT);
-      { Fl_Group* o = new Fl_Group(830, 40, 550, 785, "Input file");
-        o->hide();
-        { Fl_Button* o = new Fl_Button(845, 50, 145, 25, "Load STL");
+      { Fl_Group* o = new Fl_Group(830, 40, 555, 785, "Input file");
+        { Fl_Button* o = new Fl_Button(845, 50, 130, 25, "Load STL");
           o->callback((Fl_Callback*)cb_Load);
         } // Fl_Button* o
-        { FixSTLerrorsButton = new Fl_Light_Button(995, 50, 135, 25, "Fix STL errors");
+        { FixSTLerrorsButton = new Fl_Light_Button(1110, 50, 135, 25, "Fix STL errors");
           FixSTLerrorsButton->value(1);
           FixSTLerrorsButton->selection_color((Fl_Color)FL_GREEN);
           FixSTLerrorsButton->callback((Fl_Callback*)cb_FixSTLerrorsButton);
         } // Fl_Light_Button* FixSTLerrorsButton
-        { Fl_Button* o = new Fl_Button(845, 80, 145, 25, "Save STL");
+        { Fl_Button* o = new Fl_Button(975, 50, 130, 25, "Save STL");
           o->callback((Fl_Callback*)cb_Save);
-          o->deactivate();
-        } // Fl_Button* o
-        { Fl_Button* o = new Fl_Button(845, 110, 145, 25, "Scale model");
-          o->callback((Fl_Callback*)cb_Scale);
           o->deactivate();
         } // Fl_Button* o
         { Fl_Group* o = new Fl_Group(840, 775, 535, 50, "Object rotation");
@@ -1287,27 +1409,144 @@ GUI::GUI() {
           } // Fl_Button* RotateZButton
           o->end();
         } // Fl_Group* o
-        { Fl_Button* o = new Fl_Button(1170, 80, 185, 25, "Save settings");
+        { Fl_Button* o = new Fl_Button(1250, 50, 135, 25, "Save settings");
           o->callback((Fl_Callback*)cb_Save1);
         } // Fl_Button* o
-        { Fl_Group* o = new Fl_Group(845, 150, 535, 600, "Lua script");
-          o->box(FL_FLAT_BOX);
+        { Fl_Group* o = new Fl_Group(845, 570, 535, 190, "Lua script");
+          o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
-          { Fl_Text_Editor* o = LuaScriptEditor = new Fl_Text_Editor(850, 200, 525, 545, "LUA script:");
+          { Fl_Text_Editor* o = LuaScriptEditor = new Fl_Text_Editor(850, 605, 525, 150, "LUA script:");
             LuaScriptEditor->align(FL_ALIGN_TOP_LEFT);
             Fl_Text_Buffer *luascript = new Fl_Text_Buffer();
             o->buffer(luascript);
           } // Fl_Text_Editor* LuaScriptEditor
-          { RunLuaButton = new Fl_Button(1240, 160, 125, 25, "Run");
+          { RunLuaButton = new Fl_Button(1250, 575, 125, 25, "Run");
             RunLuaButton->callback((Fl_Callback*)cb_RunLuaButton);
           } // Fl_Button* RunLuaButton
           o->end();
         } // Fl_Group* o
+        { Fl_Button* o = new Fl_Button(845, 80, 130, 25, "Load RFO");
+          o->callback((Fl_Callback*)cb_Load1);
+        } // Fl_Button* o
+        { RFP_Browser = new Flu_Tree_Browser(845, 110, 355, 440, "RFO file");
+          RFP_Browser->box(FL_UP_BOX);
+          RFP_Browser->color((Fl_Color)FL_BACKGROUND_COLOR);
+          RFP_Browser->selection_color((Fl_Color)FL_BACKGROUND_COLOR);
+          RFP_Browser->labeltype(FL_NORMAL_LABEL);
+          RFP_Browser->labelfont(0);
+          RFP_Browser->labelsize(14);
+          RFP_Browser->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+          RFP_Browser->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
+          RFP_Browser->when(FL_WHEN_RELEASE);
+          Fl_Group::current()->resizable(RFP_Browser);
+        } // Flu_Tree_Browser* RFP_Browser
+        { Fl_Group* o = new Fl_Group(1205, 130, 180, 40, "Translate");
+          o->box(FL_ENGRAVED_FRAME);
+          o->color((Fl_Color)FL_DARK3);
+          { TranslateX = new Fl_Value_Input(1220, 141, 45, 23, "X");
+            TranslateX->minimum(-300);
+            TranslateX->maximum(300);
+            TranslateX->step(0.1);
+            TranslateX->callback((Fl_Callback*)cb_TranslateX);
+          } // Fl_Value_Input* TranslateX
+          { TranslateY = new Fl_Value_Input(1280, 142, 45, 23, "Y");
+            TranslateY->minimum(-300);
+            TranslateY->maximum(300);
+            TranslateY->step(0.1);
+            TranslateY->callback((Fl_Callback*)cb_TranslateY);
+          } // Fl_Value_Input* TranslateY
+          { TranslateZ = new Fl_Value_Input(1335, 142, 45, 23, "Z");
+            TranslateZ->minimum(-300);
+            TranslateZ->maximum(300);
+            TranslateZ->step(0.01);
+            TranslateZ->callback((Fl_Callback*)cb_TranslateZ);
+          } // Fl_Value_Input* TranslateZ
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(1205, 195, 180, 40, "Rotate");
+          o->box(FL_ENGRAVED_FRAME);
+          o->color((Fl_Color)FL_DARK3);
+          { RotateX = new Fl_Value_Input(1220, 206, 45, 23, "X");
+            RotateX->minimum(-360);
+            RotateX->maximum(360);
+            RotateX->step(1);
+            RotateX->callback((Fl_Callback*)cb_RotateX);
+          } // Fl_Value_Input* RotateX
+          { RotateY = new Fl_Value_Input(1280, 207, 45, 23, "Y");
+            RotateY->minimum(-360);
+            RotateY->maximum(360);
+            RotateY->step(1);
+            RotateY->callback((Fl_Callback*)cb_RotateY);
+          } // Fl_Value_Input* RotateY
+          { RotateZ = new Fl_Value_Input(1335, 207, 45, 23, "Z");
+            RotateZ->minimum(-360);
+            RotateZ->maximum(360);
+            RotateZ->step(1);
+            RotateZ->callback((Fl_Callback*)cb_RotateZ);
+          } // Fl_Value_Input* RotateZ
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(1205, 255, 180, 70, "Scale");
+          o->box(FL_ENGRAVED_FRAME);
+          o->color((Fl_Color)FL_DARK3);
+          { ScaleX = new Fl_Value_Input(1220, 266, 45, 23, "X");
+            ScaleX->minimum(-100);
+            ScaleX->maximum(100);
+            ScaleX->step(0.01);
+            ScaleX->value(1);
+            ScaleX->callback((Fl_Callback*)cb_ScaleX);
+          } // Fl_Value_Input* ScaleX
+          { ScaleY = new Fl_Value_Input(1280, 267, 45, 23, "Y");
+            ScaleY->minimum(-100);
+            ScaleY->maximum(100);
+            ScaleY->step(0.01);
+            ScaleY->value(1);
+            ScaleY->callback((Fl_Callback*)cb_ScaleY);
+          } // Fl_Value_Input* ScaleY
+          { ScaleZ = new Fl_Value_Input(1335, 267, 45, 23, "Z");
+            ScaleZ->minimum(-100);
+            ScaleZ->maximum(100);
+            ScaleZ->step(0.01);
+            ScaleZ->value(1);
+            ScaleZ->callback((Fl_Callback*)cb_ScaleZ);
+          } // Fl_Value_Input* ScaleZ
+          { ScaleAllAxies = new Fl_Light_Button(1220, 295, 160, 20, "All axis");
+            ScaleAllAxies->value(1);
+            ScaleAllAxies->selection_color((Fl_Color)2);
+          } // Fl_Light_Button* ScaleAllAxies
+          o->end();
+        } // Fl_Group* o
+        { FileLocationInput = new Fl_Input(1205, 436, 180, 24, "File location");
+          FileLocationInput->callback((Fl_Callback*)cb_FileLocationInput);
+          FileLocationInput->align(FL_ALIGN_TOP_LEFT);
+        } // Fl_Input* FileLocationInput
+        { FileTypeInput = new Fl_Input(1205, 481, 180, 24, "Filetype");
+          FileTypeInput->callback((Fl_Callback*)cb_FileTypeInput);
+          FileTypeInput->align(FL_ALIGN_TOP_LEFT);
+        } // Fl_Input* FileTypeInput
+        { FileMaterialInput = new Fl_Input(1205, 526, 180, 24, "File material");
+          FileMaterialInput->callback((Fl_Callback*)cb_FileMaterialInput);
+          FileMaterialInput->align(FL_ALIGN_TOP_LEFT);
+        } // Fl_Input* FileMaterialInput
+        { ObjectNameInput = new Fl_Input(1205, 391, 180, 24, "Object name");
+          ObjectNameInput->callback((Fl_Callback*)cb_ObjectNameInput);
+          ObjectNameInput->align(FL_ALIGN_TOP_LEFT);
+        } // Fl_Input* ObjectNameInput
+        { Fl_Button* o = new Fl_Button(980, 80, 130, 25, "New RFO Object");
+          o->callback((Fl_Callback*)cb_New);
+        } // Fl_Button* o
+        { Fl_Button* o = new Fl_Button(1250, 80, 135, 25, "Save RFO");
+          o->callback((Fl_Callback*)cb_Save2);
+        } // Fl_Button* o
+        { Fl_Button* o = new Fl_Button(1115, 80, 135, 25, "Delete");
+          o->callback((Fl_Callback*)cb_Delete);
+        } // Fl_Button* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(830, 40, 555, 755, "Printer definition");
+      { Fl_Group* o = new Fl_Group(830, 40, 555, 785, "Printer definition");
+        o->hide();
         { Fl_Group* o = new Fl_Group(840, 65, 230, 40, "Build volume (mm)");
-          o->box(FL_FLAT_BOX);
+          o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
           { VolumeX = new Fl_Value_Input(860, 76, 45, 23, "X");
             VolumeX->maximum(5000);
@@ -1325,7 +1564,7 @@ GUI::GUI() {
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(1150, 65, 235, 40, "Print margin  (mm)");
-          o->box(FL_FLAT_BOX);
+          o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
           { MarginX = new Fl_Value_Input(1175, 76, 45, 23, "X");
             MarginX->maximum(100);
@@ -1347,10 +1586,10 @@ GUI::GUI() {
           } // Fl_Value_Input* MarginZ
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(840, 530, 535, 120, "Acceleration");
-          o->box(FL_FLAT_BOX);
+        { Fl_Group* o = new Fl_Group(840, 640, 535, 120, "Acceleration");
+          o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
-          { accelerationStepsSlider = new Fl_Value_Slider(850, 580, 515, 20, "Number of acceleration steps");
+          { accelerationStepsSlider = new Fl_Value_Slider(850, 690, 515, 20, "Number of acceleration steps");
             accelerationStepsSlider->type(5);
             accelerationStepsSlider->selection_color((Fl_Color)2);
             accelerationStepsSlider->maximum(10);
@@ -1361,7 +1600,7 @@ GUI::GUI() {
             accelerationStepsSlider->align(FL_ALIGN_TOP_LEFT);
             accelerationStepsSlider->deactivate();
           } // Fl_Value_Slider* accelerationStepsSlider
-          { distanceBetweenSpeedStepsSlider = new Fl_Value_Slider(850, 620, 515, 20, "Distance used to read full speed(mm)");
+          { distanceBetweenSpeedStepsSlider = new Fl_Value_Slider(850, 730, 515, 20, "Distance used to read full speed(mm)");
             distanceBetweenSpeedStepsSlider->type(5);
             distanceBetweenSpeedStepsSlider->selection_color((Fl_Color)2);
             distanceBetweenSpeedStepsSlider->maximum(10);
@@ -1370,20 +1609,20 @@ GUI::GUI() {
             distanceBetweenSpeedStepsSlider->callback((Fl_Callback*)cb_distanceBetweenSpeedStepsSlider);
             distanceBetweenSpeedStepsSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* distanceBetweenSpeedStepsSlider
-          { EnableAccelerationButton = new Fl_Light_Button(850, 540, 255, 20, "Enable Acceleration");
+          { EnableAccelerationButton = new Fl_Light_Button(850, 650, 255, 20, "Enable Acceleration");
             EnableAccelerationButton->selection_color((Fl_Color)FL_GREEN);
             EnableAccelerationButton->callback((Fl_Callback*)cb_EnableAccelerationButton);
           } // Fl_Light_Button* EnableAccelerationButton
-          { UseFirmwareAccelerationButton = new Fl_Light_Button(1110, 540, 255, 20, "Use Firmware Acceleration");
+          { UseFirmwareAccelerationButton = new Fl_Light_Button(1110, 650, 255, 20, "Use Firmware Acceleration");
             UseFirmwareAccelerationButton->selection_color((Fl_Color)FL_GREEN);
             UseFirmwareAccelerationButton->callback((Fl_Callback*)cb_UseFirmwareAccelerationButton);
           } // Fl_Light_Button* UseFirmwareAccelerationButton
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(840, 330, 535, 170, "Print speeds");
-          o->box(FL_FLAT_BOX);
+        { Fl_Group* o = new Fl_Group(840, 440, 535, 170, "Print speeds");
+          o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
-          { MaxPrintSpeedXYSlider = new Fl_Value_Slider(850, 390, 515, 20, "Max PrintSpeed XY (mm/minute)");
+          { MaxPrintSpeedXYSlider = new Fl_Value_Slider(850, 500, 515, 20, "Max PrintSpeed XY (mm/minute)");
             MaxPrintSpeedXYSlider->type(5);
             MaxPrintSpeedXYSlider->selection_color((Fl_Color)2);
             MaxPrintSpeedXYSlider->maximum(8000);
@@ -1393,7 +1632,7 @@ GUI::GUI() {
             MaxPrintSpeedXYSlider->callback((Fl_Callback*)cb_MaxPrintSpeedXYSlider);
             MaxPrintSpeedXYSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* MaxPrintSpeedXYSlider
-          { MinPrintSpeedZSlider = new Fl_Value_Slider(850, 430, 515, 20, "Min PrintSpeed Z (mm/minute)");
+          { MinPrintSpeedZSlider = new Fl_Value_Slider(850, 540, 515, 20, "Min PrintSpeed Z (mm/minute)");
             MinPrintSpeedZSlider->type(5);
             MinPrintSpeedZSlider->selection_color((Fl_Color)2);
             MinPrintSpeedZSlider->minimum(1);
@@ -1404,7 +1643,7 @@ GUI::GUI() {
             MinPrintSpeedZSlider->callback((Fl_Callback*)cb_MinPrintSpeedZSlider);
             MinPrintSpeedZSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* MinPrintSpeedZSlider
-          { MinPrintSpeedXYSlider = new Fl_Value_Slider(850, 350, 515, 20, "Min PrintSpeed XY (mm/minute)");
+          { MinPrintSpeedXYSlider = new Fl_Value_Slider(850, 460, 515, 20, "Min PrintSpeed XY (mm/minute)");
             MinPrintSpeedXYSlider->type(5);
             MinPrintSpeedXYSlider->selection_color((Fl_Color)2);
             MinPrintSpeedXYSlider->maximum(8000);
@@ -1414,7 +1653,7 @@ GUI::GUI() {
             MinPrintSpeedXYSlider->callback((Fl_Callback*)cb_MinPrintSpeedXYSlider);
             MinPrintSpeedXYSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* MinPrintSpeedXYSlider
-          { MaxPrintSpeedZSlider = new Fl_Value_Slider(850, 470, 515, 20, "Max PrintSpeed Z (mm/minute)");
+          { MaxPrintSpeedZSlider = new Fl_Value_Slider(850, 580, 515, 20, "Max PrintSpeed Z (mm/minute)");
             MaxPrintSpeedZSlider->type(5);
             MaxPrintSpeedZSlider->selection_color((Fl_Color)2);
             MaxPrintSpeedZSlider->maximum(2500);
@@ -1426,10 +1665,10 @@ GUI::GUI() {
           } // Fl_Value_Slider* MaxPrintSpeedZSlider
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(840, 135, 535, 160, "Extruder");
-          o->box(FL_FLAT_BOX);
+        { Fl_Group* o = new Fl_Group(840, 135, 535, 220, "Extruder");
+          o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
-          { ExtrudedMaterialWidthSlider = new Fl_Value_Slider(850, 190, 515, 20, "Extruded material width");
+          { ExtrudedMaterialWidthSlider = new Fl_Value_Slider(850, 230, 515, 20, "Extruded material width");
             ExtrudedMaterialWidthSlider->type(5);
             ExtrudedMaterialWidthSlider->selection_color((Fl_Color)2);
             ExtrudedMaterialWidthSlider->maximum(2);
@@ -1438,7 +1677,7 @@ GUI::GUI() {
             ExtrudedMaterialWidthSlider->callback((Fl_Callback*)cb_ExtrudedMaterialWidthSlider);
             ExtrudedMaterialWidthSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* ExtrudedMaterialWidthSlider
-          { extrusionFactorSlider = new Fl_Value_Slider(850, 230, 515, 20, "Extrusion multiplier");
+          { extrusionFactorSlider = new Fl_Value_Slider(850, 270, 515, 20, "Extrusion multiplier");
             extrusionFactorSlider->type(5);
             extrusionFactorSlider->selection_color((Fl_Color)2);
             extrusionFactorSlider->maximum(2);
@@ -1451,7 +1690,7 @@ GUI::GUI() {
             UseIncrementalEcodeButton->selection_color((Fl_Color)FL_GREEN);
             UseIncrementalEcodeButton->callback((Fl_Callback*)cb_UseIncrementalEcodeButton);
           } // Fl_Light_Button* UseIncrementalEcodeButton
-          { LayerThicknessSlider = new Fl_Value_Slider(850, 270, 515, 20, "Layer Thickness");
+          { LayerThicknessSlider = new Fl_Value_Slider(850, 310, 515, 20, "Layer Thickness");
             LayerThicknessSlider->type(5);
             LayerThicknessSlider->selection_color((Fl_Color)2);
             LayerThicknessSlider->minimum(0.1);
@@ -1462,12 +1701,16 @@ GUI::GUI() {
             LayerThicknessSlider->callback((Fl_Callback*)cb_LayerThicknessSlider);
             LayerThicknessSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* LayerThicknessSlider
+          { Use3DGcodeButton = new Fl_Light_Button(850, 175, 515, 20, "Use 3D Gcode (for non-stepper extruders)");
+            Use3DGcodeButton->selection_color((Fl_Color)FL_GREEN);
+            Use3DGcodeButton->callback((Fl_Callback*)cb_Use3DGcodeButton);
+          } // Fl_Light_Button* Use3DGcodeButton
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(840, 670, 535, 45, "Port");
-          o->box(FL_FLAT_BOX);
+        { Fl_Group* o = new Fl_Group(840, 780, 535, 45, "Port");
+          o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
-          { portInput = new Fl_Input(1010, 681, 205, 24, "Port:");
+          { portInput = new Fl_Input(1010, 791, 205, 24, "Port:");
             portInput->tooltip("COM3 or  /dev/ttyUSB0 or something to that effect");
             portInput->callback((Fl_Callback*)cb_portInput);
           } // Fl_Input* portInput
@@ -1478,7 +1721,7 @@ GUI::GUI() {
       { Fl_Group* o = new Fl_Group(830, 40, 545, 755, "Infill");
         o->hide();
         { Fl_Group* o = new Fl_Group(840, 65, 535, 215, "Infill");
-          o->box(FL_FLAT_BOX);
+          o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
           { InfillRotationSlider = new Fl_Value_Slider(850, 125, 515, 20, "Rotation");
             InfillRotationSlider->type(5);
@@ -1632,7 +1875,7 @@ GUI::GUI() {
         o->color((Fl_Color)FL_DARK1);
         o->hide();
         { Fl_Group* o = new Fl_Group(835, 220, 535, 270, "Base");
-          o->box(FL_FLAT_BOX);
+          o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
           { RaftMaterialPrDistanceRatioSlider = new Fl_Value_Slider(845, 285, 515, 20, "Material pr. distance ratio");
             RaftMaterialPrDistanceRatioSlider->type(5);
@@ -1704,14 +1947,14 @@ e rest of the print.");
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(835, 145, 535, 55, "Size");
-          o->box(FL_FLAT_BOX);
+          o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
-          { RaftSizeSlider = new Fl_Value_Slider(845, 170, 515, 20, "Size");
+          { RaftSizeSlider = new Fl_Value_Slider(845, 170, 515, 20, "Larger then objects (mm)");
             RaftSizeSlider->tooltip("How much larget then the print should the Raft be.");
             RaftSizeSlider->type(5);
             RaftSizeSlider->selection_color((Fl_Color)2);
             RaftSizeSlider->minimum(1);
-            RaftSizeSlider->maximum(3);
+            RaftSizeSlider->maximum(50);
             RaftSizeSlider->value(1.33);
             RaftSizeSlider->textsize(14);
             RaftSizeSlider->callback((Fl_Callback*)cb_RaftSizeSlider);
@@ -1722,7 +1965,7 @@ e rest of the print.");
         { Fl_Group* o = new Fl_Group(835, 520, 535, 285, "Interface");
           o->tooltip("This is the layer(s) connecting to the print itself. Unlike the Base layer, t\
 hey should be \"nice\" and with a normal extrusion ratio.");
-          o->box(FL_FLAT_BOX);
+          o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
           { RaftInterfaceMaterialPrDistanceRatioSlider = new Fl_Value_Slider(845, 595, 515, 20, "Material pr. distance ratio");
             RaftInterfaceMaterialPrDistanceRatioSlider->type(5);
@@ -1794,7 +2037,7 @@ e rest of the print.");
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(835, 60, 535, 55, "Size");
-          o->box(FL_FLAT_BOX);
+          o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
           { RaftEnableButton = new Fl_Light_Button(840, 80, 255, 25, "Enable");
             RaftEnableButton->callback((Fl_Callback*)cb_RaftEnableButton);
@@ -1810,7 +2053,7 @@ e rest of the print.");
       { Fl_Group* o = new Fl_Group(830, 40, 545, 755, "GCode");
         o->hide();
         { Fl_Button* o = new Fl_Button(835, 90, 145, 25, "Load Gcode");
-          o->callback((Fl_Callback*)cb_Load1);
+          o->callback((Fl_Callback*)cb_Load2);
         } // Fl_Button* o
         { GCodeLengthText = new Fl_Output(985, 91, 225, 24);
         } // Fl_Output* GCodeLengthText
@@ -1819,6 +2062,7 @@ e rest of the print.");
         } // Fl_Button* o
         { Fl_Tabs* o = new Fl_Tabs(830, 120, 545, 675);
           { Fl_Group* o = new Fl_Group(830, 140, 545, 655, "Start code");
+            o->hide();
             { Fl_Text_Editor* o = GCodeStart = new Fl_Text_Editor(830, 140, 530, 605);
               Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();
               o->buffer(startbuff);
@@ -1840,14 +2084,13 @@ e rest of the print.");
             o->buffer(endbuff);
           } // Fl_Text_Editor* GCodeEnd
           { Fl_Text_Editor* o = GCodeResult = new Fl_Text_Editor(830, 140, 530, 655, "Result");
-            GCodeResult->hide();
             Fl_Text_Buffer *resultbuff = new Fl_Text_Buffer();
             o->buffer(resultbuff);
           } // Fl_Text_Editor* GCodeResult
           o->end();
         } // Fl_Tabs* o
         { Fl_Button* o = new Fl_Button(1215, 90, 145, 25, "Save Gcode");
-          o->callback((Fl_Callback*)cb_Save2);
+          o->callback((Fl_Callback*)cb_Save3);
         } // Fl_Button* o
         o->end();
       } // Fl_Group* o
@@ -1884,8 +2127,8 @@ an twice the filament extrusion. - with one line only");
       { Fl_Group* o = new Fl_Group(830, 40, 545, 755, "Rendering");
         o->color((Fl_Color)FL_DARK1);
         o->hide();
-        { Fl_Group* o = new Fl_Group(835, 70, 535, 280, "STL rendering");
-          o->box(FL_FLAT_BOX);
+        { Fl_Group* o = new Fl_Group(835, 70, 535, 305, "STL rendering");
+          o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
           { DisplayPolygonsButton = new Fl_Light_Button(870, 80, 220, 20, "Display Polygons");
             DisplayPolygonsButton->value(1);
@@ -1896,11 +2139,11 @@ an twice the filament extrusion. - with one line only");
             DisplayWireframeButton->selection_color((Fl_Color)FL_GREEN);
             DisplayWireframeButton->callback((Fl_Callback*)cb_DisplayWireframeButton);
           } // Fl_Light_Button* DisplayWireframeButton
-          { DisplayNormalsButton = new Fl_Light_Button(870, 180, 220, 20, "Display Normals");
+          { DisplayNormalsButton = new Fl_Light_Button(870, 205, 220, 20, "Display Normals");
             DisplayNormalsButton->selection_color((Fl_Color)FL_GREEN);
             DisplayNormalsButton->callback((Fl_Callback*)cb_DisplayNormalsButton);
           } // Fl_Light_Button* DisplayNormalsButton
-          { DisplayEndpointsButton = new Fl_Light_Button(1135, 180, 220, 20, "Display Endpoints");
+          { DisplayEndpointsButton = new Fl_Light_Button(1135, 205, 220, 20, "Display Endpoints");
             DisplayEndpointsButton->selection_color((Fl_Color)FL_GREEN);
             DisplayEndpointsButton->callback((Fl_Callback*)cb_DisplayEndpointsButton);
           } // Fl_Light_Button* DisplayEndpointsButton
@@ -1952,7 +2195,7 @@ an twice the filament extrusion. - with one line only");
             WireframeHueSlider->callback((Fl_Callback*)cb_WireframeHueSlider);
             WireframeHueSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* WireframeHueSlider
-          { NormalValSlider = new Fl_Value_Slider(870, 245, 220, 20, "Val");
+          { NormalValSlider = new Fl_Value_Slider(870, 270, 220, 20, "Val");
             NormalValSlider->type(5);
             NormalValSlider->selection_color((Fl_Color)2);
             NormalValSlider->value(0.5);
@@ -1960,7 +2203,7 @@ an twice the filament extrusion. - with one line only");
             NormalValSlider->callback((Fl_Callback*)cb_NormalValSlider);
             NormalValSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* NormalValSlider
-          { NormalSatSlider = new Fl_Value_Slider(870, 225, 220, 20, "Sat");
+          { NormalSatSlider = new Fl_Value_Slider(870, 250, 220, 20, "Sat");
             NormalSatSlider->type(5);
             NormalSatSlider->selection_color((Fl_Color)2);
             NormalSatSlider->value(0.5);
@@ -1968,7 +2211,7 @@ an twice the filament extrusion. - with one line only");
             NormalSatSlider->callback((Fl_Callback*)cb_NormalSatSlider);
             NormalSatSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* NormalSatSlider
-          { NormalHueSlider = new Fl_Value_Slider(870, 205, 220, 20, "Hue");
+          { NormalHueSlider = new Fl_Value_Slider(870, 230, 220, 20, "Hue");
             NormalHueSlider->type(5);
             NormalHueSlider->selection_color((Fl_Color)2);
             NormalHueSlider->value(0.5);
@@ -1976,7 +2219,7 @@ an twice the filament extrusion. - with one line only");
             NormalHueSlider->callback((Fl_Callback*)cb_NormalHueSlider);
             NormalHueSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* NormalHueSlider
-          { EndpointValSlider = new Fl_Value_Slider(1135, 245, 220, 20, "Val");
+          { EndpointValSlider = new Fl_Value_Slider(1135, 270, 220, 20, "Val");
             EndpointValSlider->type(5);
             EndpointValSlider->selection_color((Fl_Color)2);
             EndpointValSlider->value(0.5);
@@ -1984,7 +2227,7 @@ an twice the filament extrusion. - with one line only");
             EndpointValSlider->callback((Fl_Callback*)cb_EndpointValSlider);
             EndpointValSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* EndpointValSlider
-          { EndpointSatSlider = new Fl_Value_Slider(1135, 225, 220, 20, "Sat");
+          { EndpointSatSlider = new Fl_Value_Slider(1135, 250, 220, 20, "Sat");
             EndpointSatSlider->type(5);
             EndpointSatSlider->selection_color((Fl_Color)2);
             EndpointSatSlider->value(0.5);
@@ -1992,7 +2235,7 @@ an twice the filament extrusion. - with one line only");
             EndpointSatSlider->callback((Fl_Callback*)cb_EndpointSatSlider);
             EndpointSatSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* EndpointSatSlider
-          { EndpointHueSlider = new Fl_Value_Slider(1135, 205, 220, 20, "Hue");
+          { EndpointHueSlider = new Fl_Value_Slider(1135, 230, 220, 20, "Hue");
             EndpointHueSlider->type(5);
             EndpointHueSlider->selection_color((Fl_Color)2);
             EndpointHueSlider->value(0.5);
@@ -2000,11 +2243,11 @@ an twice the filament extrusion. - with one line only");
             EndpointHueSlider->callback((Fl_Callback*)cb_EndpointHueSlider);
             EndpointHueSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* EndpointHueSlider
-          { DisplayBBoxButton = new Fl_Light_Button(870, 325, 220, 20, "Display Bounding Box");
+          { DisplayBBoxButton = new Fl_Light_Button(870, 350, 220, 20, "Display Bounding Box");
             DisplayBBoxButton->selection_color((Fl_Color)FL_GREEN);
             DisplayBBoxButton->callback((Fl_Callback*)cb_DisplayBBoxButton);
           } // Fl_Light_Button* DisplayBBoxButton
-          { HighlightSlider = new Fl_Value_Slider(1135, 325, 220, 20, "Highlight");
+          { HighlightSlider = new Fl_Value_Slider(1135, 350, 220, 20, "Highlight");
             HighlightSlider->type(5);
             HighlightSlider->selection_color((Fl_Color)2);
             HighlightSlider->value(0.5);
@@ -2012,7 +2255,7 @@ an twice the filament extrusion. - with one line only");
             HighlightSlider->callback((Fl_Callback*)cb_HighlightSlider);
             HighlightSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* HighlightSlider
-          { NormalLengthSlider = new Fl_Value_Slider(870, 285, 220, 20, "Normals length");
+          { NormalLengthSlider = new Fl_Value_Slider(870, 310, 220, 20, "Normals length");
             NormalLengthSlider->type(5);
             NormalLengthSlider->selection_color((Fl_Color)2);
             NormalLengthSlider->minimum(1);
@@ -2023,7 +2266,7 @@ an twice the filament extrusion. - with one line only");
             NormalLengthSlider->callback((Fl_Callback*)cb_NormalLengthSlider);
             NormalLengthSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* NormalLengthSlider
-          { EndpointSizeSlider = new Fl_Value_Slider(1135, 285, 220, 20, "Endpoints size");
+          { EndpointSizeSlider = new Fl_Value_Slider(1135, 310, 220, 20, "Endpoints size");
             EndpointSizeSlider->type(5);
             EndpointSizeSlider->selection_color((Fl_Color)2);
             EndpointSizeSlider->minimum(1);
@@ -2038,17 +2281,25 @@ an twice the filament extrusion. - with one line only");
             DisplayWireframeShadedButton->selection_color((Fl_Color)FL_GREEN);
             DisplayWireframeShadedButton->callback((Fl_Callback*)cb_DisplayWireframeShadedButton);
           } // Fl_Light_Button* DisplayWireframeShadedButton
+          { PolygonOpasitySlider = new Fl_Value_Slider(870, 165, 220, 20, "Opa");
+            PolygonOpasitySlider->type(5);
+            PolygonOpasitySlider->selection_color((Fl_Color)2);
+            PolygonOpasitySlider->value(0.5);
+            PolygonOpasitySlider->textsize(14);
+            PolygonOpasitySlider->callback((Fl_Callback*)cb_PolygonOpasitySlider);
+            PolygonOpasitySlider->align(FL_ALIGN_LEFT);
+          } // Fl_Value_Slider* PolygonOpasitySlider
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(835, 370, 535, 185, "GCode rendering");
-          o->box(FL_FLAT_BOX);
+        { Fl_Group* o = new Fl_Group(835, 395, 535, 185, "GCode rendering");
+          o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
-          { DisplayGCodeButton = new Fl_Light_Button(870, 380, 220, 20, "Display GCode");
+          { DisplayGCodeButton = new Fl_Light_Button(870, 405, 220, 20, "Display GCode");
             DisplayGCodeButton->value(1);
             DisplayGCodeButton->selection_color((Fl_Color)FL_GREEN);
             DisplayGCodeButton->callback((Fl_Callback*)cb_DisplayGCodeButton);
           } // Fl_Light_Button* DisplayGCodeButton
-          { GCodeExtrudeValSlider = new Fl_Value_Slider(870, 445, 220, 20, "Val");
+          { GCodeExtrudeValSlider = new Fl_Value_Slider(870, 470, 220, 20, "Val");
             GCodeExtrudeValSlider->type(5);
             GCodeExtrudeValSlider->selection_color((Fl_Color)2);
             GCodeExtrudeValSlider->value(0.5);
@@ -2056,7 +2307,7 @@ an twice the filament extrusion. - with one line only");
             GCodeExtrudeValSlider->callback((Fl_Callback*)cb_GCodeExtrudeValSlider);
             GCodeExtrudeValSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* GCodeExtrudeValSlider
-          { GCodeExtrudeSatSlider = new Fl_Value_Slider(870, 425, 220, 20, "Sat");
+          { GCodeExtrudeSatSlider = new Fl_Value_Slider(870, 450, 220, 20, "Sat");
             GCodeExtrudeSatSlider->type(5);
             GCodeExtrudeSatSlider->selection_color((Fl_Color)2);
             GCodeExtrudeSatSlider->value(0.5);
@@ -2064,7 +2315,7 @@ an twice the filament extrusion. - with one line only");
             GCodeExtrudeSatSlider->callback((Fl_Callback*)cb_GCodeExtrudeSatSlider);
             GCodeExtrudeSatSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* GCodeExtrudeSatSlider
-          { GCodeExtrudeHueSlider = new Fl_Value_Slider(870, 405, 220, 20, "Hue");
+          { GCodeExtrudeHueSlider = new Fl_Value_Slider(870, 430, 220, 20, "Hue");
             GCodeExtrudeHueSlider->type(5);
             GCodeExtrudeHueSlider->selection_color((Fl_Color)2);
             GCodeExtrudeHueSlider->value(0.5);
@@ -2072,32 +2323,32 @@ an twice the filament extrusion. - with one line only");
             GCodeExtrudeHueSlider->callback((Fl_Callback*)cb_GCodeExtrudeHueSlider);
             GCodeExtrudeHueSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* GCodeExtrudeHueSlider
-          { LuminanceShowsSpeedButton = new Fl_Light_Button(1135, 380, 220, 20, "Luminance shows speed");
+          { LuminanceShowsSpeedButton = new Fl_Light_Button(1135, 405, 220, 20, "Luminance shows speed");
             LuminanceShowsSpeedButton->value(1);
             LuminanceShowsSpeedButton->selection_color((Fl_Color)FL_GREEN);
             LuminanceShowsSpeedButton->callback((Fl_Callback*)cb_LuminanceShowsSpeedButton);
           } // Fl_Light_Button* LuminanceShowsSpeedButton
-          { Fl_Button* o = new Fl_Button(870, 520, 220, 20, "Crop Range");
+          { Fl_Button* o = new Fl_Button(870, 545, 220, 20, "Crop Range");
             o->callback((Fl_Callback*)cb_Crop);
           } // Fl_Button* o
-          { Fl_Button* o = new Fl_Button(1140, 520, 220, 20, "Reset crop range");
+          { Fl_Button* o = new Fl_Button(1140, 545, 220, 20, "Reset crop range");
             o->callback((Fl_Callback*)cb_Reset);
           } // Fl_Button* o
-          { GCodeDrawStartSlider = new Fl_Slider(870, 470, 490, 20, "From");
-            GCodeDrawStartSlider->type(1);
+          { GCodeDrawStartSlider = new Fl_Slider(870, 495, 490, 20, "From");
+            GCodeDrawStartSlider->type(5);
             GCodeDrawStartSlider->color((Fl_Color)FL_DARK3);
             GCodeDrawStartSlider->selection_color((Fl_Color)2);
             GCodeDrawStartSlider->callback((Fl_Callback*)cb_GCodeDrawStartSlider);
             GCodeDrawStartSlider->align(FL_ALIGN_LEFT);
           } // Fl_Slider* GCodeDrawStartSlider
-          { GCodeDrawEndSlider = new Fl_Slider(870, 495, 490, 20, "To");
-            GCodeDrawEndSlider->type(1);
+          { GCodeDrawEndSlider = new Fl_Slider(870, 520, 490, 20, "To");
+            GCodeDrawEndSlider->type(5);
             GCodeDrawEndSlider->color((Fl_Color)FL_DARK3);
             GCodeDrawEndSlider->selection_color((Fl_Color)2);
             GCodeDrawEndSlider->callback((Fl_Callback*)cb_GCodeDrawEndSlider);
             GCodeDrawEndSlider->align(FL_ALIGN_LEFT);
           } // Fl_Slider* GCodeDrawEndSlider
-          { GCodeMoveValSlider = new Fl_Value_Slider(1135, 445, 220, 20, "Val");
+          { GCodeMoveValSlider = new Fl_Value_Slider(1135, 470, 220, 20, "Val");
             GCodeMoveValSlider->type(5);
             GCodeMoveValSlider->selection_color((Fl_Color)2);
             GCodeMoveValSlider->value(0.5);
@@ -2105,7 +2356,7 @@ an twice the filament extrusion. - with one line only");
             GCodeMoveValSlider->callback((Fl_Callback*)cb_GCodeMoveValSlider);
             GCodeMoveValSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* GCodeMoveValSlider
-          { GCodeMoveSatSlider = new Fl_Value_Slider(1135, 425, 220, 20, "Sat");
+          { GCodeMoveSatSlider = new Fl_Value_Slider(1135, 450, 220, 20, "Sat");
             GCodeMoveSatSlider->type(5);
             GCodeMoveSatSlider->selection_color((Fl_Color)2);
             GCodeMoveSatSlider->value(0.5);
@@ -2113,7 +2364,7 @@ an twice the filament extrusion. - with one line only");
             GCodeMoveSatSlider->callback((Fl_Callback*)cb_GCodeMoveSatSlider);
             GCodeMoveSatSlider->align(FL_ALIGN_LEFT);
           } // Fl_Value_Slider* GCodeMoveSatSlider
-          { GCodeMoveHueSlider = new Fl_Value_Slider(1135, 405, 220, 20, "Hue");
+          { GCodeMoveHueSlider = new Fl_Value_Slider(1135, 430, 220, 20, "Hue");
             GCodeMoveHueSlider->type(5);
             GCodeMoveHueSlider->selection_color((Fl_Color)2);
             GCodeMoveHueSlider->value(0.5);
@@ -2123,32 +2374,32 @@ an twice the filament extrusion. - with one line only");
           } // Fl_Value_Slider* GCodeMoveHueSlider
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(835, 585, 540, 90, "Layer preview");
-          o->box(FL_FLAT_BOX);
+        { Fl_Group* o = new Fl_Group(835, 600, 540, 90, "Layer preview");
+          o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
-          { CuttingPlaneValueSlider = new Fl_Value_Slider(845, 645, 515, 20, "Cuttingplane");
+          { CuttingPlaneValueSlider = new Fl_Value_Slider(845, 660, 515, 20, "Cuttingplane");
             CuttingPlaneValueSlider->type(5);
             CuttingPlaneValueSlider->value(0.5);
             CuttingPlaneValueSlider->textsize(14);
             CuttingPlaneValueSlider->callback((Fl_Callback*)cb_CuttingPlaneValueSlider);
             CuttingPlaneValueSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* CuttingPlaneValueSlider
-          { DisplayCuttingPlaneButton = new Fl_Light_Button(845, 600, 170, 20, "Display CuttingPlane");
+          { DisplayCuttingPlaneButton = new Fl_Light_Button(845, 615, 170, 20, "Display CuttingPlane");
             DisplayCuttingPlaneButton->selection_color((Fl_Color)FL_GREEN);
             DisplayCuttingPlaneButton->callback((Fl_Callback*)cb_DisplayCuttingPlaneButton);
           } // Fl_Light_Button* DisplayCuttingPlaneButton
-          { DisplayinFillButton = new Fl_Light_Button(1020, 600, 165, 20, "Display inFill");
+          { DisplayinFillButton = new Fl_Light_Button(1020, 615, 165, 20, "Display inFill");
             DisplayinFillButton->selection_color((Fl_Color)FL_GREEN);
             DisplayinFillButton->callback((Fl_Callback*)cb_DisplayinFillButton);
           } // Fl_Light_Button* DisplayinFillButton
-          { DisplayAllLayersButton = new Fl_Light_Button(1190, 600, 170, 20, "Display all layers");
+          { DisplayAllLayersButton = new Fl_Light_Button(1190, 615, 170, 20, "Display all layers");
             DisplayAllLayersButton->selection_color((Fl_Color)FL_GREEN);
             DisplayAllLayersButton->callback((Fl_Callback*)cb_DisplayAllLayersButton);
           } // Fl_Light_Button* DisplayAllLayersButton
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(835, 710, 540, 70, "Lights");
-          o->box(FL_FLAT_BOX);
+          o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
           { Fl_Light_Button* o = new Fl_Light_Button(845, 725, 120, 20, "Enable light 0");
             o->value(1);
@@ -2184,10 +2435,10 @@ an twice the filament extrusion. - with one line only");
         } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(830, 45, 565, 1045, "Print");
+      { Fl_Group* o = new Fl_Group(830, 45, 565, 790, "Print");
         o->color((Fl_Color)FL_DARK1);
         o->hide();
-        { Fl_Tabs* o = new Fl_Tabs(835, 180, 540, 660);
+        { Fl_Tabs* o = new Fl_Tabs(835, 180, 540, 655);
           { CommunationLog = new Fl_Multi_Browser(840, 205, 530, 630, "Communication log");
             CommunationLog->box(FL_NO_BOX);
             CommunationLog->color((Fl_Color)FL_BACKGROUND2_COLOR);
@@ -2222,10 +2473,10 @@ an twice the filament extrusion. - with one line only");
             Echo->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
             Echo->align(FL_ALIGN_BOTTOM);
             Echo->when(FL_WHEN_RELEASE_ALWAYS);
+            Echo->hide();
           } // Fl_Multi_Browser* Echo
-          { Fl_Group* o = new Fl_Group(840, 205, 535, 635, "Interactive control");
+          { Fl_Group* o = new Fl_Group(840, 205, 535, 630, "Interactive control");
             o->selection_color((Fl_Color)FL_SELECTION_COLOR);
-            o->hide();
             { SwitchHeatOnButton = new Fl_Light_Button(845, 395, 220, 25, "Switch heat on");
               SwitchHeatOnButton->callback((Fl_Callback*)cb_SwitchHeatOnButton);
             } // Fl_Light_Button* SwitchHeatOnButton
@@ -2279,7 +2530,7 @@ an twice the filament extrusion. - with one line only");
             } // Fl_Button* o
             { CurrentTempText = new Fl_Output(1160, 396, 55, 24, "Current temp");
             } // Fl_Output* CurrentTempText
-            { ExamineSlider = new Fl_Value_Slider(900, 820, 200, 20, "Examine");
+            { ExamineSlider = new Fl_Value_Slider(900, 820, 200, 15, "Examine");
               ExamineSlider->type(1);
               ExamineSlider->step(0.001);
               ExamineSlider->value(0.098);
@@ -2287,19 +2538,19 @@ an twice the filament extrusion. - with one line only");
               ExamineSlider->callback((Fl_Callback*)cb_ExamineSlider);
               ExamineSlider->align(FL_ALIGN_LEFT);
             } // Fl_Value_Slider* ExamineSlider
-            { DisplayDebuginFillButton = new Fl_Light_Button(915, 820, 145, 20, "Display Debug inFill");
+            { DisplayDebuginFillButton = new Fl_Light_Button(915, 820, 145, 15, "Display Debug inFill");
               DisplayDebuginFillButton->selection_color((Fl_Color)FL_GREEN);
               DisplayDebuginFillButton->callback((Fl_Callback*)cb_DisplayDebuginFillButton);
             } // Fl_Light_Button* DisplayDebuginFillButton
-            { DisplayDebugButton = new Fl_Light_Button(840, 820, 70, 20, "Debug");
+            { DisplayDebugButton = new Fl_Light_Button(840, 820, 70, 15, "Debug");
               DisplayDebugButton->selection_color((Fl_Color)FL_GREEN);
               DisplayDebugButton->callback((Fl_Callback*)cb_DisplayDebugButton);
             } // Fl_Light_Button* DisplayDebugButton
-            { DrawVertexNumbersButton = new Fl_Light_Button(1065, 820, 155, 20, "Draw vertex numbers");
+            { DrawVertexNumbersButton = new Fl_Light_Button(1065, 820, 155, 15, "Draw vertex numbers");
               DrawVertexNumbersButton->selection_color((Fl_Color)FL_GREEN);
               DrawVertexNumbersButton->callback((Fl_Callback*)cb_DrawVertexNumbersButton);
             } // Fl_Light_Button* DrawVertexNumbersButton
-            { DrawLineNumbersButton = new Fl_Light_Button(1220, 820, 155, 20, "Draw line numbers");
+            { DrawLineNumbersButton = new Fl_Light_Button(1220, 820, 155, 15, "Draw line numbers");
               DrawLineNumbersButton->selection_color((Fl_Color)FL_GREEN);
               DrawLineNumbersButton->callback((Fl_Callback*)cb_DrawLineNumbersButton);
             } // Fl_Light_Button* DrawLineNumbersButton
@@ -2410,7 +2661,7 @@ an twice the filament extrusion. - with one line only");
           o->end();
         } // Fl_Tabs* o
         { Fl_Group* o = new Fl_Group(835, 65, 540, 45, "Print");
-          o->box(FL_FLAT_BOX);
+          o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
           { ConnectToPrinterButton = new Fl_Light_Button(840, 75, 165, 25, "Connect to printer");
             ConnectToPrinterButton->selection_color((Fl_Color)2);
@@ -2426,7 +2677,7 @@ an twice the filament extrusion. - with one line only");
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(835, 130, 540, 45, "Feedback");
-          o->box(FL_FLAT_BOX);
+          o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
           { Fl_Light_Button* o = new Fl_Light_Button(845, 140, 165, 25, "Errors");
             o->value(1);
@@ -2453,11 +2704,12 @@ an twice the filament extrusion. - with one line only");
       } // Fl_Group* o
       Tabs->end();
     } // Fl_Tabs* Tabs
-    { ProgressBar = new Fl_Progress(75, 5, 1300, 15, "Progress:");
+    { ProgressBar = new Fl_Progress(75, 5, 1320, 15, "Progress:");
       ProgressBar->selection_color((Fl_Color)FL_GREEN);
       ProgressBar->align(FL_ALIGN_LEFT);
     } // Fl_Progress* ProgressBar
     mainWindow->end();
+    mainWindow->resizable(mainWindow);
   } // Fl_Double_Window* mainWindow
 }
 
@@ -2467,9 +2719,6 @@ Fl::scheme("plastic");
 mainWindow->show(argc, argv);
 //MVC->ReadStl("C:/box.stl");
 MVC->init();
-//MVC->ReadStl("C:/#Downloads/Reprap Exchange/N_DSL-Stylus.stl");
-MVC->ReadStl("C:/code/printed-parts/#poly.stl");
-MVC->ReadStl("C:/code/printed-parts/#dims.stl");
 MVC->CopySettingsToGUI();
 MVC->draw();
 MVC->redraw();
@@ -2478,6 +2727,6 @@ MVC->redraw();
 extern GUI* gui;
 
 void TempReadTimer(void *) {
-  gui->MVC->serial.SendNow("M105");
+  MVC->serial.SendNow("M105");
 Fl::repeat_timeout(10.0f, &TempReadTimer);
 }
