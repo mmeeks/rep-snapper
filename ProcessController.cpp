@@ -84,7 +84,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 					infillCuttingPlane.CalcInFill(infill, LayerNr, destinationZ, InfillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
 					}
 				// Make the GCode from the plane and the infill
-				plane.MakeGcode(infill, gcode, E, destinationZ, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, DistanceToReachFullSpeed, extrusionFactor, EnableAcceleration, UseIncrementalEcode, Use3DGcode, UseFirmwareAcceleration, EnableAcceleration);
+				plane.MakeGcode(infill, gcode, E, destinationZ, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, DistanceToReachFullSpeed, extrusionFactor, UseIncrementalEcode, Use3DGcode, EnableAcceleration);
 				LayerNr++;
 				}
 	destinationZ += LayerThickness;
@@ -248,7 +248,7 @@ void ProcessController::MakeRaft(float &z)
 			else
 				materialRatio = RaftInterfaceMaterialPrDistanceRatio;		// move or extrude?
 
-			MakeAcceleratedGCodeLine(Vector3f(P1.x,P1.y,z), Vector3f(P2.x,P2.y,z), DistanceToReachFullSpeed, materialRatio, gcode, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, UseIncrementalEcode, Use3DGcode, E, UseFirmwareAcceleration, EnableAcceleration);
+			MakeAcceleratedGCodeLine(Vector3f(P1.x,P1.y,z), Vector3f(P2.x,P2.y,z), DistanceToReachFullSpeed, materialRatio, gcode, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, UseIncrementalEcode, Use3DGcode, E, EnableAcceleration);
 
 			reverseLines = !reverseLines;
 		}
@@ -418,9 +418,9 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("MaxPrintSpeedXY", true, "1500")->SetValueFloat(MaxPrintSpeedXY);
 	x->FindVariableZ("MinPrintSpeedZ", true, "50")->SetValueFloat(MinPrintSpeedZ);
 	x->FindVariableZ("MaxPrintSpeedZ", true, "150")->SetValueFloat(MaxPrintSpeedZ);
-	x->FindVariableZ("accelerationSteps", true, "3")->SetValueInt(accelerationSteps);
+//	x->FindVariableZ("accelerationSteps", true, "3")->SetValueInt(accelerationSteps);
 	x->FindVariableZ("DistanceToReachFullSpeed", true, "5")->SetValueFloat(DistanceToReachFullSpeed);
-	x->FindVariableZ("UseFirmwareAcceleration", true, "5")->SetValueInt(UseFirmwareAcceleration);
+//	x->FindVariableZ("UseFirmwareAcceleration", true, "5")->SetValueInt(UseFirmwareAcceleration);
 	x->FindVariableZ("extrusionFactor", true, "0.66")->SetValueFloat(extrusionFactor);
 	x->FindVariableZ("EnableAcceleration", true, "0.66")->SetValueInt((int)EnableAcceleration);
 	x->FindVariableZ("UseIncrementalEcode", true, "1")->SetValueInt((int)UseIncrementalEcode);
@@ -924,7 +924,7 @@ void ProcessController::BindLua(lua_State *myLuaState)
 			.def ("accelerationSteps", accelerationSteps)
 			.def ("DistanceToReachFullSpeed", DistanceToReachFullSpeed)
 			.def ("extrusionFactor", extrusionFactor)
-			.def ("UseFirmwareAcceleration", UseFirmwareAcceleration)
+//			.def ("UseFirmwareAcceleration", UseFirmwareAcceleration)
 
 			// Printer
 			.def ("m_fVolume", m_fVolume)

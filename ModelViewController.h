@@ -83,10 +83,8 @@ public:
 	void SetMaxPrintSpeedXY(float val) {ProcessControl.MaxPrintSpeedXY = val;}
 	void SetMinPrintSpeedZ(float val) {ProcessControl.MinPrintSpeedZ = val;}
 	void SetMaxPrintSpeedZ(float val) {ProcessControl.MaxPrintSpeedZ = val;}
-	void NumAccelerationSteps(float val) {ProcessControl.accelerationSteps = val;}
 	void SetDistanceToReachFullSpeed(float val) {ProcessControl.DistanceToReachFullSpeed = val;}
 	void SetExtrusionFactor(float val) {ProcessControl.extrusionFactor = val;}
-	void SetUseFirmwareAcceleration(bool val){ ProcessControl.UseFirmwareAcceleration = val;}
 
 	// STL GUI Values
 	void SetLayerThickness(float val){ProcessControl.LayerThickness = val; redraw();}
