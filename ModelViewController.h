@@ -84,7 +84,7 @@ public:
 	void SetMinPrintSpeedZ(float val) {ProcessControl.MinPrintSpeedZ = val;}
 	void SetMaxPrintSpeedZ(float val) {ProcessControl.MaxPrintSpeedZ = val;}
 	void NumAccelerationSteps(float val) {ProcessControl.accelerationSteps = val;}
-	void SetDistancePrAccelerationStep(float val) {ProcessControl.distanceBetweenSpeedSteps = val;}
+	void SetDistanceToReachFullSpeed(float val) {ProcessControl.DistanceToReachFullSpeed = val;}
 	void SetExtrusionFactor(float val) {ProcessControl.extrusionFactor = val;}
 	void SetUseFirmwareAcceleration(bool val){ ProcessControl.UseFirmwareAcceleration = val;}
 

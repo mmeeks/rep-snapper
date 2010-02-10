@@ -459,8 +459,7 @@ void ModelViewController::CopySettingsToGUI()
 	gui->MinPrintSpeedZSlider->value(ProcessControl.MinPrintSpeedZ);
 	gui->MaxPrintSpeedZSlider->value(ProcessControl.MaxPrintSpeedZ);
 
-	gui->accelerationStepsSlider->value(ProcessControl.accelerationSteps);
-	gui->distanceBetweenSpeedStepsSlider->value(ProcessControl.distanceBetweenSpeedSteps);
+	gui->distanceToReachFullSpeedSlider->value(ProcessControl.DistanceToReachFullSpeed);
 	gui->UseFirmwareAccelerationButton->value(ProcessControl.UseFirmwareAcceleration);
 	gui->extrusionFactorSlider->value(ProcessControl.extrusionFactor);
 	gui->UseIncrementalEcodeButton->value(ProcessControl.UseIncrementalEcode);

@@ -30,7 +30,7 @@ class GUI {open
       } {
         Fl_Group {} {
           label {Input file} open
-          xywh {830 40 555 785}
+          xywh {830 40 555 785} hide
         } {
           Fl_Button {} {
             label {Load STL}
@@ -158,7 +158,7 @@ MVC->redraw();
             xywh {845 80 130 25}
           }
           Fl_Box RFP_Browser {
-            label {RFO file} selected
+            label {RFO file}
             xywh {845 110 355 440} box UP_BOX align 16 resizable
             code0 {\#include "Flu_Tree_Browser.h"}
             class Flu_Tree_Browser
@@ -265,7 +265,7 @@ MVC->redraw();
         }
         Fl_Group {} {
           label {Printer definition} open
-          xywh {830 40 555 785} hide
+          xywh {830 40 555 785}
         } {
           Fl_Group {} {
             label {Build volume (mm)} open
@@ -306,16 +306,11 @@ MVC->redraw();
           }
           Fl_Group {} {
             label Acceleration open
-            xywh {840 640 535 120} box ENGRAVED_FRAME color 39
+            xywh {840 680 535 80} box ENGRAVED_FRAME color 39
           } {
-            Fl_Value_Slider accelerationStepsSlider {
-              label {Number of acceleration steps}
-              callback {MVC->NumAccelerationSteps(o->value());}
-              xywh {850 690 515 20} type {Horz Knob} selection_color 2 align 5 maximum 10 step 1 value 5 textsize 14 deactivate
-            }
-            Fl_Value_Slider distanceBetweenSpeedStepsSlider {
+            Fl_Value_Slider distanceToReachFullSpeedSlider {
               label {Distance used to read full speed(mm)}
-              callback {MVC->SetDistancePrAccelerationStep(o->value())}
+              callback {MVC->SetDistanceToReachFullSpeed(o->value())} selected
               xywh {850 730 515 20} type {Horz Knob} selection_color 2 align 5 maximum 10 value 0.1 textsize 14
             }
             Fl_Light_Button EnableAccelerationButton {
@@ -323,35 +318,13 @@ MVC->redraw();
               callback {MVC->SetEnableAcceleration(o->value());
 if(o->value())
 {
-accelerationStepsSlider->activate();
-distanceBetweenSpeedStepsSlider->activate();
-UseFirmwareAccelerationButton->activate();
+distanceToReachFullSpeedSlider->activate();
 }
 else
 {
-accelerationStepsSlider->deactivate();
-distanceBetweenSpeedStepsSlider->deactivate();
-UseFirmwareAccelerationButton->deactivate();
+distanceToReachFullSpeedSlider->deactivate();
 }}
-              xywh {850 650 255 20} selection_color 63
-            }
-            Fl_Light_Button UseFirmwareAccelerationButton {
-              label {Use Firmware Acceleration}
-              callback {MVC->SetUseFirmwareAcceleration(o->value());
-
-if(o->value())
-{
-accelerationStepsSlider->deactivate();
-distanceBetweenSpeedStepsSlider->label("Distance used to read full speed(mm)");;
-}
-else
-{
-accelerationStepsSlider->activate();
-distanceBetweenSpeedStepsSlider->label("Distance Pr Acceleration Step (mm)");;
-}
-accelerationStepsSlider->redraw();
-distanceBetweenSpeedStepsSlider->redraw();}
-              xywh {1110 650 255 20} selection_color 63
+              xywh {850 690 255 20} selection_color 63
             }
           }
           Fl_Group {} {

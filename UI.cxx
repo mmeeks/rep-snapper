@@ -264,57 +264,26 @@ void GUI::cb_MarginZ(Fl_Value_Input* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_MarginZ_i(o,v);
 }
 
-void GUI::cb_accelerationStepsSlider_i(Fl_Value_Slider* o, void*) {
-  MVC->NumAccelerationSteps(o->value());
+void GUI::cb_distanceToReachFullSpeedSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetDistanceToReachFullSpeed(o->value());
 }
-void GUI::cb_accelerationStepsSlider(Fl_Value_Slider* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_accelerationStepsSlider_i(o,v);
-}
-
-void GUI::cb_distanceBetweenSpeedStepsSlider_i(Fl_Value_Slider* o, void*) {
-  MVC->SetDistancePrAccelerationStep(o->value());
-}
-void GUI::cb_distanceBetweenSpeedStepsSlider(Fl_Value_Slider* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_distanceBetweenSpeedStepsSlider_i(o,v);
+void GUI::cb_distanceToReachFullSpeedSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_distanceToReachFullSpeedSlider_i(o,v);
 }
 
 void GUI::cb_EnableAccelerationButton_i(Fl_Light_Button* o, void*) {
   MVC->SetEnableAcceleration(o->value());
 if(o->value())
 {
-accelerationStepsSlider->activate();
-distanceBetweenSpeedStepsSlider->activate();
-UseFirmwareAccelerationButton->activate();
+distanceToReachFullSpeedSlider->activate();
 }
 else
 {
-accelerationStepsSlider->deactivate();
-distanceBetweenSpeedStepsSlider->deactivate();
-UseFirmwareAccelerationButton->deactivate();
+distanceToReachFullSpeedSlider->deactivate();
 };
 }
 void GUI::cb_EnableAccelerationButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_EnableAccelerationButton_i(o,v);
-}
-
-void GUI::cb_UseFirmwareAccelerationButton_i(Fl_Light_Button* o, void*) {
-  MVC->SetUseFirmwareAcceleration(o->value());
-
-if(o->value())
-{
-accelerationStepsSlider->deactivate();
-distanceBetweenSpeedStepsSlider->label("Distance used to read full speed(mm)");;
-}
-else
-{
-accelerationStepsSlider->activate();
-distanceBetweenSpeedStepsSlider->label("Distance Pr Acceleration Step (mm)");;
-}
-accelerationStepsSlider->redraw();
-distanceBetweenSpeedStepsSlider->redraw();
-}
-void GUI::cb_UseFirmwareAccelerationButton(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_UseFirmwareAccelerationButton_i(o,v);
 }
 
 void GUI::cb_MaxPrintSpeedXYSlider_i(Fl_Value_Slider* o, void*) {
@@ -1380,6 +1349,7 @@ GUI::GUI() {
     { Tabs = new Fl_Tabs(830, 20, 565, 815);
       Tabs->align(FL_ALIGN_TOP_LEFT);
       { Fl_Group* o = new Fl_Group(830, 40, 555, 785, "Input file");
+        o->hide();
         { Fl_Button* o = new Fl_Button(845, 50, 130, 25, "Load STL");
           o->callback((Fl_Callback*)cb_Load);
         } // Fl_Button* o
@@ -1544,7 +1514,6 @@ GUI::GUI() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(830, 40, 555, 785, "Printer definition");
-        o->hide();
         { Fl_Group* o = new Fl_Group(840, 65, 230, 40, "Build volume (mm)");
           o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
@@ -1586,37 +1555,22 @@ GUI::GUI() {
           } // Fl_Value_Input* MarginZ
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(840, 640, 535, 120, "Acceleration");
+        { Fl_Group* o = new Fl_Group(840, 680, 535, 80, "Acceleration");
           o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
-          { accelerationStepsSlider = new Fl_Value_Slider(850, 690, 515, 20, "Number of acceleration steps");
-            accelerationStepsSlider->type(5);
-            accelerationStepsSlider->selection_color((Fl_Color)2);
-            accelerationStepsSlider->maximum(10);
-            accelerationStepsSlider->step(1);
-            accelerationStepsSlider->value(5);
-            accelerationStepsSlider->textsize(14);
-            accelerationStepsSlider->callback((Fl_Callback*)cb_accelerationStepsSlider);
-            accelerationStepsSlider->align(FL_ALIGN_TOP_LEFT);
-            accelerationStepsSlider->deactivate();
-          } // Fl_Value_Slider* accelerationStepsSlider
-          { distanceBetweenSpeedStepsSlider = new Fl_Value_Slider(850, 730, 515, 20, "Distance used to read full speed(mm)");
-            distanceBetweenSpeedStepsSlider->type(5);
-            distanceBetweenSpeedStepsSlider->selection_color((Fl_Color)2);
-            distanceBetweenSpeedStepsSlider->maximum(10);
-            distanceBetweenSpeedStepsSlider->value(0.1);
-            distanceBetweenSpeedStepsSlider->textsize(14);
-            distanceBetweenSpeedStepsSlider->callback((Fl_Callback*)cb_distanceBetweenSpeedStepsSlider);
-            distanceBetweenSpeedStepsSlider->align(FL_ALIGN_TOP_LEFT);
-          } // Fl_Value_Slider* distanceBetweenSpeedStepsSlider
-          { EnableAccelerationButton = new Fl_Light_Button(850, 650, 255, 20, "Enable Acceleration");
+          { distanceToReachFullSpeedSlider = new Fl_Value_Slider(850, 730, 515, 20, "Distance used to read full speed(mm)");
+            distanceToReachFullSpeedSlider->type(5);
+            distanceToReachFullSpeedSlider->selection_color((Fl_Color)2);
+            distanceToReachFullSpeedSlider->maximum(10);
+            distanceToReachFullSpeedSlider->value(0.1);
+            distanceToReachFullSpeedSlider->textsize(14);
+            distanceToReachFullSpeedSlider->callback((Fl_Callback*)cb_distanceToReachFullSpeedSlider);
+            distanceToReachFullSpeedSlider->align(FL_ALIGN_TOP_LEFT);
+          } // Fl_Value_Slider* distanceToReachFullSpeedSlider
+          { EnableAccelerationButton = new Fl_Light_Button(850, 690, 255, 20, "Enable Acceleration");
             EnableAccelerationButton->selection_color((Fl_Color)FL_GREEN);
             EnableAccelerationButton->callback((Fl_Callback*)cb_EnableAccelerationButton);
           } // Fl_Light_Button* EnableAccelerationButton
-          { UseFirmwareAccelerationButton = new Fl_Light_Button(1110, 650, 255, 20, "Use Firmware Acceleration");
-            UseFirmwareAccelerationButton->selection_color((Fl_Color)FL_GREEN);
-            UseFirmwareAccelerationButton->callback((Fl_Callback*)cb_UseFirmwareAccelerationButton);
-          } // Fl_Light_Button* UseFirmwareAccelerationButton
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(840, 440, 535, 170, "Print speeds");

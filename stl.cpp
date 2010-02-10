@@ -346,17 +346,24 @@ void STL::draw(const ProcessController &PC, float opasity)
 	{
 	while(z<Max.z)
 		{
-			/*{
+		for(uint o=0;o<PC.rfo.Objects.size();o++)
+			for(uint f=0;f<PC.rfo.Objects[o].files.size();f++)
+			{
+			Matrix4f T = PC.GetSTLTransformationMatrix(o,f);
+			Vector3f t = T.getTranslation();
+			t+= Vector3f(PC.PrintMargin.x+PC.accelerationSteps +PC.RaftSize*PC.RaftEnable, PC.PrintMargin.y+PC.RaftSize*PC.RaftEnable, 0);
+			T.setTranslation(t);
 			CuttingPlane plane;
-			CalcCuttingPlane(z, plane);	// output is a lot of unconnected line segments with individual vertices
+			T=Matrix4f::IDENTITY;
+			CalcCuttingPlane(z, plane, T);	// output is alot of un-connected line segments with individual vertices
 
 			float hackedZ = z;
 			while(plane.LinkSegments(hackedZ, PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
-				{										// This happens when there's triangles missing in the input STL
+			{										// This happens when there's triangles missing in the input STL
 				hackedZ+= 0.1f;
 				plane.polygons.clear();
-				CalcCuttingPlane(hackedZ, plane);	// output is alot of un-connected line segments with individual vertices
-				}
+				CalcCuttingPlane(hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices
+			}
 
 			plane.Draw(z, PC.DrawVertexNumbers, PC.DrawLineNumbers);
 
@@ -391,7 +398,7 @@ void STL::draw(const ProcessController &PC, float opasity)
 				}
 			
 			LayerNr++;
-			}*/
+			}
 		z+=zStep;
 		}
 	}// If display cuttingplane
@@ -462,7 +469,7 @@ CuttingPlane::CuttingPlane()
 {
 }
 
-void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, uint accelerationSteps, float distanceBetweenSpeedSteps, float extrusionFactor, GCode &code, float z, float minSpeedXY, float maxSpeedXY, float minSpeedZ, float maxSpeedZ, bool UseIncrementalEcode, bool Use3DGcode, float &E, bool UseFirmwareAcceleration, bool EnableAcceleration)
+void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, float DistanceToReachFullSpeed, float extrusionFactor, GCode &code, float z, float minSpeedXY, float maxSpeedXY, float minSpeedZ, float maxSpeedZ, bool UseIncrementalEcode, bool Use3DGcode, float &E, bool UseFirmwareAcceleration, bool EnableAcceleration)
 {
 	if(UseFirmwareAcceleration && EnableAcceleration)
 	{
@@ -487,7 +494,7 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, uint accelerationSte
 			command.f = minSpeedXY;
 			code.commands.push_back(command);
 
-			if(len < distanceBetweenSpeedSteps*2)
+			if(len < DistanceToReachFullSpeed*2)
 			{
 				// TODO: First point of acceleration is the middle of the line segment
 				command.Code = COORDINATEDMOTION;
@@ -498,7 +505,7 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, uint accelerationSte
 				else
 					E = extrudedMaterial;
 				command.e = E;		// move or extrude?
-				float lengthFactor = (len/2.0f)/distanceBetweenSpeedSteps;
+				float lengthFactor = (len/2.0f)/DistanceToReachFullSpeed;
 				command.f = (maxSpeedXY-minSpeedXY)*lengthFactor+minSpeedXY;
 				code.commands.push_back(command);
 				LastPosition = command.where;
@@ -518,7 +525,7 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, uint accelerationSte
 			{
 				// Move to max speed
 				command.Code = COORDINATEDMOTION;
-				command.where = start+(direction*distanceBetweenSpeedSteps);
+				command.where = start+(direction*DistanceToReachFullSpeed);
 				float extrudedMaterial = (LastPosition - command.where).length()*extrusionFactor;
 				if(UseIncrementalEcode)
 					E+=extrudedMaterial;
@@ -531,7 +538,7 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, uint accelerationSte
 
 				// Sustian speed till deacceleration starts
 				command.Code = COORDINATEDMOTION;
-				command.where = end-(direction*distanceBetweenSpeedSteps);
+				command.where = end-(direction*DistanceToReachFullSpeed);
 				extrudedMaterial = (LastPosition - command.where).length()*extrusionFactor;
 				if(UseIncrementalEcode)
 					E+=extrudedMaterial;
@@ -556,7 +563,7 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, uint accelerationSte
 			} // if we will reach full speed
 		}// if we are going somewhere
 	} // Firmware acceleration
-	else	// No accleration
+	else	// No accleration or stepwise acceleration
 	{
 		Command command;
 		float accumulatedE = 0;
@@ -615,16 +622,6 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, uint accelerationSte
 					command.Code = COORDINATEDMOTION;
 					command.where = pos;
 					float extrudedMaterial = (LastPosition - command.where).length()*extrusionFactor;
-					/*			if(extrudedMaterial < 1.0f)
-					{
-					accumulatedE += extrudedMaterial;		// Gather untill we have a real amount
-					extrudedMaterial = 0.0f;				// and don't extrude anything this move (ooze takes care of it)
-					if(accumulatedE > 1.0f)					// Unless we are ready to extrude again
-					{
-					extrudedMaterial = (float)(int)accumulatedE;	// Extrude the int value of the collected material
-					accumulatedE -= extrudedMaterial;				// and remove it from the buffer
-					}
-					}*/
 					if(UseIncrementalEcode)
 						E+=extrudedMaterial;
 					else
@@ -737,26 +734,10 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	while(thisPoint != -1)
 		{
 		float len;
-		// Make a accelerated line from LastPosition to lines[thisPoint]
+		// Make a MOVE accelerated line from LastPosition to lines[thisPoint]
 		if(LastPosition != lines[thisPoint]) //If we are going to somewhere else
 			{
-//			if(UseAcceleration)
-				MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], accelerationSteps,distanceBetweenSpeedSteps, 0.0f, code, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, UseIncrementalEcode, Use3DGcode, E, UseFirmwareAcceleration, EnableAcceleration);
-/*			else
-				{
-					if(EnableAcceleration)
-					{
-					command.Code = COORDINATEDMOTION;
-					command.where = lines[thisPoint];
-					if(UseIncrementalEcode)
-						command.e = E;		// Same E as last time = no extrusion = move
-					else
-						command.e = 0.0f;
-					command.f = MinPrintSpeedXY;
-					code.commands.push_back(command);
-					}
-
-				}*/
+			MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], accelerationSteps,distanceBetweenSpeedSteps, 0.0f, code, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, UseIncrementalEcode, Use3DGcode, E, UseFirmwareAcceleration, EnableAcceleration);
 			}// If we are going to somewhere else
 			
 		LastPosition = lines[thisPoint];
@@ -766,6 +747,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 		used[thisPoint] = true;
 		// store thisPoint
 
+		// Make a PLOT accelerated line from LastPosition to lines[thisPoint]
 		if(UseAcceleration)
 			MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], accelerationSteps, distanceBetweenSpeedSteps, extrusionFactor, code, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, UseIncrementalEcode, Use3DGcode, E, UseFirmwareAcceleration, EnableAcceleration);
 		else
@@ -1889,11 +1871,38 @@ uint CuttingPlane::selfIntersectAndDivideRecursive(float z, uint startPolygon, u
 	level--;
 	return startVertex;
 }
+#include "gpc.h"
 
 void CuttingPlane::selfIntersectAndDivide(float z)
 {
-	vector<outline> outlines;
+	gpc_polygon subject, clip, result;
+	gpc_vertex_list vertices;
 
+	vector<Vector2f> vertices;
+
+	for(uint p=0; p<offsetPolygons.size();p++)
+	{
+		vector<int> outline;
+		for(uint v=0; v<offsetPolygons[p].points.size();v++)
+		{
+		outline.push_back(vertices.size());
+		vertices.push_back(offsetPolygons[p].points[v]);
+		}
+		gpc_vertex_list gpc_v;
+		gpc_v.num_vertices = vertices.size();
+		gpc_v.vertex = &vertices[0].x;
+
+		gpc_polygon gpc_p;
+
+
+	if(p==0)
+		gpc_add_contour(gpc_polygon     *p, &gpc_v,int              hole);
+	outlines.push_back(o);
+	}
+
+	gpc_polygon_clip(GPC_INT, &subject, &clip, &result);
+
+/*
 	glPointSize(10);
 	glBegin(GL_POINTS);
 	glVertex3f(offsetVertices[offsetPolygons[0].points[0]].x, offsetVertices[offsetPolygons[0].points[0]].y,z);
@@ -2114,7 +2123,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 		offsetPolygons.push_back(offsetPoly);
 		}
 
-	selfIntersectAndDivide(z);
+//	selfIntersectAndDivide(z);
 }
 #endif
 

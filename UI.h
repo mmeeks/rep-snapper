@@ -164,25 +164,15 @@ private:
   void cb_MarginZ_i(Fl_Value_Input*, void*);
   static void cb_MarginZ(Fl_Value_Input*, void*);
 public:
-  Fl_Value_Slider *accelerationStepsSlider;
+  Fl_Value_Slider *distanceToReachFullSpeedSlider;
 private:
-  void cb_accelerationStepsSlider_i(Fl_Value_Slider*, void*);
-  static void cb_accelerationStepsSlider(Fl_Value_Slider*, void*);
-public:
-  Fl_Value_Slider *distanceBetweenSpeedStepsSlider;
-private:
-  void cb_distanceBetweenSpeedStepsSlider_i(Fl_Value_Slider*, void*);
-  static void cb_distanceBetweenSpeedStepsSlider(Fl_Value_Slider*, void*);
+  void cb_distanceToReachFullSpeedSlider_i(Fl_Value_Slider*, void*);
+  static void cb_distanceToReachFullSpeedSlider(Fl_Value_Slider*, void*);
 public:
   Fl_Light_Button *EnableAccelerationButton;
 private:
   void cb_EnableAccelerationButton_i(Fl_Light_Button*, void*);
   static void cb_EnableAccelerationButton(Fl_Light_Button*, void*);
-public:
-  Fl_Light_Button *UseFirmwareAccelerationButton;
-private:
-  void cb_UseFirmwareAccelerationButton_i(Fl_Light_Button*, void*);
-  static void cb_UseFirmwareAccelerationButton(Fl_Light_Button*, void*);
 public:
   Fl_Value_Slider *MaxPrintSpeedXYSlider;
 private:

@@ -60,12 +60,10 @@ public:
 		MinPrintSpeedZ = 50.0f;
 		MaxPrintSpeedZ = 150.0f;
 
-		accelerationSteps = 5;
-		distanceBetweenSpeedSteps= 0.5f;
+		DistanceToReachFullSpeed= 1.5f;
 		extrusionFactor = 1.0f;
 		UseIncrementalEcode = false;
 		Use3DGcode = false;
-		UseFirmwareAcceleration = true;
 
 		LayerThickness = 0.4f;
 		CuttingPlaneValue = 0.5f;
@@ -118,7 +116,7 @@ public:
 	bool ReadStl(string filename, STL &newstl) { return newstl.Read(filename);};
 	void OptimizeRotation();
 	void RotateObject(Vector3f axis, float a);
-	Matrix4f GetSTLTransformationMatrix(int object=-1, int file=-1);
+	Matrix4f GetSTLTransformationMatrix(int object=-1, int file=-1) const ;
 	void CalcBoundingBoxAndZoom();
 
 	void ConvertToGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd);
@@ -183,10 +181,8 @@ public:
 	float MinPrintSpeedZ;
 	float MaxPrintSpeedZ;
 
-	uint accelerationSteps;
-	float distanceBetweenSpeedSteps;
+	float DistanceToReachFullSpeed;
 	float extrusionFactor;
-	bool UseFirmwareAcceleration;
 
 	// Printer
 	Vector3f	m_fVolume;				// Max print volume
