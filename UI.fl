@@ -310,7 +310,7 @@ MVC->redraw();
           } {
             Fl_Value_Slider distanceToReachFullSpeedSlider {
               label {Distance used to read full speed(mm)}
-              callback {MVC->SetDistanceToReachFullSpeed(o->value())} selected
+              callback {MVC->SetDistanceToReachFullSpeed(o->value())}
               xywh {850 730 515 20} type {Horz Knob} selection_color 2 align 5 maximum 10 value 0.1 textsize 14
             }
             Fl_Light_Button EnableAccelerationButton {
@@ -358,8 +358,8 @@ distanceToReachFullSpeedSlider->deactivate();
           } {
             Fl_Value_Slider ExtrudedMaterialWidthSlider {
               label {Extruded material width}
-              callback {MVC->SetExtrudedMaterialWidth(o->value());}
-              xywh {850 230 515 20} type {Horz Knob} selection_color 2 align 5 maximum 2 value 0.7 textsize 14
+              callback {MVC->SetExtrudedMaterialWidth(o->value());} selected
+              xywh {850 230 515 20} type {Horz Knob} selection_color 2 align 5 maximum 10 value 0.7 textsize 14
             }
             Fl_Value_Slider extrusionFactorSlider {
               label {Extrusion multiplier}

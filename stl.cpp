@@ -877,8 +877,9 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, uint LayerNr, float z, f
 			glVertex3f(P2.x, P2.y, z);
 			glEnd();
 			}
+		float Examine = 0.5f;
 
-/*		if(DisplayDebuginFill)
+		if(DisplayDebuginFill)
 			if(!examine && ((Examine-0.5f)*2 * Length <= x))
 				{
 				examineThis = examine = true;
@@ -886,7 +887,7 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, uint LayerNr, float z, f
 				glVertex3f(P1.x, P1.y, z);
 				glVertex3f(P2.x, P2.y, z);
 				}
-*/
+
 			if(offsetPolygons.size() != 0)
 				{
 				for(uint p=0;p<offsetPolygons.size();p++)
@@ -907,7 +908,7 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, uint LayerNr, float z, f
 						}
 					}
 				}
-			else
+/*			else if(vertices.size() != 0)
 				{
 				// Fallback, collide with lines rather then polygons
 				for(uint i=0;i<lines.size();i++)
@@ -924,7 +925,7 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, uint LayerNr, float z, f
 						HitsBuffer.push_back(hit);
 						}
 					}
-				}
+				}*/
 			// Sort hits
 			// Sort the vector using predicate and std::sort
 			std::sort(HitsBuffer.begin(), HitsBuffer.end(), InFillHitCompareFunc);
@@ -1102,16 +1103,16 @@ int intersect2D_Segments( const Vector2f &p1, const Vector2f &p2, const Vector2f
 
 	// the segments are skew and may intersect in a point
 	// get the intersect parameter for S1
-	float     sI = perp(v,w) / D;
-	if (sI < 0 || sI > 1)               // no intersect with S1
+	t0 = perp(v,w) / D;
+	if (t0 < 0 || t0 > 1)               // no intersect with S1
 		return 0;
 
 	// get the intersect parameter for S2
-	float     tI = perp(u,w) / D;
-	if (tI < 0 || tI > 1)               // no intersect with S2
+	t1 = perp(u,w) / D;
+	if (t1 < 0 || t1 > 1)               // no intersect with S2
 		return 0;
 
-	I0 = p1 + u * sI;               // compute S1 intersect point
+	I0 = p1 + u * t0;               // compute S1 intersect point
 	return 1;
 }
 
@@ -1126,24 +1127,28 @@ bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, con
 	{
 		hit.p = p1;
 		hit.d = sqrtf( (p1.x-hit.p.x) * (p1.x-hit.p.x) + (p1.y-hit.p.y) * (p1.y-hit.p.y));
+		hit.t = 0.0f;
 		return true;
 	}
 	if(abs(p2.x-p3.x) < 0.01 && abs(p2.y - p3.y) < 0.01)
 	{
 		hit.p = p2;
 		hit.d = sqrtf( (p1.x-hit.p.x) * (p1.x-hit.p.x) + (p1.y-hit.p.y) * (p1.y-hit.p.y));
+		hit.t = 1.0f;
 		return true;
 	}
 	if(abs(p1.x-p4.x) < 0.01 && abs(p1.y - p4.y) < 0.01)
 	{
 		hit.p = p1;
 		hit.d = sqrtf( (p1.x-hit.p.x) * (p1.x-hit.p.x) + (p1.y-hit.p.y) * (p1.y-hit.p.y));
+		hit.t = 0.0f;
 		return true;
 	}
 	if(abs(p2.x-p4.x) < 0.01 && abs(p2.y - p4.y) < 0.01)
 	{
 		hit.p = p2;
 		hit.d = sqrtf( (p1.x-hit.p.x) * (p1.x-hit.p.x) + (p1.y-hit.p.y) * (p1.y-hit.p.y));
+		hit.t = 1.0f;
 		return true;
 	}
 
@@ -1152,6 +1157,7 @@ bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, con
 	if(intersect2D_Segments(p1,p2,p3,p4,hit.p, hit2.p, t0,t1) == 1)
 	{
 	hit.d = sqrtf( (p1.x-hit.p.x) * (p1.x-hit.p.x) + (p1.y-hit.p.y) * (p1.y-hit.p.y));
+	hit.t = t0;
 	return true;
 	}
 	return false;
@@ -1794,7 +1800,7 @@ uint CuttingPlane::selfIntersectAndDivideRecursive(float z, uint startPolygon, u
 		uint count = offsetPolygons[p].points.size();
 		for(uint v=startVertex; v<count;v++)
 		{
-			for(int p2=0; p2<offsetPolygons.size();p2++)
+			for(uint p2=0; p2<offsetPolygons.size();p2++)
 			{
 				uint count2 = offsetPolygons[p2].points.size();
 				for(int v2=0; v2<count2;v2++)
@@ -1812,12 +1818,11 @@ uint CuttingPlane::selfIntersectAndDivideRecursive(float z, uint startPolygon, u
 							{
 							if( (hit.p-endVertex).length() < 0.01)
 								{
-								outlines.push_back(result);
-								return (v+1)%count;
+//								outlines.push_back(result);
+//								return (v+1)%count;
 								}
 							result.push_back(hit.p);
-//							selfIntersectAndDivideRecursive(z, p, v, outlines, hit.p);
-							v=selfIntersectAndDivideRecursive(z, p2, (v2+1)%count2, outlines, hit.p, level);
+//							v=selfIntersectAndDivideRecursive(z, p2, (v2+1)%count2, outlines, hit.p, level);
 //							outlines.push_back(result);
 //							return;
 							}
@@ -1829,111 +1834,243 @@ uint CuttingPlane::selfIntersectAndDivideRecursive(float z, uint startPolygon, u
 	level--;
 	return startVertex;
 }
-//#include "gpc.h"
 
-void CuttingPlane::selfIntersectAndDivide(float z)
+void CuttingPlane::recurseSelfIntersectAndDivide(float z, vector<locator> &EndPointStack, vector<outline> &outlines, vector<locator> &visited)
 {
-/*	gpc_polygon subject, clip, result;
-	gpc_vertex_list vertices;
+	// pop an entry from the stack.
+	// Trace it till it hits itself
+	//		store a outline
+	// When finds splits, store locator on stack and recurse
 
-	vector<Vector2f> vertices;
-
-	for(uint p=0; p<offsetPolygons.size();p++)
+	while(EndPointStack.size())
 	{
-		vector<int> outline;
-		for(uint v=0; v<offsetPolygons[p].points.size();v++)
+		locator start(EndPointStack.back().p, EndPointStack.back().v, EndPointStack.back().t);
+		visited.push_back(start);	// add to visited list
+		EndPointStack.pop_back();	// remove from to-do stack
+
+		// search for the start point
+
+		outline result;
+		for(uint p=start.p; p<offsetPolygons.size();p++)
 		{
-		outline.push_back(vertices.size());
-		vertices.push_back(offsetPolygons[p].points[v]);
-		}
-		gpc_vertex_list gpc_v;
-		gpc_v.num_vertices = vertices.size();
-		gpc_v.vertex = &vertices[0].x;
-
-		gpc_polygon gpc_p;
-
-
-	if(p==0)
-		gpc_add_contour(gpc_polygon     *p, &gpc_v,int              hole);
-	outlines.push_back(o);
-	}
-
-	gpc_polygon_clip(GPC_INT, &subject, &clip, &result);
-*/
-/*
-	glPointSize(10);
-	glBegin(GL_POINTS);
-	glVertex3f(offsetVertices[offsetPolygons[0].points[0]].x, offsetVertices[offsetPolygons[0].points[0]].y,z);
-	glEnd();
-	glPointSize(1);
-
-	uint level=0;
-
-	for(uint p=0; p<offsetPolygons.size();p++)
-			for(uint v=0; v<offsetPolygons[p].points.size();v++)
-				selfIntersectAndDivideRecursive(z, p, v, outlines, offsetPolygons[p].points[0], level);
-/*
-	vector<Vector2f> result;
-	for(uint p=0; p<offsetPolygons.size();p++)
-	{
-		uint count = offsetPolygons[p].points.size();
-		for(uint v=0; v<count;v++)
-		{
-			for(int p2=0; p2<offsetPolygons.size();p2++)
+			for(uint v=start.v; v<offsetPolygons[p].points.size();v++)
 			{
-				uint count2 = offsetPolygons[p2].points.size();
-				for(int v2=0; v2<count2;v2++)
+				Vector2f P1 = offsetVertices[offsetPolygons[p].points[v]];
+				Vector2f P2 = offsetVertices[offsetPolygons[p].points[(v+1)%offsetPolygons[p].points.size()]];
+
+				result.push_back(P1);	// store this point
+				for(uint p2=0; p2<offsetPolygons.size();p2++)
 				{
-					if((p==p2) && (v == v2))	// Dont check a point against itself
-						continue;
-					Vector2f P1 = offsetVertices[offsetPolygons[p].points[v]];
-					Vector2f P2 = offsetVertices[offsetPolygons[p].points[(v+1)%count]];
-					Vector2f P3 = offsetVertices[offsetPolygons[p2].points[v2]];
-					Vector2f P4 = offsetVertices[offsetPolygons[p2].points[(v2+1)%count2]];
-					InFillHit hit;
-					result.push_back(P1);
-					if(P1 != P3 && P2 != P3 && P1 != P4 && P2 != P4)
-						if(IntersectXY(P1,P2,P3,P4,hit))
+					uint count2 = offsetPolygons[p2].points.size();
+					for(int v2=0; v2<count2;v2++)
+					{
+						if((p==p2) && (v == v2))	// Dont check a point against itself
+							continue;
+						Vector2f P3 = offsetVertices[offsetPolygons[p2].points[v2]];
+						Vector2f P4 = offsetVertices[offsetPolygons[p2].points[(v2+1)%offsetPolygons[p2].points.size()]];
+						InFillHit hit;
+
+						if(P1 != P3 && P2 != P3 && P1 != P4 && P2 != P4)
 						{
-							result.push_back(hit.p);
-							glEnd();
-							glPointSize(10);
-							glColor3f(1,1,1);
-							glBegin(GL_POINTS);
-							glVertex3f(hit.p.x, hit.p.y, z);
-							glEnd();
-							glPointSize(1);
-							glColor3f(1,0,0);
-							glBegin(GL_LINE_LOOP);
+							if(IntersectXY(P1,P2,P3,P4,hit))
+							{
+								bool alreadyVisited=false;
+
+								UINT i;
+								for(i=0;i<visited.size();i++)
+								{
+									if(visited[i].p == p && visited[i].v == v)
+									{
+										alreadyVisited = true;
+										break;
+									}
+								}
+								if(alreadyVisited == false)
+								{
+									EndPointStack.push_back(locator(p,v+1,hit.t));	// continue from here later on
+									p=p2;v=v2;	// continue along the intersection line
+									Vector2f P1 = offsetVertices[offsetPolygons[p].points[v]];
+									Vector2f P2 = offsetVertices[offsetPolygons[p].points[(v+1)%offsetPolygons[p].points.size()]];
+								}
+
+
+								result.push_back(hit.p);
+								// Did we hit the starting point?
+								if(start.p == p  && start.v == v) // we have a loop
+									{
+									outlines.push_back(result);
+									result.clear();
+									recurseSelfIntersectAndDivide(z, EndPointStack, outlines, visited);
+									return;
+									}
+								glPointSize(10);
+								glColor3f(1,1,1);
+								glBegin(GL_POINTS);
+								glVertex3f(hit.p.x, hit.p.y, z);
+								glEnd();
+							}
 						}
+					}
 				}
 			}
 		}
 	}
+}
+extern "C"{
+#include "gpc.h"
+};
+void CuttingPlane::selfIntersectAndDivide(float z)
+{
+	for(uint p=0; p<offsetPolygons.size();p++)
+		offsetPolygons[p].calcHole(offsetVertices);
+
+	gpc_polygon solids;
+	solids.num_contours = 0;
+	gpc_polygon holes;
+	holes.num_contours = 0;
+
+	gpc_polygon all_holes;
+	gpc_polygon all_solids;
+
+	// Copy vertices
+	for(uint p=0; p<offsetPolygons.size();p++)
+	{
+		gpc_vertex_list *vertices = new gpc_vertex_list;
+		vertices->vertex = new  gpc_vertex[offsetPolygons[p].points.size()];
+		for(int v=0;v<offsetPolygons[p].points.size();v++)
+		{
+			vertices->vertex[v].x = offsetVertices[offsetPolygons[p].points[v]].x;
+			vertices->vertex[v].y = offsetVertices[offsetPolygons[p].points[v]].y;
+		}
+	vertices->num_vertices = offsetPolygons[p].points.size();
+
+	if(offsetPolygons[p].hole == true)
+		{
+			if(holes.num_contours == 0)
+			{
+				holes.num_contours = 1;
+				holes.hole = new int;
+				*holes.hole = 0;
+				holes.contour = vertices;
+			}
+			else
+			{
+				gpc_polygon new_hole;
+				new_hole.num_contours = 1;
+				new_hole.hole = new int;
+				*new_hole.hole = 0;
+				new_hole.contour = vertices;
+				gpc_polygon_clip(GPC_UNION, &holes, &new_hole, &all_holes);
+				holes=all_holes;
+				delete new_hole.hole;
+				delete new_hole.contour;
+			}
+//				gpc_add_contour(&holes, vertices, 0);
+		}
+	else			// it's a solid
+		{
+			if(solids.num_contours == 0)
+			{
+				solids.num_contours = 1;
+				solids.hole = new int;
+				*solids.hole = 0;
+				solids.contour = vertices;
+			}
+			else
+				{
+				gpc_polygon new_solid;
+				new_solid.num_contours = 1;
+				new_solid.hole = new int;
+				*new_solid.hole = 0;
+				new_solid.contour = vertices;
+				gpc_polygon_clip(GPC_UNION, &solids, &new_solid, &all_solids);
+				solids=all_solids;
+				delete new_solid.hole;
+				delete new_solid.contour;
+				}
+	}
+	}
+
+
+	// boolean the holes together
+
+//	gpc_polygon_clip(GPC_UNION, &holes, &holes, &all_holes);
+
+	gpc_polygon poly_res;
+	gpc_polygon_clip(GPC_DIFF, &solids, &holes, &poly_res);
+
+/*
+	glLineWidth(10);
+	for(int p=0;p<poly_res.num_contours;p++)
+	{
+		switch(p%6)
+		{
+		case 0:	glColor4f(1,0,0,1); break;
+		case 1:	glColor4f(0.5f,0,0,1); break;
+		case 2:	glColor4f(0,1,0,1); break;
+		case 3:	glColor4f(0,0.5f,0,1); break;
+		case 4:	glColor4f(0,0,1,1); break;
+		case 5:	glColor4f(0,0,0.3f,1); break;
+		default: glColor4f(0.2f,0.2f,0.2f,1); break;
+		}
+
+		glBegin(GL_LINE_LOOP);
+		for(int v=0;v<poly_res.contour[p].num_vertices;v++)
+			glVertex3f(poly_res.contour[p].vertex[v].x, poly_res.contour[p].vertex[v].y, z);
+		glEnd();
+	}
+	glLineWidth(1);
 */
 
-/*	glColor3f(1,0,1);
+	offsetPolygons.clear();
+	offsetVertices.clear();
+
+	for(int p=0;p<poly_res.num_contours;p++)
+	{
+		Poly pol;
+		for(int v=0;v<poly_res.contour[p].num_vertices;v++)
+			{
+			pol.points.push_back(offsetVertices.size());
+			offsetVertices.push_back(Vector2f(poly_res.contour[p].vertex[v].x, poly_res.contour[p].vertex[v].y));
+			}
+		offsetPolygons.push_back(pol);
+	}
+
+/*
+	vector<Vector2f> result;
+
+	vector<outline> outlines;
+	vector<locator> EndPointStack;
+	vector<locator> visited;
+
+	EndPointStack.push_back(locator(0,0,0));
+
+	recurseSelfIntersectAndDivide(z, EndPointStack, outlines, visited);
+
+	glColor3f(1,0,1);
 	glLineWidth(5);
 	for(uint i=0;i<outlines.size();i++)
-		{
+	{
 		z+=1;
-			switch(i%6)
-				{
-				case 0:	glColor4f(1,0,0,1); break;
-				case 1:	glColor4f(0.5f,0,0,1); break;
-				case 2:	glColor4f(0,1,0,1); break;
-				case 3:	glColor4f(0,0.5f,0,1); break;
-				case 4:	glColor4f(0,0,1,1); break;
-				case 5:	glColor4f(0,0,0.3f,1); break;
-				default: glColor4f(0.2f,0.2f,0.2f,1); break;
-				}
+		switch(i%6)
+		{
+		case 0:	glColor4f(1,0,0,1); break;
+		case 1:	glColor4f(0.5f,0,0,1); break;
+		case 2:	glColor4f(0,1,0,1); break;
+		case 3:	glColor4f(0,0.5f,0,1); break;
+		case 4:	glColor4f(0,0,1,1); break;
+		case 5:	glColor4f(0,0,0.3f,1); break;
+		default: glColor4f(0.2f,0.2f,0.2f,1); break;
+		}
 
+	glLineWidth(5);
 		glBegin(GL_LINE_LOOP);
 		for(uint v=0;v<outlines[i].size();v++)
 			glVertex3f(outlines[i][v].x, outlines[i][v].y, z);
 		glEnd();
-		}
-	glLineWidth(1);*/
+	}
+	glLineWidth(1);
+*/
 }
 
 #if(1)
@@ -1976,6 +2113,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 			glEnd();
 		offsetPolygons.push_back(offsetPoly);
 	}
+	selfIntersectAndDivide(z);
 }
 #else
 void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
@@ -2006,7 +2144,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 			Nb -= N1*distance;
 			Nc -= N2*distance;
 			Nd -= N2*distance;
-
+/*
 			glLineWidth(5);
 			glBegin(GL_LINES);
 			glColor3f(1,0.5f,0);
@@ -2017,7 +2155,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 //			glVertex3f(Nd.x, Nd.y, z);
 			glEnd();
 			glLineWidth(1);
-
+*/
 			Vector2f point = Nb;// vertices[vertexNr] - (Normal * distance);
 
 			InFillHit hit;
@@ -2082,7 +2220,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 		offsetPolygons.push_back(offsetPoly);
 		}
 
-//	selfIntersectAndDivide(z);
+	selfIntersectAndDivide(z);
 }
 #endif
 
@@ -2130,11 +2268,11 @@ void CuttingPlane::Draw(float z, bool DrawVertexNumbers, bool DrawLineNumbers)
 
 	// Vertex numbers
 	if(DrawVertexNumbers)
-		for(int v=0;v<vertices.size();v++)
+		for(int v=0;v<offsetVertices.size();v++)
 		{
 			ostringstream oss;
 			oss << v;
-			renderBitmapString(Vector3f (vertices[v].x, vertices[v].y, z) , GLUT_BITMAP_8_BY_13 , oss.str());
+			renderBitmapString(Vector3f (offsetVertices[v].x, offsetVertices[v].y, z) , GLUT_BITMAP_8_BY_13 , oss.str());
 		}
 	if(DrawLineNumbers)
 		for(int l=0;l<lines.size();l++)
@@ -2294,4 +2432,28 @@ void STL::CenterAroundXY()
 	Max += displacement;
 	Min += displacement;
 	CalcBoundingBoxAndZoom();
+}
+
+
+void Poly::calcHole(vector<Vector2f> &offsetVertices)
+{
+	float x=-6000;
+	int v=0;
+	for(int vert=0;vert<points.size();vert++)
+	{
+		if(offsetVertices[points[vert]].x > x)
+		{
+			x = offsetVertices[points[vert]].x;
+			v=vert;
+		}
+	}
+
+	// we have the x-most vertex, v
+	Vector2f V1 = offsetVertices[points[(v-1+points.size())%points.size()]];
+	Vector2f V2 = offsetVertices[points[(v+points.size())%points.size()]];
+	Vector2f V3 = offsetVertices[points[(v+1+points.size())%points.size()]];
+
+	Vector2f Va=V2-V1;
+	Vector2f Vb=V3-V1;
+	hole = Va.cross(Vb) > 0;
 }

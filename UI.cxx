@@ -1625,7 +1625,7 @@ GUI::GUI() {
           { ExtrudedMaterialWidthSlider = new Fl_Value_Slider(850, 230, 515, 20, "Extruded material width");
             ExtrudedMaterialWidthSlider->type(5);
             ExtrudedMaterialWidthSlider->selection_color((Fl_Color)2);
-            ExtrudedMaterialWidthSlider->maximum(2);
+            ExtrudedMaterialWidthSlider->maximum(10);
             ExtrudedMaterialWidthSlider->value(0.7);
             ExtrudedMaterialWidthSlider->textsize(14);
             ExtrudedMaterialWidthSlider->callback((Fl_Callback*)cb_ExtrudedMaterialWidthSlider);

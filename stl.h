@@ -62,6 +62,7 @@ public:
 struct InFillHit{
 	Vector2f p;		// The intersection point
 	float d;		// Distance from the infill-line start point, used for sorting hits
+	float t;		// intersection point on first line
 };
 
 struct Segment{
@@ -74,8 +75,16 @@ class Poly{
 public:
 	Poly(){};
 	void cleanup();				// Removed vertices that are on a straight line
-
+	void calcHole(vector<Vector2f> &offsetVertices);
 	vector<uint> points;			// points, indices into ..... a CuttingPlane or a GCode object
+	bool hole;
+};
+
+struct locator{
+	locator(int polygon, int vertex, float where){p=polygon; v=vertex; t=where;}
+	int p;
+	int v;
+	float t;
 };
 
 // A (set of) 2D polygon extracted from a 3D model
@@ -84,6 +93,7 @@ public:
 	CuttingPlane();
 	void Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets);		// Contracts polygons
 	void selfIntersectAndDivide(float z);
+	void recurseSelfIntersectAndDivide(float z, vector<locator> &EndPointStack, vector<outline> &outlines, vector<locator> &visited);
 	uint selfIntersectAndDivideRecursive(float z, uint startPolygon, uint startVertex, vector<outline> &outlines, const Vector2f endVertex, uint &level);
 	void CalcInFill(vector<Vector2f> &infill, uint LayerNr, float z, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill);	// Collide a infill-line with the polygons
 	void Draw(float z, bool DrawVertexNumbers, bool DrawLineNumbers);
@@ -99,7 +109,6 @@ public:
 
 	vector<Poly> offsetPolygons;	// Shrinked closed loops
 	vector<Vector2f> offsetVertices;// points for shrinked closed loops
-
 };
 
 class STL
