@@ -365,6 +365,7 @@ void STL::draw(const ProcessController &PC, float opasity)
 				CalcCuttingPlane(hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices
 			}
 
+			plane.Shrink(PC.ExtrudedMaterialWidth*0.5f, z, PC.DisplayCuttingPlane, true);
 			plane.Draw(z, PC.DrawVertexNumbers, PC.DrawLineNumbers);
 
 			// inFill
@@ -1564,7 +1565,7 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 
 	// Cleanup polygons
 	CleanupPolygons(Optimization);
-	Shrink(ShrinkValue, z, DisplayCuttingPlane, true);
+//	Shrink(ShrinkValue, z, DisplayCuttingPlane, true);
 	// Draw resulting poly
 	glColor3f(1,1,0);
 	for(int p=0; p<polygons.size();p++)
@@ -1919,7 +1920,7 @@ void CuttingPlane::recurseSelfIntersectAndDivide(float z, vector<locator> &EndPo
 
 
 
-#if(1)
+#if(0)
 void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
 {
 	glColor4f(1,1,1,1);
@@ -1961,7 +1962,8 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 	}
 	selfIntersectAndDivide(z);
 }
-#else
+#endif
+#if(0)
 void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
 {
 	for(int p=0; p<polygons.size();p++)
@@ -2067,6 +2069,265 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 		}
 
 	selfIntersectAndDivide(z);
+}
+#endif
+#if(1)
+#include "gpc.h"
+
+#define RESOLUTION 4
+#define FREE(p)            {if (p) {free(p); (p)= NULL;}}
+
+void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
+{
+
+	offsetPolygons.clear();
+
+	gpc_polygon solids;
+	solids.num_contours = 0;
+	gpc_polygon holes;
+	holes.num_contours = 0;
+
+	gpc_polygon all_holes;
+	gpc_polygon all_solids;
+
+	for(int p=0; p<polygons.size();p++)
+	{
+		polygons[p].calcHole(vertices);
+		Poly offsetPoly;
+		uint count = polygons[p].points.size();
+		for(int i=0; i<count;i++)
+		{
+			Vector2f Na = Vector2f(vertices[polygons[p].points[(i-1+count)%count]].x, vertices[polygons[p].points[(i-1+count)%count]].y);
+			Vector2f Nb = Vector2f(vertices[polygons[p].points[i%count]].x, vertices[polygons[p].points[i%count]].y);
+			Vector2f V1 = (Nb-Na);
+
+			Vector2f delta = V1.getNormalized();
+			Vector2f N1 = Vector2f(-delta.y, delta.x);
+
+			vector<Vector2f> LineOutline;
+
+			Vector2f P1 = Na+N1*distance; 
+			Vector2f P3 = Nb-N1*distance; 
+/*
+
+			glColor3f(1,0,1);
+			glBegin(GL_LINES);
+			glVertex3f(P1.x, P1.y, z);
+			glVertex3f(Na.x, Na.y, z);
+			glEnd();
+
+			glColor3f(1,1,1);
+
+*/
+			float a = atan2( P1.y-Na.y , P1.x-Na.x );
+
+			float step = M_PI/RESOLUTION;
+			int steps=RESOLUTION+1;
+			Vector2f point;
+			while(steps--)
+			{
+				point.x = Na.x+cos(a)*distance;
+				point.y = Na.y+sin(a)*distance;
+
+				LineOutline.push_back(point);
+
+				a+=step;
+			}
+			LineOutline.push_back(P3);
+			steps=RESOLUTION;
+			while(steps--)
+			{
+				point.x = Nb.x+cos(a)*distance;
+				point.y = Nb.y+sin(a)*distance;
+
+				LineOutline.push_back(point);
+
+				a+=step;
+			}
+/*
+			glLineWidth(1);
+			glBegin(GL_LINE_LOOP);
+			for(int i=0;i<LineOutline.size();i++)
+			glVertex3f(LineOutline[i].x, LineOutline[i].y, z);
+			glEnd();
+			glLineWidth(1);
+*/
+			gpc_vertex_list *outline = new gpc_vertex_list;
+			outline->vertex = new  gpc_vertex[LineOutline.size()];
+			if(polygons[p].hole == true)
+				for(int v=0;v<LineOutline.size();v++)
+				{
+					outline->vertex[LineOutline.size()-1-v].x = LineOutline[v].x;
+					outline->vertex[LineOutline.size()-1-v].y = LineOutline[v].y;
+				}
+			else
+				for(int v=0;v<LineOutline.size();v++)
+				{
+					outline->vertex[v].x = LineOutline[v].x;
+					outline->vertex[v].y = LineOutline[v].y;
+				}
+			outline->num_vertices = LineOutline.size();
+			LineOutline.clear();
+
+			// add this outline to the boolean solution
+			if(polygons[p].hole == true)
+			{
+				if(holes.num_contours == 0)
+				{
+					holes.num_contours = 1;
+					holes.hole = new int;
+					*holes.hole = 1;
+					holes.contour = outline;
+				}
+				else
+				{
+					gpc_polygon new_hole;
+					new_hole.num_contours = 1;
+					new_hole.hole = new int;
+					*new_hole.hole = 1;
+					new_hole.contour = outline;
+					gpc_polygon_clip(GPC_UNION, &holes, &new_hole, &all_holes);
+					holes=all_holes;
+					delete new_hole.hole;
+					delete new_hole.contour->vertex;
+					delete new_hole.contour;
+				}
+				//				gpc_add_contour(&holes, outline, 0);
+			}
+			else			// it's a solid
+			{
+				if(solids.num_contours == 0)
+				{
+					solids.num_contours = 1;
+					solids.hole = new int;
+					*solids.hole = 0;
+					solids.contour = outline;
+				}
+				else
+				{
+					gpc_polygon new_solid;
+					new_solid.num_contours = 1;
+					new_solid.hole = new int;
+					*new_solid.hole = 0;
+					new_solid.contour = outline;
+					gpc_polygon_clip(GPC_UNION, &solids, &new_solid, &all_solids);
+					solids=all_solids;
+					delete new_solid.hole;
+					delete new_solid.contour->vertex;
+					delete new_solid.contour;
+				}
+			}
+
+
+		}	// for all segments
+
+	}// for all polygons
+
+	// delete the largest of the solids outlines, and the smallest of the holes outlines
+	for(int p=0;p<solids.num_contours;p++)
+	{
+		if(solids.hole[p] == false)
+		{
+			FREE(solids.contour[p].vertex);
+			//			FREE(solids.hole);
+			//			FREE(solids.contour);
+			solids.num_contours--;
+			for(int c=p;c<solids.num_contours;c++)
+			{
+				solids.contour[c] =solids.contour[c+1];
+				solids.hole[c] = solids.hole[c+1];
+			}
+			p--;
+		}
+	}
+	// delete the largest of the solids outlines, and the smallest of the holes outlines
+	for(int p=0;p<holes.num_contours;p++)
+	{
+		if(holes.hole[p] == true)
+		{
+			FREE(holes.contour[p].vertex);
+			//			FREE(solids.hole);
+			//			FREE(solids.contour);
+			holes.num_contours--;
+			for(int c=p;c<holes.num_contours;c++)
+			{
+				holes.contour[c] =holes.contour[c+1];
+				holes.hole[c] = holes.hole[c+1];
+			}
+			p--;
+		}
+	}
+/*
+	glColor3f(0,1,0);
+	glLineWidth(8);
+	for(int p=0;p<solids.num_contours;p++)
+	{
+		glBegin(GL_LINE_LOOP);
+		Poly pol;
+		if(solids.hole[p])
+			glColor3f(0,1,1);
+		else
+			glColor3f(1,1,0);
+		for(int v=0;v<solids.contour[p].num_vertices;v++)
+		{
+			glVertex3f(solids.contour[p].vertex[v].x, solids.contour[p].vertex[v].y,z);
+		}
+		glEnd();
+	}
+	glLineWidth(1);
+	glColor3f(1,0,0);
+	glLineWidth(8);
+	for(int p=0;p<holes.num_contours;p++)
+	{
+		if(holes.hole[p])
+			glColor3f(1,0,1);
+		else
+			glColor3f(1,1,1);
+		glBegin(GL_LINE_LOOP);
+		Poly pol;
+		for(int v=0;v<holes.contour[p].num_vertices;v++)
+			glVertex3f(holes.contour[p].vertex[v].x, holes.contour[p].vertex[v].y,z);
+		glEnd();
+	}
+	glLineWidth(1);
+*/
+
+
+	gpc_polygon poly_res;
+	gpc_polygon_clip(GPC_DIFF, &solids, &holes, &poly_res);
+
+	offsetPolygons.clear();
+	offsetVertices.clear();
+
+	glLineWidth(4);
+	for(int p=0;p<poly_res.num_contours;p++)
+	{
+		glBegin(GL_LINE_LOOP);
+		Poly pol;
+		for(int v=0;v<poly_res.contour[p].num_vertices;v++)
+		{
+			pol.points.push_back(offsetVertices.size());
+			offsetVertices.push_back(Vector2f(poly_res.contour[p].vertex[v].x, poly_res.contour[p].vertex[v].y));
+			glVertex3f(poly_res.contour[p].vertex[v].x, poly_res.contour[p].vertex[v].y,z);
+		}
+		offsetPolygons.push_back(pol);
+		glEnd();
+	}
+//	glLineWidth(1);
+	//return;
+	/*
+	if(DisplayCuttingPlane)
+	{
+	glLineWidth(5);
+	glColor3f(0,1,0);
+	glBegin(GL_LINE_LOOP);
+	for(uint i=0;i<offsetPoly.points.size();i++)
+	glVertex3f(offsetVertices[offsetPoly.points[i]].x, offsetVertices[offsetPoly.points[i]].y, z);
+	glEnd();
+	glLineWidth(1);
+	}
+	offsetPolygons.push_back(offsetPoly);*/
+//	selfIntersectAndDivide(z);
 }
 #endif
 
@@ -2309,6 +2570,9 @@ extern "C"{
 };
 void CuttingPlane::selfIntersectAndDivide(float z)
 {
+	if(offsetPolygons.size() == 0)
+		return;
+
 	for(uint p=0; p<offsetPolygons.size();p++)
 		offsetPolygons[p].calcHole(offsetVertices);
 
@@ -2387,33 +2651,11 @@ void CuttingPlane::selfIntersectAndDivide(float z)
 	gpc_polygon poly_res;
 	gpc_polygon_clip(GPC_DIFF, &solids, &holes, &poly_res);
 
-	/*
-	glLineWidth(10);
-	for(int p=0;p<poly_res.num_contours;p++)
-	{
-	switch(p%6)
-	{
-	case 0:	glColor4f(1,0,0,1); break;
-	case 1:	glColor4f(0.5f,0,0,1); break;
-	case 2:	glColor4f(0,1,0,1); break;
-	case 3:	glColor4f(0,0.5f,0,1); break;
-	case 4:	glColor4f(0,0,1,1); break;
-	case 5:	glColor4f(0,0,0.3f,1); break;
-	default: glColor4f(0.2f,0.2f,0.2f,1); break;
-	}
-
-	glBegin(GL_LINE_LOOP);
-	for(int v=0;v<poly_res.contour[p].num_vertices;v++)
-	glVertex3f(poly_res.contour[p].vertex[v].x, poly_res.contour[p].vertex[v].y, z);
-	glEnd();
-	}
-	glLineWidth(1);
-	*/
 
 	offsetPolygons.clear();
 	offsetVertices.clear();
 
-	for(int p=0;p<poly_res.num_contours;p++)
+	for(int p=0;p<poly_res.num_contours;p++)//
 	{
 		Poly pol;
 		for(int v=0;v<poly_res.contour[p].num_vertices;v++)
@@ -2423,40 +2665,4 @@ void CuttingPlane::selfIntersectAndDivide(float z)
 		}
 		offsetPolygons.push_back(pol);
 	}
-
-	/*
-	vector<Vector2f> result;
-
-	vector<outline> outlines;
-	vector<locator> EndPointStack;
-	vector<locator> visited;
-
-	EndPointStack.push_back(locator(0,0,0));
-
-	recurseSelfIntersectAndDivide(z, EndPointStack, outlines, visited);
-
-	glColor3f(1,0,1);
-	glLineWidth(5);
-	for(uint i=0;i<outlines.size();i++)
-	{
-	z+=1;
-	switch(i%6)
-	{
-	case 0:	glColor4f(1,0,0,1); break;
-	case 1:	glColor4f(0.5f,0,0,1); break;
-	case 2:	glColor4f(0,1,0,1); break;
-	case 3:	glColor4f(0,0.5f,0,1); break;
-	case 4:	glColor4f(0,0,1,1); break;
-	case 5:	glColor4f(0,0,0.3f,1); break;
-	default: glColor4f(0.2f,0.2f,0.2f,1); break;
-	}
-
-	glLineWidth(5);
-	glBegin(GL_LINE_LOOP);
-	for(uint v=0;v<outlines[i].size();v++)
-	glVertex3f(outlines[i][v].x, outlines[i][v].y, z);
-	glEnd();
-	}
-	glLineWidth(1);
-	*/
 }
