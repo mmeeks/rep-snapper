@@ -27,6 +27,7 @@
 #include <algorithm>
 
 #include "ivcon.h"
+#include "gpc.h"
 
 //#include <ANN/ANN.h>
 
@@ -365,7 +366,7 @@ void STL::draw(const ProcessController &PC, float opasity)
 				CalcCuttingPlane(hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices
 			}
 
-			plane.Shrink(PC.ExtrudedMaterialWidth*0.5f, z, PC.DisplayCuttingPlane, true);
+			plane.Shrink(PC.ExtrudedMaterialWidth*0.5f, z, PC.DisplayCuttingPlane, false);
 			plane.Draw(z, PC.DrawVertexNumbers, PC.DrawLineNumbers);
 
 			// inFill
@@ -375,13 +376,13 @@ void STL::draw(const ProcessController &PC, float opasity)
 				{
 				CuttingPlane infillCuttingPlane;
 				infillCuttingPlane = plane;
-				infillCuttingPlane.polygons = infillCuttingPlane.offsetPolygons;
-				infillCuttingPlane.vertices = infillCuttingPlane.offsetVertices;
+//				infillCuttingPlane.polygons = infillCuttingPlane.offsetPolygons;
+//				infillCuttingPlane.vertices = infillCuttingPlane.offsetVertices;
 				infillCuttingPlane.offsetPolygons.clear();
 				infillCuttingPlane.offsetVertices.clear();
 				if(PC.ShellOnly == false)
 					{
-					infillCuttingPlane.Shrink(PC.ExtrudedMaterialWidth*0.5f, z, PC.DisplayCuttingPlane, false);
+					infillCuttingPlane.Shrink(PC.ExtrudedMaterialWidth, z, PC.DisplayCuttingPlane, false);
 					infillCuttingPlane.CalcInFill(infill, LayerNr, z, PC.InfillDistance, PC.InfillRotation, PC.InfillRotationPrLayer, PC.DisplayDebuginFill);
 					}
 				glColor4f(1,1,0,1);
@@ -1565,7 +1566,7 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 
 	// Cleanup polygons
 	CleanupPolygons(Optimization);
-//	Shrink(ShrinkValue, z, DisplayCuttingPlane, true);
+	Shrink(ShrinkValue, z, DisplayCuttingPlane, true);
 	// Draw resulting poly
 	glColor3f(1,1,0);
 	for(int p=0; p<polygons.size();p++)
@@ -1920,7 +1921,7 @@ void CuttingPlane::recurseSelfIntersectAndDivide(float z, vector<locator> &EndPo
 
 
 
-#if(0)
+#if(1)
 void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
 {
 	glColor4f(1,1,1,1);
@@ -2071,15 +2072,13 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 	selfIntersectAndDivide(z);
 }
 #endif
-#if(1)
-#include "gpc.h"
+#if(0)
 
-#define RESOLUTION 4
+#define RESOLUTION 2
 #define FREE(p)            {if (p) {free(p); (p)= NULL;}}
 
 void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
 {
-
 	offsetPolygons.clear();
 
 	gpc_polygon solids;
@@ -2181,6 +2180,13 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 				}
 				else
 				{
+
+/*					void gpc_add_contour
+						(gpc_polygon     *polygon,
+						gpc_vertex_list *contour,
+						int              hole);*/
+//					gpc_add_contour(&holes, outline, 1);
+
 					gpc_polygon new_hole;
 					new_hole.num_contours = 1;
 					new_hole.hole = new int;
@@ -2205,6 +2211,8 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 				}
 				else
 				{
+					gpc_add_contour(&solids, outline, 0);
+
 					gpc_polygon new_solid;
 					new_solid.num_contours = 1;
 					new_solid.hole = new int;
@@ -2223,10 +2231,11 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 
 	}// for all polygons
 
+
 	// delete the largest of the solids outlines, and the smallest of the holes outlines
 	for(int p=0;p<solids.num_contours;p++)
 	{
-		if(solids.hole[p] == false)
+		if(solids.hole[p] == 0)
 		{
 			FREE(solids.contour[p].vertex);
 			//			FREE(solids.hole);
@@ -2243,7 +2252,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 	// delete the largest of the solids outlines, and the smallest of the holes outlines
 	for(int p=0;p<holes.num_contours;p++)
 	{
-		if(holes.hole[p] == true)
+		if(holes.hole[p] == 1)
 		{
 			FREE(holes.contour[p].vertex);
 			//			FREE(solids.hole);
@@ -2313,7 +2322,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 		offsetPolygons.push_back(pol);
 		glEnd();
 	}
-//	glLineWidth(1);
+	glLineWidth(1);
 	//return;
 	/*
 	if(DisplayCuttingPlane)
@@ -2544,6 +2553,8 @@ void STL::CenterAroundXY()
 
 void Poly::calcHole(vector<Vector2f> &offsetVertices)
 {
+	if(points.size() == 0)
+		return;	// hole is undefined
 	float x=-6000;
 	int v=0;
 	for(int vert=0;vert<points.size();vert++)
@@ -2565,9 +2576,6 @@ void Poly::calcHole(vector<Vector2f> &offsetVertices)
 	hole = Va.cross(Vb) > 0;
 }
 
-extern "C"{
-#include "gpc.h"
-};
 void CuttingPlane::selfIntersectAndDivide(float z)
 {
 	if(offsetPolygons.size() == 0)
