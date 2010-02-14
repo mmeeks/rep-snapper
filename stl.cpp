@@ -1921,7 +1921,7 @@ void CuttingPlane::recurseSelfIntersectAndDivide(float z, vector<locator> &EndPo
 
 
 
-#if(1)
+#if(0)
 void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
 {
 	glColor4f(1,1,1,1);
@@ -2072,9 +2072,21 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 	selfIntersectAndDivide(z);
 }
 #endif
-#if(0)
 
-#define RESOLUTION 2
+
+/*********************************************************************************************/
+/***                                                                                       ***/
+/***					Bisector/Fillet/Boolean version                                    ***/
+/***                                                                                       ***/
+/*********************************************************************************************/
+/*void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
+{
+	
+
+}*/
+#if(1)
+
+#define RESOLUTION 8
 #define FREE(p)            {if (p) {free(p); (p)= NULL;}}
 
 void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
@@ -2107,6 +2119,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 
 			Vector2f P1 = Na+N1*distance; 
 			Vector2f P3 = Nb-N1*distance; 
+			Vector2f P4 = Nb+N1*distance; 
 /*
 
 			glColor3f(1,0,1);
@@ -2133,7 +2146,8 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 				a+=step;
 			}
 			LineOutline.push_back(P3);
-			steps=RESOLUTION;
+			LineOutline.push_back(P4);
+/*			steps=RESOLUTION;				// Because it's a closed loop, we only need disks in one end
 			while(steps--)
 			{
 				point.x = Nb.x+cos(a)*distance;
@@ -2142,7 +2156,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 				LineOutline.push_back(point);
 
 				a+=step;
-			}
+			}*/
 /*
 			glLineWidth(1);
 			glBegin(GL_LINE_LOOP);
