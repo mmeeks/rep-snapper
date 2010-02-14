@@ -473,6 +473,9 @@ CuttingPlane::CuttingPlane()
 
 void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, float DistanceToReachFullSpeed, float extrusionFactor, GCode &code, float z, float minSpeedXY, float maxSpeedXY, float minSpeedZ, float maxSpeedZ, bool UseIncrementalEcode, bool Use3DGcode, float &E, bool EnableAcceleration)
 {
+	if((end-start).length() < 0.05)	// ignore micro moves
+		return;
+
 	if(EnableAcceleration)
 	{
 		if(end != start) //If we are going to somewhere else
@@ -693,7 +696,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 
 	while(thisPoint != -1)
 		{
-		float len;
+//		float len;
 		// Make a MOVE accelerated line from LastPosition to lines[thisPoint]
 		if(LastPosition != lines[thisPoint]) //If we are going to somewhere else
 			{
@@ -708,9 +711,9 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 		// store thisPoint
 
 		// Make a PLOT accelerated line from LastPosition to lines[thisPoint]
-		if(EnableAcceleration)
-			MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], DistanceToReachFullSpeed, extrusionFactor, code, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, UseIncrementalEcode, Use3DGcode, E, EnableAcceleration);
-		else
+//		if(EnableAcceleration)
+		MakeAcceleratedGCodeLine(LastPosition, lines[thisPoint], DistanceToReachFullSpeed, extrusionFactor, code, z, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, UseIncrementalEcode, Use3DGcode, E, EnableAcceleration);
+/*		else
 			{
 			command.Code = COORDINATEDMOTION;
 			command.where = lines[thisPoint];
@@ -722,7 +725,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 			command.e = E;		// move or extrude?
 			command.f = MinPrintSpeedXY;
 			code.commands.push_back(command);
-			}
+			}*/
 		LastPosition = lines[thisPoint];
 		thisPoint = findClosestUnused(lines, LastPosition, used);
 		if(thisPoint != -1)
@@ -2086,7 +2089,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 }*/
 #if(1)
 
-#define RESOLUTION 8
+#define RESOLUTION 6
 #define FREE(p)            {if (p) {free(p); (p)= NULL;}}
 
 void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
@@ -2351,6 +2354,8 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 	}
 	offsetPolygons.push_back(offsetPoly);*/
 //	selfIntersectAndDivide(z);
+
+	CleanupOffsetPolygons(0.01f);
 }
 #endif
 
@@ -2526,7 +2531,7 @@ void CuttingPlane::CleanupPolygons(float Optimization)
 	float allowedError = Optimization;
 	for(int p=0;p<polygons.size();p++)
 	{
-	for(int v=0;v<polygons[p].points.size();)
+		for(int v=0;v<polygons[p].points.size();)
 		{
 			Vector2f p1 =vertices[polygons[p].points[(v-1+polygons[p].points.size())%polygons[p].points.size()]];
 			Vector2f p2 =vertices[polygons[p].points[v]];
@@ -2539,9 +2544,36 @@ void CuttingPlane::CleanupPolygons(float Optimization)
 			v2.normalize();
 
 			if((v1-v2).lengthSquared() < allowedError)
-				{
+			{
 				polygons[p].points.erase(polygons[p].points.begin()+v);
-				}
+			}
+			else
+				v++;
+		}
+	}
+}
+
+void CuttingPlane::CleanupOffsetPolygons(float Optimization)
+{
+	float allowedError = Optimization;
+	for(int p=0;p<offsetPolygons.size();p++)
+	{
+		for(int v=0;v<offsetPolygons[p].points.size();)
+		{
+			Vector2f p1 =offsetVertices[offsetPolygons[p].points[(v-1+offsetPolygons[p].points.size())%offsetPolygons[p].points.size()]];
+			Vector2f p2 =offsetVertices[offsetPolygons[p].points[v]];
+			Vector2f p3 =offsetVertices[offsetPolygons[p].points[(v+1)%offsetPolygons[p].points.size()]];
+
+			Vector2f v1 = (p2-p1);
+			Vector2f v2 = (p3-p2);
+
+			v1.normalize();
+			v2.normalize();
+
+			if((v1-v2).lengthSquared() < allowedError)
+			{
+				offsetPolygons[p].points.erase(offsetPolygons[p].points.begin()+v);
+			}
 			else
 				v++;
 		}
