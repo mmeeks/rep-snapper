@@ -356,6 +356,30 @@ void GUI::cb_portInput(Fl_Input* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_portInput_i(o,v);
 }
 
+void GUI::cb_shrinkFastButton_i(Fl_Light_Button* o, void*) {
+  if(o->value())
+{
+MVC->SetShrinkQuality("Fast");
+MVC->redraw();
+shrinkNiceButton->value(0);
+};
+}
+void GUI::cb_shrinkFastButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_shrinkFastButton_i(o,v);
+}
+
+void GUI::cb_shrinkNiceButton_i(Fl_Light_Button* o, void*) {
+  if(o->value())
+{
+MVC->SetShrinkQuality("nice");
+MVC->redraw();
+shrinkFastButton->value(0);
+};
+}
+void GUI::cb_shrinkNiceButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_shrinkNiceButton_i(o,v);
+}
+
 void GUI::cb_InfillRotationSlider_i(Fl_Value_Slider* o, void*) {
   MVC->SetInfillRotation(o->value());
 }
@@ -1346,9 +1370,9 @@ GUI::GUI() {
       MVC->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
       MVC->when(FL_WHEN_RELEASE);
     } // ModelViewController* MVC
-    { Tabs = new Fl_Tabs(830, 20, 565, 815);
+    { Tabs = new Fl_Tabs(835, 20, 560, 815);
       Tabs->align(FL_ALIGN_TOP_LEFT);
-      { Fl_Group* o = new Fl_Group(830, 40, 555, 785, "Input file");
+      { Fl_Group* o = new Fl_Group(835, 40, 550, 785, "Input file");
         o->hide();
         { Fl_Button* o = new Fl_Button(845, 50, 130, 25, "Load STL");
           o->callback((Fl_Callback*)cb_Load);
@@ -1513,7 +1537,7 @@ GUI::GUI() {
         } // Fl_Button* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(830, 40, 555, 785, "Printer definition");
+      { Fl_Group* o = new Fl_Group(835, 40, 550, 785, "Printer definition");
         { Fl_Group* o = new Fl_Group(840, 65, 230, 40, "Build volume (mm)");
           o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
@@ -1573,10 +1597,10 @@ GUI::GUI() {
           } // Fl_Light_Button* EnableAccelerationButton
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(840, 440, 535, 170, "Print speeds");
+        { Fl_Group* o = new Fl_Group(840, 480, 535, 170, "Print speeds");
           o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
-          { MaxPrintSpeedXYSlider = new Fl_Value_Slider(850, 500, 515, 20, "Max PrintSpeed XY (mm/minute)");
+          { MaxPrintSpeedXYSlider = new Fl_Value_Slider(850, 540, 515, 20, "Max PrintSpeed XY (mm/minute)");
             MaxPrintSpeedXYSlider->type(5);
             MaxPrintSpeedXYSlider->selection_color((Fl_Color)2);
             MaxPrintSpeedXYSlider->maximum(8000);
@@ -1586,7 +1610,7 @@ GUI::GUI() {
             MaxPrintSpeedXYSlider->callback((Fl_Callback*)cb_MaxPrintSpeedXYSlider);
             MaxPrintSpeedXYSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* MaxPrintSpeedXYSlider
-          { MinPrintSpeedZSlider = new Fl_Value_Slider(850, 540, 515, 20, "Min PrintSpeed Z (mm/minute)");
+          { MinPrintSpeedZSlider = new Fl_Value_Slider(850, 580, 515, 20, "Min PrintSpeed Z (mm/minute)");
             MinPrintSpeedZSlider->type(5);
             MinPrintSpeedZSlider->selection_color((Fl_Color)2);
             MinPrintSpeedZSlider->minimum(1);
@@ -1597,7 +1621,7 @@ GUI::GUI() {
             MinPrintSpeedZSlider->callback((Fl_Callback*)cb_MinPrintSpeedZSlider);
             MinPrintSpeedZSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* MinPrintSpeedZSlider
-          { MinPrintSpeedXYSlider = new Fl_Value_Slider(850, 460, 515, 20, "Min PrintSpeed XY (mm/minute)");
+          { MinPrintSpeedXYSlider = new Fl_Value_Slider(850, 500, 515, 20, "Min PrintSpeed XY (mm/minute)");
             MinPrintSpeedXYSlider->type(5);
             MinPrintSpeedXYSlider->selection_color((Fl_Color)2);
             MinPrintSpeedXYSlider->maximum(8000);
@@ -1607,7 +1631,7 @@ GUI::GUI() {
             MinPrintSpeedXYSlider->callback((Fl_Callback*)cb_MinPrintSpeedXYSlider);
             MinPrintSpeedXYSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* MinPrintSpeedXYSlider
-          { MaxPrintSpeedZSlider = new Fl_Value_Slider(850, 580, 515, 20, "Max PrintSpeed Z (mm/minute)");
+          { MaxPrintSpeedZSlider = new Fl_Value_Slider(850, 620, 515, 20, "Max PrintSpeed Z (mm/minute)");
             MaxPrintSpeedZSlider->type(5);
             MaxPrintSpeedZSlider->selection_color((Fl_Color)2);
             MaxPrintSpeedZSlider->maximum(2500);
@@ -1670,9 +1694,28 @@ GUI::GUI() {
           } // Fl_Input* portInput
           o->end();
         } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(840, 385, 535, 55, "Shrinking quality");
+          o->box(FL_ENGRAVED_FRAME);
+          o->color((Fl_Color)2);
+          { shrinkFastButton = new Fl_Light_Button(855, 405, 250, 20, "Fast, can have errors (rarely)");
+            shrinkFastButton->type(102);
+            shrinkFastButton->selection_color((Fl_Color)2);
+            shrinkFastButton->callback((Fl_Callback*)cb_shrinkFastButton);
+          } // Fl_Light_Button* shrinkFastButton
+          { Fl_Group* o = new Fl_Group(1115, 405, 250, 20);
+            { shrinkNiceButton = new Fl_Light_Button(1115, 405, 250, 20, "Much slower, perfekt, small details");
+              shrinkNiceButton->type(102);
+              shrinkNiceButton->color((Fl_Color)FL_DARK1);
+              shrinkNiceButton->selection_color((Fl_Color)2);
+              shrinkNiceButton->callback((Fl_Callback*)cb_shrinkNiceButton);
+            } // Fl_Light_Button* shrinkNiceButton
+            o->end();
+          } // Fl_Group* o
+          o->end();
+        } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(830, 40, 545, 755, "Infill");
+      { Fl_Group* o = new Fl_Group(835, 40, 540, 755, "Infill");
         o->hide();
         { Fl_Group* o = new Fl_Group(840, 65, 535, 215, "Infill");
           o->box(FL_ENGRAVED_FRAME);
@@ -1735,7 +1778,7 @@ GUI::GUI() {
         } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(830, 40, 545, 755, "Apron");
+      { Fl_Group* o = new Fl_Group(835, 40, 540, 755, "Apron");
         o->color((Fl_Color)FL_DARK1);
         o->hide();
         { Fl_Group* o = new Fl_Group(840, 65, 530, 305, "Size");
@@ -1825,7 +1868,7 @@ GUI::GUI() {
         } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(830, 40, 545, 765, "Raft");
+      { Fl_Group* o = new Fl_Group(835, 40, 540, 765, "Raft");
         o->color((Fl_Color)FL_DARK1);
         o->hide();
         { Fl_Group* o = new Fl_Group(835, 220, 535, 270, "Base");
@@ -2004,7 +2047,7 @@ e rest of the print.");
         } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(830, 40, 545, 755, "GCode");
+      { Fl_Group* o = new Fl_Group(835, 40, 540, 755, "GCode");
         o->hide();
         { Fl_Button* o = new Fl_Button(835, 90, 145, 25, "Load Gcode");
           o->callback((Fl_Callback*)cb_Load2);
@@ -2014,10 +2057,10 @@ e rest of the print.");
         { Fl_Button* o = new Fl_Button(835, 60, 145, 25, "Convert to GCode");
           o->callback((Fl_Callback*)cb_Convert);
         } // Fl_Button* o
-        { Fl_Tabs* o = new Fl_Tabs(830, 120, 545, 675);
-          { Fl_Group* o = new Fl_Group(830, 140, 545, 655, "Start code");
+        { Fl_Tabs* o = new Fl_Tabs(835, 120, 540, 675);
+          { Fl_Group* o = new Fl_Group(835, 140, 540, 655, "Start code");
             o->hide();
-            { Fl_Text_Editor* o = GCodeStart = new Fl_Text_Editor(830, 140, 530, 605);
+            { Fl_Text_Editor* o = GCodeStart = new Fl_Text_Editor(835, 140, 525, 605);
               Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();
               o->buffer(startbuff);
             } // Fl_Text_Editor* GCodeStart
@@ -2027,17 +2070,17 @@ e rest of the print.");
             } // Fl_Choice* o
             o->end();
           } // Fl_Group* o
-          { Fl_Text_Editor* o = GCodeLayer = new Fl_Text_Editor(830, 140, 530, 655, "Next layer");
+          { Fl_Text_Editor* o = GCodeLayer = new Fl_Text_Editor(835, 140, 525, 655, "Next layer");
             GCodeLayer->hide();
             Fl_Text_Buffer *layerbuff = new Fl_Text_Buffer();
             o->buffer(layerbuff);
           } // Fl_Text_Editor* GCodeLayer
-          { Fl_Text_Editor* o = GCodeEnd = new Fl_Text_Editor(830, 140, 530, 655, "End code");
+          { Fl_Text_Editor* o = GCodeEnd = new Fl_Text_Editor(835, 140, 525, 655, "End code");
             GCodeEnd->hide();
             Fl_Text_Buffer *endbuff = new Fl_Text_Buffer();
             o->buffer(endbuff);
           } // Fl_Text_Editor* GCodeEnd
-          { Fl_Text_Editor* o = GCodeResult = new Fl_Text_Editor(830, 140, 530, 655, "Result");
+          { Fl_Text_Editor* o = GCodeResult = new Fl_Text_Editor(835, 140, 525, 655, "Result");
             Fl_Text_Buffer *resultbuff = new Fl_Text_Buffer();
             o->buffer(resultbuff);
           } // Fl_Text_Editor* GCodeResult
@@ -2048,7 +2091,7 @@ e rest of the print.");
         } // Fl_Button* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(830, 40, 545, 795, "Score");
+      { Fl_Group* o = new Fl_Group(835, 40, 540, 795, "Score");
         o->hide();
         { new Fl_Button(840, 65, 535, 140, "Placeholder and reminder for antomatic Score\'ing of objects (see todo folder\
 )");
@@ -2078,7 +2121,7 @@ an twice the filament extrusion. - with one line only");
         } // Fl_Text_Editor* NotesEditor
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(830, 40, 545, 755, "Rendering");
+      { Fl_Group* o = new Fl_Group(835, 40, 540, 755, "Rendering");
         o->color((Fl_Color)FL_DARK1);
         o->hide();
         { Fl_Group* o = new Fl_Group(835, 70, 535, 305, "STL rendering");
@@ -2389,7 +2432,7 @@ an twice the filament extrusion. - with one line only");
         } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(830, 45, 565, 790, "Print");
+      { Fl_Group* o = new Fl_Group(835, 45, 560, 790, "Print");
         o->color((Fl_Color)FL_DARK1);
         o->hide();
         { Fl_Tabs* o = new Fl_Tabs(835, 180, 540, 655);

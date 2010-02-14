@@ -154,7 +154,6 @@ public:
 	string m_sPortName;
 //	STL stl;							// A STL file
 	RFO rfo;
-	CuttingPlane previewCuttingPlane;	//The cuttingplane that's drawn as a live preview
 	GCode gcode;						// Gcode as binary data
 	string GcodeTxt;					// Final GCode as text
 
@@ -260,6 +259,8 @@ public:
 	float ApronCoverageY;
 	float ApronDistanceToObject;
 	float ApronInfillDistance;
+
+	int m_ShrinkQuality;
 
 	// Bounding box info
 	Vector3f Center;

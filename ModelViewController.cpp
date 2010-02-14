@@ -542,6 +542,8 @@ void ModelViewController::CopySettingsToGUI()
 	gui->ApronDistanceToObjectSlider->value(ProcessControl.ApronDistanceToObject);
 	gui->ApronInfillDistanceSlider->value(ProcessControl.ApronInfillDistance);
 
+	gui->shrinkFastButton->value(ProcessControl.m_ShrinkQuality == SHRINK_FAST);
+	gui->shrinkNiceButton->value(ProcessControl.m_ShrinkQuality == SHRINK_NICE);
 }
 
 void ModelViewController::Continue()
@@ -1043,4 +1045,12 @@ void ModelViewController::setFileLocation(string location)
 	MVC->GetSelectedRFO(&selectedObject, &selectedFile);
 	if(selectedFile)
 		selectedFile->location = location;
+}
+
+void ModelViewController::SetShrinkQuality(string quality)
+{
+	if(quality == "Fast")
+		ProcessControl.m_ShrinkQuality = SHRINK_FAST;
+	else
+		ProcessControl.m_ShrinkQuality = SHRINK_NICE;
 }

@@ -24,6 +24,8 @@
 #include "glutils.h"
 #include "RepRapSerial.h"
 
+enum SHRINK_QUALITY {SHRINK_FAST, SHRINK_NICE};
+
 #pragma warning( disable : 4244 4267)
 
 // Construct a model and a view, and link them together.
@@ -41,6 +43,8 @@ public:
 	void ReadStl(string filename);
 	void OptimizeRotation() { ProcessControl.OptimizeRotation();}
 	void RotateObject(float x, float y, float z, float a) {ProcessControl.RotateObject(Vector3f(x,y,z),a);}
+
+	void SetShrinkQuality(string quality);
 
 	void setObjectname(string name);
 	void setFileMaterial(string material);

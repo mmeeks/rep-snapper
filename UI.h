@@ -224,6 +224,16 @@ private:
   void cb_portInput_i(Fl_Input*, void*);
   static void cb_portInput(Fl_Input*, void*);
 public:
+  Fl_Light_Button *shrinkFastButton;
+private:
+  void cb_shrinkFastButton_i(Fl_Light_Button*, void*);
+  static void cb_shrinkFastButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *shrinkNiceButton;
+private:
+  void cb_shrinkNiceButton_i(Fl_Light_Button*, void*);
+  static void cb_shrinkNiceButton(Fl_Light_Button*, void*);
+public:
   Fl_Value_Slider *InfillRotationSlider;
 private:
   void cb_InfillRotationSlider_i(Fl_Value_Slider*, void*);

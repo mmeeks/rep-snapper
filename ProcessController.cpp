@@ -61,7 +61,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 				stl->CalcCuttingPlane(z, plane, T);	// output is alot of un-connected line segments with individual vertices
 
 				float hackedZ = z;
-				while(plane.LinkSegments(hackedZ, ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
+				while(plane.LinkSegments(hackedZ, ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, m_ShrinkQuality) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
 					{										// This happens when there's triangles missing in the input STL
 					hackedZ+= 0.1f;
 					plane.polygons.clear();
@@ -80,7 +80,10 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 				infillCuttingPlane.offsetVertices.clear();
 				if(ShellOnly == false)
 					{
-					infillCuttingPlane.Shrink(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false);
+					if(m_ShrinkQuality == SHRINK_FAST)
+						infillCuttingPlane.ShrinkFast(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false);
+					else
+						infillCuttingPlane.ShrinkNice(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false);
 					infillCuttingPlane.CalcInFill(infill, LayerNr, destinationZ, InfillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
 					}
 				// Make the GCode from the plane and the infill
@@ -321,8 +324,6 @@ void ProcessController::Draw()
 	glTranslatef(translation.x+printOffset.x, translation.y+printOffset.y, translation.z+PrintMargin.z);
 	glPolygonOffset (0.5f, 0.5f);
 	rfo.Draw(*this);
-	if(DisplayCuttingPlane)
-		previewCuttingPlane.Draw(CuttingPlaneValue, DrawVertexNumbers, DrawLineNumbers);
 	if(DisplayGCode)
 	{
 		glTranslatef(-(translation.x+printOffset.x), -(translation.y+printOffset.y), -(translation.z+PrintMargin.z));
@@ -498,6 +499,9 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("ApronDistanceToObject", true, "1")->SetValueFloat(ApronDistanceToObject);
 	x->FindVariableZ("ApronInfillDistance", true, "1")->SetValueFloat(ApronInfillDistance);
 
+	x->FindVariableZ("ShrinkFast", true, "1")->SetValueInt(m_ShrinkQuality == SHRINK_FAST);
+	x->FindVariableZ("ShrinkNice", true, "1")->SetValueInt(m_ShrinkQuality == SHRINK_NICE);
+	x->FindVariableZ("ApronInfillDistance", true, "1")->SetValueFloat(ApronInfillDistance);
 	/*
 
 	XMLElement *x = e->FindElementZ("RED_ProcessingSettings", true);
@@ -742,6 +746,10 @@ void ProcessController::LoadXML(XMLElement *e)
 	y=x->FindVariableZ("ApronInfillDistance", true, "2");
 	if(y)	ApronInfillDistance = (bool)y->GetValueFloat();
 
+	y=x->FindVariableZ("ShrinkNice", true, "0");
+	if(y)	m_ShrinkQuality = (bool)y->GetValueInt() ? SHRINK_NICE : SHRINK_FAST;
+
+
 	/*
 	ImageProcessingSettings();
 	UserCurve[0] = UserCurve[1] = 0.0f;
@@ -894,7 +902,6 @@ void ProcessController::BindLua(lua_State *myLuaState)
 			.def ("printer", printer)
 			.def ("m_sPortName", m_sPortName)
 			.def ("stl", stl)
-			.def ("previewCuttingPlane", previewCuttingPlane)
 			.def ("gcode", gcode)
 			.def ("GcodeTxt", GcodeTxt)
 

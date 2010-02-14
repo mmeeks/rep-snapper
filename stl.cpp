@@ -359,14 +359,17 @@ void STL::draw(const ProcessController &PC, float opasity)
 			CalcCuttingPlane(z, plane, T);	// output is alot of un-connected line segments with individual vertices
 
 			float hackedZ = z;
-			while(plane.LinkSegments(hackedZ, PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
+			while(plane.LinkSegments(hackedZ, PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane, PC.m_ShrinkQuality) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
 			{										// This happens when there's triangles missing in the input STL
 				hackedZ+= 0.1f;
 				plane.polygons.clear();
 				CalcCuttingPlane(hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices
 			}
 
-			plane.Shrink(PC.ExtrudedMaterialWidth*0.5f, z, PC.DisplayCuttingPlane, false);
+			if(PC.m_ShrinkQuality == SHRINK_FAST)
+				plane.ShrinkFast(PC.ExtrudedMaterialWidth*0.5f, z, PC.DisplayCuttingPlane, false);
+			else
+				plane.ShrinkNice(PC.ExtrudedMaterialWidth*0.5f, z, PC.DisplayCuttingPlane, false);
 			plane.Draw(z, PC.DrawVertexNumbers, PC.DrawLineNumbers);
 
 			// inFill
@@ -382,7 +385,10 @@ void STL::draw(const ProcessController &PC, float opasity)
 				infillCuttingPlane.offsetVertices.clear();
 				if(PC.ShellOnly == false)
 					{
-					infillCuttingPlane.Shrink(PC.ExtrudedMaterialWidth, z, PC.DisplayCuttingPlane, false);
+					if(PC.m_ShrinkQuality == SHRINK_FAST)
+						infillCuttingPlane.ShrinkFast(PC.ExtrudedMaterialWidth, z, PC.DisplayCuttingPlane, false);
+					else
+						infillCuttingPlane.ShrinkNice(PC.ExtrudedMaterialWidth, z, PC.DisplayCuttingPlane, false);
 					infillCuttingPlane.CalcInFill(infill, LayerNr, z, PC.InfillDistance, PC.InfillRotation, PC.InfillRotationPrLayer, PC.DisplayDebuginFill);
 					}
 				glColor4f(1,1,0,1);
@@ -476,13 +482,15 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, float DistanceToReac
 	if((end-start).length() < 0.05)	// ignore micro moves
 		return;
 
+	static Command lastCommand;
+	Command command;
+
 	if(EnableAcceleration)
 	{
 		if(end != start) //If we are going to somewhere else
 		{
 			float len;
-			Vector3f LastPosition = start;
-			Command command;
+			lastCommand.where = start;
 			float accumulatedE = 0;
 
 			Vector3f direction = end-start;
@@ -498,13 +506,14 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, float DistanceToReac
 				command.e = 0.0f;		// move or extrude?
 			command.f = minSpeedXY;
 			code.commands.push_back(command);
+			lastCommand = command;
 
 			if(len < DistanceToReachFullSpeed*2)
 			{
 				// TODO: First point of acceleration is the middle of the line segment
 				command.Code = COORDINATEDMOTION;
 				command.where = (start+end)*0.5f;
-				float extrudedMaterial = (LastPosition - command.where).length()*extrusionFactor;
+				float extrudedMaterial = (lastCommand.where - command.where).length()*extrusionFactor;
 				if(UseIncrementalEcode)
 					E+=extrudedMaterial;
 				else
@@ -513,7 +522,7 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, float DistanceToReac
 				float lengthFactor = (len/2.0f)/DistanceToReachFullSpeed;
 				command.f = (maxSpeedXY-minSpeedXY)*lengthFactor+minSpeedXY;
 				code.commands.push_back(command);
-				LastPosition = command.where;
+				lastCommand = command;
 
 				// And then decelerate
 				command.Code = COORDINATEDMOTION;
@@ -525,13 +534,14 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, float DistanceToReac
 				command.e = E;		// move or extrude?
 				command.f = minSpeedXY;
 				code.commands.push_back(command);
+				lastCommand = command;
 			}// if we will never reach full speed
 			else
 			{
 				// Move to max speed
 				command.Code = COORDINATEDMOTION;
 				command.where = start+(direction*DistanceToReachFullSpeed);
-				float extrudedMaterial = (LastPosition - command.where).length()*extrusionFactor;
+				float extrudedMaterial = (lastCommand.where - command.where).length()*extrusionFactor;
 				if(UseIncrementalEcode)
 					E+=extrudedMaterial;
 				else
@@ -539,12 +549,12 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, float DistanceToReac
 				command.e = E;		// move or extrude?
 				command.f = maxSpeedXY;
 				code.commands.push_back(command);
-				LastPosition = command.where;
+				lastCommand = command;
 
 				// Sustian speed till deacceleration starts
 				command.Code = COORDINATEDMOTION;
 				command.where = end-(direction*DistanceToReachFullSpeed);
-				extrudedMaterial = (LastPosition - command.where).length()*extrusionFactor;
+				extrudedMaterial = (lastCommand.where - command.where).length()*extrusionFactor;
 				if(UseIncrementalEcode)
 					E+=extrudedMaterial;
 				else
@@ -552,12 +562,12 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, float DistanceToReac
 				command.e = E;		// move or extrude?
 				command.f = maxSpeedXY;
 				code.commands.push_back(command);
-				LastPosition = command.where;
+				lastCommand = command;
 
 				// deacceleration untill end
 				command.Code = COORDINATEDMOTION;
 				command.where = end;
-				extrudedMaterial = (LastPosition - command.where).length()*extrusionFactor;
+				extrudedMaterial = (lastCommand.where - command.where).length()*extrusionFactor;
 				if(UseIncrementalEcode)
 					E+=extrudedMaterial;
 				else
@@ -565,33 +575,35 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, float DistanceToReac
 				command.e = E;		// move or extrude?
 				command.f = minSpeedXY;
 				code.commands.push_back(command);
+				lastCommand = command;
 			} // if we will reach full speed
 		}// if we are going somewhere
 	} // Firmware acceleration
 	else	// No accleration
 	{
-		Command command;
 		float accumulatedE = 0;
-		// Make a accelerated line from LastPosition to lines[thisPoint]
+		// Make a accelerated line from lastCommand.where to lines[thisPoint]
 		if(end != start) //If we are going to somewhere else
 		{
-			Vector3f LastPosition = start;
+			lastCommand.where = start;
 			if(Use3DGcode)
 			{
 				{
 				command.Code = EXTRUDEROFF;
 				code.commands.push_back(command);
+				lastCommand = command;
 				float speed = minSpeedXY;
 				command.Code = COORDINATEDMOTION3D;
 				command.where = start;
 				command.e = E;		// move or extrude?
 				command.f = speed;
 				code.commands.push_back(command);
-				LastPosition = start;
+				lastCommand = command;
 				}	// we need to move before extruding
 
 				command.Code = EXTRUDERON;
 				code.commands.push_back(command);
+				lastCommand = command;
 
 				float speed = minSpeedXY;
 				command.Code = COORDINATEDMOTION3D;
@@ -599,10 +611,11 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, float DistanceToReac
 				command.e = E;		// move or extrude?
 				command.f = speed;
 				code.commands.push_back(command);
-				LastPosition = end;
+				lastCommand = command;
 				// Done, switch extruder off
 				command.Code = EXTRUDEROFF;
 				code.commands.push_back(command);
+				lastCommand = command;
 			}
 			else	// 5d gcode, no acceleration
 				{
@@ -610,17 +623,20 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, float DistanceToReac
 				direction.normalize();
 
 				// set start speed to max
-				Command g;
-				g.Code = SETSPEED;
-				g.where = Vector3f(start.x, start.y, z);
-				g.f=maxSpeedXY;
-				g.e = E;
-				code.commands.push_back(g);
+				if(lastCommand.f != maxSpeedXY)
+					{
+					command.Code = SETSPEED;
+					command.where = Vector3f(start.x, start.y, z);
+					command.f=maxSpeedXY;
+					command.e = E;
+					code.commands.push_back(command);
+					lastCommand = command;
+					}
 
 				// store endPoint
 				command.Code = COORDINATEDMOTION;
 				command.where = end;
-				float extrudedMaterial = (LastPosition - command.where).length()*extrusionFactor;
+				float extrudedMaterial = (lastCommand.where - command.where).length()*extrusionFactor;
 				if(UseIncrementalEcode)
 					E+=extrudedMaterial;
 				else
@@ -628,7 +644,7 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, float DistanceToReac
 				command.e = E;		// move or extrude?
 				command.f = maxSpeedXY;
 				code.commands.push_back(command);
-				LastPosition = end;
+				lastCommand = command;
 			}	// 5D gcode
 		}// If we are going to somewhere else*/
 	}// If using firmware acceleration
@@ -1400,7 +1416,7 @@ public:
 };
 
 
-bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, bool DisplayCuttingPlane)
+bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, bool DisplayCuttingPlane, bool ShrinkQuality)
 {
 	if(vertices.size() == 0)
 		return true;
@@ -1569,7 +1585,11 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 
 	// Cleanup polygons
 	CleanupPolygons(Optimization);
-	Shrink(ShrinkValue, z, DisplayCuttingPlane, true);
+
+	if(ShrinkQuality)
+		ShrinkNice(ShrinkValue, z, DisplayCuttingPlane, true);
+	else
+		ShrinkFast(ShrinkValue, z, DisplayCuttingPlane, true);
 	// Draw resulting poly
 	glColor3f(1,1,0);
 	for(int p=0; p<polygons.size();p++)
@@ -1924,8 +1944,8 @@ void CuttingPlane::recurseSelfIntersectAndDivide(float z, vector<locator> &EndPo
 
 
 
-#if(0)
-void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
+
+void CuttingPlane::ShrinkFast(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
 {
 	glColor4f(1,1,1,1);
 	for(int p=0; p<polygons.size();p++)
@@ -1966,7 +1986,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 	}
 	selfIntersectAndDivide(z);
 }
-#endif
+
 #if(0)
 void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
 {
@@ -2092,7 +2112,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 #define RESOLUTION 6
 #define FREE(p)            {if (p) {free(p); (p)= NULL;}}
 
-void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
+void CuttingPlane::ShrinkNice(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
 {
 	offsetPolygons.clear();
 
@@ -2355,7 +2375,7 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 	offsetPolygons.push_back(offsetPoly);*/
 //	selfIntersectAndDivide(z);
 
-	CleanupOffsetPolygons(0.01f);
+	CleanupOffsetPolygons(0.1f);
 }
 #endif
 

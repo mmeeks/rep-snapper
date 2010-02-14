@@ -91,13 +91,14 @@ struct locator{
 class  CuttingPlane{
 public:
 	CuttingPlane();
-	void Shrink(float distance, float z, bool DisplayCuttingPlane, bool useFillets);		// Contracts polygons
+	void ShrinkFast(float distance, float z, bool DisplayCuttingPlane, bool useFillets);		// Contracts polygons
+	void ShrinkNice(float distance, float z, bool DisplayCuttingPlane, bool useFillets);		// Contracts polygons
 	void selfIntersectAndDivide(float z);
 	void recurseSelfIntersectAndDivide(float z, vector<locator> &EndPointStack, vector<outline> &outlines, vector<locator> &visited);
 	uint selfIntersectAndDivideRecursive(float z, uint startPolygon, uint startVertex, vector<outline> &outlines, const Vector2f endVertex, uint &level);
 	void CalcInFill(vector<Vector2f> &infill, uint LayerNr, float z, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill);	// Collide a infill-line with the polygons
 	void Draw(float z, bool DrawVertexNumbers, bool DrawLineNumbers);
-	bool LinkSegments(float z, float shrinkValue, float Optimization, bool DisplayCuttingPlane);		// Link Segments to form polygons
+	bool LinkSegments(float z, float shrinkValue, float Optimization, bool DisplayCuttingPlane, bool ShrinkNice);		// Link Segments to form polygons
 	void CleanupPolygons(float Optimization);			// remove redudant points
 	void CleanupOffsetPolygons(float Optimization);			// remove redudant points
 	void MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float &E, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, float DistanceToReachFullSpeed, float extrusionFactor, bool UseIncrementalEcode, bool Use3DGcode, bool EnableAcceleration);	// Convert Cuttingplane to GCode

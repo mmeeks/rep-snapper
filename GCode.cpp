@@ -222,6 +222,10 @@ void GCode::draw(const ProcessController &PC)
 	{
 		switch(commands[i].Code)
 		{
+		case SETSPEED:
+			{
+				int a=0;
+			}
 		case ZMOVE:
 		case EXTRUDERON:
 			extruderon = true;
@@ -239,6 +243,8 @@ void GCode::draw(const ProcessController &PC)
 			glLineWidth(3);
 			glBegin(GL_LINES);
 			glColor3fv(&Color[0]);
+			if(i==end-1)
+				glColor3f(0,1,0);
 			glVertex3fv((GLfloat*)&pos);
 			glVertex3fv((GLfloat*)&commands[i].where);
 			glEnd();
@@ -269,8 +275,12 @@ void GCode::draw(const ProcessController &PC)
 			Distance += (commands[i].where-pos).length();
 			glBegin(GL_LINES);
 			glColor3fv(&LastColor[0]);
+			if(i==end-1)
+				glColor3f(1,0,0);
 			glVertex3fv((GLfloat*)&pos);
 			glColor3fv(&Color[0]);
+			if(i==end-1)
+				glColor3f(1,0,0);
 			glVertex3fv((GLfloat*)&commands[i].where);
 			glEnd();
 			LastColor = Color;

@@ -26,11 +26,11 @@ class GUI {open
         class ModelViewController
       }
       Fl_Tabs Tabs {open
-        xywh {830 20 565 815} align 5
+        xywh {835 20 560 815} align 5
       } {
         Fl_Group {} {
           label {Input file} open
-          xywh {830 40 555 785} hide
+          xywh {835 40 550 785} hide
         } {
           Fl_Button {} {
             label {Load STL}
@@ -265,7 +265,7 @@ MVC->redraw();
         }
         Fl_Group {} {
           label {Printer definition} open
-          xywh {830 40 555 785}
+          xywh {835 40 550 785}
         } {
           Fl_Group {} {
             label {Build volume (mm)} open
@@ -329,27 +329,27 @@ distanceToReachFullSpeedSlider->deactivate();
           }
           Fl_Group {} {
             label {Print speeds}
-            xywh {840 440 535 170} box ENGRAVED_FRAME color 39
+            xywh {840 480 535 170} box ENGRAVED_FRAME color 39
           } {
             Fl_Value_Slider MaxPrintSpeedXYSlider {
               label {Max PrintSpeed XY (mm/minute)}
               callback {MVC->SetMaxPrintSpeedXY(o->value());}
-              xywh {850 500 515 20} type {Horz Knob} selection_color 2 align 5 maximum 8000 step 100 value 4000 textsize 14
+              xywh {850 540 515 20} type {Horz Knob} selection_color 2 align 5 maximum 8000 step 100 value 4000 textsize 14
             }
             Fl_Value_Slider MinPrintSpeedZSlider {
               label {Min PrintSpeed Z (mm/minute)}
               callback {MVC->SetMinPrintSpeedZ(o->value());}
-              xywh {850 540 515 20} type {Horz Knob} selection_color 2 align 5 minimum 1 maximum 2500 step 10 value 50 textsize 14
+              xywh {850 580 515 20} type {Horz Knob} selection_color 2 align 5 minimum 1 maximum 2500 step 10 value 50 textsize 14
             }
             Fl_Value_Slider MinPrintSpeedXYSlider {
               label {Min PrintSpeed XY (mm/minute)}
               callback {MVC->SetMinPrintSpeedXY(o->value());}
-              xywh {850 460 515 20} type {Horz Knob} selection_color 2 align 5 maximum 8000 step 100 value 1000 textsize 14
+              xywh {850 500 515 20} type {Horz Knob} selection_color 2 align 5 maximum 8000 step 100 value 1000 textsize 14
             }
             Fl_Value_Slider MaxPrintSpeedZSlider {
               label {Max PrintSpeed Z (mm/minute)}
               callback {MVC->SetMaxPrintSpeedZ(o->value());}
-              xywh {850 580 515 20} type {Horz Knob} selection_color 2 align 5 maximum 2500 step 10 value 150 textsize 14
+              xywh {850 620 515 20} type {Horz Knob} selection_color 2 align 5 maximum 2500 step 10 value 150 textsize 14
             }
           }
           Fl_Group {} {
@@ -358,7 +358,7 @@ distanceToReachFullSpeedSlider->deactivate();
           } {
             Fl_Value_Slider ExtrudedMaterialWidthSlider {
               label {Extruded material width}
-              callback {MVC->SetExtrudedMaterialWidth(o->value());} selected
+              callback {MVC->SetExtrudedMaterialWidth(o->value());}
               xywh {850 230 515 20} type {Horz Knob} selection_color 2 align 5 maximum 10 value 0.7 textsize 14
             }
             Fl_Value_Slider extrusionFactorSlider {
@@ -392,10 +392,39 @@ distanceToReachFullSpeedSlider->deactivate();
               tooltip {COM3 or  /dev/ttyUSB0 or something to that effect} xywh {1010 791 205 24}
             }
           }
+          Fl_Group {} {
+            label {Shrinking quality} open
+            xywh {840 385 535 55} box ENGRAVED_FRAME color 2
+          } {
+            Fl_Light_Button shrinkFastButton {
+              label {Fast, can have errors (rarely)}
+              callback {if(o->value())
+{
+MVC->SetShrinkQuality("Fast");
+MVC->redraw();
+shrinkNiceButton->value(0);
+}}
+              xywh {855 405 250 20} type Radio selection_color 2
+            }
+            Fl_Group {} {open
+              xywh {1115 405 250 20}
+            } {
+              Fl_Light_Button shrinkNiceButton {
+                label {Much slower, perfekt, small details}
+                callback {if(o->value())
+{
+MVC->SetShrinkQuality("nice");
+MVC->redraw();
+shrinkFastButton->value(0);
+}} selected
+                xywh {1115 405 250 20} type Radio color 47 selection_color 2
+              }
+            }
+          }
         }
         Fl_Group {} {
           label Infill open
-          xywh {830 40 545 755} hide
+          xywh {835 40 540 755} hide
         } {
           Fl_Group {} {
             label Infill open
@@ -435,7 +464,7 @@ distanceToReachFullSpeedSlider->deactivate();
         }
         Fl_Group {} {
           label Apron
-          xywh {830 40 545 755} color 47 hide
+          xywh {835 40 540 755} color 47 hide
         } {
           Fl_Group {} {
             label Size open
@@ -485,7 +514,7 @@ distanceToReachFullSpeedSlider->deactivate();
         }
         Fl_Group {} {
           label Raft open
-          xywh {830 40 545 765} color 47 hide
+          xywh {835 40 540 765} color 47 hide
         } {
           Fl_Group {} {
             label Base open
@@ -586,7 +615,7 @@ MVC->redraw();}
         }
         Fl_Group {} {
           label GCode open
-          xywh {830 40 545 755} hide
+          xywh {835 40 540 755} hide
         } {
           Fl_Button {} {
             label {Load Gcode}
@@ -616,14 +645,14 @@ MVC->redraw();
             xywh {835 60 145 25}
           }
           Fl_Tabs {} {open
-            xywh {830 120 545 675}
+            xywh {835 120 540 675}
           } {
             Fl_Group {} {
               label {Start code} open
-              xywh {830 140 545 655} hide
+              xywh {835 140 540 655} hide
             } {
               Fl_Text_Editor GCodeStart {
-                xywh {830 140 530 605}
+                xywh {835 140 525 605}
                 code0 {Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();}
                 code1 {o->buffer(startbuff);}
               }
@@ -651,19 +680,19 @@ MVC->redraw();
             }
             Fl_Text_Editor GCodeLayer {
               label {Next layer}
-              xywh {830 140 530 655} hide
+              xywh {835 140 525 655} hide
               code0 {Fl_Text_Buffer *layerbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(layerbuff);}
             }
             Fl_Text_Editor GCodeEnd {
               label {End code}
-              xywh {830 140 530 655} hide
+              xywh {835 140 525 655} hide
               code0 {Fl_Text_Buffer *endbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(endbuff);}
             }
             Fl_Text_Editor GCodeResult {
               label Result
-              xywh {830 140 530 655}
+              xywh {835 140 525 655}
               code0 {Fl_Text_Buffer *resultbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(resultbuff);}
             }
@@ -705,7 +734,7 @@ MVC->redraw();
         }
         Fl_Group {} {
           label Score
-          xywh {830 40 545 795} hide
+          xywh {835 40 540 795} hide
         } {
           Fl_Button {} {
             label {Placeholder and reminder for antomatic Score'ing of objects (see todo folder)}
@@ -756,7 +785,7 @@ MVC->redraw();
         }
         Fl_Group {} {
           label Rendering open
-          xywh {830 40 545 755} color 47 hide
+          xywh {835 40 540 755} color 47 hide
         } {
           Fl_Group {} {
             label {STL rendering} open
@@ -1039,7 +1068,7 @@ MVC->redraw();}
         }
         Fl_Group {} {
           label Print open
-          xywh {830 45 565 790} color 47 hide
+          xywh {835 45 560 790} color 47 hide
         } {
           Fl_Tabs {} {open
             xywh {835 180 540 655}
