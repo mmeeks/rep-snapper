@@ -118,7 +118,7 @@ void RepRapSerial::SendData(string s, const int lineNr)
 			float old_speed = ToFloat(number);
 			s.clear();
 			std::stringstream oss;
-			oss << start << old_speed*DSMultiplier << after;
+			oss << start << old_speed*DSMultiplier << " " <<after;
 			s=oss.str();
 		}
 	}
