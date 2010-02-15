@@ -382,7 +382,7 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 					if(commands[i].e != 0.0f)
 						oss << "E" << commands[i].e << " ";
 					}
-			oss << " F" << commands[i].f;
+			oss << "F" << commands[i].f;
 			if(commands[i].comment.length() != 0)
 				oss << " ;" << commands[i].comment << "\n";
 			else
