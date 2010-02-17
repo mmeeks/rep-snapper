@@ -102,6 +102,7 @@ public:
 	void CleanupPolygons(float Optimization);			// remove redudant points
 	void CleanupOffsetPolygons(float Optimization);			// remove redudant points
 	void MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float &E, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, float DistanceToReachFullSpeed, float extrusionFactor, bool UseIncrementalEcode, bool Use3DGcode, bool EnableAcceleration);	// Convert Cuttingplane to GCode
+	bool VertexIsOutsideOriginalPolygon( Vector2f point, float z);
 
 	Vector2f Min, Max;				// Bounding box
 	vector<Segment> lines;			// Segments - 2 points pr. line-segment

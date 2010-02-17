@@ -2107,6 +2107,34 @@ void CuttingPlane::Shrink(float distance, float z, bool DisplayCuttingPlane, boo
 	
 
 }*/
+
+bool CuttingPlane::VertexIsOutsideOriginalPolygon( Vector2f point, float z)
+{
+	// Shoot a ray along +X and count the number of intersections.
+	// If n_intersections is euqal, return true, else return false
+	
+	Vector2f EndP(point.x+10000, point.y);
+	int intersectcount = 0;
+	
+	for(int p=0; p<polygons.size();p++)
+	{
+		uint count = polygons[p].points.size();
+		for(int i=0; i<count;i++)
+		{
+		Vector2f P1 = Vector2f( vertices[polygons[p].points[(i-1+count)%count]] );
+		Vector2f P2 = Vector2f( vertices[polygons[p].points[i]]);
+		
+		if(P1.y == P2.y)	// Skip hortisontal lines, we can't intersect with them, because the test line in horitsontal
+			continue;
+		
+		InFillHit hit;
+		if(IntersectXY(point,EndP,P1,P2,hit))
+			intersectcount++;
+		}
+	}
+	return intersectcount%2;
+}
+
 #if(1)
 
 #define RESOLUTION 6
@@ -2217,13 +2245,6 @@ void CuttingPlane::ShrinkNice(float distance, float z, bool DisplayCuttingPlane,
 				}
 				else
 				{
-
-/*					void gpc_add_contour
-						(gpc_polygon     *polygon,
-						gpc_vertex_list *contour,
-						int              hole);*/
-//					gpc_add_contour(&holes, outline, 1);
-
 					gpc_polygon new_hole;
 					new_hole.num_contours = 1;
 					new_hole.hole = new int;
@@ -2278,18 +2299,21 @@ void CuttingPlane::ShrinkNice(float distance, float z, bool DisplayCuttingPlane,
 
 	for(int p=0;p<solids.num_contours;p++)
 	{
-		if(solids.hole[p] == 0)
+//		if(solids.hole[p] == 0)	// seeme we have to check everything
 		{
+		if(!VertexIsOutsideOriginalPolygon( Vector2f(solids.contour[p].vertex[0].x, solids.contour[p].vertex[0].y), z))
+			{
 			FREE(solids.contour[p].vertex);
 			//			FREE(solids.hole);
 			//			FREE(solids.contour);
 			solids.num_contours--;
 			for(int c=p;c<solids.num_contours;c++)
-			{
+				{
 				solids.contour[c] =solids.contour[c+1];
 				solids.hole[c] = solids.hole[c+1];
-			}
+				}
 			p--;
+			}
 		}
 	}
 
@@ -2658,21 +2682,26 @@ void Poly::calcHole(vector<Vector2f> &offsetVertices)
 {
 	if(points.size() == 0)
 		return;	// hole is undefined
-	float x=-6000;
+	Vector2f p(-6000, -6000);
 	int v=0;
 	for(int vert=0;vert<points.size();vert++)
 	{
-		if(offsetVertices[points[vert]].x > x)
+		if(offsetVertices[points[vert]].x > p.x)
 		{
-			x = offsetVertices[points[vert]].x;
+			p.x = offsetVertices[points[vert]].x;
+			v=vert;
+		}
+		else if(offsetVertices[points[vert]].x == p.x && offsetVertices[points[vert]].y > p.y)
+		{
+			p = offsetVertices[points[vert]];
 			v=vert;
 		}
 	}
 
 	// we have the x-most vertex, v
 	Vector2f V1 = offsetVertices[points[(v-1+points.size())%points.size()]];
-	Vector2f V2 = offsetVertices[points[(v+points.size())%points.size()]];
-	Vector2f V3 = offsetVertices[points[(v+1+points.size())%points.size()]];
+	Vector2f V2 = offsetVertices[points[v]];
+	Vector2f V3 = offsetVertices[points[(v+1)%points.size()]];
 
 	Vector2f Va=V2-V1;
 	Vector2f Vb=V3-V1;

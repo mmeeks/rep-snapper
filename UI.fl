@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109 
+version 1.0110 
 header_name {.h} 
 code_name {.cxx}
 decl {\#pragma warning( disable : 4311 4312 4244 4267 4800)} {public global
@@ -13,7 +13,7 @@ class GUI {open
   Function {GUI()} {open
   } {
     Fl_Window mainWindow {
-      label {RepSnapper by Kulitorum www.kulitorum.com} open
+      label {RepSnapper by Kulitorum www.kulitorum.com}
       xywh {319 235 1400 840} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
     } {
       Fl_Box MVC {
@@ -416,7 +416,7 @@ shrinkNiceButton->value(0);
 MVC->SetShrinkQuality("nice");
 MVC->redraw();
 shrinkFastButton->value(0);
-}} selected
+}}
                 xywh {1115 405 250 20} type Radio color 47 selection_color 2
               }
             }
@@ -1408,12 +1408,13 @@ o->label("Print");
     code {Fl::visual( FL_DOUBLE | FL_RGB);
 Fl::scheme("plastic");
 mainWindow->show(argc, argv);
-//MVC->ReadStl("C:/box.stl");
+MVC->ReadStl("C:/code/printed-parts/z-tensioner_1off.stl");
 MVC->init();
 MVC->CopySettingsToGUI();
 MVC->draw();
 MVC->redraw();
-MVC->redraw();} {}
+MVC->redraw();} {selected
+    }
   }
 } 
 
