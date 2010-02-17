@@ -61,7 +61,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 				stl->CalcCuttingPlane(z, plane, T);	// output is alot of un-connected line segments with individual vertices
 
 				float hackedZ = z;
-				while(plane.LinkSegments(hackedZ, ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, m_ShrinkQuality) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
+				while(plane.LinkSegments(hackedZ, ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, m_ShrinkQuality, ShellCount) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
 					{										// This happens when there's triangles missing in the input STL
 					hackedZ+= 0.1f;
 					plane.polygons.clear();
@@ -81,9 +81,9 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 				if(ShellOnly == false)
 					{
 					if(m_ShrinkQuality == SHRINK_FAST)
-						infillCuttingPlane.ShrinkFast(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false);
+						infillCuttingPlane.ShrinkFast(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);
 					else
-						infillCuttingPlane.ShrinkNice(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false);
+						infillCuttingPlane.ShrinkNice(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);
 					infillCuttingPlane.CalcInFill(infill, LayerNr, destinationZ, InfillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
 					}
 				// Make the GCode from the plane and the infill

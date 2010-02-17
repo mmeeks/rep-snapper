@@ -359,7 +359,7 @@ void STL::draw(const ProcessController &PC, float opasity)
 			CalcCuttingPlane(z, plane, T);	// output is alot of un-connected line segments with individual vertices
 
 			float hackedZ = z;
-			while(plane.LinkSegments(hackedZ, PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane, PC.m_ShrinkQuality) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
+			while(plane.LinkSegments(hackedZ, PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane, PC.m_ShrinkQuality, PC.ShellCount) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
 			{										// This happens when there's triangles missing in the input STL
 				hackedZ+= 0.1f;
 				plane.polygons.clear();
@@ -367,9 +367,9 @@ void STL::draw(const ProcessController &PC, float opasity)
 			}
 
 			if(PC.m_ShrinkQuality == SHRINK_FAST)
-				plane.ShrinkFast(PC.ExtrudedMaterialWidth*0.5f, z, PC.DisplayCuttingPlane, false);
+				plane.ShrinkFast(PC.ExtrudedMaterialWidth*0.5f, z, PC.DisplayCuttingPlane, false, PC.ShellCount);
 			else
-				plane.ShrinkNice(PC.ExtrudedMaterialWidth*0.5f, z, PC.DisplayCuttingPlane, false);
+				plane.ShrinkNice(PC.ExtrudedMaterialWidth*0.5f, z, PC.DisplayCuttingPlane, false, PC.ShellCount);
 			plane.Draw(z, PC.DrawVertexNumbers, PC.DrawLineNumbers);
 
 			// inFill
@@ -386,9 +386,9 @@ void STL::draw(const ProcessController &PC, float opasity)
 				if(PC.ShellOnly == false)
 					{
 					if(PC.m_ShrinkQuality == SHRINK_FAST)
-						infillCuttingPlane.ShrinkFast(PC.ExtrudedMaterialWidth, z, PC.DisplayCuttingPlane, false);
+						infillCuttingPlane.ShrinkFast(PC.ExtrudedMaterialWidth, z, PC.DisplayCuttingPlane, false, PC.ShellCount);
 					else
-						infillCuttingPlane.ShrinkNice(PC.ExtrudedMaterialWidth, z, PC.DisplayCuttingPlane, false);
+						infillCuttingPlane.ShrinkNice(PC.ExtrudedMaterialWidth, z, PC.DisplayCuttingPlane, false, PC.ShellCount);
 					infillCuttingPlane.CalcInFill(infill, LayerNr, z, PC.InfillDistance, PC.InfillRotation, PC.InfillRotationPrLayer, PC.DisplayDebuginFill);
 					}
 				glColor4f(1,1,0,1);
@@ -1143,6 +1143,16 @@ int intersect2D_Segments( const Vector2f &p1, const Vector2f &p2, const Vector2f
 // the line segment p1-p2
 bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, InFillHit &hit)
 {
+	// BBOX test
+	if(MIN(p1.x,p2.x) > MAX(p3.x,p4.x))
+		return false;
+	if(MAX(p1.x,p2.x) < MIN(p3.x,p4.x))
+		return false;
+	if(MIN(p1.y,p2.y) > MAX(p3.y,p4.y))
+		return false;
+	if(MAX(p1.y,p2.y) < MIN(p3.y,p4.y))
+		return false;
+
 
 	if(abs(p1.x-p3.x) < 0.01 && abs(p1.y - p3.y) < 0.01)
 	{
@@ -1416,7 +1426,7 @@ public:
 };
 
 
-bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, bool DisplayCuttingPlane, bool ShrinkQuality)
+bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, bool DisplayCuttingPlane, bool ShrinkQuality, int ShellCount)
 {
 	if(vertices.size() == 0)
 		return true;
@@ -1587,9 +1597,9 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 	CleanupPolygons(Optimization);
 
 	if(ShrinkQuality)
-		ShrinkNice(ShrinkValue, z, DisplayCuttingPlane, true);
+		ShrinkNice(ShrinkValue, z, DisplayCuttingPlane, true, ShellCount);
 	else
-		ShrinkFast(ShrinkValue, z, DisplayCuttingPlane, true);
+		ShrinkFast(ShrinkValue, z, DisplayCuttingPlane, true, ShellCount);
 	// Draw resulting poly
 	glColor3f(1,1,0);
 	for(int p=0; p<polygons.size();p++)
@@ -1943,10 +1953,27 @@ void CuttingPlane::recurseSelfIntersectAndDivide(float z, vector<locator> &EndPo
 }
 
 
-
-
-void CuttingPlane::ShrinkFast(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
+float angleBetween(Vector2f V1, Vector2f V2)
 {
+	float dotproduct, lengtha, lengthb, result;
+
+	dotproduct = (V1.x * V2.x) + (V1.y * V2.y);
+	lengtha = sqrt(V1.x * V1.x + V1.y * V1.y);
+	lengthb = sqrt(V2.x * V2.x + V2.y * V2.y);
+
+	result = acos( dotproduct / (lengtha * lengthb) );
+	if(result > 0)
+		result += M_PI;
+	else
+		result -= M_PI;
+
+	return result;
+}
+
+void CuttingPlane::ShrinkFast(float distance, float z, bool DisplayCuttingPlane, bool useFillets, int ShellCount)
+{
+	distance*=ShellCount;
+
 	glColor4f(1,1,1,1);
 	for(int p=0; p<polygons.size();p++)
 	{
@@ -1960,8 +1987,38 @@ void CuttingPlane::ShrinkFast(float distance, float z, bool DisplayCuttingPlane,
 			Vector2f Nb = Vector2f(vertices[polygons[p].points[i]].x, vertices[polygons[p].points[i]].y);
 			Vector2f Nc = Vector2f(vertices[polygons[p].points[(i+1)%count]].x, vertices[polygons[p].points[(i+1)%count]].y);
 
-			Vector2f V1 = (Nb-Na);
-			Vector2f V2 = (Nc-Nb);
+			Vector2f V1 = (Nb-Na).getNormalized();
+			Vector2f V2 = (Nc-Nb).getNormalized();
+
+			Vector2f biplane = (V2 - V1).getNormalized();
+			
+			float a = angleBetween(V1,V2);
+
+			bool convex = V1.cross(V2) < 0;
+			Vector2f p;
+			if(convex)
+				p = Nb+biplane*distance/(cos((M_PI-a)*0.5f));
+			else
+				p = Nb-biplane*distance/(sin(a*0.5f));
+
+/*			if(DisplayCuttingPlane)
+				glEnd();
+
+			if(convex)
+				glColor3f(1,0,0);
+			else
+				glColor3f(0,1,0);
+
+			ostringstream oss;
+			oss << a;
+			renderBitmapString(Vector3f (Nb.x, Nb.y, z) , GLUT_BITMAP_8_BY_13 , oss.str());
+
+			if(DisplayCuttingPlane)
+				glBegin(GL_LINE_LOOP);
+			glColor3f(1,1,0);
+			*/
+/*
+
 
 			Vector2f N1 = Vector2f(-V1.y, V1.x);
 			Vector2f N2 = Vector2f(-V2.y, V2.x);
@@ -1974,7 +2031,8 @@ void CuttingPlane::ShrinkFast(float distance, float z, bool DisplayCuttingPlane,
 
 			int vertexNr = polygons[p].points[i];
 
-			Vector2f p = vertices[vertexNr] - (Normal * distance);
+			Vector2f p = vertices[vertexNr] - (Normal * distance);*/
+
 			offsetPoly.points.push_back(offsetVertices.size());
 			offsetVertices.push_back(p);
 			if(DisplayCuttingPlane)
@@ -1984,7 +2042,8 @@ void CuttingPlane::ShrinkFast(float distance, float z, bool DisplayCuttingPlane,
 			glEnd();
 		offsetPolygons.push_back(offsetPoly);
 	}
-	selfIntersectAndDivide(z);
+//	CleanupOffsetPolygons(0.1f);
+	selfIntersectAndDivide(z);		make this work for z-tensioner_1off.stl rotated 45d on X axis
 }
 
 #if(0)
@@ -2137,12 +2196,14 @@ bool CuttingPlane::VertexIsOutsideOriginalPolygon( Vector2f point, float z)
 
 #if(1)
 
-#define RESOLUTION 6
+#define RESOLUTION 4
 #define FREE(p)            {if (p) {free(p); (p)= NULL;}}
 
-void CuttingPlane::ShrinkNice(float distance, float z, bool DisplayCuttingPlane, bool useFillets)
+void CuttingPlane::ShrinkNice(float distance, float z, bool DisplayCuttingPlane, bool useFillets, int ShellCount)
 {
 	offsetPolygons.clear();
+	
+	distance *= ShellCount;
 
 	gpc_polygon solids;
 	solids.num_contours = 0;
@@ -2292,11 +2353,6 @@ void CuttingPlane::ShrinkNice(float distance, float z, bool DisplayCuttingPlane,
 
 
 	// delete the largest of the solids outlines, and the smallest of the holes outlines
-
-	/////////////////////////////////////////////////////////////////////////////////////
-	// we do not delete holes in solids, we just intersect it with the original outline//
-	/////////////////////////////////////////////////////////////////////////////////////
-
 	for(int p=0;p<solids.num_contours;p++)
 	{
 //		if(solids.hole[p] == 0)	// seeme we have to check everything
@@ -2317,34 +2373,7 @@ void CuttingPlane::ShrinkNice(float distance, float z, bool DisplayCuttingPlane,
 		}
 	}
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	// intersect original outline                                                      //
-	/////////////////////////////////////////////////////////////////////////////////////
-
-/*	for(int p=0; p<polygons.size();p++)
-	{
-	uint count = polygons[p].points.size();
-
-	gpc_vertex_list *outline = new gpc_vertex_list;
-	outline->vertex = new  gpc_vertex[count];
-	for(int i=0; i<count;i++)
-	{
-	outline->vertex[i].x = vertices[polygons[p].points[i]].x;
-	outline->vertex[i].y = vertices[polygons[p].points[i]].y;
-	}
-	outline->num_vertices = count;
-	gpc_polygon new_solid;
-	new_solid.num_contours = 1;
-	new_solid.hole = new int;
-	*new_solid.hole = 0;
-	new_solid.contour = outline;
-	gpc_polygon_clip(GPC_INT, &solids, &new_solid, &all_solids);
-	solids=all_solids;
-	delete new_solid.hole;
-	delete new_solid.contour->vertex;
-	delete new_solid.contour;
-	}*/
-	// intersect original outline END                                                  //
+                            //
 
 
 	// delete the largest of the solids outlines, and the smallest of the holes outlines
@@ -2742,7 +2771,7 @@ void CuttingPlane::selfIntersectAndDivide(float z)
 			{
 				holes.num_contours = 1;
 				holes.hole = new int;
-				*holes.hole = 0;
+				*holes.hole = 1;
 				holes.contour = vertices;
 			}
 			else
@@ -2750,7 +2779,7 @@ void CuttingPlane::selfIntersectAndDivide(float z)
 				gpc_polygon new_hole;
 				new_hole.num_contours = 1;
 				new_hole.hole = new int;
-				*new_hole.hole = 0;
+				*new_hole.hole = 1;
 				new_hole.contour = vertices;
 				gpc_polygon_clip(GPC_UNION, &holes, &new_hole, &all_holes);
 				holes=all_holes;
@@ -2784,13 +2813,9 @@ void CuttingPlane::selfIntersectAndDivide(float z)
 	}
 
 
-	// boolean the holes together
-
-	//	gpc_polygon_clip(GPC_UNION, &holes, &holes, &all_holes);
 
 	gpc_polygon poly_res;
 	gpc_polygon_clip(GPC_DIFF, &solids, &holes, &poly_res);
-
 
 	offsetPolygons.clear();
 	offsetVertices.clear();
