@@ -2269,7 +2269,13 @@ void CuttingPlane::ShrinkNice(float distance, float z, bool DisplayCuttingPlane,
 	}// for all polygons
 
 
+
 	// delete the largest of the solids outlines, and the smallest of the holes outlines
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	// we do not delete holes in solids, we just intersect it with the original outline//
+	/////////////////////////////////////////////////////////////////////////////////////
+
 	for(int p=0;p<solids.num_contours;p++)
 	{
 		if(solids.hole[p] == 0)
@@ -2286,6 +2292,37 @@ void CuttingPlane::ShrinkNice(float distance, float z, bool DisplayCuttingPlane,
 			p--;
 		}
 	}
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	// intersect original outline                                                      //
+	/////////////////////////////////////////////////////////////////////////////////////
+
+/*	for(int p=0; p<polygons.size();p++)
+	{
+	uint count = polygons[p].points.size();
+
+	gpc_vertex_list *outline = new gpc_vertex_list;
+	outline->vertex = new  gpc_vertex[count];
+	for(int i=0; i<count;i++)
+	{
+	outline->vertex[i].x = vertices[polygons[p].points[i]].x;
+	outline->vertex[i].y = vertices[polygons[p].points[i]].y;
+	}
+	outline->num_vertices = count;
+	gpc_polygon new_solid;
+	new_solid.num_contours = 1;
+	new_solid.hole = new int;
+	*new_solid.hole = 0;
+	new_solid.contour = outline;
+	gpc_polygon_clip(GPC_INT, &solids, &new_solid, &all_solids);
+	solids=all_solids;
+	delete new_solid.hole;
+	delete new_solid.contour->vertex;
+	delete new_solid.contour;
+	}*/
+	// intersect original outline END                                                  //
+
+
 	// delete the largest of the solids outlines, and the smallest of the holes outlines
 	for(int p=0;p<holes.num_contours;p++)
 	{
