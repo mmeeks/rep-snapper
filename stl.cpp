@@ -27,7 +27,9 @@
 #include <algorithm>
 
 #include "ivcon.h"
+extern "C" {
 #include "gpc.h"
+}
 
 //#include <ANN/ANN.h>
 

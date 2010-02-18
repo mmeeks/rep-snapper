@@ -1,5 +1,6 @@
 
 CC=gcc
+CXX=g++
 CFLAGS=-c -ggdb
 INC=-I/usr/include -I../Libraries/vmmlib/include -I../Libraries -I../Libraries/ann_1.1.1/include -I/usr/include/boost -I/usr/include/lua5.1
 LDFLAGS=-L/usr/lib -L../Libraries/xml -lfltk -lfltk_gl -lfltk_forms -lglut -lcustomxml -lboost_thread-mt -lboost_system-mt
@@ -10,10 +11,10 @@ EXECUTABLE=repsnapper
 all: $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS) 
-	$(CC) ${INC} $(OBJECTS) $(LDFLAGS) -o $@ 
+	$(CXX) ${INC} $(OBJECTS) $(LDFLAGS) -o $@ 
 
 .cpp.o:
-	$(CC) ${INC} $(CFLAGS) $< -o $@
+	$(CXX) ${INC} $(CFLAGS) $< -o $@
           
 .c.o:
 	$(CC) ${INC} $(CFLAGS) $< -o $@
