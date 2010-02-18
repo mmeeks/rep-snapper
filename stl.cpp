@@ -2043,7 +2043,7 @@ void CuttingPlane::ShrinkFast(float distance, float z, bool DisplayCuttingPlane,
 		offsetPolygons.push_back(offsetPoly);
 	}
 //	CleanupOffsetPolygons(0.1f);
-	selfIntersectAndDivide(z);		make this work for z-tensioner_1off.stl rotated 45d on X axis
+	selfIntersectAndDivide(z);		//make this work for z-tensioner_1off.stl rotated 45d on X axis
 }
 
 #if(0)
