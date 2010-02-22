@@ -27,10 +27,13 @@
 #include <algorithm>
 
 #include "ivcon.h"
+#ifndef WIN32
 extern "C" {
-#include "gpc.h"
+#endif
+	#include "gpc.h"
+#ifndef WIN32
 }
-
+#endif
 //#include <ANN/ANN.h>
 
 #pragma warning( disable : 4018 4267)
