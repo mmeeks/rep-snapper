@@ -27,7 +27,7 @@ GUI *gui;
 
 using namespace std;
 
-int main(int argc, char* argv[])
+int main()
 {
 	gui = new GUI();
 	MVC = gui->MVC;
