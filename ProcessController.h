@@ -110,7 +110,7 @@ public:
 
 	void SetFilename(string filename) { m_Filename = filename;}
 
-	void Draw();
+	void Draw(Flu_Tree_Browser::Node *selected_node);
 	
 	// STL Functions
 	bool ReadStl(string filename, STL &newstl) { return newstl.Read(filename);};
@@ -246,6 +246,7 @@ public:
 	float Highlight;
 	float NormalsLength;
 	float EndPointSize;
+	float TempUpdateSpeed;
 
 	bool LuminanceShowsSpeed;
 	bool DisplayGCode;

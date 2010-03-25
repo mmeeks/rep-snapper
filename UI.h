@@ -74,6 +74,10 @@ private:
   static void cb_Load1(Fl_Button*, void*);
 public:
   Flu_Tree_Browser *RFP_Browser;
+private:
+  void cb_RFP_Browser_i(Flu_Tree_Browser*, void*);
+  static void cb_RFP_Browser(Flu_Tree_Browser*, void*);
+public:
   Fl_Value_Input *TranslateX;
 private:
   void cb_TranslateX_i(Fl_Value_Input*, void*);
@@ -145,6 +149,8 @@ private:
   static void cb_Save2(Fl_Button*, void*);
   void cb_Delete_i(Fl_Button*, void*);
   static void cb_Delete(Fl_Button*, void*);
+  void cb_Duplicate_i(Fl_Button*, void*);
+  static void cb_Duplicate(Fl_Button*, void*);
 public:
   Fl_Value_Input *VolumeX;
   Fl_Value_Input *VolumeY;
@@ -714,10 +720,13 @@ public:
 private:
   void cb_ZposText_i(Fl_Value_Input*, void*);
   static void cb_ZposText(Fl_Value_Input*, void*);
-  void cb_STOP_i(Fl_Button*, void*);
-  static void cb_STOP(Fl_Button*, void*);
 public:
   Fl_Value_Slider *DownstreamMultiplierSlider;
+  Fl_Value_Slider *TempUpdateSpeedSlider;
+private:
+  void cb_TempUpdateSpeedSlider_i(Fl_Value_Slider*, void*);
+  static void cb_TempUpdateSpeedSlider(Fl_Value_Slider*, void*);
+public:
   Fl_Light_Button *ConnectToPrinterButton;
 private:
   void cb_ConnectToPrinterButton_i(Fl_Light_Button*, void*);
@@ -727,6 +736,8 @@ public:
 private:
   void cb_PrintButton_i(Fl_Light_Button*, void*);
   static void cb_PrintButton(Fl_Light_Button*, void*);
+  void cb_Restart_i(Fl_Button*, void*);
+  static void cb_Restart(Fl_Button*, void*);
   void cb_Nudge_i(Fl_Button*, void*);
   static void cb_Nudge(Fl_Button*, void*);
   void cb_Errors_i(Fl_Light_Button*, void*);

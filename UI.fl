@@ -13,7 +13,7 @@ class GUI {open
   Function {GUI()} {open
   } {
     Fl_Window mainWindow {
-      label {RepSnapper by Kulitorum www.kulitorum.com}
+      label {RepSnapper by Kulitorum www.kulitorum.com} open
       xywh {319 235 1400 840} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
     } {
       Fl_Box MVC {
@@ -30,7 +30,7 @@ class GUI {open
       } {
         Fl_Group {} {
           label {Input file} open
-          xywh {835 40 550 785} hide
+          xywh {835 40 550 785}
         } {
           Fl_Button {} {
             label {Load STL}
@@ -53,7 +53,7 @@ MVC->redraw();
           Fl_Light_Button FixSTLerrorsButton {
             label {Fix STL errors}
             callback {MVC->redraw()}
-            xywh {1110 50 135 25} value 1 selection_color 63
+            xywh {1115 50 135 25} value 1 selection_color 63
           }
           Fl_Button {} {
             label {Save STL}
@@ -71,7 +71,7 @@ if(dir.length())
 MVC->ReadStl(dir);
 MVC->redraw();
 };}
-            xywh {975 50 130 25} deactivate
+            xywh {975 50 135 25} deactivate
           }
           Fl_Group {} {
             label {Object rotation} open
@@ -159,72 +159,73 @@ MVC->redraw();
           }
           Fl_Box RFP_Browser {
             label {RFO file}
-            xywh {845 110 355 440} box UP_BOX align 16 resizable
+            callback {MVC->redraw();} selected
+            xywh {845 110 355 440} box UP_BOX align 16 when 1 resizable
             code0 {\#include "Flu_Tree_Browser.h"}
             class Flu_Tree_Browser
           }
           Fl_Group {} {
             label Translate open
-            xywh {1205 130 180 40} box ENGRAVED_FRAME color 39
+            xywh {1205 180 180 40} box ENGRAVED_FRAME color 39
           } {
             Fl_Value_Input TranslateX {
               label X
               callback {MVC->Translate("X", o->value());}
-              xywh {1220 141 45 23} minimum -300 maximum 300 step 0.1
+              xywh {1220 191 45 23} minimum -300 maximum 300 step 0.1
             }
             Fl_Value_Input TranslateY {
               label Y
               callback {MVC->Translate("Y", o->value());}
-              xywh {1280 142 45 23} minimum -300 maximum 300 step 0.1
+              xywh {1280 192 45 23} minimum -300 maximum 300 step 0.1
             }
             Fl_Value_Input TranslateZ {
               label Z
               callback {MVC->Translate("Z", o->value());}
-              xywh {1335 142 45 23} minimum -300 maximum 300 step 0.01
+              xywh {1335 192 45 23} minimum -300 maximum 300 step 0.01
             }
           }
           Fl_Group {} {
             label Rotate open
-            xywh {1205 195 180 40} box ENGRAVED_FRAME color 39
+            xywh {1205 245 180 40} box ENGRAVED_FRAME color 39
           } {
             Fl_Value_Input RotateX {
               label X
               callback {MVC->RotateObject(1,0,0, o->value());}
-              xywh {1220 206 45 23} minimum -360 maximum 360 step 1
+              xywh {1220 256 45 23} minimum -360 maximum 360 step 1
             }
             Fl_Value_Input RotateY {
               label Y
               callback {MVC->RotateObject(0,1,0, o->value());}
-              xywh {1280 207 45 23} minimum -360 maximum 360 step 1
+              xywh {1280 257 45 23} minimum -360 maximum 360 step 1
             }
             Fl_Value_Input RotateZ {
               label Z
               callback {MVC->RotateObject(0,0,1, o->value());}
-              xywh {1335 207 45 23} minimum -360 maximum 360 step 1
+              xywh {1335 257 45 23} minimum -360 maximum 360 step 1
             }
           }
           Fl_Group {} {
             label Scale open
-            xywh {1205 255 180 70} box ENGRAVED_FRAME color 39
+            xywh {1205 305 180 70} box ENGRAVED_FRAME color 39
           } {
             Fl_Value_Input ScaleX {
               label X
               callback {MVC->Scale("X", o->value());}
-              xywh {1220 266 45 23} minimum -100 maximum 100 step 0.01 value 1
+              xywh {1220 316 45 23} minimum -100 maximum 100 step 0.01 value 1
             }
             Fl_Value_Input ScaleY {
               label Y
               callback {MVC->Scale("Y", o->value());}
-              xywh {1280 267 45 23} minimum -100 maximum 100 step 0.01 value 1
+              xywh {1280 317 45 23} minimum -100 maximum 100 step 0.01 value 1
             }
             Fl_Value_Input ScaleZ {
               label Z
               callback {MVC->Scale("Z", o->value());}
-              xywh {1335 267 45 23} minimum -100 maximum 100 step 0.01 value 1
+              xywh {1335 317 45 23} minimum -100 maximum 100 step 0.01 value 1
             }
             Fl_Light_Button ScaleAllAxies {
               label {All axis}
-              xywh {1220 295 160 20} value 1 selection_color 2
+              xywh {1220 345 160 20} value 1 selection_color 2
             }
           }
           Fl_Input FileLocationInput {
@@ -250,7 +251,7 @@ MVC->redraw();
           Fl_Button {} {
             label {New RFO Object}
             callback {MVC->newObject();}
-            xywh {980 80 130 25}
+            xywh {975 80 135 25}
           }
           Fl_Button {} {
             label {Save RFO}
@@ -262,10 +263,15 @@ MVC->redraw();
             callback {MVC->ProcessControl.rfo.DeleteSelected();}
             xywh {1115 80 135 25}
           }
+          Fl_Button {} {
+            label Duplicate
+            callback {MVC->Duplicate();}
+            xywh {1250 110 135 25}
+          }
         }
         Fl_Group {} {
           label {Printer definition} open
-          xywh {835 40 550 785}
+          xywh {835 40 550 785} hide
         } {
           Fl_Group {} {
             label {Build volume (mm)} open
@@ -733,7 +739,7 @@ MVC->redraw();
           }
         }
         Fl_Group {} {
-          label Score
+          label Score open
           xywh {835 40 540 795} hide
         } {
           Fl_Button {} {
@@ -755,14 +761,6 @@ MVC->redraw();
           Fl_Button {} {
             label {Sliders to move head interactivily}
             xywh {840 385 535 30}
-          }
-          Fl_Button {} {
-            label {Type input where you can send gcode interactivly}
-            xywh {840 210 535 30}
-          }
-          Fl_Button {} {
-            label {Temperature reading}
-            xywh {840 280 535 30}
           }
           Fl_Button {} {
             label {Speed input and interactive start/stop of extruder}
@@ -1146,12 +1144,12 @@ MVC->redraw();}
               }
               Fl_Input GCodeInput {
                 label GCode
-                xywh {895 350 385 25}
+                xywh {905 330 375 25}
               }
               Fl_Button {} {
                 label Send
                 callback {MVC->SendNow(GCodeInput->value());}
-                xywh {1285 350 68 25}
+                xywh {1285 330 68 25}
               }
               Fl_Output CurrentTempText {
                 label {Current temp}
@@ -1331,14 +1329,14 @@ MVC->redraw();}
                 callback {MVC->Goto("Z", o->value());}
                 xywh {1130 276 40 24} maximum 500
               }
-              Fl_Button {} {
-                label {STOP !!!!}
-                callback {MVC->STOP();}
-                xywh {855 530 495 230} color 1 labelfont 1 labelsize 64 labelcolor 1
-              }
               Fl_Value_Slider DownstreamMultiplierSlider {
                 label {Downstream speed multiplier}
                 xywh {845 490 510 25} type {Horz Knob} align 5 minimum 0.01 maximum 5 value 1 textsize 14
+              }
+              Fl_Value_Slider TempUpdateSpeedSlider {
+                label {Temperature update speed (seconds)}
+                callback {MVC->SetTempUpdateSpeed(o->value());}
+                xywh {1120 365 235 25} type {Horz Knob} align 4 minimum 0.1 maximum 10 step 0 value 3 textsize 14
               }
             }
           }
@@ -1349,7 +1347,7 @@ MVC->redraw();}
             Fl_Light_Button ConnectToPrinterButton {
               label {Connect to printer}
               callback {MVC->ConnectToPrinter(o->value());}
-              xywh {840 75 165 25} selection_color 2
+              xywh {840 75 135 25} selection_color 2
             }
             Fl_Light_Button PrintButton {
               label Print
@@ -1360,15 +1358,21 @@ MVC->Print();
 }
 else
 {
-MVC->Print();
-o->label("Print");
+MVC->Continue();
+o->label("Continue");
 }}
-              xywh {1010 75 165 25} selection_color 2
+              xywh {980 75 135 25} selection_color 2
+            }
+            Fl_Button {} {
+              label Restart
+              callback {MVC->Print();
+PrintButton->label("Pause");}
+              xywh {1120 75 135 25}
             }
             Fl_Button {} {
               label Nudge
               callback {MVC->Continue();}
-              xywh {1180 75 165 25}
+              xywh {1260 75 105 25}
             }
           }
           Fl_Group {} {
@@ -1413,8 +1417,7 @@ MVC->init();
 MVC->CopySettingsToGUI();
 MVC->draw();
 MVC->redraw();
-MVC->redraw();} {selected
-    }
+MVC->redraw();} {}
   }
 } 
 
@@ -1423,5 +1426,5 @@ decl {extern GUI* gui;} {}
 Function {TempReadTimer(void *)} {open return_type void
 } {
   code {MVC->serial.SendNow("M105");
-Fl::repeat_timeout(10.0f, &TempReadTimer);} {}
+  Fl::repeat_timeout(MVC->gui ? MVC->ProcessControl.TempUpdateSpeed: 10.0f , &TempReadTimer);} {}
 } 

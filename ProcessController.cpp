@@ -29,7 +29,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 	uint LayerNr = 0;
 	printOffset = PrintMargin;
 
-	float z=Min.z+0.001f;				// Offset it a bit in Z, z=0 gives a empty slice because no triangles crosses this Z value
+	float z=Min.z+LayerThickness*0.5f;				// Offset it a bit in Z, z=0 gives a empty slice because no triangles crosses this Z value
 
 	gcode.commands.clear();
 
@@ -58,14 +58,14 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 				t+= Vector3f(PrintMargin.x+RaftSize*RaftEnable, PrintMargin.y+RaftSize*RaftEnable, 0);
 				T.setTranslation(t);
 				CuttingPlane plane;
-				stl->CalcCuttingPlane(z, plane, T);	// output is alot of un-connected line segments with individual vertices
+				stl->CalcCuttingPlane(z, plane, T);	// output is alot of un-connected line segments with individual vertices, describing the outline
 
 				float hackedZ = z;
 				while(plane.LinkSegments(hackedZ, ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, m_ShrinkQuality, ShellCount) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
 					{										// This happens when there's triangles missing in the input STL
 					hackedZ+= 0.1f;
 					plane.polygons.clear();
-					stl->CalcCuttingPlane(hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices
+					stl->CalcCuttingPlane(hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices, describing the outline
 					}
 
 		//		plane.Draw(z);
@@ -88,8 +88,8 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 					}
 				// Make the GCode from the plane and the infill
 				plane.MakeGcode(infill, gcode, E, destinationZ, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, DistanceToReachFullSpeed, extrusionFactor, UseIncrementalEcode, Use3DGcode, EnableAcceleration);
-				LayerNr++;
 				}
+	LayerNr++;
 	destinationZ += LayerThickness;
 	z+=LayerThickness;
 	}
@@ -291,13 +291,6 @@ void ProcessController::RotateObject(Vector3f axis, float a)
 	// first check files
 	for(uint o=0;o<rfo.Objects.size();o++)
 	{
-/*		if(Objects[o].node == node)
-		{
-			ProcessControl.RotateObject(x,y,z,a);
-			BuildBrowser(MVC->ProcessControl);
-			MVC->redraw();
-			return;
-		}*/
 		for(uint f=0;f<rfo.Objects[o].files.size();f++)
 		{
 			if(rfo.Objects[o].files[f].node == node)
@@ -308,10 +301,9 @@ void ProcessController::RotateObject(Vector3f axis, float a)
 			}
 		}
 	}
-	cout << "Reimplementate ProcessController::RotateObject";
 }
 
-void ProcessController::Draw()
+void ProcessController::Draw(Flu_Tree_Browser::Node *selected_node)
 {
 	printOffset = PrintMargin;
 	if(RaftEnable)
@@ -323,16 +315,15 @@ void ProcessController::Draw()
 	// Move objects
 	glTranslatef(translation.x+printOffset.x, translation.y+printOffset.y, translation.z+PrintMargin.z);
 	glPolygonOffset (0.5f, 0.5f);
-	rfo.Draw(*this);
+	rfo.Draw(*this, 1.0f, selected_node);
 	if(DisplayGCode)
 	{
 		glTranslatef(-(translation.x+printOffset.x), -(translation.y+printOffset.y), -(translation.z+PrintMargin.z));
 		gcode.draw(*this);
+		glTranslatef(translation.x+printOffset.x, translation.y+printOffset.y, translation.z+PrintMargin.z);
+		glPolygonOffset (-0.5f, -0.5f);
+		rfo.Draw(*this, PolygonOpasity);
 	}
-	glTranslatef(translation.x+printOffset.x, translation.y+printOffset.y, translation.z+PrintMargin.z);
-	
-	glPolygonOffset (-0.5f, -0.5f);
-	rfo.Draw(*this, PolygonOpasity);
 //	float z=0;
 //	MakeRaft(z);
 
@@ -485,6 +476,7 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("Highlight", true, "0.4")->SetValueFloat(Highlight);
 	x->FindVariableZ("NormalsLength", true, "10")->SetValueFloat(NormalsLength);
 	x->FindVariableZ("EndPointSize", true, "8")->SetValueFloat(EndPointSize);
+	x->FindVariableZ("TempUpdateSpeed", true,"3")->SetValueFloat(TempUpdateSpeed);
 
 	x->FindVariableZ("DisplayGCode", true, "1")->SetValueFloat(DisplayGCode);
 	x->FindVariableZ("LuminanceShowsSpeed", true, "1")->SetValueFloat(LuminanceShowsSpeed);
@@ -721,6 +713,10 @@ void ProcessController::LoadXML(XMLElement *e)
 	if(y)	NormalsLength = y->GetValueFloat();
 	y=x->FindVariableZ("EndPointSize", true, "8");
 	if(y)	EndPointSize = y->GetValueFloat();
+
+	y=x->FindVariableZ("TempUpdateSpeed", true, "3");
+	if(y)	TempUpdateSpeed = y->GetValueFloat();
+
 
 	y=x->FindVariableZ("DisplayGCode", true, "1");
 	if(y)	DisplayGCode = (bool)y->GetValueInt();
@@ -1009,3 +1005,4 @@ void ProcessController::BindLua(lua_State *myLuaState)
 		];
 #endif
 }
+

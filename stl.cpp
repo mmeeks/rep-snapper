@@ -683,6 +683,13 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	code.commands.push_back(command);
 	command.comment = "";
 
+	command.Code = SETSPEED;
+	command.where = Vector3f(0,0,lastLayerZ);
+	command.e = E;					// move
+	command.f = MinPrintSpeedXY;		// Use Min Z speed
+	code.commands.push_back(command);
+	command.comment = "";
+
 	std::vector<Vector3f> lines;
 
 	for(uint i=0;i<infill.size();i++)
@@ -2632,8 +2639,19 @@ void STL::RotateObject(Vector3f axis, float angle)
 	max.y = MAX(max.y, triangles[i].C.y);
 	max.z = MAX(max.z, triangles[i].C.z);
 	}
-	Min = min;
-	Max = max;
+
+	// Move object, so min.x,y,z = old Min.x,y,z
+	Vector3f Delta = Min-min;
+
+	for(uint i=0; i<triangles.size() ; i++)
+	{
+		triangles[i].A += Delta;
+		triangles[i].B += Delta;
+		triangles[i].C += Delta;
+	}
+
+	Min = min+Delta;
+	Max = max+Delta;
 }
 
 float Triangle::area()

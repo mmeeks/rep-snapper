@@ -124,6 +124,7 @@ void tree_callback( Fl_Widget* w, void* )
 		printf( "node '%s' added to the tree\n", n->label() );
 		break;
 	}
+	MVC->redraw();
 }
 
 ModelViewController::~ModelViewController()
@@ -258,7 +259,8 @@ void ModelViewController::draw()
 
 	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
 
-	ProcessControl.Draw();
+	Flu_Tree_Browser::Node *node=MVC->gui->RFP_Browser->get_selected( 1 );
+	ProcessControl.Draw(node);
 
 	/*--------------- Exit -----------------*/
 	glPopMatrix();													// NEW: Unapply Dynamic Transform
@@ -529,6 +531,7 @@ void ModelViewController::CopySettingsToGUI()
 
 	gui->NormalLengthSlider->value(ProcessControl.NormalsLength);
 	gui->EndpointSizeSlider->value(ProcessControl.EndPointSize);
+	gui->TempUpdateSpeedSlider->value(ProcessControl.TempUpdateSpeed);
 
 	gui->DisplayGCodeButton->value(ProcessControl.DisplayGCode);
 	gui->LuminanceShowsSpeedButton->value(ProcessControl.LuminanceShowsSpeed);
@@ -982,30 +985,62 @@ void ModelViewController::ReadStl(string filename)
 	STL stl;
 	bool ok = ProcessControl.ReadStl(filename, stl);
 	if(ok)
-		{
-		RFO_Object *parent = SelectedParent();
-		if(parent == 0)
-		{
-			ProcessControl.rfo.Objects.push_back(RFO_Object());
-			ProcessControl.rfo.BuildBrowser(ProcessControl);
-			parent = SelectedParent();
-		}
-		assert(parent != 0);
+		AddStl(stl, filename);
+}
 
-		RFO_File r;
-		r.stl = stl;
 
-		size_t found;
-		found=filename.find_last_of("/\\");
-		r.location = filename.substr(found+1);
-		//r.filetype = "";
-		//string material;
-		r.node = 0;	//???
-		parent->files.push_back(r);
+RFO_File* ModelViewController::AddStl(STL stl, string filename)
+{
+	RFO_Object *parent = SelectedParent();
+	if(parent == 0)
+	{
+		ProcessControl.rfo.Objects.push_back(RFO_Object());
 		ProcessControl.rfo.BuildBrowser(ProcessControl);
-		}
+		parent = SelectedParent();
+	}
+	assert(parent != 0);
+
+	RFO_File r;
+	r.stl = stl;
+
+	size_t found;
+	found=filename.find_last_of("/\\");
+	r.location = filename.substr(found+1);
+	//r.filetype = "";
+	//string material;
+	r.node = 0;	//???
+	parent->files.push_back(r);
+	ProcessControl.rfo.BuildBrowser(ProcessControl);
 
 	ProcessControl.CalcBoundingBoxAndZoom();
+	redraw();
+	return &parent->files.back();
+}
+
+
+void ModelViewController::Duplicate()
+{
+	Flu_Tree_Browser::Node *node=MVC->gui->RFP_Browser->get_selected( 1 );
+	// first check files
+	for(uint o=0;o<ProcessControl.rfo.Objects.size();o++)
+	{
+		for(uint f=0;f<ProcessControl.rfo.Objects[o].files.size();f++)
+		{
+			if(ProcessControl.rfo.Objects[o].files[f].node == node)
+			{
+				// Move it, so there's room for it.
+				RFO_File* obj = AddStl(ProcessControl.rfo.Objects[o].files[f].stl, ProcessControl.rfo.Objects[o].files[f].location);
+				Vector3f p = ProcessControl.rfo.Objects[o].files[f].transform3D.transform.getTranslation();
+				Vector3f size = ProcessControl.rfo.Objects[o].files[f].stl.Max - ProcessControl.rfo.Objects[o].files[f].stl.Min;
+				p.x += size.x+5.0f;	// 5mm space
+				obj->transform3D.transform.setTranslation(p);
+				MVC->gui->RFP_Browser->set_hilighted(obj->node);
+				ProcessControl.CalcBoundingBoxAndZoom();
+				redraw();
+				return;
+			}
+		}
+	}
 }
 
 void ModelViewController::newObject()

@@ -131,6 +131,13 @@ void GUI::cb_Load1(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load1_i(o,v);
 }
 
+void GUI::cb_RFP_Browser_i(Flu_Tree_Browser*, void*) {
+  MVC->redraw();
+}
+void GUI::cb_RFP_Browser(Flu_Tree_Browser* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_RFP_Browser_i(o,v);
+}
+
 void GUI::cb_TranslateX_i(Fl_Value_Input* o, void*) {
   MVC->Translate("X", o->value());
 }
@@ -241,6 +248,13 @@ void GUI::cb_Delete_i(Fl_Button*, void*) {
 }
 void GUI::cb_Delete(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Delete_i(o,v);
+}
+
+void GUI::cb_Duplicate_i(Fl_Button*, void*) {
+  MVC->Duplicate();
+}
+void GUI::cb_Duplicate(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Duplicate_i(o,v);
 }
 
 void GUI::cb_MarginX_i(Fl_Value_Input* o, void*) {
@@ -1294,11 +1308,11 @@ void GUI::cb_ZposText(Fl_Value_Input* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_ZposText_i(o,v);
 }
 
-void GUI::cb_STOP_i(Fl_Button*, void*) {
-  MVC->STOP();
+void GUI::cb_TempUpdateSpeedSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetTempUpdateSpeed(o->value());
 }
-void GUI::cb_STOP(Fl_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_STOP_i(o,v);
+void GUI::cb_TempUpdateSpeedSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_TempUpdateSpeedSlider_i(o,v);
 }
 
 void GUI::cb_ConnectToPrinterButton_i(Fl_Light_Button* o, void*) {
@@ -1316,12 +1330,20 @@ MVC->Print();
 }
 else
 {
-MVC->Print();
-o->label("Print");
+MVC->Continue();
+o->label("Continue");
 };
 }
 void GUI::cb_PrintButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_PrintButton_i(o,v);
+}
+
+void GUI::cb_Restart_i(Fl_Button*, void*) {
+  MVC->Print();
+PrintButton->label("Pause");
+}
+void GUI::cb_Restart(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Restart_i(o,v);
 }
 
 void GUI::cb_Nudge_i(Fl_Button*, void*) {
@@ -1373,16 +1395,15 @@ GUI::GUI() {
     { Tabs = new Fl_Tabs(835, 20, 560, 815);
       Tabs->align(FL_ALIGN_TOP_LEFT);
       { Fl_Group* o = new Fl_Group(835, 40, 550, 785, "Input file");
-        o->hide();
         { Fl_Button* o = new Fl_Button(845, 50, 130, 25, "Load STL");
           o->callback((Fl_Callback*)cb_Load);
         } // Fl_Button* o
-        { FixSTLerrorsButton = new Fl_Light_Button(1110, 50, 135, 25, "Fix STL errors");
+        { FixSTLerrorsButton = new Fl_Light_Button(1115, 50, 135, 25, "Fix STL errors");
           FixSTLerrorsButton->value(1);
           FixSTLerrorsButton->selection_color((Fl_Color)FL_GREEN);
           FixSTLerrorsButton->callback((Fl_Callback*)cb_FixSTLerrorsButton);
         } // Fl_Light_Button* FixSTLerrorsButton
-        { Fl_Button* o = new Fl_Button(975, 50, 130, 25, "Save STL");
+        { Fl_Button* o = new Fl_Button(975, 50, 135, 25, "Save STL");
           o->callback((Fl_Callback*)cb_Save);
           o->deactivate();
         } // Fl_Button* o
@@ -1430,26 +1451,27 @@ GUI::GUI() {
           RFP_Browser->labelfont(0);
           RFP_Browser->labelsize(14);
           RFP_Browser->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+          RFP_Browser->callback((Fl_Callback*)cb_RFP_Browser);
           RFP_Browser->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
-          RFP_Browser->when(FL_WHEN_RELEASE);
+          RFP_Browser->when(FL_WHEN_CHANGED);
           Fl_Group::current()->resizable(RFP_Browser);
         } // Flu_Tree_Browser* RFP_Browser
-        { Fl_Group* o = new Fl_Group(1205, 130, 180, 40, "Translate");
+        { Fl_Group* o = new Fl_Group(1205, 180, 180, 40, "Translate");
           o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
-          { TranslateX = new Fl_Value_Input(1220, 141, 45, 23, "X");
+          { TranslateX = new Fl_Value_Input(1220, 191, 45, 23, "X");
             TranslateX->minimum(-300);
             TranslateX->maximum(300);
             TranslateX->step(0.1);
             TranslateX->callback((Fl_Callback*)cb_TranslateX);
           } // Fl_Value_Input* TranslateX
-          { TranslateY = new Fl_Value_Input(1280, 142, 45, 23, "Y");
+          { TranslateY = new Fl_Value_Input(1280, 192, 45, 23, "Y");
             TranslateY->minimum(-300);
             TranslateY->maximum(300);
             TranslateY->step(0.1);
             TranslateY->callback((Fl_Callback*)cb_TranslateY);
           } // Fl_Value_Input* TranslateY
-          { TranslateZ = new Fl_Value_Input(1335, 142, 45, 23, "Z");
+          { TranslateZ = new Fl_Value_Input(1335, 192, 45, 23, "Z");
             TranslateZ->minimum(-300);
             TranslateZ->maximum(300);
             TranslateZ->step(0.01);
@@ -1457,22 +1479,22 @@ GUI::GUI() {
           } // Fl_Value_Input* TranslateZ
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(1205, 195, 180, 40, "Rotate");
+        { Fl_Group* o = new Fl_Group(1205, 245, 180, 40, "Rotate");
           o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
-          { RotateX = new Fl_Value_Input(1220, 206, 45, 23, "X");
+          { RotateX = new Fl_Value_Input(1220, 256, 45, 23, "X");
             RotateX->minimum(-360);
             RotateX->maximum(360);
             RotateX->step(1);
             RotateX->callback((Fl_Callback*)cb_RotateX);
           } // Fl_Value_Input* RotateX
-          { RotateY = new Fl_Value_Input(1280, 207, 45, 23, "Y");
+          { RotateY = new Fl_Value_Input(1280, 257, 45, 23, "Y");
             RotateY->minimum(-360);
             RotateY->maximum(360);
             RotateY->step(1);
             RotateY->callback((Fl_Callback*)cb_RotateY);
           } // Fl_Value_Input* RotateY
-          { RotateZ = new Fl_Value_Input(1335, 207, 45, 23, "Z");
+          { RotateZ = new Fl_Value_Input(1335, 257, 45, 23, "Z");
             RotateZ->minimum(-360);
             RotateZ->maximum(360);
             RotateZ->step(1);
@@ -1480,31 +1502,31 @@ GUI::GUI() {
           } // Fl_Value_Input* RotateZ
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(1205, 255, 180, 70, "Scale");
+        { Fl_Group* o = new Fl_Group(1205, 305, 180, 70, "Scale");
           o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
-          { ScaleX = new Fl_Value_Input(1220, 266, 45, 23, "X");
+          { ScaleX = new Fl_Value_Input(1220, 316, 45, 23, "X");
             ScaleX->minimum(-100);
             ScaleX->maximum(100);
             ScaleX->step(0.01);
             ScaleX->value(1);
             ScaleX->callback((Fl_Callback*)cb_ScaleX);
           } // Fl_Value_Input* ScaleX
-          { ScaleY = new Fl_Value_Input(1280, 267, 45, 23, "Y");
+          { ScaleY = new Fl_Value_Input(1280, 317, 45, 23, "Y");
             ScaleY->minimum(-100);
             ScaleY->maximum(100);
             ScaleY->step(0.01);
             ScaleY->value(1);
             ScaleY->callback((Fl_Callback*)cb_ScaleY);
           } // Fl_Value_Input* ScaleY
-          { ScaleZ = new Fl_Value_Input(1335, 267, 45, 23, "Z");
+          { ScaleZ = new Fl_Value_Input(1335, 317, 45, 23, "Z");
             ScaleZ->minimum(-100);
             ScaleZ->maximum(100);
             ScaleZ->step(0.01);
             ScaleZ->value(1);
             ScaleZ->callback((Fl_Callback*)cb_ScaleZ);
           } // Fl_Value_Input* ScaleZ
-          { ScaleAllAxies = new Fl_Light_Button(1220, 295, 160, 20, "All axis");
+          { ScaleAllAxies = new Fl_Light_Button(1220, 345, 160, 20, "All axis");
             ScaleAllAxies->value(1);
             ScaleAllAxies->selection_color((Fl_Color)2);
           } // Fl_Light_Button* ScaleAllAxies
@@ -1526,7 +1548,7 @@ GUI::GUI() {
           ObjectNameInput->callback((Fl_Callback*)cb_ObjectNameInput);
           ObjectNameInput->align(FL_ALIGN_TOP_LEFT);
         } // Fl_Input* ObjectNameInput
-        { Fl_Button* o = new Fl_Button(980, 80, 130, 25, "New RFO Object");
+        { Fl_Button* o = new Fl_Button(975, 80, 135, 25, "New RFO Object");
           o->callback((Fl_Callback*)cb_New);
         } // Fl_Button* o
         { Fl_Button* o = new Fl_Button(1250, 80, 135, 25, "Save RFO");
@@ -1535,9 +1557,13 @@ GUI::GUI() {
         { Fl_Button* o = new Fl_Button(1115, 80, 135, 25, "Delete");
           o->callback((Fl_Callback*)cb_Delete);
         } // Fl_Button* o
+        { Fl_Button* o = new Fl_Button(1250, 110, 135, 25, "Duplicate");
+          o->callback((Fl_Callback*)cb_Duplicate);
+        } // Fl_Button* o
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(835, 40, 550, 785, "Printer definition");
+        o->hide();
         { Fl_Group* o = new Fl_Group(840, 65, 230, 40, "Build volume (mm)");
           o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
@@ -2104,10 +2130,6 @@ e rest of the print.");
         } // Fl_Button* o
         { new Fl_Button(840, 385, 535, 30, "Sliders to move head interactivily");
         } // Fl_Button* o
-        { new Fl_Button(840, 210, 535, 30, "Type input where you can send gcode interactivly");
-        } // Fl_Button* o
-        { new Fl_Button(840, 280, 535, 30, "Temperature reading");
-        } // Fl_Button* o
         { new Fl_Button(840, 420, 535, 30, "Speed input and interactive start/stop of extruder");
         } // Fl_Button* o
         { new Fl_Button(840, 455, 535, 30, "Fix shrink code");
@@ -2520,9 +2542,9 @@ an twice the filament extrusion. - with one line only");
               o->callback((Fl_Callback*)cb_Length);
               o->align(FL_ALIGN_LEFT);
             } // Fl_Value_Slider* o
-            { GCodeInput = new Fl_Input(895, 350, 385, 25, "GCode");
+            { GCodeInput = new Fl_Input(905, 330, 375, 25, "GCode");
             } // Fl_Input* GCodeInput
-            { Fl_Button* o = new Fl_Button(1285, 350, 68, 25, "Send");
+            { Fl_Button* o = new Fl_Button(1285, 330, 68, 25, "Send");
               o->callback((Fl_Callback*)cb_Send);
             } // Fl_Button* o
             { CurrentTempText = new Fl_Output(1160, 396, 55, 24, "Current temp");
@@ -2638,13 +2660,6 @@ an twice the filament extrusion. - with one line only");
               ZposText->maximum(500);
               ZposText->callback((Fl_Callback*)cb_ZposText);
             } // Fl_Value_Input* ZposText
-            { Fl_Button* o = new Fl_Button(855, 530, 495, 230, "STOP !!!!");
-              o->color((Fl_Color)1);
-              o->labelfont(1);
-              o->labelsize(64);
-              o->labelcolor((Fl_Color)1);
-              o->callback((Fl_Callback*)cb_STOP);
-            } // Fl_Button* o
             { DownstreamMultiplierSlider = new Fl_Value_Slider(845, 490, 510, 25, "Downstream speed multiplier");
               DownstreamMultiplierSlider->type(5);
               DownstreamMultiplierSlider->minimum(0.01);
@@ -2653,6 +2668,16 @@ an twice the filament extrusion. - with one line only");
               DownstreamMultiplierSlider->textsize(14);
               DownstreamMultiplierSlider->align(FL_ALIGN_TOP_LEFT);
             } // Fl_Value_Slider* DownstreamMultiplierSlider
+            { TempUpdateSpeedSlider = new Fl_Value_Slider(1120, 365, 235, 25, "Temperature update speed (seconds)");
+              TempUpdateSpeedSlider->type(5);
+              TempUpdateSpeedSlider->minimum(0.1);
+              TempUpdateSpeedSlider->maximum(10);
+              TempUpdateSpeedSlider->step(0);
+              TempUpdateSpeedSlider->value(3);
+              TempUpdateSpeedSlider->textsize(14);
+              TempUpdateSpeedSlider->callback((Fl_Callback*)cb_TempUpdateSpeedSlider);
+              TempUpdateSpeedSlider->align(FL_ALIGN_LEFT);
+            } // Fl_Value_Slider* TempUpdateSpeedSlider
             o->end();
           } // Fl_Group* o
           o->end();
@@ -2660,15 +2685,18 @@ an twice the filament extrusion. - with one line only");
         { Fl_Group* o = new Fl_Group(835, 65, 540, 45, "Print");
           o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
-          { ConnectToPrinterButton = new Fl_Light_Button(840, 75, 165, 25, "Connect to printer");
+          { ConnectToPrinterButton = new Fl_Light_Button(840, 75, 135, 25, "Connect to printer");
             ConnectToPrinterButton->selection_color((Fl_Color)2);
             ConnectToPrinterButton->callback((Fl_Callback*)cb_ConnectToPrinterButton);
           } // Fl_Light_Button* ConnectToPrinterButton
-          { PrintButton = new Fl_Light_Button(1010, 75, 165, 25, "Print");
+          { PrintButton = new Fl_Light_Button(980, 75, 135, 25, "Print");
             PrintButton->selection_color((Fl_Color)2);
             PrintButton->callback((Fl_Callback*)cb_PrintButton);
           } // Fl_Light_Button* PrintButton
-          { Fl_Button* o = new Fl_Button(1180, 75, 165, 25, "Nudge");
+          { Fl_Button* o = new Fl_Button(1120, 75, 135, 25, "Restart");
+            o->callback((Fl_Callback*)cb_Restart);
+          } // Fl_Button* o
+          { Fl_Button* o = new Fl_Button(1260, 75, 105, 25, "Nudge");
             o->callback((Fl_Callback*)cb_Nudge);
           } // Fl_Button* o
           o->end();
@@ -2725,5 +2753,5 @@ extern GUI* gui;
 
 void TempReadTimer(void *) {
   MVC->serial.SendNow("M105");
-Fl::repeat_timeout(10.0f, &TempReadTimer);
+  Fl::repeat_timeout(MVC->gui ? MVC->ProcessControl.TempUpdateSpeed: 10.0f , &TempReadTimer);
 }

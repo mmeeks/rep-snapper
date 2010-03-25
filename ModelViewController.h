@@ -41,6 +41,8 @@ public:
 
 	// STL Functions
 	void ReadStl(string filename);
+	RFO_File *AddStl(STL stl, string filename);
+	void Duplicate();
 	void OptimizeRotation() { ProcessControl.OptimizeRotation();}
 	void RotateObject(float x, float y, float z, float a) {ProcessControl.RotateObject(Vector3f(x,y,z),a);}
 
@@ -173,6 +175,7 @@ public:
 	void SetHighlight(float val) {ProcessControl.Highlight = val;}
 	void SetNormalsLength(float val){ProcessControl.NormalsLength = val;}
 	void SetEndPointSize(float val){ProcessControl.EndPointSize = val;}
+	void SetTempUpdateSpeed(float val){ProcessControl.TempUpdateSpeed = val;}
 
 	void SetPrintMargin(string Axis, float value);
 
