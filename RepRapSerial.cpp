@@ -22,6 +22,13 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 			if(gui->AutoscrollButton->value())
 				gui->ErrorLog->bottomline(gui->ErrorLog->size());
 			}
+
+		while(gui->CommunationLog->size() > MVC->ProcessControl.KeepLines)
+			gui->CommunationLog->remove(0);
+		while(gui->ErrorLog->size() > MVC->ProcessControl.KeepLines)
+			gui->ErrorLog->remove(0);
+		while(gui->Echo->size() > MVC->ProcessControl.KeepLines)
+			gui->Echo->remove(0);
 	}
 	else
 		printf("%s", s.c_str());
@@ -53,7 +60,6 @@ void RepRapSerial::echo(string s)
 
 void RepRapSerial::StartPrint()
 {
-
 	m_iLineNr = 0;
 	m_bPrinting = true;
 	SendNextLine();

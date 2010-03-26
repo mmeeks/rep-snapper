@@ -727,6 +727,12 @@ private:
   void cb_TempUpdateSpeedSlider_i(Fl_Value_Slider*, void*);
   static void cb_TempUpdateSpeedSlider(Fl_Value_Slider*, void*);
 public:
+  Fl_Light_Button *AutoscrollButton;
+  Fl_Value_Slider *LinesToKeepSlider;
+private:
+  void cb_LinesToKeepSlider_i(Fl_Value_Slider*, void*);
+  static void cb_LinesToKeepSlider(Fl_Value_Slider*, void*);
+public:
   Fl_Light_Button *ConnectToPrinterButton;
 private:
   void cb_ConnectToPrinterButton_i(Fl_Light_Button*, void*);
@@ -747,7 +753,6 @@ private:
   void cb_Echo_i(Fl_Light_Button*, void*);
   static void cb_Echo(Fl_Light_Button*, void*);
 public:
-  Fl_Light_Button *AutoscrollButton;
   Fl_Progress *ProgressBar;
   void show(int argc, char **argv);
 };

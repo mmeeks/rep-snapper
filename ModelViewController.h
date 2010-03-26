@@ -195,7 +195,9 @@ public:
 
 	}
 	void Print();
+	void Pause();
 	void Continue();
+	void Restart();
 	void SwitchHeat(bool on, float temp);
 	void SetTargetTemp(float temp);
 	void RunExtruder();
@@ -204,6 +206,7 @@ public:
 	void SetExtruderDirection(bool reverse);
 	void SendNow(string str);
 	void setPort(string s){ProcessControl.m_sPortName = s;}
+	void SetKeepLines(float val){ ProcessControl.KeepLines = (int)val;}
 
 	void Home(string axis);
 	void Move(string axis, float distance);

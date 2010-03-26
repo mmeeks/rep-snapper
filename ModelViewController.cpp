@@ -551,20 +551,26 @@ void ModelViewController::CopySettingsToGUI()
 
 void ModelViewController::Continue()
 {
+	serial.m_bPrinting = true;
 	serial.SendNextLine();
 }
 
+void ModelViewController::Restart()
+{
+	serial.Clear();	// resets line nr
+	Print();
+}
 
 void ModelViewController::Print()
 {
 	// Snack one line at a time from the Gcode view, and buffer it.
-
+/*
 	if(gui->PrintButton->value() == 0)	// Turned off print, cancel buffer and flush
 	{
-		serial.Clear();
+		m_bPrinting = false;
 		return;
 	}
-
+*/
 	serial.SetDebugMask();
 	serial.SetLineNr(-1);	// Reset LineNr Count
 	gui->CommunationLog->clear();
@@ -592,6 +598,10 @@ void ModelViewController::Print()
 	serial.StartPrint();
 }
 
+void ModelViewController::Pause()
+{
+	serial.m_bPrinting = false;
+}
 
 void ModelViewController::SwitchHeat(bool on, float temp)
 {

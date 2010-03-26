@@ -1315,6 +1315,13 @@ void GUI::cb_TempUpdateSpeedSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_TempUpdateSpeedSlider_i(o,v);
 }
 
+void GUI::cb_LinesToKeepSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetKeepLines(o->value());
+}
+void GUI::cb_LinesToKeepSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_LinesToKeepSlider_i(o,v);
+}
+
 void GUI::cb_ConnectToPrinterButton_i(Fl_Light_Button* o, void*) {
   MVC->ConnectToPrinter(o->value());
 }
@@ -1330,8 +1337,8 @@ MVC->Print();
 }
 else
 {
-MVC->Continue();
 o->label("Continue");
+MVC->Pause();
 };
 }
 void GUI::cb_PrintButton(Fl_Light_Button* o, void* v) {
@@ -1339,7 +1346,7 @@ void GUI::cb_PrintButton(Fl_Light_Button* o, void* v) {
 }
 
 void GUI::cb_Restart_i(Fl_Button*, void*) {
-  MVC->Print();
+  MVC->Restart();
 PrintButton->label("Pause");
 }
 void GUI::cb_Restart(Fl_Button* o, void* v) {
@@ -1395,6 +1402,7 @@ GUI::GUI() {
     { Tabs = new Fl_Tabs(835, 20, 560, 815);
       Tabs->align(FL_ALIGN_TOP_LEFT);
       { Fl_Group* o = new Fl_Group(835, 40, 550, 785, "Input file");
+        o->hide();
         { Fl_Button* o = new Fl_Button(845, 50, 130, 25, "Load STL");
           o->callback((Fl_Callback*)cb_Load);
         } // Fl_Button* o
@@ -2456,7 +2464,6 @@ an twice the filament extrusion. - with one line only");
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(835, 45, 560, 790, "Print");
         o->color((Fl_Color)FL_DARK1);
-        o->hide();
         { Fl_Tabs* o = new Fl_Tabs(835, 180, 540, 655);
           { CommunationLog = new Fl_Multi_Browser(840, 205, 530, 630, "Communication log");
             CommunationLog->box(FL_NO_BOX);
@@ -2678,6 +2685,20 @@ an twice the filament extrusion. - with one line only");
               TempUpdateSpeedSlider->callback((Fl_Callback*)cb_TempUpdateSpeedSlider);
               TempUpdateSpeedSlider->align(FL_ALIGN_LEFT);
             } // Fl_Value_Slider* TempUpdateSpeedSlider
+            { AutoscrollButton = new Fl_Light_Button(845, 535, 105, 25, "Auto scroll");
+              AutoscrollButton->value(1);
+              AutoscrollButton->selection_color((Fl_Color)2);
+            } // Fl_Light_Button* AutoscrollButton
+            { LinesToKeepSlider = new Fl_Value_Slider(955, 535, 400, 25, "Keep only the last # lines:");
+              LinesToKeepSlider->type(5);
+              LinesToKeepSlider->minimum(100);
+              LinesToKeepSlider->maximum(100000);
+              LinesToKeepSlider->step(1);
+              LinesToKeepSlider->value(1000);
+              LinesToKeepSlider->textsize(14);
+              LinesToKeepSlider->callback((Fl_Callback*)cb_LinesToKeepSlider);
+              LinesToKeepSlider->align(FL_ALIGN_TOP_LEFT);
+            } // Fl_Value_Slider* LinesToKeepSlider
             o->end();
           } // Fl_Group* o
           o->end();
@@ -2721,10 +2742,6 @@ an twice the filament extrusion. - with one line only");
           } // Fl_Light_Button* o
           o->end();
         } // Fl_Group* o
-        { AutoscrollButton = new Fl_Light_Button(1270, 180, 105, 25, "Auto scroll");
-          AutoscrollButton->value(1);
-          AutoscrollButton->selection_color((Fl_Color)2);
-        } // Fl_Light_Button* AutoscrollButton
         o->end();
       } // Fl_Group* o
       Tabs->end();

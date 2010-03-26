@@ -51,6 +51,8 @@ public:
 		PrintMargin = Vector3f(10,10,0);
 		ExtrudedMaterialWidth = 0.7f;	// 0.7
 
+		KeepLines = 1000;
+
 		//GCode
 		GCodeDrawStart = 0.0f;;
 		GCodeDrawEnd = 1.0f;
@@ -152,6 +154,7 @@ public:
 	/*--------------Models-------------------*/
 	Printer printer;					// Printer settings and functions
 	string m_sPortName;
+	int KeepLines;
 //	STL stl;							// A STL file
 	RFO rfo;
 	GCode gcode;						// Gcode as binary data

@@ -117,12 +117,12 @@ public:
 	void Connect(string port);
 	void DisConnect();
 	bool isPrinting(){return m_bPrinting;}
+	bool m_bPrinting;
 
 private:
 	void debugPrint(string s, bool selectLine = false);
 	void echo(string s);
 	vector<string> buffer;
-	bool m_bPrinting;
 	bool m_bConnected;
 	uint m_iLineNr;
 	string InBuffer;
