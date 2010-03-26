@@ -238,7 +238,7 @@ void ModelViewController::draw()
 
 		// enable lighting
 		glDisable ( GL_LIGHTING);
-	}
+	}else{
 
 //    glEnable(GL_BLEND);
 //    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -268,6 +268,7 @@ void ModelViewController::draw()
 	glPopMatrix();													// NEW: Unapply Dynamic Transform
 	glFlush ();														// Flush The GL Rendering Pipeline
 //	swap_buffers();
+	}
 }
 
 
