@@ -135,7 +135,7 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 {
 	gui = 0;
 	zoom = 100.0f;
-
+	
 	glClearColor (0.0f, 0.0f, 0.0f, 0.5f);							// Black Background
 	glClearDepth (1.0f);											// Depth Buffer Setup
 	glDepthFunc (GL_LEQUAL);										// The Type Of Depth Testing (Less Or Equal)
