@@ -563,7 +563,12 @@ void ModelViewController::Restart()
 	serial.Clear();	// resets line nr
 	Print();
 }
-
+void ModelViewController::PrintDone()
+{
+	gui->PrintButton->label("Print");
+	gui->PrintButton->value(0);
+	gui->ContinueButton->deactivate();
+}
 void ModelViewController::Print()
 {
 	// Snack one line at a time from the Gcode view, and buffer it.

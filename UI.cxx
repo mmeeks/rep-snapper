@@ -1334,30 +1334,27 @@ void GUI::cb_PrintButton_i(Fl_Light_Button* o, void*) {
 {
 o->label("Pause");
 MVC->Print();
+ContinueButton->deactivate();
 }
 else
 {
-o->label("Continue");
+o->label("Restart");
 MVC->Pause();
+ContinueButton->activate();
 };
 }
 void GUI::cb_PrintButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_PrintButton_i(o,v);
 }
 
-void GUI::cb_Restart_i(Fl_Button*, void*) {
-  MVC->Restart();
-PrintButton->label("Pause");
-}
-void GUI::cb_Restart(Fl_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Restart_i(o,v);
-}
-
-void GUI::cb_Nudge_i(Fl_Button*, void*) {
+void GUI::cb_ContinueButton_i(Fl_Button* o, void*) {
   MVC->Continue();
+PrintButton->label("Pause");
+PrintButton->value(1);
+o->deactivate();
 }
-void GUI::cb_Nudge(Fl_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Nudge_i(o,v);
+void GUI::cb_ContinueButton(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ContinueButton_i(o,v);
 }
 
 void GUI::cb_Errors_i(Fl_Light_Button* o, void*) {
@@ -2679,7 +2676,7 @@ an twice the filament extrusion. - with one line only");
               TempUpdateSpeedSlider->type(5);
               TempUpdateSpeedSlider->minimum(0.1);
               TempUpdateSpeedSlider->maximum(10);
-              TempUpdateSpeedSlider->step(0);
+              TempUpdateSpeedSlider->step(0.1);
               TempUpdateSpeedSlider->value(3);
               TempUpdateSpeedSlider->textsize(14);
               TempUpdateSpeedSlider->callback((Fl_Callback*)cb_TempUpdateSpeedSlider);
@@ -2714,12 +2711,10 @@ an twice the filament extrusion. - with one line only");
             PrintButton->selection_color((Fl_Color)2);
             PrintButton->callback((Fl_Callback*)cb_PrintButton);
           } // Fl_Light_Button* PrintButton
-          { Fl_Button* o = new Fl_Button(1120, 75, 135, 25, "Restart");
-            o->callback((Fl_Callback*)cb_Restart);
-          } // Fl_Button* o
-          { Fl_Button* o = new Fl_Button(1260, 75, 105, 25, "Nudge");
-            o->callback((Fl_Callback*)cb_Nudge);
-          } // Fl_Button* o
+          { ContinueButton = new Fl_Button(1120, 75, 135, 25, "Continue");
+            ContinueButton->callback((Fl_Callback*)cb_ContinueButton);
+            ContinueButton->deactivate();
+          } // Fl_Button* ContinueButton
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(835, 130, 540, 45, "Feedback");

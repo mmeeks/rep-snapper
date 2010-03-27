@@ -198,6 +198,7 @@ public:
 	void Pause();
 	void Continue();
 	void Restart();
+	void PrintDone();
 	void SwitchHeat(bool on, float temp);
 	void SetTargetTemp(float temp);
 	void RunExtruder();

@@ -24,11 +24,12 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 			}
 
 		while(gui->CommunationLog->size() > MVC->ProcessControl.KeepLines)
-			gui->CommunationLog->remove(0);
+			gui->CommunationLog->remove(1);
 		while(gui->ErrorLog->size() > MVC->ProcessControl.KeepLines)
-			gui->ErrorLog->remove(0);
+			gui->ErrorLog->remove(1);
 		while(gui->Echo->size() > MVC->ProcessControl.KeepLines)
-			gui->Echo->remove(0);
+
+			gui->Echo->remove(1);
 	}
 	else
 		printf("%s", s.c_str());
@@ -86,6 +87,7 @@ void RepRapSerial::SendNextLine()
 		m_bPrinting = false;
 		buffer.clear();
 		gui->ProgressBar->label("Print done");
+		MVC->PrintDone();
 		return;
 		}
 	if(gui)

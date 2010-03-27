@@ -14,7 +14,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {319 235 1400 840} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
+      xywh {319 235 1400 840} type Double box UP_BOX color 0 selection_color 0 labelsize 12 resizable visible
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -1335,8 +1335,8 @@ MVC->redraw();}
               }
               Fl_Value_Slider TempUpdateSpeedSlider {
                 label {Temperature update speed (seconds)}
-                callback {MVC->SetTempUpdateSpeed(o->value());}
-                xywh {1120 365 235 25} type {Horz Knob} align 4 minimum 0.1 maximum 10 step 0 value 3 textsize 14
+                callback {MVC->SetTempUpdateSpeed(o->value());} selected
+                xywh {1120 365 235 25} type {Horz Knob} align 4 minimum 0.1 maximum 10 step 0.1 value 3 textsize 14
               }
               Fl_Light_Button AutoscrollButton {
                 label {Auto scroll}
@@ -1364,24 +1364,23 @@ MVC->redraw();}
 {
 o->label("Pause");
 MVC->Print();
+ContinueButton->deactivate();
 }
 else
 {
-o->label("Continue");
+o->label("Restart");
 MVC->Pause();
+ContinueButton->activate();
 }}
               xywh {980 75 135 25} selection_color 2
             }
-            Fl_Button {} {
-              label Restart
-              callback {MVC->Restart();
-PrintButton->label("Pause");} selected
-              xywh {1120 75 135 25}
-            }
-            Fl_Button {} {
-              label Nudge
-              callback {MVC->Continue();}
-              xywh {1260 75 105 25}
+            Fl_Button ContinueButton {
+              label Continue
+              callback {MVC->Continue();
+PrintButton->label("Pause");
+PrintButton->value(1);
+o->deactivate();}
+              xywh {1120 75 135 25} deactivate
             }
           }
           Fl_Group {} {

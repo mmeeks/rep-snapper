@@ -742,10 +742,11 @@ public:
 private:
   void cb_PrintButton_i(Fl_Light_Button*, void*);
   static void cb_PrintButton(Fl_Light_Button*, void*);
-  void cb_Restart_i(Fl_Button*, void*);
-  static void cb_Restart(Fl_Button*, void*);
-  void cb_Nudge_i(Fl_Button*, void*);
-  static void cb_Nudge(Fl_Button*, void*);
+public:
+  Fl_Button *ContinueButton;
+private:
+  void cb_ContinueButton_i(Fl_Button*, void*);
+  static void cb_ContinueButton(Fl_Button*, void*);
   void cb_Errors_i(Fl_Light_Button*, void*);
   static void cb_Errors(Fl_Light_Button*, void*);
   void cb_Info_i(Fl_Light_Button*, void*);
