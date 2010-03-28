@@ -555,11 +555,13 @@ void ModelViewController::Continue()
 
 void ModelViewController::Restart()
 {
-	serial.Clear();	// resets line nr
+	serial.Clear();	// resets line nr and clears buffer
 	Print();
 }
 void ModelViewController::PrintDone()
 {
+	serial.Clear();	// resets line nr and buffer
+	serial.m_bPrinting = false;
 	gui->PrintButton->label("Print");
 	gui->PrintButton->value(0);
 	gui->ContinueButton->deactivate();
@@ -574,6 +576,8 @@ void ModelViewController::Print()
 		return;
 	}
 */
+	serial.Clear();	// resets line nr and buffer
+	serial.m_bPrinting = false;
 	serial.SetDebugMask();
 	serial.SetLineNr(-1);	// Reset LineNr Count
 	gui->CommunationLog->clear();
@@ -781,7 +785,7 @@ void ModelViewController::Goto(string axis, float position)
 void ModelViewController::STOP()
 {
 	SendNow("M112");
-	serial.Clear();
+	serial.Clear(); // reset buffer
 }
 
 void ModelViewController::SetPrintMargin(string Axis, float value)

@@ -41,7 +41,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 		MakeRaft(destinationZ);
 		}
 	float E=0.0f;
-	while(z<Max.z+0.0001f)
+	while(z<Max.z+LayerThickness*0.5f)
 	{
 		if(gui)
 		{
@@ -67,8 +67,6 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 					plane.polygons.clear();
 					stl->CalcCuttingPlane(hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices, describing the outline
 					}
-
-		//		plane.Draw(z);
 
 				// inFill
 				vector<Vector2f> infill;
