@@ -450,7 +450,7 @@ void STL::draw(const ProcessController &PC, float opasity)
 uint findClosestUnused(std::vector<Vector3f> lines, Vector3f point, std::vector<bool> &used)
 {
 	uint closest = -1;
-	float closestDist = 9999999999999;
+	float closestDist = 1000000;
 	
 	uint count = lines.size();
 	
