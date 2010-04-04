@@ -634,6 +634,17 @@ void ModelViewController::SetExtruderLength(int length)
 }
 void ModelViewController::RunExtruder()
 {
+	static bool isRunning = false;
+	if(ProcessControl.Use3DGcode)
+	{
+		if(isRunning)
+			serial.SendNow("M103");
+		else
+			serial.SendNow("M101");
+		isRunning = 1-isRunning;
+		return;
+	}
+
 	std::stringstream oss;
 	string command("G1 F");
 	oss << m_iExtruderSpeed;
