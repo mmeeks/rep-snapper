@@ -21,7 +21,6 @@ class ModelViewController;
 #include <FL/Fl_Value_Slider.H>
 #include <FL/Fl_File_Chooser.H>
 #include <FL/Fl_Output.H>
-#include <FL/Fl_Choice.H>
 #include <FL/Fl_Slider.H>
 #include <FL/Fl_Multi_Browser.H>
 #include <FL/Fl_Progress.H>
@@ -390,8 +389,6 @@ private:
   static void cb_Convert(Fl_Button*, void*);
 public:
   Fl_Text_Editor *GCodeStart;
-  static Fl_Menu_Item menu_Printer[];
-  static Fl_Menu_Item *MinSpeedXY;
   Fl_Text_Editor *GCodeLayer;
   Fl_Text_Editor *GCodeEnd;
   Fl_Text_Editor *GCodeResult;
@@ -733,6 +730,17 @@ private:
   void cb_LinesToKeepSlider_i(Fl_Value_Slider*, void*);
   static void cb_LinesToKeepSlider(Fl_Value_Slider*, void*);
 public:
+  Fl_Light_Button *SetFileLoggingButton;
+private:
+  void cb_SetFileLoggingButton_i(Fl_Light_Button*, void*);
+  static void cb_SetFileLoggingButton(Fl_Light_Button*, void*);
+  void cb_Enable4_i(Fl_Light_Button*, void*);
+  static void cb_Enable4(Fl_Light_Button*, void*);
+  void cb_Clear_i(Fl_Light_Button*, void*);
+  static void cb_Clear(Fl_Light_Button*, void*);
+  void cb_Clear1_i(Fl_Button*, void*);
+  static void cb_Clear1(Fl_Button*, void*);
+public:
   Fl_Light_Button *ConnectToPrinterButton;
 private:
   void cb_ConnectToPrinterButton_i(Fl_Light_Button*, void*);
@@ -747,6 +755,8 @@ public:
 private:
   void cb_ContinueButton_i(Fl_Button*, void*);
   static void cb_ContinueButton(Fl_Button*, void*);
+  void cb_Power_i(Fl_Light_Button*, void*);
+  static void cb_Power(Fl_Light_Button*, void*);
   void cb_Errors_i(Fl_Light_Button*, void*);
   static void cb_Errors(Fl_Light_Button*, void*);
   void cb_Info_i(Fl_Light_Button*, void*);

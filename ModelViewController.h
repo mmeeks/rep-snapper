@@ -209,6 +209,15 @@ public:
 	void setPort(string s){ProcessControl.m_sPortName = s;}
 	void SetKeepLines(float val){ ProcessControl.KeepLines = (int)val;}
 
+	void SetFileLogging(bool on);
+	void EnableTempReading(bool on);
+	void SetLogFileClear(bool on);
+	void ClearLogs();
+	void SwitchPower(bool on);
+
+
+
+
 	void Home(string axis);
 	void Move(string axis, float distance);
 	void Goto(string axis, float position);

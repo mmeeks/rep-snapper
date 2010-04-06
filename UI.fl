@@ -14,7 +14,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {319 235 1400 840} type Double box UP_BOX color 0 selection_color 0 labelsize 12 resizable visible
+      xywh {319 235 1400 840} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -621,7 +621,7 @@ MVC->redraw();}
         }
         Fl_Group {} {
           label GCode open
-          xywh {835 40 540 755} hide
+          xywh {835 40 555 792} hide
         } {
           Fl_Button {} {
             label {Load Gcode}
@@ -650,55 +650,30 @@ MVC->redraw();
             callback {MVC->ConvertToGCode();}
             xywh {835 60 145 25}
           }
-          Fl_Tabs {} {open
-            xywh {835 120 540 675}
+          Fl_Tabs {} {
+            xywh {835 120 555 710} color 66 selection_color 31
           } {
-            Fl_Group {} {
-              label {Start code} open
-              xywh {835 140 540 655} hide
-            } {
-              Fl_Text_Editor GCodeStart {
-                xywh {835 140 525 605}
-                code0 {Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();}
-                code1 {o->buffer(startbuff);}
-              }
-              Fl_Choice {} {
-                label {Printer definition} open
-                xywh {955 750 75 15} down_box BORDER_BOX
-              } {
-                MenuItem MinSpeedXY {
-                  label {Min PrintSpeed XY}
-                  xywh {0 0 34 24}
-                }
-                MenuItem {} {
-                  label {Max PrintSpeed XY}
-                  xywh {0 0 34 24}
-                }
-                MenuItem {} {
-                  label {Min PrintSpeed Z}
-                  xywh {0 0 34 24}
-                }
-                MenuItem {} {
-                  label {Max PrintSpeed Z}
-                  xywh {0 0 34 24}
-                }
-              }
+            Fl_Text_Editor GCodeStart {
+              label Start
+              xywh {835 140 555 690} selection_color 31
+              code0 {Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();}
+              code1 {o->buffer(startbuff);}
             }
             Fl_Text_Editor GCodeLayer {
               label {Next layer}
-              xywh {835 140 525 655} hide
+              xywh {835 140 555 690} selection_color 31 hide
               code0 {Fl_Text_Buffer *layerbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(layerbuff);}
             }
             Fl_Text_Editor GCodeEnd {
               label {End code}
-              xywh {835 140 525 655} hide
+              xywh {835 140 555 690} selection_color 31 hide
               code0 {Fl_Text_Buffer *endbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(endbuff);}
             }
             Fl_Text_Editor GCodeResult {
               label Result
-              xywh {835 140 525 655}
+              xywh {835 140 555 690} selection_color 31 hide
               code0 {Fl_Text_Buffer *resultbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(resultbuff);}
             }
@@ -1073,25 +1048,25 @@ MVC->redraw();}
           } {
             Fl_Browser CommunationLog {
               label {Communication log}
-              xywh {840 205 530 630} hide
+              xywh {840 205 530 630} selection_color 31 hide
               code0 {\#include <FL/Fl_Multi_Browser.H>}
               class Fl_Multi_Browser
             }
             Fl_Browser ErrorLog {
               label {Errors / warnings}
-              xywh {840 205 530 630} hide
+              xywh {840 205 530 630} selection_color 31 hide
               code0 {\#include <FL/Fl_Multi_Browser.H>}
               class Fl_Multi_Browser
             }
             Fl_Browser Echo {
               label Echo
-              xywh {840 205 530 630} hide
+              xywh {840 205 530 630} selection_color 31 hide
               code0 {\#include <FL/Fl_Multi_Browser.H>}
               class Fl_Multi_Browser
             }
             Fl_Group {} {
-              label {Interactive control} open
-              xywh {840 205 535 630} selection_color 15
+              label {Interactive control} open selected
+              xywh {840 205 535 630} selection_color 31
             } {
               Fl_Light_Button SwitchHeatOnButton {
                 label {Switch heat on}
@@ -1334,9 +1309,9 @@ MVC->redraw();}
                 xywh {845 490 510 25} type {Horz Knob} align 5 minimum 0.01 maximum 5 value 1 textsize 14
               }
               Fl_Value_Slider TempUpdateSpeedSlider {
-                label {Temperature update speed (seconds)}
-                callback {MVC->SetTempUpdateSpeed(o->value());} selected
-                xywh {1120 365 235 25} type {Horz Knob} align 4 minimum 0.1 maximum 10 step 0.1 value 3 textsize 14
+                label {Temperature update interval}
+                callback {MVC->SetTempUpdateSpeed(o->value());}
+                xywh {1030 365 235 25} type {Horz Knob} align 4 minimum 0.1 maximum 10 step 0.1 value 3 textsize 14
               }
               Fl_Light_Button AutoscrollButton {
                 label {Auto scroll}
@@ -1346,6 +1321,26 @@ MVC->redraw();}
                 label {Keep only the last \# lines:}
                 callback {MVC->SetKeepLines(o->value());}
                 xywh {955 535 400 25} type {Horz Knob} align 5 minimum 100 maximum 100000 step 1 value 1000 textsize 14
+              }
+              Fl_Light_Button SetFileLoggingButton {
+                label LogFiles
+                callback {MVC->SetFileLogging(o->value());}
+                xywh {845 565 105 25} value 1 selection_color 2
+              }
+              Fl_Light_Button {} {
+                label Enable
+                callback {MVC->EnableTempReading(o->value());}
+                xywh {1270 365 85 25} value 1 selection_color 2
+              }
+              Fl_Light_Button {} {
+                label {Clear logs when print starts}
+                callback {MVC->SetLogFileClear(o->value());}
+                xywh {955 565 205 25} value 1 selection_color 2
+              }
+              Fl_Button {} {
+                label {Clear logs now}
+                callback {MVC->ClearLogs();}
+                xywh {1210 565 145 25}
               }
             }
           }
@@ -1372,7 +1367,7 @@ o->label("Restart");
 MVC->Pause();
 ContinueButton->activate();
 }}
-              xywh {980 75 135 25} selection_color 2
+              xywh {1085 75 135 25} selection_color 2
             }
             Fl_Button ContinueButton {
               label Continue
@@ -1380,7 +1375,12 @@ ContinueButton->activate();
 PrintButton->label("Pause");
 PrintButton->value(1);
 o->deactivate();}
-              xywh {1120 75 135 25} deactivate
+              xywh {1225 75 135 25} deactivate
+            }
+            Fl_Light_Button {} {
+              label {Power on}
+              callback {MVC->SwitchPower(o->value());}
+              xywh {980 75 100 25} selection_color 2
             }
           }
           Fl_Group {} {

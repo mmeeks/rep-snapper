@@ -632,16 +632,37 @@ void ModelViewController::SetExtruderLength(int length)
 {
 	m_iExtruderLength = length;
 }
+void ModelViewController::SetFileLogging(bool on)
+{
+
+}
+void ModelViewController::EnableTempReading(bool on)
+{
+
+}
+void ModelViewController::SetLogFileClear(bool on)
+{
+
+}
+void ModelViewController::ClearLogs()
+{
+
+}
+void ModelViewController::SwitchPower(bool on)
+{
+
+}
+
 void ModelViewController::RunExtruder()
 {
-	static bool isRunning = false;
+	static bool extruderIsRunning = false;
 	if(ProcessControl.Use3DGcode)
 	{
-		if(isRunning)
+		if(extruderIsRunning)
 			serial.SendNow("M103");
 		else
 			serial.SendNow("M101");
-		isRunning = 1-isRunning;
+		extruderIsRunning = 1-extruderIsRunning;
 		return;
 	}
 
