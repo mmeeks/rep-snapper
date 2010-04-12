@@ -492,6 +492,10 @@ void ModelViewController::CopySettingsToGUI()
 
 	gui->EnableAccelerationButton->value(ProcessControl.EnableAcceleration);
 
+	gui->FileLogginEnabledButton->value(ProcessControl.FileLogginEnabled);
+	gui->TempReadingEnabledButton->value(ProcessControl.TempReadingEnabled);
+	gui->ClearLogfilesWhenPrintStartsButton->value(ProcessControl.ClearLogfilesWhenPrintStarts);
+	
 	// GUI GUI
 	gui->DisplayEndpointsButton->value(ProcessControl.DisplayEndpoints);
 	gui->DisplayNormalsButton->value(ProcessControl.DisplayNormals);
@@ -634,15 +638,18 @@ void ModelViewController::SetExtruderLength(int length)
 }
 void ModelViewController::SetFileLogging(bool on)
 {
-
+	ProcessControl.FileLogginEnabled = on;
 }
 void ModelViewController::EnableTempReading(bool on)
 {
+	ProcessControl.TempReadingEnabled = on;
+	if(on)
+		Fl::add_timeout(1.0f, &TempReadTimer);
 
 }
 void ModelViewController::SetLogFileClear(bool on)
 {
-
+	ProcessControl.ClearLogfilesWhenPrintStarts = on;
 }
 void ModelViewController::ClearLogs()
 {

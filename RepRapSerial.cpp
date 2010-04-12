@@ -179,7 +179,6 @@ void RepRapSerial::Connect(string port)
 
 void RepRapSerial::DisConnect()
 {
-
 	close();
 	m_bConnected = false;
 
@@ -194,7 +193,6 @@ void RepRapSerial::SetLineNr(int nr)
 
 void RepRapSerial::SetDebugMask(int mask, bool on)
 {
-
 	if(on)
 		debugMask |= mask;
 	else

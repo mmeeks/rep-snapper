@@ -730,16 +730,22 @@ private:
   void cb_LinesToKeepSlider_i(Fl_Value_Slider*, void*);
   static void cb_LinesToKeepSlider(Fl_Value_Slider*, void*);
 public:
-  Fl_Light_Button *SetFileLoggingButton;
+  Fl_Light_Button *FileLogginEnabledButton;
 private:
-  void cb_SetFileLoggingButton_i(Fl_Light_Button*, void*);
-  static void cb_SetFileLoggingButton(Fl_Light_Button*, void*);
-  void cb_Enable4_i(Fl_Light_Button*, void*);
-  static void cb_Enable4(Fl_Light_Button*, void*);
-  void cb_Clear_i(Fl_Light_Button*, void*);
-  static void cb_Clear(Fl_Light_Button*, void*);
-  void cb_Clear1_i(Fl_Button*, void*);
-  static void cb_Clear1(Fl_Button*, void*);
+  void cb_FileLogginEnabledButton_i(Fl_Light_Button*, void*);
+  static void cb_FileLogginEnabledButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *TempReadingEnabledButton;
+private:
+  void cb_TempReadingEnabledButton_i(Fl_Light_Button*, void*);
+  static void cb_TempReadingEnabledButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *ClearLogfilesWhenPrintStartsButton;
+private:
+  void cb_ClearLogfilesWhenPrintStartsButton_i(Fl_Light_Button*, void*);
+  static void cb_ClearLogfilesWhenPrintStartsButton(Fl_Light_Button*, void*);
+  void cb_Clear_i(Fl_Button*, void*);
+  static void cb_Clear(Fl_Button*, void*);
 public:
   Fl_Light_Button *ConnectToPrinterButton;
 private:

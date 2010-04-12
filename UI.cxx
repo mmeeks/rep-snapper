@@ -1313,32 +1313,32 @@ void GUI::cb_LinesToKeepSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_LinesToKeepSlider_i(o,v);
 }
 
-void GUI::cb_SetFileLoggingButton_i(Fl_Light_Button* o, void*) {
+void GUI::cb_FileLogginEnabledButton_i(Fl_Light_Button* o, void*) {
   MVC->SetFileLogging(o->value());
 }
-void GUI::cb_SetFileLoggingButton(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_SetFileLoggingButton_i(o,v);
+void GUI::cb_FileLogginEnabledButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_FileLogginEnabledButton_i(o,v);
 }
 
-void GUI::cb_Enable4_i(Fl_Light_Button* o, void*) {
+void GUI::cb_TempReadingEnabledButton_i(Fl_Light_Button* o, void*) {
   MVC->EnableTempReading(o->value());
 }
-void GUI::cb_Enable4(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_Enable4_i(o,v);
+void GUI::cb_TempReadingEnabledButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_TempReadingEnabledButton_i(o,v);
 }
 
-void GUI::cb_Clear_i(Fl_Light_Button* o, void*) {
+void GUI::cb_ClearLogfilesWhenPrintStartsButton_i(Fl_Light_Button* o, void*) {
   MVC->SetLogFileClear(o->value());
 }
-void GUI::cb_Clear(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_Clear_i(o,v);
+void GUI::cb_ClearLogfilesWhenPrintStartsButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_ClearLogfilesWhenPrintStartsButton_i(o,v);
 }
 
-void GUI::cb_Clear1_i(Fl_Button*, void*) {
+void GUI::cb_Clear_i(Fl_Button*, void*) {
   MVC->ClearLogs();
 }
-void GUI::cb_Clear1(Fl_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_Clear1_i(o,v);
+void GUI::cb_Clear(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_Clear_i(o,v);
 }
 
 void GUI::cb_ConnectToPrinterButton_i(Fl_Light_Button* o, void*) {
@@ -2537,7 +2537,7 @@ an twice the filament extrusion. - with one line only");
             } // Fl_Light_Button* SwitchHeatOnButton
             { TargetTempText = new Fl_Value_Input(1300, 396, 55, 24, "Target temp");
               TargetTempText->maximum(300);
-              TargetTempText->value(63);
+              TargetTempText->value(200);
               TargetTempText->callback((Fl_Callback*)cb_TargetTempText);
             } // Fl_Value_Input* TargetTempText
             { RunExtruderButton = new Fl_Light_Button(845, 425, 115, 25, "Run extruder");
@@ -2728,23 +2728,23 @@ an twice the filament extrusion. - with one line only");
               LinesToKeepSlider->callback((Fl_Callback*)cb_LinesToKeepSlider);
               LinesToKeepSlider->align(FL_ALIGN_TOP_LEFT);
             } // Fl_Value_Slider* LinesToKeepSlider
-            { SetFileLoggingButton = new Fl_Light_Button(845, 565, 105, 25, "LogFiles");
-              SetFileLoggingButton->value(1);
-              SetFileLoggingButton->selection_color((Fl_Color)2);
-              SetFileLoggingButton->callback((Fl_Callback*)cb_SetFileLoggingButton);
-            } // Fl_Light_Button* SetFileLoggingButton
-            { Fl_Light_Button* o = new Fl_Light_Button(1270, 365, 85, 25, "Enable");
-              o->value(1);
-              o->selection_color((Fl_Color)2);
-              o->callback((Fl_Callback*)cb_Enable4);
-            } // Fl_Light_Button* o
-            { Fl_Light_Button* o = new Fl_Light_Button(955, 565, 205, 25, "Clear logs when print starts");
-              o->value(1);
-              o->selection_color((Fl_Color)2);
-              o->callback((Fl_Callback*)cb_Clear);
-            } // Fl_Light_Button* o
+            { FileLogginEnabledButton = new Fl_Light_Button(845, 565, 105, 25, "LogFiles");
+              FileLogginEnabledButton->value(1);
+              FileLogginEnabledButton->selection_color((Fl_Color)2);
+              FileLogginEnabledButton->callback((Fl_Callback*)cb_FileLogginEnabledButton);
+            } // Fl_Light_Button* FileLogginEnabledButton
+            { TempReadingEnabledButton = new Fl_Light_Button(1270, 365, 85, 25, "Enable");
+              TempReadingEnabledButton->value(1);
+              TempReadingEnabledButton->selection_color((Fl_Color)2);
+              TempReadingEnabledButton->callback((Fl_Callback*)cb_TempReadingEnabledButton);
+            } // Fl_Light_Button* TempReadingEnabledButton
+            { ClearLogfilesWhenPrintStartsButton = new Fl_Light_Button(955, 565, 205, 25, "Clear logs when print starts");
+              ClearLogfilesWhenPrintStartsButton->value(1);
+              ClearLogfilesWhenPrintStartsButton->selection_color((Fl_Color)2);
+              ClearLogfilesWhenPrintStartsButton->callback((Fl_Callback*)cb_ClearLogfilesWhenPrintStartsButton);
+            } // Fl_Light_Button* ClearLogfilesWhenPrintStartsButton
             { Fl_Button* o = new Fl_Button(1210, 565, 145, 25, "Clear logs now");
-              o->callback((Fl_Callback*)cb_Clear1);
+              o->callback((Fl_Callback*)cb_Clear);
             } // Fl_Button* o
             o->end();
           } // Fl_Group* o
@@ -2822,6 +2822,9 @@ MVC->redraw();
 extern GUI* gui;
 
 void TempReadTimer(void *) {
-  MVC->serial.SendNow("M105");
-  Fl::repeat_timeout(MVC->gui ? MVC->ProcessControl.TempUpdateSpeed: 10.0f , &TempReadTimer);
+  if(gui->TempReadingEnabledButton->value())
+{
+MVC->serial.SendNow("M105");
+Fl::repeat_timeout(MVC->gui ? MVC->ProcessControl.TempUpdateSpeed: 10.0f , &TempReadTimer);
+}
 }

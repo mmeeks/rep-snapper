@@ -99,6 +99,10 @@ public:
 		DisplayDebuginFill = true;
 		DisplayCuttingPlane = true;
 
+		FileLogginEnabled = true;
+		TempReadingEnabled = true;
+		ClearLogfilesWhenPrintStarts = true;
+
 		Min = Vector3f(0, 0, 0);
 		Max = Vector3f(200,200,200);
 		Center.x = Center.y = 100.0f;
@@ -210,6 +214,11 @@ public:
 	uint ShellCount;
 
 	bool EnableAcceleration;
+
+	bool FileLogginEnabled;
+	bool TempReadingEnabled;
+	bool ClearLogfilesWhenPrintStarts;
+
 
 	// GUI... ?
 	bool DisplayEndpoints;

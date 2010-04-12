@@ -14,7 +14,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {319 235 1400 840} type Double box UP_BOX color 0 selection_color 0 labelsize 12 hide resizable
+      xywh {99 135 1400 840} type Double box UP_BOX color 0 selection_color 0 labelsize 12 resizable visible
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -1076,7 +1076,7 @@ MVC->redraw();}
               Fl_Value_Input TargetTempText {
                 label {Target temp}
                 callback {MVC->SetTargetTemp(o->value());}
-                xywh {1300 396 55 24} maximum 300 value 63
+                xywh {1300 396 55 24} maximum 300 value 200
               }
               Fl_Light_Button RunExtruderButton {
                 label {Run extruder}
@@ -1322,17 +1322,17 @@ MVC->redraw();}
                 callback {MVC->SetKeepLines(o->value());}
                 xywh {955 535 400 25} type {Horz Knob} align 5 minimum 100 maximum 100000 step 1 value 1000 textsize 14
               }
-              Fl_Light_Button SetFileLoggingButton {
+              Fl_Light_Button FileLogginEnabledButton {
                 label LogFiles
                 callback {MVC->SetFileLogging(o->value());}
                 xywh {845 565 105 25} value 1 selection_color 2
               }
-              Fl_Light_Button {} {
+              Fl_Light_Button TempReadingEnabledButton {
                 label Enable
                 callback {MVC->EnableTempReading(o->value());}
                 xywh {1270 365 85 25} value 1 selection_color 2
               }
-              Fl_Light_Button {} {
+              Fl_Light_Button ClearLogfilesWhenPrintStartsButton {
                 label {Clear logs when print starts}
                 callback {MVC->SetLogFileClear(o->value());}
                 xywh {955 565 205 25} value 1 selection_color 2
@@ -1384,7 +1384,7 @@ o->deactivate();}
             }
             Fl_Light_Button {} {
               label {Fan on}
-              callback {MVC->SwitchFan(o->value());} selected
+              callback {MVC->SwitchFan(o->value());}
               xywh {1070 75 85 25} selection_color 2
             }
           }
@@ -1434,6 +1434,10 @@ decl {extern GUI* gui;} {}
 
 Function {TempReadTimer(void *)} {open return_type void
 } {
-  code {MVC->serial.SendNow("M105");
-  Fl::repeat_timeout(MVC->gui ? MVC->ProcessControl.TempUpdateSpeed: 10.0f , &TempReadTimer);} {}
+  code {if(gui->TempReadingEnabledButton->value())
+{
+MVC->serial.SendNow("M105");
+Fl::repeat_timeout(MVC->gui ? MVC->ProcessControl.TempUpdateSpeed: 10.0f , &TempReadTimer);
+}} {selected
+  }
 } 

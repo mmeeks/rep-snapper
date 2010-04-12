@@ -416,7 +416,10 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("UseIncrementalEcode", true, "1")->SetValueInt((int)UseIncrementalEcode);
 	x->FindVariableZ("Use3DGcode", true, "0")->SetValueInt((int)Use3DGcode);
 	
-
+	x->FindVariableZ("FileLogginEnabled", true, "1")->SetValueInt((int)FileLogginEnabled);
+	x->FindVariableZ("TempReadingEnabled", true, "1")->SetValueInt((int)TempReadingEnabled);
+	x->FindVariableZ("ClearLogfilesWhenPrintStarts", true, "1")->SetValueInt((int)ClearLogfilesWhenPrintStarts);
+	
 	x->FindVariableZ("m_fVolume.x", true, "200")->SetValueFloat(m_fVolume.x);
 	x->FindVariableZ("m_fVolume.y", true, "200")->SetValueFloat(m_fVolume.y);
 	x->FindVariableZ("m_fVolume.z", true, "140")->SetValueFloat(m_fVolume.z);
@@ -642,6 +645,12 @@ void ProcessController::LoadXML(XMLElement *e)
 	y=x->FindVariableZ("Use3DGcode", true, "0");
 	if(y)	Use3DGcode= (bool)y->GetValueInt();
 	
+	y=x->FindVariableZ("FileLogginEnabled", true, "1");
+	if(y)	FileLogginEnabled= (bool)y->GetValueInt();
+	y=x->FindVariableZ("TempReadingEnabled", true, "1");
+	if(y)	TempReadingEnabled= (bool)y->GetValueInt();
+	y=x->FindVariableZ("ClearLogfilesWhenPrintStarts", true, "1");
+	if(y)	ClearLogfilesWhenPrintStarts= (bool)y->GetValueInt();
 
 	// GUI... ?
 	y=x->FindVariableZ("DisplayEndpoints", true, "0");
