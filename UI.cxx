@@ -1383,6 +1383,13 @@ void GUI::cb_Power(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Power_i(o,v);
 }
 
+void GUI::cb_Fan_i(Fl_Light_Button* o, void*) {
+  MVC->SwitchFan(o->value());
+}
+void GUI::cb_Fan(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Fan_i(o,v);
+}
+
 void GUI::cb_Errors_i(Fl_Light_Button* o, void*) {
   MVC->serial.SetDebugMask(DEBUG_ERRORS, (bool)o->value());
 }
@@ -2553,9 +2560,9 @@ an twice the filament extrusion. - with one line only");
             } // Fl_Button* o
             { Fl_Value_Slider* o = new Fl_Value_Slider(1120, 425, 235, 25, "Speed");
               o->type(5);
-              o->minimum(100);
+              o->minimum(5);
               o->maximum(9999);
-              o->step(100);
+              o->step(1);
               o->value(3000);
               o->textsize(14);
               o->callback((Fl_Callback*)cb_Speed);
@@ -2565,7 +2572,7 @@ an twice the filament extrusion. - with one line only");
               o->type(5);
               o->minimum(10);
               o->maximum(850);
-              o->step(100);
+              o->step(1);
               o->value(150);
               o->textsize(14);
               o->callback((Fl_Callback*)cb_Length);
@@ -2750,17 +2757,21 @@ an twice the filament extrusion. - with one line only");
             ConnectToPrinterButton->selection_color((Fl_Color)2);
             ConnectToPrinterButton->callback((Fl_Callback*)cb_ConnectToPrinterButton);
           } // Fl_Light_Button* ConnectToPrinterButton
-          { PrintButton = new Fl_Light_Button(1085, 75, 135, 25, "Print");
+          { PrintButton = new Fl_Light_Button(1160, 75, 110, 25, "Print");
             PrintButton->selection_color((Fl_Color)2);
             PrintButton->callback((Fl_Callback*)cb_PrintButton);
           } // Fl_Light_Button* PrintButton
-          { ContinueButton = new Fl_Button(1225, 75, 135, 25, "Continue");
+          { ContinueButton = new Fl_Button(1275, 75, 85, 25, "Continue");
             ContinueButton->callback((Fl_Callback*)cb_ContinueButton);
             ContinueButton->deactivate();
           } // Fl_Button* ContinueButton
-          { Fl_Light_Button* o = new Fl_Light_Button(980, 75, 100, 25, "Power on");
+          { Fl_Light_Button* o = new Fl_Light_Button(980, 75, 85, 25, "Power on");
             o->selection_color((Fl_Color)2);
             o->callback((Fl_Callback*)cb_Power);
+          } // Fl_Light_Button* o
+          { Fl_Light_Button* o = new Fl_Light_Button(1070, 75, 85, 25, "Fan on");
+            o->selection_color((Fl_Color)2);
+            o->callback((Fl_Callback*)cb_Fan);
           } // Fl_Light_Button* o
           o->end();
         } // Fl_Group* o

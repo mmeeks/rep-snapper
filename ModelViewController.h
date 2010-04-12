@@ -214,6 +214,7 @@ public:
 	void SetLogFileClear(bool on);
 	void ClearLogs();
 	void SwitchPower(bool on);
+	void SwitchFan(bool on);
 
 
 

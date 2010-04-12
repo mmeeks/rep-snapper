@@ -757,6 +757,8 @@ private:
   static void cb_ContinueButton(Fl_Button*, void*);
   void cb_Power_i(Fl_Light_Button*, void*);
   static void cb_Power(Fl_Light_Button*, void*);
+  void cb_Fan_i(Fl_Light_Button*, void*);
+  static void cb_Fan(Fl_Light_Button*, void*);
   void cb_Errors_i(Fl_Light_Button*, void*);
   static void cb_Errors(Fl_Light_Button*, void*);
   void cb_Info_i(Fl_Light_Button*, void*);

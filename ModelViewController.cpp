@@ -650,7 +650,18 @@ void ModelViewController::ClearLogs()
 }
 void ModelViewController::SwitchPower(bool on)
 {
+	if(on)
+		serial.SendNow("M80");
+	else
+		serial.SendNow("M81");
+}
 
+void ModelViewController::SwitchFan(bool on)
+{
+	if(on)
+		serial.SendNow("M106");
+	else
+		serial.SendNow("M107");
 }
 
 void ModelViewController::RunExtruder()

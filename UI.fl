@@ -1065,7 +1065,7 @@ MVC->redraw();}
               class Fl_Multi_Browser
             }
             Fl_Group {} {
-              label {Interactive control} open selected
+              label {Interactive control} open
               xywh {840 205 535 630} selection_color 31
             } {
               Fl_Light_Button SwitchHeatOnButton {
@@ -1110,12 +1110,12 @@ MVC->redraw();}
               Fl_Value_Slider {} {
                 label Speed
                 callback {MVC->SetExtruderSpeed(o->value());}
-                xywh {1120 425 235 25} type {Horz Knob} align 4 minimum 100 maximum 9999 step 100 value 3000 textsize 14
+                xywh {1120 425 235 25} type {Horz Knob} align 4 minimum 5 maximum 9999 step 1 value 3000 textsize 14
               }
               Fl_Value_Slider {} {
                 label Length
                 callback {MVC->SetExtruderLength(o->value());}
-                xywh {1120 455 235 25} type {Horz Knob} align 4 minimum 10 maximum 850 step 100 value 150 textsize 14
+                xywh {1120 455 235 25} type {Horz Knob} align 4 minimum 10 maximum 850 step 1 value 150 textsize 14
               }
               Fl_Input GCodeInput {
                 label GCode
@@ -1367,7 +1367,7 @@ o->label("Restart");
 MVC->Pause();
 ContinueButton->activate();
 }}
-              xywh {1085 75 135 25} selection_color 2
+              xywh {1160 75 110 25} selection_color 2
             }
             Fl_Button ContinueButton {
               label Continue
@@ -1375,12 +1375,17 @@ ContinueButton->activate();
 PrintButton->label("Pause");
 PrintButton->value(1);
 o->deactivate();}
-              xywh {1225 75 135 25} deactivate
+              xywh {1275 75 85 25} deactivate
             }
             Fl_Light_Button {} {
               label {Power on}
               callback {MVC->SwitchPower(o->value());}
-              xywh {980 75 100 25} selection_color 2
+              xywh {980 75 85 25} selection_color 2
+            }
+            Fl_Light_Button {} {
+              label {Fan on}
+              callback {MVC->SwitchFan(o->value());} selected
+              xywh {1070 75 85 25} selection_color 2
             }
           }
           Fl_Group {} {
