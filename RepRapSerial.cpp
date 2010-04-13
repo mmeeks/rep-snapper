@@ -10,6 +10,13 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 		if(s[a] == '\r' || s[a] == '\n') s[a] = ' ';
 		a++;
 	}
+	time_t rawtime;
+	tm * ptm;
+	time ( &rawtime );
+	ptm = localtime ( &rawtime );
+	std::stringstream oss;
+	oss << setfill('0') << setw(2) << ptm->tm_hour << ":" << setfill('0') << setw(2) << ptm->tm_min << ":" << setfill('0') << setw(2) << ptm->tm_sec << " Send >>" << s.c_str() << "\n";
+	s=oss.str();
 
 	if(gui)
 		{
@@ -49,23 +56,29 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 			fseek ( logFile , 0 , SEEK_END );	// goto end of file
 			}
 		}
-	fputs ( s.c_str() , logFile );
-	fputs ( "\n" , logFile );
+	fputs ( s.c_str(), logFile );
 	}
 
 };
 void RepRapSerial::echo(string s)
 {
 
+	uint a=0;
+	while(a<s.length())
+	{
+		if(s[a] == '\r' || s[a] == '\n') s[a] = ' ';
+		a++;
+	}
+	time_t rawtime;
+	tm * ptm;
+	time ( &rawtime );
+	ptm = localtime ( &rawtime );
+	std::stringstream oss;
+	oss << setfill('0') << setw(2) << ptm->tm_hour << ":" << setfill('0') << setw(2) << ptm->tm_min << ":" << setfill('0') << setw(2) << ptm->tm_sec << " Echo >>" << s.c_str() << "\n";
+	s=oss.str();
+
 	if(gui)
 	{
-		uint a=0;
-		while(a<s.length())
-		{
-			if(s[a] == '\r' || s[a] == '\n') s[a] = ' ';
-			a++;
-		}
-		s+='\n';
 		Fl::lock();
 		gui->Echo->add(s.c_str());
 		if(gui->AutoscrollButton->value())
@@ -77,6 +90,24 @@ void RepRapSerial::echo(string s)
 	}
 	else
 		printf("%s", s.c_str());
+
+	if(MVC->ProcessControl.FileLogginEnabled)
+	{
+	// is the files open?
+	if(logFile == 0)
+		{
+		// Append or new?
+		if(MVC->ProcessControl.ClearLogfilesWhenPrintStarts)
+			logFile = fopen("./RepSnapper.log", "w");
+		else
+			{
+			logFile = fopen("./RepSnapper.log", "a");
+			fseek ( logFile , 0 , SEEK_END );	// goto end of file
+			}
+		}
+	fputs ( s.c_str(), logFile );
+	}
+
 };
 
 void RepRapSerial::StartPrint()
