@@ -216,9 +216,6 @@ public:
 	void SwitchPower(bool on);
 	void SwitchFan(bool on);
 
-
-
-
 	void Home(string axis);
 	void Move(string axis, float distance);
 	void Goto(string axis, float position);

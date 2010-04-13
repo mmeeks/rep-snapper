@@ -4,14 +4,15 @@
 
 void RepRapSerial::debugPrint(string s, bool selectLine)
 {
-	if(gui)
+	uint a=0;
+	while(a<s.length())
 	{
-		uint a=0;
-		while(a<s.length())
+		if(s[a] == '\r' || s[a] == '\n') s[a] = ' ';
+		a++;
+	}
+
+	if(gui)
 		{
-			if(s[a] == '\r' || s[a] == '\n') s[a] = ' ';
-			a++;
-		}
 		gui->CommunationLog->add(s.c_str());
 		if(gui->AutoscrollButton->value())
 			gui->CommunationLog->bottomline(gui->CommunationLog->size());
@@ -30,9 +31,28 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 		while(gui->Echo->size() > MVC->ProcessControl.KeepLines)
 
 			gui->Echo->remove(1);
-	}
+		}
 	else
 		printf("%s", s.c_str());
+
+	if(MVC->ProcessControl.FileLogginEnabled)
+	{
+	// is the files open?
+	if(logFile == 0)
+		{
+		// Append or new?
+		if(MVC->ProcessControl.ClearLogfilesWhenPrintStarts)
+			logFile = fopen("./RepSnapper.log", "w");
+		else
+			{
+			logFile = fopen("./RepSnapper.log", "a");
+			fseek ( logFile , 0 , SEEK_END );	// goto end of file
+			}
+		}
+	fputs ( s.c_str() , logFile );
+	fputs ( "\n" , logFile );
+	}
+
 };
 void RepRapSerial::echo(string s)
 {
