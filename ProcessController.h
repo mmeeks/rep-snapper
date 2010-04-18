@@ -83,7 +83,6 @@ public:
 		InfillDistance = 2.0f;
 		InfillRotation = 45.0f;
 		InfillRotationPrLayer = 90.0f;
-		Optimization = 0.02f;
 		Examine = 0.5f;
 
 		DisplayDebuginFill = false;
@@ -207,7 +206,6 @@ public:
 	float InfillDistance;
 	float InfillRotation;
 	float InfillRotationPrLayer;
-	float Optimization;
 	float Examine;
 
 	bool ShellOnly;

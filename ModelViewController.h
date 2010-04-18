@@ -111,7 +111,6 @@ public:
 	void SetInfillDistance(float val){ProcessControl.InfillDistance = val; redraw();}
 	void SetInfillRotation(float val){ProcessControl.InfillRotation = val; redraw();}
 	void SetInfillRotationPrLayer(float val){ProcessControl.InfillRotationPrLayer = val; redraw();}
-	void SetOptimization(float val){ProcessControl.Optimization = val; redraw();}
 	void SetExamine(float val){ProcessControl.Examine = val; redraw();}
 	void SetExtrudedMaterialWidth(float val){ProcessControl.ExtrudedMaterialWidth = val; redraw();}
 
@@ -214,7 +213,9 @@ public:
 	void SetLogFileClear(bool on);
 	void ClearLogs();
 	void SwitchPower(bool on);
-	void SwitchFan(bool on);
+	void SetFan(int val);
+
+
 
 	void Home(string axis);
 	void Move(string axis, float distance);

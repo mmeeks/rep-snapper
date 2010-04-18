@@ -61,7 +61,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 				stl->CalcCuttingPlane(z, plane, T);	// output is alot of un-connected line segments with individual vertices, describing the outline
 
 				float hackedZ = z;
-				while(plane.LinkSegments(hackedZ, ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, m_ShrinkQuality, ShellCount) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
+				while(plane.LinkSegments(hackedZ, ExtrudedMaterialWidth*0.5f, DisplayCuttingPlane, m_ShrinkQuality, ShellCount) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
 					{										// This happens when there's triangles missing in the input STL
 					hackedZ+= 0.1f;
 					plane.polygons.clear();
@@ -79,9 +79,9 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 				if(ShellOnly == false)
 					{
 					if(m_ShrinkQuality == SHRINK_FAST)
-						infillCuttingPlane.ShrinkFast(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);
+						infillCuttingPlane.ShrinkFast(ExtrudedMaterialWidth*0.5f, z, DisplayCuttingPlane, false, ShellCount);
 					else
-						infillCuttingPlane.ShrinkNice(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);
+						infillCuttingPlane.ShrinkNice(ExtrudedMaterialWidth*0.5f, z, DisplayCuttingPlane, false, ShellCount);
 					infillCuttingPlane.CalcInFill(infill, LayerNr, destinationZ, InfillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
 					}
 				// Make the GCode from the plane and the infill
@@ -434,7 +434,6 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("InfillDistance", true, "2")->SetValueFloat(InfillDistance);
 	x->FindVariableZ("InfillRotation", true, "90")->SetValueFloat(InfillRotation);
 	x->FindVariableZ("InfillRotationPrLayer", true, "90")->SetValueFloat(InfillRotationPrLayer);
-	x->FindVariableZ("Optimization", true, "0.05")->SetValueFloat(Optimization);
 	x->FindVariableZ("PolygonOpasity", true, "0.66")->SetValueFloat(PolygonOpasity);
 
 
@@ -632,8 +631,6 @@ void ProcessController::LoadXML(XMLElement *e)
 	if(y)	InfillRotation = y->GetValueFloat();
 	y=x->FindVariableZ("InfillRotationPrLayer", true, "90");
 	if(y)	InfillRotationPrLayer = y->GetValueFloat();
-	y=x->FindVariableZ("Optimization", true, "0.05");
-	if(y)	Optimization = y->GetValueFloat();
 	y=x->FindVariableZ("ShellOnly", true, "0");
 	if(y)	ShellOnly = y->GetValueFloat();
 	y=x->FindVariableZ("ShellCount", true, "1");
@@ -950,7 +947,6 @@ void ProcessController::BindLua(lua_State *myLuaState)
 			.def ("InfillDistance", InfillDistance)
 			.def ("InfillRotation", InfillRotation)
 			.def ("InfillRotationPrLayer", InfillRotationPrLayer)
-			.def ("Optimization", Optimization)
 			.def ("Examine", Examine)
 
 			.def ("ShellOnly", ShellOnly)

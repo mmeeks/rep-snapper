@@ -411,7 +411,6 @@ void ModelViewController::init()
 	buffer->text(ProcessControl.GCodeLayerText.c_str());
 	buffer = gui->GCodeEnd->buffer();
 	buffer->text(ProcessControl.GCodeEndText.c_str());
-	buffer = gui->NotesEditor->buffer();
 	buffer->text(ProcessControl.Notes.c_str());
 
 //	buffer = gui->CommunationsLogText->buffer();
@@ -431,7 +430,6 @@ void ModelViewController::CopySettingsToGUI()
 	buffer->text(ProcessControl.GCodeLayerText.c_str());
 	buffer = gui->GCodeEnd->buffer();
 	buffer->text(ProcessControl.GCodeEndText.c_str());
-	buffer = gui->NotesEditor->buffer();
 	buffer->text(ProcessControl.Notes.c_str());
 
 	gui->RaftEnableButton->value(ProcessControl.RaftEnable);
@@ -484,7 +482,6 @@ void ModelViewController::CopySettingsToGUI()
 	gui->InfillDistanceSlider->value(ProcessControl.InfillDistance);
 	gui->InfillRotationSlider->value(ProcessControl.InfillRotation);
 	gui->InfillRotationPrLayerSlider->value(ProcessControl.InfillRotationPrLayer);
-	gui->OptimizationSlider->value(ProcessControl.Optimization);
 	gui->ExamineSlider->value(ProcessControl.Examine);
 
 	gui->ShellOnlyButton->value(ProcessControl.ShellOnly);
@@ -537,15 +534,6 @@ void ModelViewController::CopySettingsToGUI()
 
 	gui->DisplayGCodeButton->value(ProcessControl.DisplayGCode);
 	gui->LuminanceShowsSpeedButton->value(ProcessControl.LuminanceShowsSpeed);
-
-	gui->ApronEnableButton->value(ProcessControl.ApronEnable);
-	gui->ApronPreviewButton->value(ProcessControl.ApronPreview);
-	gui->ApronSizeSlider->value(ProcessControl.ApronSize);
-	gui->ApronHeightSlider->value(ProcessControl.ApronHeight);
-	gui->ApronCoverageXSlider->value(ProcessControl.ApronCoverageX);
-	gui->ApronCoverageYSlider->value(ProcessControl.ApronCoverageY);
-	gui->ApronDistanceToObjectSlider->value(ProcessControl.ApronDistanceToObject);
-	gui->ApronInfillDistanceSlider->value(ProcessControl.ApronInfillDistance);
 
 	gui->shrinkFastButton->value(ProcessControl.m_ShrinkQuality == SHRINK_FAST);
 	gui->shrinkNiceButton->value(ProcessControl.m_ShrinkQuality == SHRINK_NICE);
@@ -663,10 +651,14 @@ void ModelViewController::SwitchPower(bool on)
 		serial.SendNow("M81");
 }
 
-void ModelViewController::SwitchFan(bool on)
+void ModelViewController::SetFan(int val)
 {
-	if(on)
-		serial.SendNow("M106");
+	if(val != 0)
+	{
+		std::stringstream oss;
+		oss << "M106 S" << val;
+		serial.SendNow(oss.str());
+	}
 	else
 		serial.SendNow("M107");
 }

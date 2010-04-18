@@ -254,11 +254,6 @@ private:
   void cb_InfillDistanceSlider_i(Fl_Value_Slider*, void*);
   static void cb_InfillDistanceSlider(Fl_Value_Slider*, void*);
 public:
-  Fl_Value_Slider *OptimizationSlider;
-private:
-  void cb_OptimizationSlider_i(Fl_Value_Slider*, void*);
-  static void cb_OptimizationSlider(Fl_Value_Slider*, void*);
-public:
   Fl_Light_Button *ShellOnlyButton;
 private:
   void cb_ShellOnlyButton_i(Fl_Light_Button*, void*);
@@ -268,46 +263,6 @@ public:
 private:
   void cb_ShellCountSlider_i(Fl_Value_Slider*, void*);
   static void cb_ShellCountSlider(Fl_Value_Slider*, void*);
-public:
-  Fl_Value_Slider *ApronSizeSlider;
-private:
-  void cb_ApronSizeSlider_i(Fl_Value_Slider*, void*);
-  static void cb_ApronSizeSlider(Fl_Value_Slider*, void*);
-public:
-  Fl_Value_Slider *ApronCoverageXSlider;
-private:
-  void cb_ApronCoverageXSlider_i(Fl_Value_Slider*, void*);
-  static void cb_ApronCoverageXSlider(Fl_Value_Slider*, void*);
-public:
-  Fl_Value_Slider *ApronHeightSlider;
-private:
-  void cb_ApronHeightSlider_i(Fl_Value_Slider*, void*);
-  static void cb_ApronHeightSlider(Fl_Value_Slider*, void*);
-public:
-  Fl_Value_Slider *ApronCoverageYSlider;
-private:
-  void cb_ApronCoverageYSlider_i(Fl_Value_Slider*, void*);
-  static void cb_ApronCoverageYSlider(Fl_Value_Slider*, void*);
-public:
-  Fl_Light_Button *ApronEnableButton;
-private:
-  void cb_ApronEnableButton_i(Fl_Light_Button*, void*);
-  static void cb_ApronEnableButton(Fl_Light_Button*, void*);
-public:
-  Fl_Value_Slider *ApronDistanceToObjectSlider;
-private:
-  void cb_ApronDistanceToObjectSlider_i(Fl_Value_Slider*, void*);
-  static void cb_ApronDistanceToObjectSlider(Fl_Value_Slider*, void*);
-public:
-  Fl_Value_Slider *ApronInfillDistanceSlider;
-private:
-  void cb_ApronInfillDistanceSlider_i(Fl_Value_Slider*, void*);
-  static void cb_ApronInfillDistanceSlider(Fl_Value_Slider*, void*);
-public:
-  Fl_Light_Button *ApronPreviewButton;
-private:
-  void cb_ApronPreviewButton_i(Fl_Light_Button*, void*);
-  static void cb_ApronPreviewButton(Fl_Light_Button*, void*);
 public:
   Fl_Value_Slider *RaftMaterialPrDistanceRatioSlider;
 private:
@@ -396,7 +351,6 @@ private:
   void cb_Save3_i(Fl_Button*, void*);
   static void cb_Save3(Fl_Button*, void*);
 public:
-  Fl_Text_Editor *NotesEditor;
   Fl_Light_Button *DisplayPolygonsButton;
 private:
   void cb_DisplayPolygonsButton_i(Fl_Light_Button*, void*);
@@ -624,34 +578,13 @@ private:
 public:
   Fl_Input *GCodeInput;
 private:
+  void cb_GCodeInput_i(Fl_Input*, void*);
+  static void cb_GCodeInput(Fl_Input*, void*);
   void cb_Send_i(Fl_Button*, void*);
   static void cb_Send(Fl_Button*, void*);
 public:
   Fl_Output *CurrentTempText;
-  Fl_Value_Slider *ExamineSlider;
 private:
-  void cb_ExamineSlider_i(Fl_Value_Slider*, void*);
-  static void cb_ExamineSlider(Fl_Value_Slider*, void*);
-public:
-  Fl_Light_Button *DisplayDebuginFillButton;
-private:
-  void cb_DisplayDebuginFillButton_i(Fl_Light_Button*, void*);
-  static void cb_DisplayDebuginFillButton(Fl_Light_Button*, void*);
-public:
-  Fl_Light_Button *DisplayDebugButton;
-private:
-  void cb_DisplayDebugButton_i(Fl_Light_Button*, void*);
-  static void cb_DisplayDebugButton(Fl_Light_Button*, void*);
-public:
-  Fl_Light_Button *DrawVertexNumbersButton;
-private:
-  void cb_DrawVertexNumbersButton_i(Fl_Light_Button*, void*);
-  static void cb_DrawVertexNumbersButton(Fl_Light_Button*, void*);
-public:
-  Fl_Light_Button *DrawLineNumbersButton;
-private:
-  void cb_DrawLineNumbersButton_i(Fl_Light_Button*, void*);
-  static void cb_DrawLineNumbersButton(Fl_Light_Button*, void*);
   void cb_Home3_i(Fl_Button*, void*);
   static void cb_Home3(Fl_Button*, void*);
   void cb_10_i(Fl_Button*, void*);
@@ -763,14 +696,47 @@ private:
   static void cb_ContinueButton(Fl_Button*, void*);
   void cb_Power_i(Fl_Light_Button*, void*);
   static void cb_Power(Fl_Light_Button*, void*);
-  void cb_Fan_i(Fl_Light_Button*, void*);
-  static void cb_Fan(Fl_Light_Button*, void*);
   void cb_Errors_i(Fl_Light_Button*, void*);
   static void cb_Errors(Fl_Light_Button*, void*);
   void cb_Info_i(Fl_Light_Button*, void*);
   static void cb_Info(Fl_Light_Button*, void*);
   void cb_Echo_i(Fl_Light_Button*, void*);
   static void cb_Echo(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *DisplayDebuginFillButton;
+private:
+  void cb_DisplayDebuginFillButton_i(Fl_Light_Button*, void*);
+  static void cb_DisplayDebuginFillButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *DisplayDebugButton;
+private:
+  void cb_DisplayDebugButton_i(Fl_Light_Button*, void*);
+  static void cb_DisplayDebugButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *DrawVertexNumbersButton;
+private:
+  void cb_DrawVertexNumbersButton_i(Fl_Light_Button*, void*);
+  static void cb_DrawVertexNumbersButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *DrawLineNumbersButton;
+private:
+  void cb_DrawLineNumbersButton_i(Fl_Light_Button*, void*);
+  static void cb_DrawLineNumbersButton(Fl_Light_Button*, void*);
+public:
+  Fl_Value_Slider *ExamineSlider;
+private:
+  void cb_ExamineSlider_i(Fl_Value_Slider*, void*);
+  static void cb_ExamineSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Light_Button *FanOnButton;
+private:
+  void cb_FanOnButton_i(Fl_Light_Button*, void*);
+  static void cb_FanOnButton(Fl_Light_Button*, void*);
+public:
+  Fl_Value_Slider *FanPowerSlider;
+private:
+  void cb_FanPowerSlider_i(Fl_Value_Slider*, void*);
+  static void cb_FanPowerSlider(Fl_Value_Slider*, void*);
 public:
   Fl_Progress *ProgressBar;
   void show(int argc, char **argv);
