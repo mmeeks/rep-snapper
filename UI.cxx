@@ -1280,6 +1280,13 @@ void GUI::cb_Power(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Power_i(o,v);
 }
 
+void GUI::cb_KickButton_i(Fl_Button*, void*) {
+  MVC->Continue();
+}
+void GUI::cb_KickButton(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_KickButton_i(o,v);
+}
+
 void GUI::cb_Errors_i(Fl_Light_Button* o, void*) {
   MVC->serial.SetDebugMask(DEBUG_ERRORS, (bool)o->value());
 }
@@ -1357,7 +1364,7 @@ void GUI::cb_FanOnButton(Fl_Light_Button* o, void* v) {
 
 void GUI::cb_FanPowerSlider_i(Fl_Value_Slider* o, void*) {
   FanOnButton->value(true);
-MVC->SetFan(o->value());
+MVC->SetFan(o->value()*(255.0f/12.0f));
 }
 void GUI::cb_FanPowerSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_FanPowerSlider_i(o,v);
@@ -2564,18 +2571,21 @@ e rest of the print.");
             ConnectToPrinterButton->selection_color((Fl_Color)2);
             ConnectToPrinterButton->callback((Fl_Callback*)cb_ConnectToPrinterButton);
           } // Fl_Light_Button* ConnectToPrinterButton
-          { PrintButton = new Fl_Light_Button(1125, 80, 130, 25, "Print");
+          { PrintButton = new Fl_Light_Button(1075, 80, 90, 25, "Print");
             PrintButton->selection_color((Fl_Color)2);
             PrintButton->callback((Fl_Callback*)cb_PrintButton);
           } // Fl_Light_Button* PrintButton
-          { ContinueButton = new Fl_Button(1260, 80, 100, 25, "Continue");
+          { ContinueButton = new Fl_Button(1170, 80, 95, 25, "Continue");
             ContinueButton->callback((Fl_Callback*)cb_ContinueButton);
             ContinueButton->deactivate();
           } // Fl_Button* ContinueButton
-          { Fl_Light_Button* o = new Fl_Light_Button(980, 80, 140, 25, "Power on");
+          { Fl_Light_Button* o = new Fl_Light_Button(980, 80, 90, 25, "Power on");
             o->selection_color((Fl_Color)2);
             o->callback((Fl_Callback*)cb_Power);
           } // Fl_Light_Button* o
+          { KickButton = new Fl_Button(1270, 80, 95, 25, "Kick");
+            KickButton->callback((Fl_Callback*)cb_KickButton);
+          } // Fl_Button* KickButton
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(840, 180, 540, 40, "Feedback");
@@ -2629,11 +2639,10 @@ e rest of the print.");
             FanOnButton->selection_color((Fl_Color)2);
             FanOnButton->callback((Fl_Callback*)cb_FanOnButton);
           } // Fl_Light_Button* FanOnButton
-          { FanPowerSlider = new Fl_Value_Slider(980, 135, 150, 25, "Power");
+          { FanPowerSlider = new Fl_Value_Slider(995, 135, 375, 25, "Voltage");
             FanPowerSlider->type(5);
-            FanPowerSlider->maximum(255);
-            FanPowerSlider->step(1);
-            FanPowerSlider->value(50);
+            FanPowerSlider->maximum(12);
+            FanPowerSlider->value(5);
             FanPowerSlider->textsize(14);
             FanPowerSlider->callback((Fl_Callback*)cb_FanPowerSlider);
             FanPowerSlider->align(FL_ALIGN_LEFT);

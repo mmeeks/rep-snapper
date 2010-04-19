@@ -696,6 +696,11 @@ private:
   static void cb_ContinueButton(Fl_Button*, void*);
   void cb_Power_i(Fl_Light_Button*, void*);
   static void cb_Power(Fl_Light_Button*, void*);
+public:
+  Fl_Button *KickButton;
+private:
+  void cb_KickButton_i(Fl_Button*, void*);
+  static void cb_KickButton(Fl_Button*, void*);
   void cb_Errors_i(Fl_Light_Button*, void*);
   static void cb_Errors(Fl_Light_Button*, void*);
   void cb_Info_i(Fl_Light_Button*, void*);

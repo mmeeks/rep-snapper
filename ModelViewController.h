@@ -215,8 +215,6 @@ public:
 	void SwitchPower(bool on);
 	void SetFan(int val);
 
-
-
 	void Home(string axis);
 	void Move(string axis, float distance);
 	void Goto(string axis, float position);

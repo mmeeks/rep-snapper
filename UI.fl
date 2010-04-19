@@ -14,7 +14,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {362 175 1400 858} type Double box UP_BOX color 39 selection_color 39 labelsize 12 resizable visible
+      xywh {362 175 1400 858} type Double box UP_BOX color 39 selection_color 39 labelsize 12 hide resizable
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -1006,7 +1006,7 @@ MVC->redraw();}
                 xywh {855 310 83 25}
               }
               Fl_Button {} {
-                label {Find position in Gcode} selected
+                label {Find position in Gcode}
                 xywh {1175 340 173 25} deactivate
               }
               Fl_Value_Slider {} {
@@ -1233,7 +1233,7 @@ o->label("Restart");
 MVC->Pause();
 ContinueButton->activate();
 }}
-              xywh {1125 80 130 25} selection_color 2
+              xywh {1075 80 90 25} selection_color 2
             }
             Fl_Button ContinueButton {
               label Continue
@@ -1241,12 +1241,17 @@ ContinueButton->activate();
 PrintButton->label("Pause");
 PrintButton->value(1);
 o->deactivate();}
-              xywh {1260 80 100 25} deactivate
+              xywh {1170 80 95 25} deactivate
             }
             Fl_Light_Button {} {
               label {Power on}
               callback {MVC->SwitchPower(o->value());}
-              xywh {980 80 140 25} selection_color 2
+              xywh {980 80 90 25} selection_color 2
+            }
+            Fl_Button KickButton {
+              label Kick
+              callback {MVC->Continue();} selected
+              xywh {1270 80 95 25}
             }
           }
           Fl_Group {} {
@@ -1316,10 +1321,10 @@ MVC->redraw();}
               xywh {845 135 85 25} selection_color 2
             }
             Fl_Value_Slider FanPowerSlider {
-              label Power
+              label Voltage
               callback {FanOnButton->value(true);
-MVC->SetFan(o->value());}
-              xywh {980 135 150 25} type {Horz Knob} align 4 when 4 maximum 255 step 1 value 50 textsize 14
+MVC->SetFan(o->value()*(255.0f/12.0f));}
+              xywh {995 135 375 25} type {Horz Knob} align 4 when 4 maximum 12 value 5 textsize 14
             }
           }
         }
