@@ -76,7 +76,7 @@ public:
 	Poly(){};
 	void cleanup();				// Removed vertices that are on a straight line
 	int calcHole(vector<Vector2f> &offsetVertices);
-	vector<uint> points;			// points, indices into ..... a CuttingPlane or a GCode object
+	vector<Vector2f> points;			// points
 	bool hole;
 };
 

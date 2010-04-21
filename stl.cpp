@@ -706,8 +706,8 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 			{
 			for(uint i=0;i<offsetPolygons[p].points.size();i++)
 				{
-				Vector2f P3 = offsetVertices[offsetPolygons[p].points[i]];
-				Vector2f P4 = offsetVertices[offsetPolygons[p].points[(i+1)%offsetPolygons[p].points.size()]];
+				Vector2f P3 = offsetPolygons[p].points[i];
+				Vector2f P4 = offsetPolygons[p].points[(i+1)%offsetPolygons[p].points.size()];
 				lines.push_back(Vector3f(P3.x, P3.y, z));
 				lines.push_back(Vector3f(P4.x, P4.y, z));
 				}
@@ -931,8 +931,8 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, uint LayerNr, float z, f
 					{
 					for(uint i=0;i<offsetPolygons[p].points.size();i++)
 						{
-						Vector2f P3 = offsetVertices[offsetPolygons[p].points[i]];
-						Vector2f P4 = offsetVertices[offsetPolygons[p].points[(i+1)%offsetPolygons[p].points.size()]];
+						Vector2f P3 = offsetPolygons[p].points[i];
+						Vector2f P4 = offsetPolygons[p].points[(i+1)%offsetPolygons[p].points.size()];
 
 						Vector3f point;
 						InFillHit hit;
@@ -1580,7 +1580,7 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, bool DisplayCuttingP
 					break;				// done
 				}
 			used[startLine]=true;
-			poly.points.push_back(endPoint);
+			poly.points.push_back(vertices[endPoint]);
 			count--;
 			}
 
@@ -1622,7 +1622,7 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, bool DisplayCuttingP
 		{
 		glBegin(GL_LINE_LOOP);
 		for(int v=0; v<polygons[p].points.size();v++)
-			glVertex3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, z);
+			glVertex3f(polygons[p].points[v].x, polygons[p].points[v].y, z);
 		glEnd();
 		/*glColor3f(1,0,1);
 		glEnable(GL_POINT_SMOOTH);
@@ -1873,9 +1873,9 @@ void CuttingPlane::ShrinkFast(float distance, float z, bool DisplayCuttingPlane,
 		uint count = polygons[p].points.size();
 		for(int i=0; i<count;i++)
 		{
-			Vector2f Na = Vector2f(vertices[polygons[p].points[(i-1+count)%count]].x, vertices[polygons[p].points[(i-1+count)%count]].y);
-			Vector2f Nb = Vector2f(vertices[polygons[p].points[i]].x, vertices[polygons[p].points[i]].y);
-			Vector2f Nc = Vector2f(vertices[polygons[p].points[(i+1)%count]].x, vertices[polygons[p].points[(i+1)%count]].y);
+			Vector2f Na = Vector2f(polygons[p].points[(i-1+count)%count].x, polygons[p].points[(i-1+count)%count].y);
+			Vector2f Nb = Vector2f(polygons[p].points[i].x, polygons[p].points[i].y);
+			Vector2f Nc = Vector2f(polygons[p].points[(i+1)%count].x, polygons[p].points[(i+1)%count].y);
 
 			Vector2f V1 = (Nb-Na).getNormalized();
 			Vector2f V2 = (Nc-Nb).getNormalized();
@@ -2070,8 +2070,8 @@ bool CuttingPlane::VertexIsOutsideOriginalPolygon( Vector2f point, float z)
 		uint count = polygons[p].points.size();
 		for(int i=0; i<count;i++)
 		{
-		Vector2f P1 = Vector2f( vertices[polygons[p].points[(i-1+count)%count]] );
-		Vector2f P2 = Vector2f( vertices[polygons[p].points[i]]);
+		Vector2f P1 = Vector2f( polygons[p].points[(i-1+count)%count] );
+		Vector2f P2 = Vector2f( polygons[p].points[i]);
 		
 		if(P1.y == P2.y)	// Skip hortisontal lines, we can't intersect with them, because the test line in horitsontal
 			continue;
@@ -2110,8 +2110,8 @@ void CuttingPlane::ShrinkNice(float distance, float z, bool DisplayCuttingPlane,
 		uint count = polygons[p].points.size();
 		for(int i=0; i<count;i++)
 		{
-			Vector2f Na = Vector2f(vertices[polygons[p].points[(i-1+count)%count]].x, vertices[polygons[p].points[(i-1+count)%count]].y);
-			Vector2f Nb = Vector2f(vertices[polygons[p].points[i%count]].x, vertices[polygons[p].points[i%count]].y);
+			Vector2f Na = Vector2f(polygons[p].points[(i-1+count)%count].x, polygons[p].points[(i-1+count)%count].y);
+			Vector2f Nb = Vector2f(polygons[p].points[i%count].x, polygons[p].points[i%count].y);
 			Vector2f V1 = (Nb-Na);
 
 			Vector2f delta = V1.getNormalized();
@@ -2544,9 +2544,9 @@ void CuttingPlane::CleanupPolygons()
 	{
 		for(int v=0;v<polygons[p].points.size();)
 		{
-			Vector2f p1 =vertices[polygons[p].points[(v-1+polygons[p].points.size())%polygons[p].points.size()]];
-			Vector2f p2 =vertices[polygons[p].points[v]];
-			Vector2f p3 =vertices[polygons[p].points[(v+1)%polygons[p].points.size()]];
+			Vector2f p1 =polygons[p].points[(v-1+polygons[p].points.size())%polygons[p].points.size()];
+			Vector2f p2 =polygons[p].points[v];
+			Vector2f p3 =polygons[p].points[(v+1)%polygons[p].points.size()];
 
 			Vector2f v1 = (p2-p1);
 			Vector2f v2 = (p3-p2);
@@ -2571,9 +2571,9 @@ void CuttingPlane::CleanupOffsetPolygons()
 	{
 		for(int v=0;v<offsetPolygons[p].points.size();)
 		{
-			Vector2f p1 =offsetVertices[offsetPolygons[p].points[(v-1+offsetPolygons[p].points.size())%offsetPolygons[p].points.size()]];
-			Vector2f p2 =offsetVertices[offsetPolygons[p].points[v]];
-			Vector2f p3 =offsetVertices[offsetPolygons[p].points[(v+1)%offsetPolygons[p].points.size()]];
+			Vector2f p1 = offsetPolygons[p].points[(v-1+offsetPolygons[p].points.size())%offsetPolygons[p].points.size()];
+			Vector2f p2 = offsetPolygons[p].points[v];
+			Vector2f p3 = offsetPolygons[p].points[(v+1)%offsetPolygons[p].points.size()];
 
 			Vector2f v1 = (p2-p1);
 			Vector2f v2 = (p3-p2);
@@ -2616,22 +2616,22 @@ int Poly::calcHole(vector<Vector2f> &offsetVertices)
 	int v=0;
 	for(int vert=0;vert<points.size();vert++)
 	{
-		if(offsetVertices[points[vert]].x > p.x)
+		if(points[vert].x > p.x)
 		{
-			p.x = offsetVertices[points[vert]].x;
+			p.x = points[vert].x;
 			v=vert;
 		}
-		else if(offsetVertices[points[vert]].x == p.x && offsetVertices[points[vert]].y > p.y)
+		else if(points[vert].x == p.x && points[vert].y > p.y)
 		{
-			p = offsetVertices[points[vert]];
+			p = points[vert];
 			v=vert;
 		}
 	}
 
 	// we have the x-most vertex, v
-	Vector2f V1 = offsetVertices[points[(v-1+points.size())%points.size()]];
-	Vector2f V2 = offsetVertices[points[v]];
-	Vector2f V3 = offsetVertices[points[(v+1)%points.size()]];
+	Vector2f V1 = points[(v-1+points.size())%points.size()];
+	Vector2f V2 = points[v];
+	Vector2f V3 = points[(v+1)%points.size()];
 
 	Vector2f Va=V2-V1;
 	Vector2f Vb=V3-V1;
@@ -2642,8 +2642,8 @@ int Poly::calcHole(vector<Vector2f> &offsetVertices)
 
 void CuttingPlane::selfIntersectAndDivide(float z)
 {
-//	selfIntersectAndDivideTest(z);
-//	return;
+	selfIntersectAndDivideTest(z);
+	return;
 
 	if(offsetPolygons.size() == 0)
 		return;
@@ -2666,8 +2666,8 @@ void CuttingPlane::selfIntersectAndDivide(float z)
 		vertices->vertex = new  gpc_vertex[offsetPolygons[p].points.size()];
 		for(int v=0;v<offsetPolygons[p].points.size();v++)
 		{
-			vertices->vertex[v].x = offsetVertices[offsetPolygons[p].points[v]].x;
-			vertices->vertex[v].y = offsetVertices[offsetPolygons[p].points[v]].y;
+			vertices->vertex[v].x = offsetPolygons[p].points[v].x;
+			vertices->vertex[v].y = offsetPolygons[p].points[v].y;
 		}
 		vertices->num_vertices = offsetPolygons[p].points.size();
 
@@ -2759,20 +2759,20 @@ void CuttingPlane::selfIntersectAndDivideTest(float z)
 
 	for(uint p=0; p<offsetPolygons.size();p++)
 		{
-		vector<uint> result;
+		vector<Vector2f> result;
 //		for(int pnr=0;pnr<offsetPolygons[p].points.size();pnr++)
 			{
 				uint v;
 				for(v=startVertex[p];v<offsetPolygons[p].points.size()+startVertex[p];v++)
 				{
-					Vector2f P1 = offsetVertices[offsetPolygons[p].points[v%offsetPolygons[p].points.size()]];;
-					Vector2f P2 = offsetVertices[offsetPolygons[p].points[(v+1)%offsetPolygons[p].points.size()]];
+					Vector2f P1 = offsetPolygons[p].points[v%offsetPolygons[p].points.size()];;
+					Vector2f P2 = offsetPolygons[p].points[(v+1)%offsetPolygons[p].points.size()];
 
 					// Intersect this line with the other lines
 					for(uint v2=startVertex[p];v2<offsetPolygons[p].points.size()+startVertex[p];v2++)
 					{
-						Vector2f P3 = offsetVertices[offsetPolygons[p].points[v2%offsetPolygons[p].points.size()]];;
-						Vector2f P4 = offsetVertices[offsetPolygons[p].points[(v2+1)%offsetPolygons[p].points.size()]];
+						Vector2f P3 = offsetPolygons[p].points[v2%offsetPolygons[p].points.size()];
+						Vector2f P4 = offsetPolygons[p].points[(v2+1)%offsetPolygons[p].points.size()];
 
 						InFillHit hit;
 						if(IntersectXY(P1,P2,P3,P4, hit) == 1) //we are in a negative area
@@ -2785,9 +2785,9 @@ void CuttingPlane::selfIntersectAndDivideTest(float z)
 					}
 
 				}
-				if(positive)
-					result.push_back(v);
+//				if(positive)
+//					result.push_back(v);
 			}
-		offsetPolygons[p].points = result;
+//		offsetPolygons[p].points = result;
 		}
 }
