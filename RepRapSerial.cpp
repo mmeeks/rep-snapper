@@ -223,7 +223,7 @@ extern void TempReadTimer(void *);
 
 void RepRapSerial::Connect(string port, int speed)
 {
-	open(port.c_str(), 19200);
+	open(port.c_str(), speed);
 	Fl::add_timeout(1.0f, &TempReadTimer);
 }
 
