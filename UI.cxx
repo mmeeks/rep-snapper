@@ -370,6 +370,13 @@ void GUI::cb_portInput(Fl_Input* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_portInput_i(o,v);
 }
 
+void GUI::cb_SerialSpeedInput_i(Fl_Value_Input* o, void*) {
+  MVC->setSerialSpeed(o->value());
+}
+void GUI::cb_SerialSpeedInput(Fl_Value_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_SerialSpeedInput_i(o,v);
+}
+
 void GUI::cb_shrinkFastButton_i(Fl_Light_Button* o, void*) {
   if(o->value())
 {
@@ -1560,7 +1567,6 @@ GUI::GUI() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(835, 45, 550, 785, "Printer definition");
-        o->hide();
         { Fl_Group* o = new Fl_Group(840, 70, 230, 40, "Build volume (mm)");
           o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
@@ -1708,13 +1714,17 @@ GUI::GUI() {
           } // Fl_Light_Button* Use3DGcodeButton
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(840, 785, 535, 45, "Port");
+        { Fl_Group* o = new Fl_Group(840, 771, 535, 59, "Port");
           o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
-          { portInput = new Fl_Input(1010, 796, 205, 24, "Port:");
+          { portInput = new Fl_Input(885, 796, 205, 24, "Port:");
             portInput->tooltip("COM3 or  /dev/ttyUSB0 or something to that effect");
             portInput->callback((Fl_Callback*)cb_portInput);
           } // Fl_Input* portInput
+          { Fl_Value_Input* o = SerialSpeedInput = new Fl_Value_Input(1160, 796, 205, 24, "Speed:");
+            SerialSpeedInput->callback((Fl_Callback*)cb_SerialSpeedInput);
+            o->value(19200);
+          } // Fl_Value_Input* SerialSpeedInput
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(840, 390, 535, 55, "Shrinking quality");
@@ -2328,6 +2338,7 @@ e rest of the print.");
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(835, 50, 560, 800, "Print");
         o->color((Fl_Color)FL_DARK1);
+        o->hide();
         { Fl_Tabs* o = new Fl_Tabs(835, 220, 540, 595);
           { CommunationLog = new Fl_Multi_Browser(840, 245, 530, 565, "Communication log");
             CommunationLog->box(FL_NO_BOX);

@@ -185,7 +185,7 @@ public:
 	void ConnectToPrinter(char on){
 		if(on)
 			{
-			serial.Connect(ProcessControl.m_sPortName);
+			serial.Connect(ProcessControl.m_sPortName, ProcessControl.m_iSerialSpeed);
 			}
 		else
 			{
@@ -206,6 +206,8 @@ public:
 	void SetExtruderDirection(bool reverse);
 	void SendNow(string str);
 	void setPort(string s){ProcessControl.m_sPortName = s;}
+	void setSerialSpeed(int s ){ProcessControl.m_iSerialSpeed = s;}
+	
 	void SetKeepLines(float val){ ProcessControl.KeepLines = (int)val;}
 
 	void SetFileLogging(bool on);

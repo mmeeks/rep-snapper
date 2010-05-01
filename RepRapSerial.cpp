@@ -130,8 +130,7 @@ void RepRapSerial::SendNextLine()
 	if(m_iLineNr < buffer.size())
 		{
 		string a = buffer[m_iLineNr];
-		SendData(a.c_str(), m_iLineNr);
-		m_iLineNr++;
+		SendData(a.c_str(), m_iLineNr++);
 		}
 	else	// we are done
 		{
@@ -186,7 +185,7 @@ void RepRapSerial::SendData(string s, const int lineNr)
 	string buffer;
 	std::stringstream oss;
 	oss << " N" << lineNr << " ";//*";
-	buffer += oss.str();
+//	buffer += oss.str();	Hydra
 	// strip comments
 	
 	string tmp=s;
@@ -203,7 +202,7 @@ void RepRapSerial::SendData(string s, const int lineNr)
 			tmp.erase(tmp.begin()+i--);
 
 	buffer += tmp;
-	buffer += " *";
+/*	buffer += " *"; Hydra
 	oss.str( "" );
 	// Calc checksum.
 	short checksum = 0;
@@ -213,6 +212,7 @@ void RepRapSerial::SendData(string s, const int lineNr)
 
 	oss << checksum;//std::setfill('0') << std::setw(2) << buffer.length()+2;
 	buffer += oss.str();
+*/
 	debugPrint( string("SendData:") + buffer);
 	buffer += "\r\n";
 	write(buffer);
@@ -221,7 +221,7 @@ void RepRapSerial::SendData(string s, const int lineNr)
 
 extern void TempReadTimer(void *);
 
-void RepRapSerial::Connect(string port)
+void RepRapSerial::Connect(string port, int speed)
 {
 	open(port.c_str(), 19200);
 	Fl::add_timeout(1.0f, &TempReadTimer);
@@ -237,9 +237,7 @@ void RepRapSerial::DisConnect()
 
 void RepRapSerial::SetLineNr(int nr)
 {
-
 	SendData("M110", nr);	// restart lineNr count
-
 }
 
 void RepRapSerial::SetDebugMask(int mask, bool on)

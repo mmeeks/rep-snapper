@@ -398,6 +398,8 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("Notes", true,"[Empty]")->SetValue(Notes.c_str());	
 	x->FindVariableZ("m_sPortName", true,"COM5")->SetValue(m_sPortName.c_str());	
 
+	x->FindVariableZ("m_iSerialSpeed", true,"19200")->SetValueInt(m_iSerialSpeed);	
+
 	x->FindVariableZ("GCodeDrawStart", true, "190")->SetValueFloat(GCodeDrawStart);
 	x->FindVariableZ("GCodeDrawEnd", true, "190")->SetValueFloat(GCodeDrawEnd);
 	x->FindVariableZ("ShellOnly", true, "0.66")->SetValueInt((int)ShellOnly);
@@ -582,6 +584,9 @@ void ProcessController::LoadXML(XMLElement *e)
 	memset(buffer,0,10000);
 	x->FindVariableZ("m_sPortName", true, "COM5")->GetValue(buffer);
 	m_sPortName = string(buffer);
+
+	y=x->FindVariableZ("m_iSerialSpeed", true, "0");
+	if(y)	m_iSerialSpeed = y->GetValueInt();
 
 	y=x->FindVariableZ("GCodeDrawStart", true, "0");
 	if(y)	GCodeDrawStart = y->GetValueFloat();

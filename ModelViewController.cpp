@@ -448,6 +448,7 @@ void ModelViewController::CopySettingsToGUI()
 	gui->RaftInterfaceTemperatureSlider->value(ProcessControl.RaftInterfaceTemperature);
 
 	gui->portInput->value(ProcessControl.m_sPortName.c_str());
+	gui->SerialSpeedInput->value(ProcessControl.m_iSerialSpeed);
 
 	// GCode
 	gui->GCodeDrawStartSlider->value(ProcessControl.GCodeDrawStart);

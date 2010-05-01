@@ -30,6 +30,7 @@ class ProcessController
 public:
 	ProcessController(){
 
+		m_iSerialSpeed = 19200;
 		// default parameters (are overwritten by the xml loading)
 		RaftSize = 1.33f;
 		RaftBaseLayerCount = 1;
@@ -157,6 +158,7 @@ public:
 	/*--------------Models-------------------*/
 	Printer printer;					// Printer settings and functions
 	string m_sPortName;
+	int m_iSerialSpeed;
 	int KeepLines;
 //	STL stl;							// A STL file
 	RFO rfo;

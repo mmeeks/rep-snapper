@@ -229,6 +229,11 @@ private:
   void cb_portInput_i(Fl_Input*, void*);
   static void cb_portInput(Fl_Input*, void*);
 public:
+  Fl_Value_Input *SerialSpeedInput;
+private:
+  void cb_SerialSpeedInput_i(Fl_Value_Input*, void*);
+  static void cb_SerialSpeedInput(Fl_Value_Input*, void*);
+public:
   Fl_Light_Button *shrinkFastButton;
 private:
   void cb_shrinkFastButton_i(Fl_Light_Button*, void*);
