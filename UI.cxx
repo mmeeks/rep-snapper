@@ -1000,13 +1000,6 @@ void GUI::cb_GCodeInput(Fl_Input* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_GCodeInput_i(o,v);
 }
 
-void GUI::cb_Send_i(Fl_Button*, void*) {
-  MVC->SendNow(GCodeInput->value());
-}
-void GUI::cb_Send(Fl_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_Send_i(o,v);
-}
-
 void GUI::cb_Home3_i(Fl_Button*, void*) {
   MVC->Home("ALL");
 }
@@ -1245,6 +1238,221 @@ void GUI::cb_Clear(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_Clear_i(o,v);
 }
 
+void GUI::cb_Send_i(Fl_Return_Button*, void*) {
+  MVC->SendNow(GCodeInput->value());
+}
+void GUI::cb_Send(Fl_Return_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_Send_i(o,v);
+}
+
+void GUI::cb_CustomButton1_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(1);
+}
+void GUI::cb_CustomButton1(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton1_i(o,v);
+}
+
+void GUI::cb_CustomButton3_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(3);
+}
+void GUI::cb_CustomButton3(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton3_i(o,v);
+}
+
+void GUI::cb_CustomButton2_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(2);
+}
+void GUI::cb_CustomButton2(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton2_i(o,v);
+}
+
+void GUI::cb_CustomButton4_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(4);
+}
+void GUI::cb_CustomButton4(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton4_i(o,v);
+}
+
+void GUI::cb_CustomButton5_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(5);
+}
+void GUI::cb_CustomButton5(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton5_i(o,v);
+}
+
+void GUI::cb_CustomButton7_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(7);
+}
+void GUI::cb_CustomButton7(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton7_i(o,v);
+}
+
+void GUI::cb_CustomButton6_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(6);
+}
+void GUI::cb_CustomButton6(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton6_i(o,v);
+}
+
+void GUI::cb_CustomButton8_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(8);
+}
+void GUI::cb_CustomButton8(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton8_i(o,v);
+}
+
+void GUI::cb_CustomButton9_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(9);
+}
+void GUI::cb_CustomButton9(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton9_i(o,v);
+}
+
+void GUI::cb_CustomButton11_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(11);
+}
+void GUI::cb_CustomButton11(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton11_i(o,v);
+}
+
+void GUI::cb_CustomButton10_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(10);
+}
+void GUI::cb_CustomButton10(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton10_i(o,v);
+}
+
+void GUI::cb_CustomButton12_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(12);
+}
+void GUI::cb_CustomButton12(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton12_i(o,v);
+}
+
+void GUI::cb_CustomButton13_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(13);
+}
+void GUI::cb_CustomButton13(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton13_i(o,v);
+}
+
+void GUI::cb_CustomButton15_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(15);
+}
+void GUI::cb_CustomButton15(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton15_i(o,v);
+}
+
+void GUI::cb_CustomButton14_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(14);
+}
+void GUI::cb_CustomButton14(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton14_i(o,v);
+}
+
+void GUI::cb_CustomButton16_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(16);
+}
+void GUI::cb_CustomButton16(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton16_i(o,v);
+}
+
+void GUI::cb_CustomButton17_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(17);
+}
+void GUI::cb_CustomButton17(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton17_i(o,v);
+}
+
+void GUI::cb_CustomButton18_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(18);
+}
+void GUI::cb_CustomButton18(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton18_i(o,v);
+}
+
+void GUI::cb_CustomButton19_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(19);
+}
+void GUI::cb_CustomButton19(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton19_i(o,v);
+}
+
+void GUI::cb_CustomButton20_i(Fl_Button*, void*) {
+  MVC->SendCustomButton(20);
+}
+void GUI::cb_CustomButton20(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButton20_i(o,v);
+}
+
+void GUI::cb_CustomButtonSelectorSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->GetCustomButtonText(o->value()-1);
+}
+void GUI::cb_CustomButtonSelectorSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_CustomButtonSelectorSlider_i(o,v);
+}
+
+void GUI::cb_Test_i(Fl_Button*, void*) {
+  MVC->TestCustomButton();
+}
+void GUI::cb_Test(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_Test_i(o,v);
+}
+
+void GUI::cb_Save4_i(Fl_Button*, void*) {
+  MVC->SaveCustomButton();
+}
+void GUI::cb_Save4(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_Save4_i(o,v);
+}
+
+void GUI::cb_DisplayDebuginFillButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetDisplayDebuginFill(o->value());
+}
+void GUI::cb_DisplayDebuginFillButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_DisplayDebuginFillButton_i(o,v);
+}
+
+void GUI::cb_DisplayDebugButton_i(Fl_Light_Button* o, void*) {
+  if(o->value())
+{
+DisplayDebuginFillButton->show();
+ExamineSlider->show();
+}
+else
+{
+DisplayDebuginFillButton->hide();
+ExamineSlider->hide();
+}
+
+
+MVC->redraw();
+}
+void GUI::cb_DisplayDebugButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_DisplayDebugButton_i(o,v);
+}
+
+void GUI::cb_DrawVertexNumbersButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetDrawVertexNumbers(o->value());
+}
+void GUI::cb_DrawVertexNumbersButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_DrawVertexNumbersButton_i(o,v);
+}
+
+void GUI::cb_DrawLineNumbersButton_i(Fl_Light_Button* o, void*) {
+  MVC->SetDrawLineNumbers(o->value());
+}
+void GUI::cb_DrawLineNumbersButton(Fl_Light_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_DrawLineNumbersButton_i(o,v);
+}
+
+void GUI::cb_ExamineSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetExamine(o->value());
+}
+void GUI::cb_ExamineSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_ExamineSlider_i(o,v);
+}
+
 void GUI::cb_ConnectToPrinterButton_i(Fl_Light_Button* o, void*) {
   MVC->ConnectToPrinter(o->value());
 }
@@ -1315,53 +1523,6 @@ void GUI::cb_Echo(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Echo_i(o,v);
 }
 
-void GUI::cb_DisplayDebuginFillButton_i(Fl_Light_Button* o, void*) {
-  MVC->SetDisplayDebuginFill(o->value());
-}
-void GUI::cb_DisplayDebuginFillButton(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayDebuginFillButton_i(o,v);
-}
-
-void GUI::cb_DisplayDebugButton_i(Fl_Light_Button* o, void*) {
-  if(o->value())
-{
-DisplayDebuginFillButton->show();
-ExamineSlider->show();
-}
-else
-{
-DisplayDebuginFillButton->hide();
-ExamineSlider->hide();
-}
-
-
-MVC->redraw();
-}
-void GUI::cb_DisplayDebugButton(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DisplayDebugButton_i(o,v);
-}
-
-void GUI::cb_DrawVertexNumbersButton_i(Fl_Light_Button* o, void*) {
-  MVC->SetDrawVertexNumbers(o->value());
-}
-void GUI::cb_DrawVertexNumbersButton(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DrawVertexNumbersButton_i(o,v);
-}
-
-void GUI::cb_DrawLineNumbersButton_i(Fl_Light_Button* o, void*) {
-  MVC->SetDrawLineNumbers(o->value());
-}
-void GUI::cb_DrawLineNumbersButton(Fl_Light_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_DrawLineNumbersButton_i(o,v);
-}
-
-void GUI::cb_ExamineSlider_i(Fl_Value_Slider* o, void*) {
-  MVC->SetExamine(o->value());
-}
-void GUI::cb_ExamineSlider(Fl_Value_Slider* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_ExamineSlider_i(o,v);
-}
-
 void GUI::cb_FanOnButton_i(Fl_Light_Button* o, void*) {
   MVC->SetFan(o->value() ? FanPowerSlider->value() : 0);
 }
@@ -1395,7 +1556,7 @@ GUI::GUI() {
       MVC->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
       MVC->when(FL_WHEN_RELEASE);
     } // ModelViewController* MVC
-    { Tabs = new Fl_Tabs(835, 25, 560, 825);
+    { Tabs = new Fl_Tabs(835, 25, 565, 825);
       Tabs->align(FL_ALIGN_TOP_LEFT);
       { Fl_Group* o = new Fl_Group(835, 45, 550, 785, "Input file");
         o->hide();
@@ -2336,9 +2497,9 @@ e rest of the print.");
         } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(835, 50, 560, 800, "Print");
+      { Fl_Group* o = new Fl_Group(835, 50, 565, 800, "Print");
         o->color((Fl_Color)FL_DARK1);
-        { Fl_Tabs* o = new Fl_Tabs(835, 220, 540, 595);
+        { Fl_Tabs* o = new Fl_Tabs(835, 220, 565, 625);
           { CommunationLog = new Fl_Multi_Browser(840, 245, 530, 565, "Communication log");
             CommunationLog->box(FL_NO_BOX);
             CommunationLog->color((Fl_Color)FL_BACKGROUND2_COLOR);
@@ -2375,9 +2536,10 @@ e rest of the print.");
             Echo->when(FL_WHEN_RELEASE_ALWAYS);
             Echo->hide();
           } // Fl_Multi_Browser* Echo
-          { Fl_Group* o = new Fl_Group(840, 245, 535, 565, "Interactive control");
+          { Fl_Group* o = new Fl_Group(840, 245, 535, 585, "Interactive control");
             o->selection_color((Fl_Color)31);
             o->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
+            o->hide();
             { SwitchHeatOnButton = new Fl_Light_Button(845, 430, 220, 25, "Switch heat on");
               SwitchHeatOnButton->callback((Fl_Callback*)cb_SwitchHeatOnButton);
             } // Fl_Light_Button* SwitchHeatOnButton
@@ -2424,13 +2586,10 @@ e rest of the print.");
               o->callback((Fl_Callback*)cb_Length);
               o->align(FL_ALIGN_LEFT);
             } // Fl_Value_Slider* o
-            { GCodeInput = new Fl_Input(905, 365, 375, 25, "GCode");
+            { GCodeInput = new Fl_Input(905, 370, 375, 25, "GCode");
               GCodeInput->callback((Fl_Callback*)cb_GCodeInput);
               GCodeInput->when(FL_WHEN_ENTER_KEY);
             } // Fl_Input* GCodeInput
-            { Fl_Button* o = new Fl_Button(1285, 365, 68, 25, "Send");
-              o->callback((Fl_Callback*)cb_Send);
-            } // Fl_Button* o
             { CurrentTempText = new Fl_Output(1160, 431, 55, 24, "Current temp");
             } // Fl_Output* CurrentTempText
             { Fl_Button* o = new Fl_Button(855, 340, 85, 25, "Home all");
@@ -2570,6 +2729,119 @@ e rest of the print.");
             { Fl_Button* o = new Fl_Button(1210, 600, 145, 25, "Clear logs now");
               o->callback((Fl_Callback*)cb_Clear);
             } // Fl_Button* o
+            { Fl_Return_Button* o = new Fl_Return_Button(1285, 370, 66, 25, "Send");
+              o->callback((Fl_Callback*)cb_Send);
+            } // Fl_Return_Button* o
+            { CustomButton1 = new Fl_Button(845, 630, 250, 20, "Custom button 1");
+              CustomButton1->callback((Fl_Callback*)cb_CustomButton1);
+            } // Fl_Button* CustomButton1
+            { CustomButton3 = new Fl_Button(845, 650, 250, 20, "Custom button 3");
+              CustomButton3->callback((Fl_Callback*)cb_CustomButton3);
+            } // Fl_Button* CustomButton3
+            { CustomButton2 = new Fl_Button(1105, 630, 250, 20, "Custom button 2");
+              CustomButton2->callback((Fl_Callback*)cb_CustomButton2);
+            } // Fl_Button* CustomButton2
+            { CustomButton4 = new Fl_Button(1105, 650, 250, 20, "Custom button 4");
+              CustomButton4->callback((Fl_Callback*)cb_CustomButton4);
+            } // Fl_Button* CustomButton4
+            { CustomButton5 = new Fl_Button(845, 670, 250, 20, "Custom button 5");
+              CustomButton5->callback((Fl_Callback*)cb_CustomButton5);
+            } // Fl_Button* CustomButton5
+            { CustomButton7 = new Fl_Button(845, 690, 250, 20, "Custom button 7");
+              CustomButton7->callback((Fl_Callback*)cb_CustomButton7);
+            } // Fl_Button* CustomButton7
+            { CustomButton6 = new Fl_Button(1105, 670, 250, 20, "Custom button 6");
+              CustomButton6->callback((Fl_Callback*)cb_CustomButton6);
+            } // Fl_Button* CustomButton6
+            { CustomButton8 = new Fl_Button(1105, 690, 250, 20, "Custom button 8");
+              CustomButton8->callback((Fl_Callback*)cb_CustomButton8);
+            } // Fl_Button* CustomButton8
+            { CustomButton9 = new Fl_Button(845, 710, 250, 20, "Custom button 9");
+              CustomButton9->callback((Fl_Callback*)cb_CustomButton9);
+            } // Fl_Button* CustomButton9
+            { CustomButton11 = new Fl_Button(845, 730, 250, 20, "Custom button 11");
+              CustomButton11->callback((Fl_Callback*)cb_CustomButton11);
+            } // Fl_Button* CustomButton11
+            { CustomButton10 = new Fl_Button(1105, 710, 250, 20, "Custom button 10");
+              CustomButton10->callback((Fl_Callback*)cb_CustomButton10);
+            } // Fl_Button* CustomButton10
+            { CustomButton12 = new Fl_Button(1105, 730, 250, 20, "Custom button 12");
+              CustomButton12->callback((Fl_Callback*)cb_CustomButton12);
+            } // Fl_Button* CustomButton12
+            { CustomButton13 = new Fl_Button(845, 750, 250, 20, "Custom button 13");
+              CustomButton13->callback((Fl_Callback*)cb_CustomButton13);
+            } // Fl_Button* CustomButton13
+            { CustomButton15 = new Fl_Button(845, 770, 250, 20, "Custom button 15");
+              CustomButton15->callback((Fl_Callback*)cb_CustomButton15);
+            } // Fl_Button* CustomButton15
+            { CustomButton14 = new Fl_Button(1105, 750, 250, 20, "Custom button 14");
+              CustomButton14->callback((Fl_Callback*)cb_CustomButton14);
+            } // Fl_Button* CustomButton14
+            { CustomButton16 = new Fl_Button(1105, 770, 250, 20, "Custom button 16");
+              CustomButton16->callback((Fl_Callback*)cb_CustomButton16);
+            } // Fl_Button* CustomButton16
+            { CustomButton17 = new Fl_Button(845, 790, 250, 20, "Custom button 17");
+              CustomButton17->callback((Fl_Callback*)cb_CustomButton17);
+            } // Fl_Button* CustomButton17
+            { CustomButton18 = new Fl_Button(1105, 790, 250, 20, "Custom button 18");
+              CustomButton18->callback((Fl_Callback*)cb_CustomButton18);
+            } // Fl_Button* CustomButton18
+            { CustomButton19 = new Fl_Button(845, 810, 250, 20, "Custom button 19");
+              CustomButton19->callback((Fl_Callback*)cb_CustomButton19);
+            } // Fl_Button* CustomButton19
+            { CustomButton20 = new Fl_Button(1105, 810, 250, 20, "Custom button 20");
+              CustomButton20->callback((Fl_Callback*)cb_CustomButton20);
+            } // Fl_Button* CustomButton20
+            o->end();
+          } // Fl_Group* o
+          { Fl_Group* o = new Fl_Group(840, 250, 560, 595, "Custom buttons");
+            { Fl_Text_Editor* o = CustomButtonText = new Fl_Text_Editor(840, 320, 555, 485, "Button gcode");
+              CustomButtonText->selection_color((Fl_Color)31);
+              Fl_Text_Buffer *CustomButtonBuffer = new Fl_Text_Buffer();
+              o->buffer(CustomButtonBuffer);
+            } // Fl_Text_Editor* CustomButtonText
+            { CustomButtonLabel = new Fl_Input(930, 276, 465, 24, "Button label:");
+            } // Fl_Input* CustomButtonLabel
+            { CustomButtonSelectorSlider = new Fl_Value_Slider(935, 250, 320, 20, "Button to edit:");
+              CustomButtonSelectorSlider->type(1);
+              CustomButtonSelectorSlider->minimum(1);
+              CustomButtonSelectorSlider->maximum(20);
+              CustomButtonSelectorSlider->step(1);
+              CustomButtonSelectorSlider->value(1);
+              CustomButtonSelectorSlider->textsize(14);
+              CustomButtonSelectorSlider->callback((Fl_Callback*)cb_CustomButtonSelectorSlider);
+              CustomButtonSelectorSlider->align(FL_ALIGN_LEFT);
+            } // Fl_Value_Slider* CustomButtonSelectorSlider
+            { Fl_Button* o = new Fl_Button(1330, 250, 64, 20, "Test");
+              o->callback((Fl_Callback*)cb_Test);
+            } // Fl_Button* o
+            { Fl_Button* o = new Fl_Button(1260, 250, 64, 20, "Save");
+              o->callback((Fl_Callback*)cb_Save4);
+            } // Fl_Button* o
+            { DisplayDebuginFillButton = new Fl_Light_Button(920, 825, 145, 15, "Display Debug inFill");
+              DisplayDebuginFillButton->selection_color((Fl_Color)FL_GREEN);
+              DisplayDebuginFillButton->callback((Fl_Callback*)cb_DisplayDebuginFillButton);
+            } // Fl_Light_Button* DisplayDebuginFillButton
+            { DisplayDebugButton = new Fl_Light_Button(845, 825, 70, 15, "Debug");
+              DisplayDebugButton->selection_color((Fl_Color)FL_GREEN);
+              DisplayDebugButton->callback((Fl_Callback*)cb_DisplayDebugButton);
+            } // Fl_Light_Button* DisplayDebugButton
+            { DrawVertexNumbersButton = new Fl_Light_Button(1070, 825, 155, 15, "Draw vertex numbers");
+              DrawVertexNumbersButton->selection_color((Fl_Color)FL_GREEN);
+              DrawVertexNumbersButton->callback((Fl_Callback*)cb_DrawVertexNumbersButton);
+            } // Fl_Light_Button* DrawVertexNumbersButton
+            { DrawLineNumbersButton = new Fl_Light_Button(1225, 825, 155, 15, "Draw line numbers");
+              DrawLineNumbersButton->selection_color((Fl_Color)FL_GREEN);
+              DrawLineNumbersButton->callback((Fl_Callback*)cb_DrawLineNumbersButton);
+            } // Fl_Light_Button* DrawLineNumbersButton
+            { ExamineSlider = new Fl_Value_Slider(900, 810, 200, 15, "Examine");
+              ExamineSlider->type(1);
+              ExamineSlider->step(0.001);
+              ExamineSlider->value(0.098);
+              ExamineSlider->textsize(14);
+              ExamineSlider->callback((Fl_Callback*)cb_ExamineSlider);
+              ExamineSlider->align(FL_ALIGN_LEFT);
+            } // Fl_Value_Slider* ExamineSlider
             o->end();
           } // Fl_Group* o
           o->end();
@@ -2618,30 +2890,6 @@ e rest of the print.");
           } // Fl_Light_Button* o
           o->end();
         } // Fl_Group* o
-        { DisplayDebuginFillButton = new Fl_Light_Button(920, 830, 145, 15, "Display Debug inFill");
-          DisplayDebuginFillButton->selection_color((Fl_Color)FL_GREEN);
-          DisplayDebuginFillButton->callback((Fl_Callback*)cb_DisplayDebuginFillButton);
-        } // Fl_Light_Button* DisplayDebuginFillButton
-        { DisplayDebugButton = new Fl_Light_Button(845, 830, 70, 15, "Debug");
-          DisplayDebugButton->selection_color((Fl_Color)FL_GREEN);
-          DisplayDebugButton->callback((Fl_Callback*)cb_DisplayDebugButton);
-        } // Fl_Light_Button* DisplayDebugButton
-        { DrawVertexNumbersButton = new Fl_Light_Button(1070, 830, 155, 15, "Draw vertex numbers");
-          DrawVertexNumbersButton->selection_color((Fl_Color)FL_GREEN);
-          DrawVertexNumbersButton->callback((Fl_Callback*)cb_DrawVertexNumbersButton);
-        } // Fl_Light_Button* DrawVertexNumbersButton
-        { DrawLineNumbersButton = new Fl_Light_Button(1225, 830, 155, 15, "Draw line numbers");
-          DrawLineNumbersButton->selection_color((Fl_Color)FL_GREEN);
-          DrawLineNumbersButton->callback((Fl_Callback*)cb_DrawLineNumbersButton);
-        } // Fl_Light_Button* DrawLineNumbersButton
-        { ExamineSlider = new Fl_Value_Slider(900, 815, 200, 15, "Examine");
-          ExamineSlider->type(1);
-          ExamineSlider->step(0.001);
-          ExamineSlider->value(0.098);
-          ExamineSlider->textsize(14);
-          ExamineSlider->callback((Fl_Callback*)cb_ExamineSlider);
-          ExamineSlider->align(FL_ALIGN_LEFT);
-        } // Fl_Value_Slider* ExamineSlider
         { Fl_Group* o = new Fl_Group(840, 130, 540, 35, "Fan");
           o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);

@@ -23,6 +23,7 @@ class ModelViewController;
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Slider.H>
 #include <FL/Fl_Multi_Browser.H>
+#include <FL/Fl_Return_Button.H>
 #include <FL/Fl_Progress.H>
 
 class GUI {
@@ -585,8 +586,6 @@ public:
 private:
   void cb_GCodeInput_i(Fl_Input*, void*);
   static void cb_GCodeInput(Fl_Input*, void*);
-  void cb_Send_i(Fl_Button*, void*);
-  static void cb_Send(Fl_Button*, void*);
 public:
   Fl_Output *CurrentTempText;
 private:
@@ -684,6 +683,144 @@ private:
   static void cb_ClearLogfilesWhenPrintStartsButton(Fl_Light_Button*, void*);
   void cb_Clear_i(Fl_Button*, void*);
   static void cb_Clear(Fl_Button*, void*);
+  void cb_Send_i(Fl_Return_Button*, void*);
+  static void cb_Send(Fl_Return_Button*, void*);
+public:
+  Fl_Button *CustomButton1;
+private:
+  void cb_CustomButton1_i(Fl_Button*, void*);
+  static void cb_CustomButton1(Fl_Button*, void*);
+public:
+  Fl_Button *CustomButton3;
+private:
+  void cb_CustomButton3_i(Fl_Button*, void*);
+  static void cb_CustomButton3(Fl_Button*, void*);
+public:
+  Fl_Button *CustomButton2;
+private:
+  void cb_CustomButton2_i(Fl_Button*, void*);
+  static void cb_CustomButton2(Fl_Button*, void*);
+public:
+  Fl_Button *CustomButton4;
+private:
+  void cb_CustomButton4_i(Fl_Button*, void*);
+  static void cb_CustomButton4(Fl_Button*, void*);
+public:
+  Fl_Button *CustomButton5;
+private:
+  void cb_CustomButton5_i(Fl_Button*, void*);
+  static void cb_CustomButton5(Fl_Button*, void*);
+public:
+  Fl_Button *CustomButton7;
+private:
+  void cb_CustomButton7_i(Fl_Button*, void*);
+  static void cb_CustomButton7(Fl_Button*, void*);
+public:
+  Fl_Button *CustomButton6;
+private:
+  void cb_CustomButton6_i(Fl_Button*, void*);
+  static void cb_CustomButton6(Fl_Button*, void*);
+public:
+  Fl_Button *CustomButton8;
+private:
+  void cb_CustomButton8_i(Fl_Button*, void*);
+  static void cb_CustomButton8(Fl_Button*, void*);
+public:
+  Fl_Button *CustomButton9;
+private:
+  void cb_CustomButton9_i(Fl_Button*, void*);
+  static void cb_CustomButton9(Fl_Button*, void*);
+public:
+  Fl_Button *CustomButton11;
+private:
+  void cb_CustomButton11_i(Fl_Button*, void*);
+  static void cb_CustomButton11(Fl_Button*, void*);
+public:
+  Fl_Button *CustomButton10;
+private:
+  void cb_CustomButton10_i(Fl_Button*, void*);
+  static void cb_CustomButton10(Fl_Button*, void*);
+public:
+  Fl_Button *CustomButton12;
+private:
+  void cb_CustomButton12_i(Fl_Button*, void*);
+  static void cb_CustomButton12(Fl_Button*, void*);
+public:
+  Fl_Button *CustomButton13;
+private:
+  void cb_CustomButton13_i(Fl_Button*, void*);
+  static void cb_CustomButton13(Fl_Button*, void*);
+public:
+  Fl_Button *CustomButton15;
+private:
+  void cb_CustomButton15_i(Fl_Button*, void*);
+  static void cb_CustomButton15(Fl_Button*, void*);
+public:
+  Fl_Button *CustomButton14;
+private:
+  void cb_CustomButton14_i(Fl_Button*, void*);
+  static void cb_CustomButton14(Fl_Button*, void*);
+public:
+  Fl_Button *CustomButton16;
+private:
+  void cb_CustomButton16_i(Fl_Button*, void*);
+  static void cb_CustomButton16(Fl_Button*, void*);
+public:
+  Fl_Button *CustomButton17;
+private:
+  void cb_CustomButton17_i(Fl_Button*, void*);
+  static void cb_CustomButton17(Fl_Button*, void*);
+public:
+  Fl_Button *CustomButton18;
+private:
+  void cb_CustomButton18_i(Fl_Button*, void*);
+  static void cb_CustomButton18(Fl_Button*, void*);
+public:
+  Fl_Button *CustomButton19;
+private:
+  void cb_CustomButton19_i(Fl_Button*, void*);
+  static void cb_CustomButton19(Fl_Button*, void*);
+public:
+  Fl_Button *CustomButton20;
+private:
+  void cb_CustomButton20_i(Fl_Button*, void*);
+  static void cb_CustomButton20(Fl_Button*, void*);
+public:
+  Fl_Text_Editor *CustomButtonText;
+  Fl_Input *CustomButtonLabel;
+  Fl_Value_Slider *CustomButtonSelectorSlider;
+private:
+  void cb_CustomButtonSelectorSlider_i(Fl_Value_Slider*, void*);
+  static void cb_CustomButtonSelectorSlider(Fl_Value_Slider*, void*);
+  void cb_Test_i(Fl_Button*, void*);
+  static void cb_Test(Fl_Button*, void*);
+  void cb_Save4_i(Fl_Button*, void*);
+  static void cb_Save4(Fl_Button*, void*);
+public:
+  Fl_Light_Button *DisplayDebuginFillButton;
+private:
+  void cb_DisplayDebuginFillButton_i(Fl_Light_Button*, void*);
+  static void cb_DisplayDebuginFillButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *DisplayDebugButton;
+private:
+  void cb_DisplayDebugButton_i(Fl_Light_Button*, void*);
+  static void cb_DisplayDebugButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *DrawVertexNumbersButton;
+private:
+  void cb_DrawVertexNumbersButton_i(Fl_Light_Button*, void*);
+  static void cb_DrawVertexNumbersButton(Fl_Light_Button*, void*);
+public:
+  Fl_Light_Button *DrawLineNumbersButton;
+private:
+  void cb_DrawLineNumbersButton_i(Fl_Light_Button*, void*);
+  static void cb_DrawLineNumbersButton(Fl_Light_Button*, void*);
+public:
+  Fl_Value_Slider *ExamineSlider;
+private:
+  void cb_ExamineSlider_i(Fl_Value_Slider*, void*);
+  static void cb_ExamineSlider(Fl_Value_Slider*, void*);
 public:
   Fl_Light_Button *ConnectToPrinterButton;
 private:
@@ -712,31 +849,6 @@ private:
   static void cb_Info(Fl_Light_Button*, void*);
   void cb_Echo_i(Fl_Light_Button*, void*);
   static void cb_Echo(Fl_Light_Button*, void*);
-public:
-  Fl_Light_Button *DisplayDebuginFillButton;
-private:
-  void cb_DisplayDebuginFillButton_i(Fl_Light_Button*, void*);
-  static void cb_DisplayDebuginFillButton(Fl_Light_Button*, void*);
-public:
-  Fl_Light_Button *DisplayDebugButton;
-private:
-  void cb_DisplayDebugButton_i(Fl_Light_Button*, void*);
-  static void cb_DisplayDebugButton(Fl_Light_Button*, void*);
-public:
-  Fl_Light_Button *DrawVertexNumbersButton;
-private:
-  void cb_DrawVertexNumbersButton_i(Fl_Light_Button*, void*);
-  static void cb_DrawVertexNumbersButton(Fl_Light_Button*, void*);
-public:
-  Fl_Light_Button *DrawLineNumbersButton;
-private:
-  void cb_DrawLineNumbersButton_i(Fl_Light_Button*, void*);
-  static void cb_DrawLineNumbersButton(Fl_Light_Button*, void*);
-public:
-  Fl_Value_Slider *ExamineSlider;
-private:
-  void cb_ExamineSlider_i(Fl_Value_Slider*, void*);
-  static void cb_ExamineSlider(Fl_Value_Slider*, void*);
 public:
   Fl_Light_Button *FanOnButton;
 private:

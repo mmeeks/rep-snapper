@@ -538,6 +538,9 @@ void ModelViewController::CopySettingsToGUI()
 
 	gui->shrinkFastButton->value(ProcessControl.m_ShrinkQuality == SHRINK_FAST);
 	gui->shrinkNiceButton->value(ProcessControl.m_ShrinkQuality == SHRINK_NICE);
+
+	gui->MVC->RefreshCustomButtonLabels();
+
 }
 
 void ModelViewController::Continue()
@@ -1148,4 +1151,71 @@ void ModelViewController::SetShrinkQuality(string quality)
 		ProcessControl.m_ShrinkQuality = SHRINK_FAST;
 	else
 		ProcessControl.m_ShrinkQuality = SHRINK_NICE;
+}
+
+void ModelViewController::SendCustomButton(int nr)
+{
+	nr--;
+	string gcode = ProcessControl.CustomButtonGcode[nr];
+	serial.SendNow(gcode);
+}
+void ModelViewController::SaveCustomButton()
+{
+	int ButtonNr = MVC->gui->CustomButtonSelectorSlider->value()-1;
+
+	Fl_Text_Buffer* buffer = gui->CustomButtonText->buffer();
+	char* pText = buffer->text();
+	string Text = string(pText);
+	free(pText);
+	ProcessControl.CustomButtonGcode[ButtonNr] = Text;
+
+	const char* text = gui->CustomButtonLabel->value();
+	string label(text);
+	ProcessControl.CustomButtonLabel[ButtonNr] = label;
+
+	RefreshCustomButtonLabels();
+}
+void ModelViewController::TestCustomButton()
+{
+	Fl_Text_Buffer* buffer = gui->CustomButtonText->buffer();
+	char* pText = buffer->text();
+	serial.SendNow(pText);
+}
+void ModelViewController::GetCustomButtonText(int nr)
+{
+	string Text = ProcessControl.CustomButtonGcode[nr];
+
+	Fl_Text_Buffer* buffer = gui->CustomButtonText->buffer();
+	buffer->text(Text.c_str());
+	gui->CustomButtonLabel->value(ProcessControl.CustomButtonLabel[nr].c_str());
+	Fl::check();
+}
+
+
+void ModelViewController::RefreshCustomButtonLabels()
+{
+	for(int i=0;i<ProcessControl.CustomButtonLabel.size();i++)
+	switch(i)
+		{
+		case 0: gui->CustomButton1->label(ProcessControl.CustomButtonLabel[i].c_str());
+		case 1: gui->CustomButton2->label(ProcessControl.CustomButtonLabel[i].c_str());
+		case 2: gui->CustomButton3->label(ProcessControl.CustomButtonLabel[i].c_str());
+		case 3: gui->CustomButton4->label(ProcessControl.CustomButtonLabel[i].c_str());
+		case 4: gui->CustomButton5->label(ProcessControl.CustomButtonLabel[i].c_str());
+		case 5: gui->CustomButton6->label(ProcessControl.CustomButtonLabel[i].c_str());
+		case 6: gui->CustomButton7->label(ProcessControl.CustomButtonLabel[i].c_str());
+		case 7: gui->CustomButton8->label(ProcessControl.CustomButtonLabel[i].c_str());
+		case 8: gui->CustomButton9->label(ProcessControl.CustomButtonLabel[i].c_str());
+		case 9: gui->CustomButton10->label(ProcessControl.CustomButtonLabel[i].c_str());
+		case 10: gui->CustomButton11->label(ProcessControl.CustomButtonLabel[i].c_str());
+		case 11: gui->CustomButton12->label(ProcessControl.CustomButtonLabel[i].c_str());
+		case 12: gui->CustomButton13->label(ProcessControl.CustomButtonLabel[i].c_str());
+		case 13: gui->CustomButton14->label(ProcessControl.CustomButtonLabel[i].c_str());
+		case 14: gui->CustomButton15->label(ProcessControl.CustomButtonLabel[i].c_str());
+		case 15: gui->CustomButton16->label(ProcessControl.CustomButtonLabel[i].c_str());
+		case 16: gui->CustomButton17->label(ProcessControl.CustomButtonLabel[i].c_str());
+		case 17: gui->CustomButton18->label(ProcessControl.CustomButtonLabel[i].c_str());
+		case 18: gui->CustomButton19->label(ProcessControl.CustomButtonLabel[i].c_str());
+		case 19: gui->CustomButton20->label(ProcessControl.CustomButtonLabel[i].c_str());
+		}
 }

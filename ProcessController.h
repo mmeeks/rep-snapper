@@ -109,6 +109,8 @@ public:
 		Center.z = 0.0f;
 
 		gui = 0;
+		CustomButtonGcode.resize(20);
+		CustomButtonLabel.resize(20);
 
 };
 
@@ -279,6 +281,9 @@ public:
 	Vector3f Center;
 	Vector3f Min;
 	Vector3f Max;
+
+	vector<string>CustomButtonGcode;
+	vector<string>CustomButtonLabel;
 
 	// Maybe a pointer to the gui
 	GUI *gui;

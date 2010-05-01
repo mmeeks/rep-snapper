@@ -250,6 +250,13 @@ public:
 	void SetEnableLight(int lightNr, bool on){ if(on) lights[lightNr].TurnOn(); else lights[lightNr].TurnOff(); redraw(); }
 	CGL_Light3D lights[4];
 	
+	/*- Custom button interface -*/
+	void SendCustomButton(int nr);
+	void SaveCustomButton();
+	void TestCustomButton();
+	void GetCustomButtonText(int nr);
+	void RefreshCustomButtonLabels();
+
 	/*--------------User interface (View)-------------------*/
 	GUI *gui;
 	ProcessController ProcessControl;
