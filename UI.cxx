@@ -1567,6 +1567,7 @@ GUI::GUI() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(835, 45, 550, 785, "Printer definition");
+        o->hide();
         { Fl_Group* o = new Fl_Group(840, 70, 230, 40, "Build volume (mm)");
           o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
@@ -2337,7 +2338,6 @@ e rest of the print.");
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(835, 50, 560, 800, "Print");
         o->color((Fl_Color)FL_DARK1);
-        o->hide();
         { Fl_Tabs* o = new Fl_Tabs(835, 220, 540, 595);
           { CommunationLog = new Fl_Multi_Browser(840, 245, 530, 565, "Communication log");
             CommunationLog->box(FL_NO_BOX);

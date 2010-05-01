@@ -271,7 +271,7 @@ MVC->redraw();
         }
         Fl_Group {} {
           label {Printer definition} open
-          xywh {835 45 550 785}
+          xywh {835 45 550 785} hide
         } {
           Fl_Group {} {
             label {Build volume (mm)} open
@@ -399,7 +399,7 @@ distanceToReachFullSpeedSlider->deactivate();
             }
             Fl_Value_Input SerialSpeedInput {
               label {Speed:}
-              callback {MVC->setSerialSpeed(o->value());} selected
+              callback {MVC->setSerialSpeed(o->value());}
               xywh {1160 796 205 24}
             }
           }
@@ -948,7 +948,7 @@ MVC->redraw();}
         }
         Fl_Group {} {
           label Print open
-          xywh {835 50 560 800} color 47 hide
+          xywh {835 50 560 800} color 47
         } {
           Fl_Tabs {} {open
             xywh {835 220 540 595}
@@ -1176,7 +1176,7 @@ MVC->redraw();}
                 xywh {1130 311 40 24} maximum 500
               }
               Fl_Value_Slider DownstreamMultiplierSlider {
-                label {Downstream speed multiplier}
+                label {Downstream speed multiplier} selected
                 xywh {845 525 510 25} type {Horz Knob} align 5 minimum 0.01 maximum 5 value 1 textsize 14
               }
               Fl_Value_Slider TempUpdateSpeedSlider {

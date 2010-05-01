@@ -20,6 +20,7 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 
 	if(gui)
 		{
+		Fl::lock();
 		gui->CommunationLog->add(s.c_str());
 		if(gui->AutoscrollButton->value())
 			gui->CommunationLog->bottomline(gui->CommunationLog->size());
@@ -36,8 +37,9 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 		while(gui->ErrorLog->size() > MVC->ProcessControl.KeepLines)
 			gui->ErrorLog->remove(1);
 		while(gui->Echo->size() > MVC->ProcessControl.KeepLines)
-
 			gui->Echo->remove(1);
+
+		Fl::unlock();
 		}
 	else
 		printf("%s", s.c_str());
