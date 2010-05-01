@@ -585,7 +585,7 @@ void ProcessController::LoadXML(XMLElement *e)
 	x->FindVariableZ("m_sPortName", true, "COM5")->GetValue(buffer);
 	m_sPortName = string(buffer);
 
-	y=x->FindVariableZ("m_iSerialSpeed", true, "0");
+	y=x->FindVariableZ("m_iSerialSpeed", true, "19200");
 	if(y)	m_iSerialSpeed = y->GetValueInt();
 
 	y=x->FindVariableZ("GCodeDrawStart", true, "0");

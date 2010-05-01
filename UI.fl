@@ -401,7 +401,6 @@ distanceToReachFullSpeedSlider->deactivate();
               label {Speed:}
               callback {MVC->setSerialSpeed(o->value());} selected
               xywh {1160 796 205 24}
-              code0 {o->value(19200);}
             }
           }
           Fl_Group {} {

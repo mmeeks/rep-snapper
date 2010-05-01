@@ -1721,9 +1721,8 @@ GUI::GUI() {
             portInput->tooltip("COM3 or  /dev/ttyUSB0 or something to that effect");
             portInput->callback((Fl_Callback*)cb_portInput);
           } // Fl_Input* portInput
-          { Fl_Value_Input* o = SerialSpeedInput = new Fl_Value_Input(1160, 796, 205, 24, "Speed:");
+          { SerialSpeedInput = new Fl_Value_Input(1160, 796, 205, 24, "Speed:");
             SerialSpeedInput->callback((Fl_Callback*)cb_SerialSpeedInput);
-            o->value(19200);
           } // Fl_Value_Input* SerialSpeedInput
           o->end();
         } // Fl_Group* o
