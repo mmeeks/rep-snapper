@@ -185,7 +185,7 @@ void RepRapSerial::SendData(string s, const int lineNr)
 	string buffer;
 	std::stringstream oss;
 	oss << " N" << lineNr << " ";//*";
-//	buffer += oss.str();	Hydra
+	buffer += oss.str();//	Hydra
 	// strip comments
 	
 	string tmp=s;
@@ -202,7 +202,7 @@ void RepRapSerial::SendData(string s, const int lineNr)
 			tmp.erase(tmp.begin()+i--);
 
 	buffer += tmp;
-/*	buffer += " *"; Hydra
+	buffer += " *";// Hydra
 	oss.str( "" );
 	// Calc checksum.
 	short checksum = 0;
@@ -212,7 +212,7 @@ void RepRapSerial::SendData(string s, const int lineNr)
 
 	oss << checksum;//std::setfill('0') << std::setw(2) << buffer.length()+2;
 	buffer += oss.str();
-*/
+
 	debugPrint( string("SendData:") + buffer);
 	buffer += "\r\n";
 	write(buffer);
