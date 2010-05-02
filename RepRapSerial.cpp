@@ -20,7 +20,6 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 
 	if(gui)
 		{
-		Fl::lock();
 		gui->CommunationLog->add(s.c_str());
 		if(gui->AutoscrollButton->value())
 			gui->CommunationLog->bottomline(gui->CommunationLog->size());
@@ -32,6 +31,7 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 				gui->ErrorLog->bottomline(gui->ErrorLog->size());
 			}
 
+		Fl::lock();
 		while(gui->CommunationLog->size() > MVC->ProcessControl.KeepLines)
 			gui->CommunationLog->remove(1);
 		while(gui->ErrorLog->size() > MVC->ProcessControl.KeepLines)
@@ -228,7 +228,7 @@ void RepRapSerial::Connect(string port, int speed)
 	std::stringstream oss;
 	oss << "Connecting to port: " << port  << " at speed " << speed;
 	debugPrint( oss.str() );
-	open(port.c_str(), 19200);
+	open(port.c_str(), speed);
 	Fl::add_timeout(1.0f, &TempReadTimer);
 	m_bConnected = true;
 }
