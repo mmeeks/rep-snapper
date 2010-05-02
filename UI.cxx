@@ -2158,6 +2158,7 @@ e rest of the print.");
           o->selection_color((Fl_Color)31);
           { Fl_Text_Editor* o = GCodeStart = new Fl_Text_Editor(835, 145, 555, 690, "Start");
             GCodeStart->selection_color((Fl_Color)31);
+            GCodeStart->hide();
             Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();
             o->buffer(startbuff);
           } // Fl_Text_Editor* GCodeStart
@@ -2175,7 +2176,6 @@ e rest of the print.");
           } // Fl_Text_Editor* GCodeEnd
           { Fl_Text_Editor* o = GCodeResult = new Fl_Text_Editor(835, 145, 555, 690, "Result");
             GCodeResult->selection_color((Fl_Color)31);
-            GCodeResult->hide();
             Fl_Text_Buffer *resultbuff = new Fl_Text_Buffer();
             o->buffer(resultbuff);
           } // Fl_Text_Editor* GCodeResult
@@ -2539,7 +2539,6 @@ e rest of the print.");
           { Fl_Group* o = new Fl_Group(840, 245, 535, 585, "Interactive control");
             o->selection_color((Fl_Color)31);
             o->align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
-            o->hide();
             { SwitchHeatOnButton = new Fl_Light_Button(845, 430, 220, 25, "Switch heat on");
               SwitchHeatOnButton->callback((Fl_Callback*)cb_SwitchHeatOnButton);
             } // Fl_Light_Button* SwitchHeatOnButton
@@ -2795,6 +2794,7 @@ e rest of the print.");
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(840, 250, 560, 595, "Custom buttons");
+            o->hide();
             { Fl_Text_Editor* o = CustomButtonText = new Fl_Text_Editor(840, 320, 555, 485, "Button gcode");
               CustomButtonText->selection_color((Fl_Color)31);
               Fl_Text_Buffer *CustomButtonBuffer = new Fl_Text_Buffer();

@@ -145,7 +145,7 @@ public:
 	void SaveXML(XMLElement *e);
 
 	// LUA
-	void BindLua(lua_State *myLuaState);
+//	void BindLua(lua_State *myLuaState);
 
 
 

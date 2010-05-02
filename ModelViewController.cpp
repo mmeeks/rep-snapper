@@ -877,20 +877,23 @@ void ModelViewController::RunLua(char* script)
 	// Connect LuaBind to this lua state
 	luabind::open(myLuaState);
 
+	//http://www.nuclex.org/articles/cxx/1-quick-introduction-to-luabind
+
 	try {
 		luabind::module(myLuaState)
 			[
-				class_ <ModelViewController>("ModelViewController")
+				luabind::class_<ModelViewController>("ModelViewController")
 				.def("ReadStl", &ModelViewController::ReadStl)
+				.def("ClearGcode", &ModelViewController::ClearGcode)
+				.property("GCodeSize", &ModelViewController::GCodeSize)
+				.def("AddText", &ModelViewController::AddText)
+				.property("GetText", &ModelViewController::GetText)
 			];
 			//		ProcessControl.BindLua(myLuaState);
 
 		luabind::globals(myLuaState)["base"] = this;
 
 		luaL_dostring(myLuaState, script);
-		// Read a global from the lua script
-//		size_t ResourceCount = luabind::object_cast<size_t>(luabind::globals(myLuaState)["ResourceCount"]);
-//		cout << ResourceCount << endl;
 	}// try
 	catch(const std::exception &TheError)
 	{
@@ -1194,7 +1197,7 @@ void ModelViewController::GetCustomButtonText(int nr)
 
 void ModelViewController::RefreshCustomButtonLabels()
 {
-	for(int i=0;i<ProcessControl.CustomButtonLabel.size();i++)
+	for(UINT i=0;i<ProcessControl.CustomButtonLabel.size();i++)
 	switch(i)
 		{
 		case 0: gui->CustomButton1->label(ProcessControl.CustomButtonLabel[i].c_str());
@@ -1218,4 +1221,25 @@ void ModelViewController::RefreshCustomButtonLabels()
 		case 18: gui->CustomButton19->label(ProcessControl.CustomButtonLabel[i].c_str());
 		case 19: gui->CustomButton20->label(ProcessControl.CustomButtonLabel[i].c_str());
 		}
+}
+
+
+// LUA functions
+
+void ModelViewController::ClearGcode()
+{
+	Fl_Text_Buffer* buffer = MVC->gui->GCodeResult->buffer();
+	buffer->remove(0, buffer->length());
+}
+int ModelViewController::GCodeSize()
+{
+	return MVC->gui->GCodeResult->buffer()->length();
+}
+void ModelViewController::AddText(string line)
+{
+	MVC->gui->GCodeResult->buffer()->append(line.c_str());
+}
+string ModelViewController::GetText()
+{
+	return MVC->gui->GCodeResult->buffer()->text();
 }

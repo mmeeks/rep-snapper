@@ -217,6 +217,13 @@ public:
 	void SwitchPower(bool on);
 	void SetFan(int val);
 
+	// LUA stuff
+
+	void ClearGcode();
+	int GCodeSize();
+	void AddText(string line);
+	string GetText();
+
 	void Home(string axis);
 	void Move(string axis, float distance);
 	void Goto(string axis, float position);

@@ -1012,7 +1012,7 @@ void ProcessController::SaveXML()
 		xml->Save(); // Saves back to file
 	delete xml;
 }
-
+/*
 void ProcessController::BindLua(lua_State *myLuaState)
 {
 #ifdef WIN32
@@ -1029,6 +1029,9 @@ void ProcessController::BindLua(lua_State *myLuaState)
 			class_<ProcessController>("ProcessController")
 			.def ("setFilename", &ProcessController::SetFilename)
 			.def( "ReadStl",  &ProcessController::ReadStl)
+
+//			.def ("GCode", ProcessController::GCodeResult)
+
 /*
 			// Start, layer, end GCode
 			.def ("GCodeStartText", GCodeStartText)
@@ -1141,8 +1144,8 @@ void ProcessController::BindLua(lua_State *myLuaState)
 			.def ("ApronCoverageX", ApronCoverageX)
 			.def ("ApronCoverageY", ApronCoverageY)
 			.def ("ApronDistanceToObject", ApronDistanceToObject)
-			.def ("ApronInfillDistance", ApronInfillDistance)*/
+			.def ("ApronInfillDistance", ApronInfillDistance)
 		];
 #endif
 }
-
+*/

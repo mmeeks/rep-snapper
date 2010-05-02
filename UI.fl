@@ -14,7 +14,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {357 155 1400 858} type Double box UP_BOX color 39 selection_color 39 labelsize 12 resizable visible
+      xywh {357 155 1400 858} type Double box UP_BOX color 39 selection_color 39 labelsize 12 hide resizable
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -605,7 +605,7 @@ MVC->redraw();
           } {
             Fl_Text_Editor GCodeStart {
               label Start
-              xywh {835 145 555 690} selection_color 31
+              xywh {835 145 555 690} selection_color 31 hide
               code0 {Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(startbuff);}
             }
@@ -623,7 +623,7 @@ MVC->redraw();
             }
             Fl_Text_Editor GCodeResult {
               label Result
-              xywh {835 145 555 690} selection_color 31 hide
+              xywh {835 145 555 690} selection_color 31
               code0 {Fl_Text_Buffer *resultbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(resultbuff);}
             }
@@ -972,8 +972,8 @@ MVC->redraw();}
               class Fl_Multi_Browser
             }
             Fl_Group {} {
-              label {Interactive control} open
-              xywh {840 245 535 585} selection_color 31 align 16 hide
+              label {Interactive control} open selected
+              xywh {840 245 535 585} selection_color 31 align 16
             } {
               Fl_Light_Button SwitchHeatOnButton {
                 label {Switch heat on}
@@ -1316,7 +1316,7 @@ MVC->redraw();}
             }
             Fl_Group {} {
               label {Custom buttons} open
-              xywh {840 250 560 595}
+              xywh {840 250 560 595} hide
             } {
               Fl_Text_Editor CustomButtonText {
                 label {Button gcode}
@@ -1330,7 +1330,7 @@ MVC->redraw();}
               }
               Fl_Value_Slider CustomButtonSelectorSlider {
                 label {Button to edit:}
-                callback {MVC->GetCustomButtonText(o->value()-1);} selected
+                callback {MVC->GetCustomButtonText(o->value()-1);}
                 xywh {935 250 320 20} type Horizontal align 4 minimum 1 maximum 20 step 1 value 1 textsize 14
               }
               Fl_Button {} {
