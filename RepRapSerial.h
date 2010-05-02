@@ -117,6 +117,7 @@ public:
 	void Connect(string port, int speed);
 	void DisConnect();
 	bool isPrinting(){return m_bPrinting;}
+	bool isConnected(){return m_bConnected;}
 	bool m_bPrinting;
 
 private:

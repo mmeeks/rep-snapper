@@ -225,16 +225,20 @@ extern void TempReadTimer(void *);
 
 void RepRapSerial::Connect(string port, int speed)
 {
-	open(port.c_str(), speed);
+	std::stringstream oss;
+	oss << "Connecting to port: " << port  << " at speed " << speed;
+	debugPrint( oss.str() );
+	open(port.c_str(), 19200);
 	Fl::add_timeout(1.0f, &TempReadTimer);
+	m_bConnected = true;
 }
 
 
 void RepRapSerial::DisConnect()
 {
+	SendNow("M81");
 	close();
 	m_bConnected = false;
-
 }
 
 void RepRapSerial::SetLineNr(int nr)

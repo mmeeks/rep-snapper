@@ -881,64 +881,58 @@ size_t getResourceCount() const {
  size_t m_ResourceCount;
 };
  
+void print_hello(int number)
+{
+cout << "hello world " << number << endl;
+}
+
+void ReportErrors(lua_State * L)
+{
+	fl_beep(FL_BEEP_ERROR);
+	std::stringstream oss;
+	oss << "Error: " << lua_tostring(L,-1);
+	fl_alert(oss.str().c_str());
+	lua_pop(L, 1);
+}
 
 
 void ModelViewController::RunLua(char* script)
 {
-#ifdef WIN32
-	// Create a new lua state
-	lua_State *myLuaState = lua_open();
-
-	// Connect LuaBind to this lua state
-	luabind::open(myLuaState);
-
-	//http://www.nuclex.org/articles/cxx/1-quick-introduction-to-luabind
-
-		// Export our class with LuaBind
+	try{
+		
+		lua_State *myLuaState = lua_open();				// Create a new lua state
+		
+		luabind::open(myLuaState);						// Connect LuaBind to this lua state
+		
+		// Add our function to the state's global scope
 		luabind::module(myLuaState) [
-			luabind::class_<ResourceManager>("ResourceManager")
-				.def("loadResource", &ResourceManager::loadResource)
-				.property("ResourceCount", &ResourceManager::getResourceCount)
+			luabind::def("print_hello", print_hello)
 		];
+
 
 		luabind::module(myLuaState)
 			[
-				luabind::class_<ModelViewController>("ModelViewController")
-				.def("ReadStl", &ModelViewController::ReadStl)
-				.def("ClearGcode", &ModelViewController::ClearGcode)
-				.property("GCodeSize", &ModelViewController::GCodeSize)
-				.def("AddText", &ModelViewController::AddText)
-				.property("GetText", &ModelViewController::GetText)
+			luabind::class_<ModelViewController>("ModelViewController")
+			.def("ReadStl", &ModelViewController::ReadStl)			// To use: base:ReadStl("c:/Vertex.stl")
+			.def("ClearGcode", &ModelViewController::ClearGcode)	// To use: base:ClearGcode()
+			.def("AddText", &ModelViewController::AddText)			// To use: base:AddText("text\n")
 			];
-			//		ProcessControl.BindLua(myLuaState);
-		try {
 
 		luabind::globals(myLuaState)["base"] = this;
 
-		// Execute a script to load some resources
-		    luaL_dostring(
-		      myLuaState,
-		      "MyResourceManager:loadResource(\"abc.res\")\n"
-		      "MyResourceManager:loadResource(\"xyz.res\")\n"
-		      "\n"
-		      "ResourceCount = MyResourceManager.ResourceCount\n"
-		    );
+		// Now call our function in a lua script, such as "print_hello(5)"
+		if luaL_dostring( myLuaState, script)
+			ReportErrors(myLuaState);
 
-			// Read a global from the lua script
-			    size_t ResourceCount = luabind::object_cast<size_t>(
-			      luabind::globals(myLuaState)["ResourceCount"]
-			   );
-			   cout << ResourceCount << endl;
+		lua_close(myLuaState);
 
-//		luaL_dostring(myLuaState, script);
+
 	}// try
 	catch(const std::exception &TheError)
 	{
 		cerr << TheError.what() << endl;
 	}
 
-	lua_close(myLuaState);
-#endif
 }
 void ModelViewController::ReadRFO(string filename)
 {
