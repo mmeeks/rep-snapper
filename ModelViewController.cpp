@@ -867,6 +867,21 @@ ProcessController &ModelViewController::getProcessController()
 	return ProcessControl;
 }
 
+struct ResourceManager {
+ResourceManager() :
+   m_ResourceCount(0) {}
+
+  void loadResource(const string &sFilename) {
+    ++m_ResourceCount;
+  }
+size_t getResourceCount() const {
+   return m_ResourceCount;
+  }
+
+ size_t m_ResourceCount;
+};
+ 
+
 
 void ModelViewController::RunLua(char* script)
 {
@@ -879,7 +894,13 @@ void ModelViewController::RunLua(char* script)
 
 	//http://www.nuclex.org/articles/cxx/1-quick-introduction-to-luabind
 
-	try {
+		// Export our class with LuaBind
+		luabind::module(myLuaState) [
+			luabind::class_<ResourceManager>("ResourceManager")
+				.def("loadResource", &ResourceManager::loadResource)
+				.property("ResourceCount", &ResourceManager::getResourceCount)
+		];
+
 		luabind::module(myLuaState)
 			[
 				luabind::class_<ModelViewController>("ModelViewController")
@@ -890,10 +911,26 @@ void ModelViewController::RunLua(char* script)
 				.property("GetText", &ModelViewController::GetText)
 			];
 			//		ProcessControl.BindLua(myLuaState);
+		try {
 
 		luabind::globals(myLuaState)["base"] = this;
 
-		luaL_dostring(myLuaState, script);
+		// Execute a script to load some resources
+		    luaL_dostring(
+		      myLuaState,
+		      "MyResourceManager:loadResource(\"abc.res\")\n"
+		      "MyResourceManager:loadResource(\"xyz.res\")\n"
+		      "\n"
+		      "ResourceCount = MyResourceManager.ResourceCount\n"
+		    );
+
+			// Read a global from the lua script
+			    size_t ResourceCount = luabind::object_cast<size_t>(
+			      luabind::globals(myLuaState)["ResourceCount"]
+			   );
+			   cout << ResourceCount << endl;
+
+//		luaL_dostring(myLuaState, script);
 	}// try
 	catch(const std::exception &TheError)
 	{
