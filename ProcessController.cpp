@@ -73,9 +73,9 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 
 				CuttingPlane infillCuttingPlane = plane;
 				infillCuttingPlane.polygons = infillCuttingPlane.offsetPolygons;
-				infillCuttingPlane.vertices = infillCuttingPlane.offsetVertices;
+//				infillCuttingPlane.vertices = infillCuttingPlane.offsetVertices;
 				infillCuttingPlane.offsetPolygons.clear();
-				infillCuttingPlane.offsetVertices.clear();
+//				infillCuttingPlane.offsetVertices.clear();
 				if(ShellOnly == false)
 					{
 					if(m_ShrinkQuality == SHRINK_FAST)

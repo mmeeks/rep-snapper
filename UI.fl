@@ -14,7 +14,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {357 155 1400 858} type Double box UP_BOX color 39 selection_color 39 labelsize 12 hide resizable
+      xywh {357 155 1400 858} type Double box UP_BOX color 39 selection_color 39 labelsize 12 resizable visible
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -26,7 +26,7 @@ class GUI {open
         class ModelViewController
       }
       Fl_Tabs Tabs {open
-        xywh {835 25 565 825} align 5
+        xywh {835 25 570 825} align 5
       } {
         Fl_Group {} {
           label {Input file} open
@@ -605,7 +605,7 @@ MVC->redraw();
           } {
             Fl_Text_Editor GCodeStart {
               label Start
-              xywh {835 145 555 690} selection_color 31 hide
+              xywh {835 145 555 690} selection_color 31
               code0 {Fl_Text_Buffer *startbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(startbuff);}
             }
@@ -623,7 +623,7 @@ MVC->redraw();
             }
             Fl_Text_Editor GCodeResult {
               label Result
-              xywh {835 145 555 690} selection_color 31
+              xywh {835 145 555 690} selection_color 31 hide
               code0 {Fl_Text_Buffer *resultbuff = new Fl_Text_Buffer();}
               code1 {o->buffer(resultbuff);}
             }
@@ -948,405 +948,410 @@ MVC->redraw();}
         }
         Fl_Group {} {
           label Print open
-          xywh {835 50 565 800} color 47
+          xywh {835 50 570 800} color 47
         } {
           Fl_Tabs {} {open
-            xywh {835 220 565 625}
+            xywh {835 220 570 630}
           } {
-            Fl_Browser CommunationLog {
-              label {Communication log}
-              xywh {840 245 530 565} selection_color 31 align 16 hide
-              code0 {\#include <FL/Fl_Multi_Browser.H>}
-              class Fl_Multi_Browser
+            Fl_Group {} {
+              label {Communation Log} open
+              xywh {840 245 560 600}
+            } {
+              Fl_Browser CommunationLog {
+                label {Errors / warnings} selected
+                xywh {840 250 540 595} selection_color 31 align 16
+                code0 {\#include <FL/Fl_Multi_Browser.H>}
+                class Fl_Multi_Browser
+              }
             }
             Fl_Browser ErrorLog {
               label {Errors / warnings}
-              xywh {840 245 530 565} selection_color 31 align 16 hide
+              xywh {840 250 540 595} selection_color 31 align 16 hide
               code0 {\#include <FL/Fl_Multi_Browser.H>}
               class Fl_Multi_Browser
             }
             Fl_Browser Echo {
               label Echo
-              xywh {840 245 530 565} selection_color 31 align 16 hide
+              xywh {840 250 540 595} selection_color 31 align 16 hide
               code0 {\#include <FL/Fl_Multi_Browser.H>}
               class Fl_Multi_Browser
             }
             Fl_Group {} {
-              label {Interactive control} open selected
-              xywh {840 245 535 585} selection_color 31 align 16
+              label {Interactive control}
+              xywh {845 250 535 585} selection_color 31 align 16 hide
             } {
               Fl_Light_Button SwitchHeatOnButton {
                 label {Switch heat on}
                 callback {MVC->SwitchHeat(o->value(), TargetTempText->value());}
-                xywh {845 430 220 25}
+                xywh {850 435 220 25}
               }
               Fl_Value_Input TargetTempText {
                 label {Target temp}
                 callback {MVC->SetTargetTemp(o->value());}
-                xywh {1300 431 55 24} maximum 300 value 200
+                xywh {1305 436 55 24} maximum 300 value 200
               }
               Fl_Light_Button RunExtruderButton {
                 label {Run extruder}
                 callback {MVC->RunExtruder();}
-                xywh {845 460 115 25}
+                xywh {850 465 115 25}
               }
               Fl_Light_Button SetExtruderDirectionButton {
                 label Reverse
                 callback {MVC->SetExtruderDirection(o->value());}
-                xywh {965 460 100 25}
+                xywh {970 465 100 25}
               }
               Fl_Button {} {
                 label Home
                 callback {MVC->Home("X");}
-                xywh {855 250 83 25}
+                xywh {860 255 83 25}
               }
               Fl_Button {} {
                 label Home
                 callback {MVC->Home("Y");}
-                xywh {855 280 83 25}
+                xywh {860 285 83 25}
               }
               Fl_Button {} {
                 label Home
                 callback {MVC->Home("Z");}
-                xywh {855 310 83 25}
+                xywh {860 315 83 25}
               }
               Fl_Button {} {
                 label {Find position in Gcode}
-                xywh {1175 340 173 25} deactivate
+                xywh {1180 345 173 25} deactivate
               }
               Fl_Value_Slider {} {
                 label Speed
                 callback {MVC->SetExtruderSpeed(o->value());}
-                xywh {1120 460 235 25} type {Horz Knob} align 4 minimum 5 maximum 9999 step 1 value 3000 textsize 14
+                xywh {1125 465 235 25} type {Horz Knob} align 4 minimum 5 maximum 9999 step 1 value 3000 textsize 14
               }
               Fl_Value_Slider {} {
                 label Length
                 callback {MVC->SetExtruderLength(o->value());}
-                xywh {1120 490 235 25} type {Horz Knob} align 4 minimum 10 maximum 850 step 1 value 150 textsize 14
+                xywh {1125 495 235 25} type {Horz Knob} align 4 minimum 10 maximum 850 step 1 value 150 textsize 14
               }
               Fl_Input GCodeInput {
                 label GCode
                 callback {MVC->SendNow(o->value());}
-                xywh {905 370 375 25} when 8
+                xywh {910 375 375 25} when 8
               }
               Fl_Output CurrentTempText {
                 label {Current temp}
-                xywh {1160 431 55 24}
+                xywh {1165 436 55 24}
               }
               Fl_Button {} {
                 label {Home all}
                 callback {MVC->Home("ALL");}
-                xywh {855 340 85 25}
+                xywh {860 345 85 25}
               }
               Fl_Button {} {
                 label {-10}
                 callback {MVC->Move("X", -10);}
-                xywh {995 250 40 25}
+                xywh {1000 255 40 25}
               }
               Fl_Button {} {
                 label {-1}
                 callback {MVC->Move("X", -1);}
-                xywh {1040 250 40 25}
+                xywh {1045 255 40 25}
               }
               Fl_Button {} {
                 label {-0.1}
                 callback {MVC->Move("X", -0.1f);}
-                xywh {1085 250 40 25}
+                xywh {1090 255 40 25}
               }
               Fl_Button {} {
                 label {+0.1}
                 callback {MVC->Move("X", 0.1f);}
-                xywh {1175 250 40 25}
+                xywh {1180 255 40 25}
               }
               Fl_Button {} {
                 label {+1}
                 callback {MVC->Move("X", 1);}
-                xywh {1220 250 40 25}
+                xywh {1225 255 40 25}
               }
               Fl_Button {} {
                 label {+10}
                 callback {MVC->Move("X", 10);}
-                xywh {1265 250 40 25}
+                xywh {1270 255 40 25}
               }
               Fl_Button {} {
                 label {-100}
                 callback {MVC->Move("X", -100);}
-                xywh {950 250 40 25}
+                xywh {955 255 40 25}
               }
               Fl_Button {} {
                 label {+100}
                 callback {MVC->Move("X", 100);}
-                xywh {1310 250 40 25}
+                xywh {1315 255 40 25}
               }
               Fl_Button {} {
                 label {-10}
                 callback {MVC->Move("Y", -10);}
-                xywh {995 280 40 25}
+                xywh {1000 285 40 25}
               }
               Fl_Button {} {
                 label {-1}
                 callback {MVC->Move("Y", -1);}
-                xywh {1040 280 40 25}
+                xywh {1045 285 40 25}
               }
               Fl_Button {} {
                 label {-0.1}
                 callback {MVC->Move("Y", -0.1f);}
-                xywh {1085 280 40 25}
+                xywh {1090 285 40 25}
               }
               Fl_Button {} {
                 label {+0.1}
                 callback {MVC->Move("Y", 0.1f);}
-                xywh {1175 280 40 25}
+                xywh {1180 285 40 25}
               }
               Fl_Button {} {
                 label {+1}
                 callback {MVC->Move("Y", 1);}
-                xywh {1220 280 40 25}
+                xywh {1225 285 40 25}
               }
               Fl_Button {} {
                 label {+10}
                 callback {MVC->Move("Y", 10);}
-                xywh {1265 280 40 25}
+                xywh {1270 285 40 25}
               }
               Fl_Button {} {
                 label {-100}
                 callback {MVC->Move("Y", -100);}
-                xywh {950 280 40 25}
+                xywh {955 285 40 25}
               }
               Fl_Button {} {
                 label {+100}
                 callback {MVC->Move("Y", 100);}
-                xywh {1310 280 40 25}
+                xywh {1315 285 40 25}
               }
               Fl_Button {} {
                 label {-10}
                 callback {MVC->Move("Z", -10);}
-                xywh {995 310 40 25}
+                xywh {1000 315 40 25}
               }
               Fl_Button {} {
                 label {-1}
                 callback {MVC->Move("Z", -1);}
-                xywh {1040 310 40 25}
+                xywh {1045 315 40 25}
               }
               Fl_Button {} {
                 label {-0.1}
                 callback {MVC->Move("Z", -0.1f);}
-                xywh {1085 310 40 25}
+                xywh {1090 315 40 25}
               }
               Fl_Button {} {
                 label {+0.1}
                 callback {MVC->Move("Z", 0.1f);}
-                xywh {1175 310 40 25}
+                xywh {1180 315 40 25}
               }
               Fl_Button {} {
                 label {+1}
                 callback {MVC->Move("Z", 1);}
-                xywh {1220 310 40 25}
+                xywh {1225 315 40 25}
               }
               Fl_Button {} {
                 label {+10}
                 callback {MVC->Move("Z", 10);}
-                xywh {1265 310 40 25}
+                xywh {1270 315 40 25}
               }
               Fl_Button {} {
                 label {-100}
                 callback {MVC->Move("Z", -100);}
-                xywh {950 310 40 25}
+                xywh {955 315 40 25}
               }
               Fl_Button {} {
                 label {+100}
                 callback {MVC->Move("Z", 100);}
-                xywh {1310 310 40 25}
+                xywh {1315 315 40 25}
               }
               Fl_Value_Input XposText {
                 callback {MVC->Goto("X", o->value());}
-                xywh {1130 251 40 24} maximum 500
+                xywh {1135 256 40 24} maximum 500
               }
               Fl_Value_Input YposText {
                 callback {MVC->Goto("Y", o->value());}
-                xywh {1130 281 40 24} maximum 500
+                xywh {1135 286 40 24} maximum 500
               }
               Fl_Value_Input ZposText {
                 callback {MVC->Goto("Z", o->value());}
-                xywh {1130 311 40 24} maximum 500
+                xywh {1135 316 40 24} maximum 500
               }
               Fl_Value_Slider DownstreamMultiplierSlider {
                 label {Downstream speed multiplier}
-                xywh {845 525 510 25} type {Horz Knob} align 5 minimum 0.01 maximum 5 value 1 textsize 14
+                xywh {850 530 510 25} type {Horz Knob} align 5 minimum 0.01 maximum 5 value 1 textsize 14
               }
               Fl_Value_Slider TempUpdateSpeedSlider {
                 label {Temperature update interval}
                 callback {MVC->SetTempUpdateSpeed(o->value());}
-                xywh {1030 400 235 25} type {Horz Knob} align 4 minimum 0.1 maximum 10 step 0.1 value 3 textsize 14
+                xywh {1035 405 235 25} type {Horz Knob} align 4 minimum 0.1 maximum 10 step 0.1 value 3 textsize 14
               }
               Fl_Light_Button AutoscrollButton {
                 label {Auto scroll}
-                xywh {845 570 105 25} value 1 selection_color 2
+                xywh {850 575 105 25} value 1 selection_color 2
               }
               Fl_Value_Slider LinesToKeepSlider {
                 label {Keep only the last \# lines:}
                 callback {MVC->SetKeepLines(o->value());}
-                xywh {955 570 400 25} type {Horz Knob} align 5 minimum 100 maximum 100000 step 1 value 1000 textsize 14
+                xywh {960 575 400 25} type {Horz Knob} align 5 minimum 100 maximum 100000 step 1 value 1000 textsize 14
               }
               Fl_Light_Button FileLogginEnabledButton {
                 label LogFiles
                 callback {MVC->SetFileLogging(o->value());}
-                xywh {845 600 105 25} value 1 selection_color 2
+                xywh {850 605 105 25} value 1 selection_color 2
               }
               Fl_Light_Button TempReadingEnabledButton {
                 label Enable
                 callback {MVC->EnableTempReading(o->value());}
-                xywh {1270 400 85 25} value 1 selection_color 2
+                xywh {1275 405 85 25} value 1 selection_color 2
               }
               Fl_Light_Button ClearLogfilesWhenPrintStartsButton {
                 label {Clear logs when print starts}
                 callback {MVC->SetLogFileClear(o->value());}
-                xywh {955 600 205 25} value 1 selection_color 2
+                xywh {960 605 205 25} value 1 selection_color 2
               }
               Fl_Button {} {
                 label {Clear logs now}
                 callback {MVC->ClearLogs();}
-                xywh {1210 600 145 25}
+                xywh {1215 605 145 25}
               }
               Fl_Return_Button {} {
                 label Send
                 callback {MVC->SendNow(GCodeInput->value());}
-                xywh {1285 370 66 25}
+                xywh {1290 375 66 25}
               }
               Fl_Button CustomButton1 {
                 label {Custom button 1}
                 callback {MVC->SendCustomButton(1);}
-                xywh {845 630 250 20}
+                xywh {850 635 250 20}
               }
               Fl_Button CustomButton3 {
                 label {Custom button 3}
                 callback {MVC->SendCustomButton(3);}
-                xywh {845 650 250 20}
+                xywh {850 655 250 20}
               }
               Fl_Button CustomButton2 {
                 label {Custom button 2}
                 callback {MVC->SendCustomButton(2);}
-                xywh {1105 630 250 20}
+                xywh {1110 635 250 20}
               }
               Fl_Button CustomButton4 {
                 label {Custom button 4}
                 callback {MVC->SendCustomButton(4);}
-                xywh {1105 650 250 20}
+                xywh {1110 655 250 20}
               }
               Fl_Button CustomButton5 {
                 label {Custom button 5}
                 callback {MVC->SendCustomButton(5);}
-                xywh {845 670 250 20}
+                xywh {850 675 250 20}
               }
               Fl_Button CustomButton7 {
                 label {Custom button 7}
                 callback {MVC->SendCustomButton(7);}
-                xywh {845 690 250 20}
+                xywh {850 695 250 20}
               }
               Fl_Button CustomButton6 {
                 label {Custom button 6}
                 callback {MVC->SendCustomButton(6);}
-                xywh {1105 670 250 20}
+                xywh {1110 675 250 20}
               }
               Fl_Button CustomButton8 {
                 label {Custom button 8}
                 callback {MVC->SendCustomButton(8);}
-                xywh {1105 690 250 20}
+                xywh {1110 695 250 20}
               }
               Fl_Button CustomButton9 {
                 label {Custom button 9}
                 callback {MVC->SendCustomButton(9);}
-                xywh {845 710 250 20}
+                xywh {850 715 250 20}
               }
               Fl_Button CustomButton11 {
                 label {Custom button 11}
                 callback {MVC->SendCustomButton(11);}
-                xywh {845 730 250 20}
+                xywh {850 735 250 20}
               }
               Fl_Button CustomButton10 {
                 label {Custom button 10}
                 callback {MVC->SendCustomButton(10);}
-                xywh {1105 710 250 20}
+                xywh {1110 715 250 20}
               }
               Fl_Button CustomButton12 {
                 label {Custom button 12}
                 callback {MVC->SendCustomButton(12);}
-                xywh {1105 730 250 20}
+                xywh {1110 735 250 20}
               }
               Fl_Button CustomButton13 {
                 label {Custom button 13}
                 callback {MVC->SendCustomButton(13);}
-                xywh {845 750 250 20}
+                xywh {850 755 250 20}
               }
               Fl_Button CustomButton15 {
                 label {Custom button 15}
                 callback {MVC->SendCustomButton(15);}
-                xywh {845 770 250 20}
+                xywh {850 775 250 20}
               }
               Fl_Button CustomButton14 {
                 label {Custom button 14}
                 callback {MVC->SendCustomButton(14);}
-                xywh {1105 750 250 20}
+                xywh {1110 755 250 20}
               }
               Fl_Button CustomButton16 {
                 label {Custom button 16}
                 callback {MVC->SendCustomButton(16);}
-                xywh {1105 770 250 20}
+                xywh {1110 775 250 20}
               }
               Fl_Button CustomButton17 {
                 label {Custom button 17}
                 callback {MVC->SendCustomButton(17);}
-                xywh {845 790 250 20}
+                xywh {850 795 250 20}
               }
               Fl_Button CustomButton18 {
                 label {Custom button 18}
                 callback {MVC->SendCustomButton(18);}
-                xywh {1105 790 250 20}
+                xywh {1110 795 250 20}
               }
               Fl_Button CustomButton19 {
                 label {Custom button 19}
                 callback {MVC->SendCustomButton(19);}
-                xywh {845 810 250 20}
+                xywh {850 815 250 20}
               }
               Fl_Button CustomButton20 {
                 label {Custom button 20}
                 callback {MVC->SendCustomButton(20);}
-                xywh {1105 810 250 20}
+                xywh {1110 815 250 20}
               }
             }
             Fl_Group {} {
-              label {Custom buttons} open
-              xywh {840 250 560 595} hide
+              label {Custom buttons}
+              xywh {845 255 560 595} hide
             } {
               Fl_Text_Editor CustomButtonText {
                 label {Button gcode}
-                xywh {840 320 555 485} selection_color 31
+                xywh {845 325 555 485} selection_color 31
                 code0 {Fl_Text_Buffer *CustomButtonBuffer = new Fl_Text_Buffer();}
                 code1 {o->buffer(CustomButtonBuffer);}
               }
               Fl_Input CustomButtonLabel {
                 label {Button label:}
-                xywh {930 276 465 24}
+                xywh {935 281 465 24}
               }
               Fl_Value_Slider CustomButtonSelectorSlider {
                 label {Button to edit:}
                 callback {MVC->GetCustomButtonText(o->value()-1);}
-                xywh {935 250 320 20} type Horizontal align 4 minimum 1 maximum 20 step 1 value 1 textsize 14
+                xywh {940 255 320 20} type Horizontal align 4 minimum 1 maximum 20 step 1 value 1 textsize 14
               }
               Fl_Button {} {
                 label Test
                 callback {MVC->TestCustomButton();}
-                xywh {1330 250 64 20}
+                xywh {1335 255 64 20}
               }
               Fl_Button {} {
                 label Save
                 callback {MVC->SaveCustomButton();}
-                xywh {1260 250 64 20}
+                xywh {1265 255 64 20}
               }
               Fl_Light_Button DisplayDebuginFillButton {
                 label {Display Debug inFill}
                 callback {MVC->SetDisplayDebuginFill(o->value());}
-                xywh {920 825 145 15} selection_color 63
+                xywh {925 830 145 15} selection_color 63
               }
               Fl_Light_Button DisplayDebugButton {
                 label Debug
@@ -1363,22 +1368,22 @@ ExamineSlider->hide();
 
 
 MVC->redraw();}
-                xywh {845 825 70 15} selection_color 63
+                xywh {850 830 70 15} selection_color 63
               }
               Fl_Light_Button DrawVertexNumbersButton {
                 label {Draw vertex numbers}
                 callback {MVC->SetDrawVertexNumbers(o->value());}
-                xywh {1070 825 155 15} selection_color 63
+                xywh {1075 830 155 15} selection_color 63
               }
               Fl_Light_Button DrawLineNumbersButton {
                 label {Draw line numbers}
                 callback {MVC->SetDrawLineNumbers(o->value());}
-                xywh {1225 825 155 15} selection_color 63
+                xywh {1230 830 155 15} selection_color 63
               }
               Fl_Value_Slider ExamineSlider {
                 label Examine
                 callback {MVC->SetExamine(o->value());}
-                xywh {900 810 200 15} type Horizontal align 4 step 0.001 value 0.098 textsize 14
+                xywh {905 815 200 15} type Horizontal align 4 step 0.001 value 0.098 textsize 14
               }
             }
           }

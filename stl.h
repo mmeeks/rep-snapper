@@ -75,7 +75,7 @@ class Poly{
 public:
 	Poly(){};
 	void cleanup();				// Removed vertices that are on a straight line
-	int calcHole(vector<Vector2f> &offsetVertices);
+	int calcHole();
 	vector<Vector2f> points;			// points
 	bool hole;
 };
@@ -110,7 +110,7 @@ public:
 	vector<Vector2f> vertices;		// points
 
 	vector<Poly> offsetPolygons;	// Shrinked closed loops
-	vector<Vector2f> offsetVertices;// points for shrinked closed loops
+//	vector<Vector2f> offsetVertices;// points for shrinked closed loops
 };
 
 class STL

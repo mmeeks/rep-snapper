@@ -391,7 +391,7 @@ void STL::draw(const ProcessController &PC, float opasity)
 //				infillCuttingPlane.polygons = infillCuttingPlane.offsetPolygons;
 //				infillCuttingPlane.vertices = infillCuttingPlane.offsetVertices;
 				infillCuttingPlane.offsetPolygons.clear();
-				infillCuttingPlane.offsetVertices.clear();
+//				infillCuttingPlane.offsetVertices.clear();
 				if(PC.ShellOnly == false)
 					{
 					if(PC.m_ShrinkQuality == SHRINK_FAST)
@@ -1447,7 +1447,16 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, bool DisplayCuttingP
 	if(vertices.size() == 0)
 		return true;
 
-	// Find doublepoints (they all should be)
+	glPointSize(5);
+	glColor3f(0,1,0);
+	glBegin(GL_POINTS);
+
+	for(int i=0;i<vertices.size();i++)
+		glVertex3f(vertices[i].x, vertices[i].y, z);
+	glEnd();
+	glPointSize(1);
+
+		// Find doublepoints (they all should be)
 	vector<int> myDouble;
 	myDouble.resize(vertices.size());
 	for(int i=0;i<myDouble.size();i++)
@@ -1523,7 +1532,7 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, bool DisplayCuttingP
 
 	for(int i=0;i<vertices.size();i++)
 		{
-		if(myDouble[i] >= 0)
+		if(myDouble[i] >= 0)		// ERROR????? Maybe not >=, but just >
 			{
 			newVertices.push_back(vertices[i]);
 			oldVertexNumbersToNew[i] = oldVertexNumbers.size();
@@ -1555,7 +1564,7 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, bool DisplayCuttingP
 		int endPoint = lines[startLine].end;
 
 		Poly poly;
-		poly.points.push_back(endPoint);
+		poly.points.push_back(vertices[endPoint]);
 		int count = lines.size()+100;
 		while(endPoint != startPoint && count != 0)	// While not closed
 			{
@@ -1891,40 +1900,8 @@ void CuttingPlane::ShrinkFast(float distance, float z, bool DisplayCuttingPlane,
 			else
 				p = Nb-biplane*distance/(sin(a*0.5f));
 
-/*			if(DisplayCuttingPlane)
-				glEnd();
-
-			if(convex)
-				glColor3f(1,0,0);
-			else
-				glColor3f(0,1,0);
-
-			ostringstream oss;
-			oss << a;
-			renderBitmapString(Vector3f (Nb.x, Nb.y, z) , GLUT_BITMAP_8_BY_13 , oss.str());
-
-			if(DisplayCuttingPlane)
-				glBegin(GL_LINE_LOOP);
-			glColor3f(1,1,0);
-			*/
-/*
-
-
-			Vector2f N1 = Vector2f(-V1.y, V1.x);
-			Vector2f N2 = Vector2f(-V2.y, V2.x);
-
-			N1.normalise();
-			N2.normalise();
-
-			Vector2f Normal = N1+N2;
-			Normal.normalise();
-
-			int vertexNr = polygons[p].points[i];
-
-			Vector2f p = vertices[vertexNr] - (Normal * distance);*/
-
-			offsetPoly.points.push_back(offsetVertices.size());
-			offsetVertices.push_back(p);
+			offsetPoly.points.push_back(p);
+//			offsetVertices.push_back(p);
 			if(DisplayCuttingPlane)
 				glVertex3f(p.x,p.y,z);
 		}
@@ -1932,7 +1909,7 @@ void CuttingPlane::ShrinkFast(float distance, float z, bool DisplayCuttingPlane,
 			glEnd();
 		offsetPolygons.push_back(offsetPoly);
 	}
-//	CleanupOffsetPolygons(0.1f);
+//	CleanupOffsetPolygons();
 	selfIntersectAndDivide(z);		//make this work for z-tensioner_1off.stl rotated 45d on X axis
 }
 
@@ -2105,7 +2082,7 @@ void CuttingPlane::ShrinkNice(float distance, float z, bool DisplayCuttingPlane,
 
 	for(int p=0; p<polygons.size();p++)
 	{
-		polygons[p].calcHole(vertices);
+		polygons[p].calcHole();
 		Poly offsetPoly;
 		uint count = polygons[p].points.size();
 		for(int i=0; i<count;i++)
@@ -2323,7 +2300,7 @@ void CuttingPlane::ShrinkNice(float distance, float z, bool DisplayCuttingPlane,
 	gpc_polygon_clip(GPC_DIFF, &solids, &holes, &poly_res);
 
 	offsetPolygons.clear();
-	offsetVertices.clear();
+//	offsetVertices.clear();
 
 	glLineWidth(4);
 	for(int p=0;p<poly_res.num_contours;p++)
@@ -2332,8 +2309,8 @@ void CuttingPlane::ShrinkNice(float distance, float z, bool DisplayCuttingPlane,
 		Poly pol;
 		for(int v=0;v<poly_res.contour[p].num_vertices;v++)
 		{
-			pol.points.push_back(offsetVertices.size());
-			offsetVertices.push_back(Vector2f(poly_res.contour[p].vertex[v].x, poly_res.contour[p].vertex[v].y));
+			pol.points.push_back(Vector2f(poly_res.contour[p].vertex[v].x, poly_res.contour[p].vertex[v].y));
+//			offsetVertices.push_back(Vector2f(poly_res.contour[p].vertex[v].x, poly_res.contour[p].vertex[v].y));
 			glVertex3f(poly_res.contour[p].vertex[v].x, poly_res.contour[p].vertex[v].y,z);
 		}
 		offsetPolygons.push_back(pol);
@@ -2403,12 +2380,13 @@ void CuttingPlane::Draw(float z, bool DrawVertexNumbers, bool DrawLineNumbers)
 
 	// Vertex numbers
 	if(DrawVertexNumbers)
-		for(int v=0;v<offsetVertices.size();v++)
-		{
-			ostringstream oss;
-			oss << v;
-			renderBitmapString(Vector3f (offsetVertices[v].x, offsetVertices[v].y, z) , GLUT_BITMAP_8_BY_13 , oss.str());
-		}
+		for(int p=0;p<offsetPolygons.size();p++)
+			for(int v=0;v<offsetPolygons[p].points.size();v++)
+			{
+				ostringstream oss;
+				oss << v;
+				renderBitmapString(Vector3f (offsetPolygons[p].points[v].x, offsetPolygons[p].points[v].y, z) , GLUT_BITMAP_8_BY_13 , oss.str());
+			}
 	if(DrawLineNumbers)
 		for(int l=0;l<lines.size();l++)
 		{
@@ -2608,7 +2586,7 @@ void STL::CenterAroundXY()
 }
 
 
-int Poly::calcHole(vector<Vector2f> &offsetVertices)
+int Poly::calcHole()
 {
 	if(points.size() == 0)
 		return 0;	// hole is undefined
@@ -2642,14 +2620,14 @@ int Poly::calcHole(vector<Vector2f> &offsetVertices)
 
 void CuttingPlane::selfIntersectAndDivide(float z)
 {
-	selfIntersectAndDivideTest(z);
-	return;
+//	selfIntersectAndDivideTest(z);
+//	return;
 
 	if(offsetPolygons.size() == 0)
 		return;
 
 	for(uint p=0; p<offsetPolygons.size();p++)
-		offsetPolygons[p].calcHole(offsetVertices);
+		offsetPolygons[p].calcHole();
 
 	gpc_polygon solids;
 	solids.num_contours = 0;
@@ -2724,15 +2702,13 @@ void CuttingPlane::selfIntersectAndDivide(float z)
 	gpc_polygon_clip(GPC_DIFF, &solids, &holes, &poly_res);
 
 	offsetPolygons.clear();
-	offsetVertices.clear();
 
 	for(int p=0;p<poly_res.num_contours;p++)//
 	{
 		Poly pol;
 		for(int v=0;v<poly_res.contour[p].num_vertices;v++)
 		{
-			pol.points.push_back(offsetVertices.size());
-			offsetVertices.push_back(Vector2f(poly_res.contour[p].vertex[v].x, poly_res.contour[p].vertex[v].y));
+			pol.points.push_back(Vector2f(poly_res.contour[p].vertex[v].x, poly_res.contour[p].vertex[v].y));
 		}
 		offsetPolygons.push_back(pol);
 	}
@@ -2747,7 +2723,7 @@ void CuttingPlane::selfIntersectAndDivideTest(float z)
 	int startVertex[100];
 
 	for(uint p=0; p<offsetPolygons.size();p++)
-		startVertex[p] = offsetPolygons[p].calcHole(offsetVertices);
+		startVertex[p] = offsetPolygons[p].calcHole();
 
 	// Find intersections
 
@@ -2765,14 +2741,15 @@ void CuttingPlane::selfIntersectAndDivideTest(float z)
 				uint v;
 				for(v=startVertex[p];v<offsetPolygons[p].points.size()+startVertex[p];v++)
 				{
-					Vector2f P1 = offsetPolygons[p].points[v%offsetPolygons[p].points.size()];;
+					Vector2f P1 = offsetPolygons[p].points[v%offsetPolygons[p].points.size()];
 					Vector2f P2 = offsetPolygons[p].points[(v+1)%offsetPolygons[p].points.size()];
 
 					// Intersect this line with the other lines
-					for(uint v2=startVertex[p];v2<offsetPolygons[p].points.size()+startVertex[p];v2++)
+					for(uint p2=p+1; p2<offsetPolygons.size();p2++)
+					for(uint v2=startVertex[p2];v2<offsetPolygons[p2].points.size()+startVertex[p2];v2++)
 					{
-						Vector2f P3 = offsetPolygons[p].points[v2%offsetPolygons[p].points.size()];
-						Vector2f P4 = offsetPolygons[p].points[(v2+1)%offsetPolygons[p].points.size()];
+						Vector2f P3 = offsetPolygons[p2].points[v2%offsetPolygons[p2].points.size()];
+						Vector2f P4 = offsetPolygons[p2].points[(v2+1)%offsetPolygons[p2].points.size()];
 
 						InFillHit hit;
 						if(IntersectXY(P1,P2,P3,P4, hit) == 1) //we are in a negative area
@@ -2783,11 +2760,10 @@ void CuttingPlane::selfIntersectAndDivideTest(float z)
 							}
 						}
 					}
-
+				if(positive)
+					result.push_back(offsetPolygons[p].points[v%offsetPolygons[p].points.size()]);
 				}
-//				if(positive)
-//					result.push_back(v);
 			}
-//		offsetPolygons[p].points = result;
+		offsetPolygons[p].points = result;
 		}
 }

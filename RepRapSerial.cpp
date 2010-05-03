@@ -20,7 +20,12 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 
 	if(gui)
 		{
-		gui->CommunationLog->add(s.c_str());
+/*			Fl_Text_Buffer* buffer = gui->CommunationLog->buffer();
+			buffer->append(s.c_str());
+			cout << s;
+			Fl::check();*/
+
+			gui->CommunationLog->add(s.c_str());
 		if(gui->AutoscrollButton->value())
 			gui->CommunationLog->bottomline(gui->CommunationLog->size());
 		if(selectLine)
@@ -31,15 +36,12 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 				gui->ErrorLog->bottomline(gui->ErrorLog->size());
 			}
 
-		Fl::lock();
 		while(gui->CommunationLog->size() > MVC->ProcessControl.KeepLines)
 			gui->CommunationLog->remove(1);
 		while(gui->ErrorLog->size() > MVC->ProcessControl.KeepLines)
 			gui->ErrorLog->remove(1);
 		while(gui->Echo->size() > MVC->ProcessControl.KeepLines)
 			gui->Echo->remove(1);
-
-		Fl::unlock();
 		}
 	else
 		printf("%s", s.c_str());
