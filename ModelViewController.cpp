@@ -880,6 +880,7 @@ size_t getResourceCount() const {
 
  size_t m_ResourceCount;
 };
+#ifdef WIN32
  
 void print_hello(int number)
 {
@@ -894,10 +895,11 @@ void ReportErrors(lua_State * L)
 	fl_alert(oss.str().c_str());
 	lua_pop(L, 1);
 }
-
+#endif
 
 void ModelViewController::RunLua(char* script)
 {
+#ifdef WIN32
 	try{
 		
 		lua_State *myLuaState = lua_open();				// Create a new lua state
@@ -932,7 +934,7 @@ void ModelViewController::RunLua(char* script)
 	{
 		cerr << TheError.what() << endl;
 	}
-
+#endif
 }
 void ModelViewController::ReadRFO(string filename)
 {

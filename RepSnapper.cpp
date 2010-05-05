@@ -9,6 +9,19 @@
 * option, any later version, incorporated herein by reference.
 *
 * ------------------------------------------------------------------------- */
+
+
+
+/*************************************************************************
+
+	TODO LIST:
+
+
+Connect to printer crashes if settings are not first saved, even if com port is right, per Nightwork_zZz 
+
+
+*************************************************************************/
+
 #include "stdafx.h"
 
 //#include <windows.h>													// Header File For The Windows Library
@@ -29,6 +42,8 @@ using namespace std;
 
 int main()
 {
+	//initialize threading support in FLTK
+	Fl::lock();
 	gui = new GUI();
 	MVC = gui->MVC;
 

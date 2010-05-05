@@ -958,7 +958,7 @@ MVC->redraw();}
               xywh {840 245 560 600}
             } {
               Fl_Browser CommunationLog {
-                label {Errors / warnings} selected
+                label {Errors / warnings}
                 xywh {840 250 540 595} selection_color 31 align 16
                 code0 {\#include <FL/Fl_Multi_Browser.H>}
                 class Fl_Multi_Browser
@@ -1485,7 +1485,8 @@ MVC->init();
 MVC->CopySettingsToGUI();
 MVC->draw();
 MVC->redraw();
-MVC->redraw();} {}
+MVC->redraw();} {selected
+    }
   }
 } 
 
