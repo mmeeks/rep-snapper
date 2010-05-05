@@ -153,6 +153,7 @@ public:
     GCode();
 
 	void Read(string filename);
+	void Write(string filename);
 	void draw(const ProcessController &PC);
 	void MakeText(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, bool UseIncrementalEcode, bool Use3DGcode);
 

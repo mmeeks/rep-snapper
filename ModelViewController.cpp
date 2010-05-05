@@ -413,7 +413,10 @@ void ModelViewController::init()
 	buffer->text(ProcessControl.GCodeEndText.c_str());
 	buffer->text(ProcessControl.Notes.c_str());
 
-//	buffer = gui->CommunationsLogText->buffer();
+	buffer = gui->LuaScriptEditor->buffer();
+	buffer->text("--Clear existing gcode\\nbase:ClearGcode()\n		-- Set start speed for acceleration firmware\nbase:AddText(\"G1 F2600\\n\")\n\n	 z=0.0\n	 e=0;\n	oldx = 0;\n	oldy=0;\n	while(z<48) do\n	angle=0\n		while (angle < math.pi*2) do\n	x=(50*math.cos(z/30)*math.sin(angle))+70\n		y=(50*math.cos(z/30)*math.cos(angle))+70\n\n		--how much to extrude\n\n		dx=oldx-x\n		dy=oldy-y\n		if not (angle==0) then\n			e = e+math.sqrt(dx*dx+dy*dy)\n			end\n\n			-- Make gcode string\n\n			s=string.format(\"G1 X%f Y%f Z%f F2600 E%f\\n\", x,y,z,e)\n			if(angle == 0) then\n				s=string.format(\"G1 X%f Y%f Z%f F2600 E%f\\n\", x,y,z,e)\n				end\n				-- Add gcode to gcode result\nbase:AddText(s)\n	 angle=angle+0.2\n	 oldx=x\n	 oldy=y\n	 end\n	 z=z+1\n	 end\n	 ");
+
+	//	buffer = gui->CommunationsLogText->buffer();
 //	buffer->text("Dump");
 }
 
@@ -884,7 +887,16 @@ size_t getResourceCount() const {
  
 void print_hello(int number)
 {
-cout << "hello world " << number << endl;
+	cout << "hello world " << number << endl;
+}
+
+void refreshGraphicsView()
+{
+	// Hack: save and load the gcode, to force redraw
+
+	GCode* code = &MVC->ProcessControl.gcode;
+	code->Write("./tmp.gcode");
+	code->Read("./tmp.gcode");
 }
 
 void ReportErrors(lua_State * L)
@@ -905,7 +917,8 @@ void ModelViewController::RunLua(char* script)
 		lua_State *myLuaState = lua_open();				// Create a new lua state
 		
 		luabind::open(myLuaState);						// Connect LuaBind to this lua state
-		
+		luaL_openlibs(myLuaState);
+
 		// Add our function to the state's global scope
 		luabind::module(myLuaState) [
 			luabind::def("print_hello", print_hello)
@@ -934,6 +947,7 @@ void ModelViewController::RunLua(char* script)
 	{
 		cerr << TheError.what() << endl;
 	}
+	refreshGraphicsView();
 #endif
 }
 void ModelViewController::ReadRFO(string filename)

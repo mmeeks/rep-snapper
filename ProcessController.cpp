@@ -390,7 +390,6 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("RaftInterfaceThickness", true, "1")->SetValueFloat(RaftInterfaceThickness);
 	x->FindVariableZ("RaftInterfaceTemperature", true, "190")->SetValueFloat(RaftInterfaceTemperature);
 
-
 	// GCode parameters
 	x->FindVariableZ("GCodeStartText", true,"[Empty]")->SetValue(GCodeStartText.c_str());	
 	x->FindVariableZ("GCodeLayerText", true,"[Empty]")->SetValue(GCodeLayerText.c_str());	

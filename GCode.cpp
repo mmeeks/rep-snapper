@@ -429,3 +429,24 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 	GcodeTxt += GcodeEnd + "\n";
 }
 
+
+void GCode::Write(string filename)
+{
+	Fl_Text_Buffer *buffer = MVC->gui->GCodeResult->buffer();
+
+	int result = buffer->savefile(filename.c_str());
+
+	switch(result)
+	{
+	case 0:	// Succes
+		break;
+	case 1:	//Open for write failed
+		fl_alert("Error saving GCode file, error creating file.", "That's odd, I'll check the output dir.");
+		break;
+	case 2: // Partially saved file
+		fl_alert("Error saving GCode file, while writing file, is the disk full?.", "I'll take a look at it.");
+		break;
+	}
+
+	MVC->redraw();
+}

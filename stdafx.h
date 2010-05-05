@@ -67,7 +67,8 @@ extern void YUVTORGB	(float y, float u, float v, float &r, float &g, float &b);
 #ifdef WIN32
 extern "C"
 {
-#include <lua.h>
+//#include <lua.h>
+#include <lua.hpp>
 }
 
 #include <luabind/luabind.hpp>

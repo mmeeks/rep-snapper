@@ -111,7 +111,6 @@ public:
 		gui = 0;
 		CustomButtonGcode.resize(20);
 		CustomButtonLabel.resize(20);
-
 };
 
 //	ProcessController::~ProcessController();
