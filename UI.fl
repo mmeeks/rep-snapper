@@ -1388,7 +1388,7 @@ MVC->redraw();}
             }
           }
           Fl_Group {} {
-            label Print
+            label Print open
             xywh {835 70 540 45} box ENGRAVED_FRAME color 39
           } {
             Fl_Light_Button ConnectToPrinterButton {
@@ -1400,6 +1400,12 @@ MVC->redraw();}
               label Print
               callback {if(o->value())
 {
+if(o->label() == "Restart")
+  if (fl_ask("Are you sure to restart?", "YES!") == false)
+    {
+    o->value(0);
+    return;
+    }
 o->label("Pause");
 MVC->Print();
 ContinueButton->deactivate();
@@ -1409,7 +1415,7 @@ else
 o->label("Restart");
 MVC->Pause();
 ContinueButton->activate();
-}}
+}} selected
               xywh {1075 80 90 25} selection_color 2
             }
             Fl_Button ContinueButton {
@@ -1485,8 +1491,7 @@ MVC->init();
 MVC->CopySettingsToGUI();
 MVC->draw();
 MVC->redraw();
-MVC->redraw();} {selected
-    }
+MVC->redraw();} {}
   }
 } 
 

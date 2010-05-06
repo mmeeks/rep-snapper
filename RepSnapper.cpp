@@ -16,8 +16,17 @@
 
 	TODO LIST:
 
+Joaz>	btw. Kulitorum a dialog " are you sure to restart" would be nice :)
 
 Connect to printer crashes if settings are not first saved, even if com port is right, per Nightwork_zZz 
+
+[08:42]	<Tonok>	RepSnapper M105 doesn't expect "ok"
+[08:42]	<Kulitorum>	Hmmm, that's true
+[08:42]	<Tonok>	firmware responds anyway, and RepSnapper sends the next two lines instead of one
+[08:43]	<Kulitorum>	I guess that might cause the error?
+[08:43]	<Tonok>	yes
+[08:43]	<Kulitorum>	I should make resnapper expect a "ok" on M105's then
+[08:43]	<Tonok>	but we can turn off M105 now :)
 
 
 *************************************************************************/

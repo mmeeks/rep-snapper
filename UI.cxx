@@ -1463,6 +1463,12 @@ void GUI::cb_ConnectToPrinterButton(Fl_Light_Button* o, void* v) {
 void GUI::cb_PrintButton_i(Fl_Light_Button* o, void*) {
   if(o->value())
 {
+if(o->label() == "Restart")
+  if (fl_ask("Are you sure to restart?", "YES!") == false)
+    {
+    o->value(0);
+    return;
+    }
 o->label("Pause");
 MVC->Print();
 ContinueButton->deactivate();
