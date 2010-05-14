@@ -168,11 +168,83 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 	m_iExtruderLength = 750;
 	m_fTargetTemp = 63.0f;
 
+	Fl::add_timeout(0.25, Static_Timer_CB, (void*)this);
+}
+
+void ModelViewController::Static_Timer_CB(void *userdata) {
+    ModelViewController *o = (ModelViewController*)userdata;
+    o->Timer_CB();
+    Fl::repeat_timeout(0.25, Static_Timer_CB, userdata);
+}
+
+void ModelViewController::Timer_CB() 
+{
+	if( gui->Tabs->value() == gui->PrinterDefinitionTab )
+	{
+		static ULONGLONG lastCheckForComPorts = -1;
+		ULONGLONG tick = GetTickCount64();
+		if( tick-lastCheckForComPorts > 10000 )
+		{
+			lastCheckForComPorts = tick;
+			CheckComPorts();
+		}
+	}
+	if( gui->Tabs->value() == gui->PrintTab )
+	{
+		gui->PrintTab->redraw();
+	}
+	
 }
 
 void ModelViewController::resize(int x,int y, int width, int height)					// Reshape The Window When It's Moved Or Resized
 {
 	Fl_Gl_Window::resize(x,y,width,height);
+}
+
+int ModelViewController::CheckComPorts()
+{
+	int highestCom = 0;
+	for(int i = 1; i <=9 ; i++ )
+	{
+        TCHAR strPort[32] = {0};
+        _stprintf(strPort, _T("COM%d"), i);   
+
+        DWORD dwSize = 0;
+        LPCOMMCONFIG lpCC = (LPCOMMCONFIG) new BYTE[1];
+        GetDefaultCommConfig(strPort, lpCC, &dwSize);
+		int r = GetLastError();
+        delete [] lpCC;    
+
+        lpCC = (LPCOMMCONFIG) new BYTE[dwSize];
+        GetDefaultCommConfig(strPort, lpCC, &dwSize);
+        delete [] lpCC;    
+
+		if( r != 87 )
+		{
+			highestCom = i;
+			const_cast<Fl_Menu_Item*>(gui->portInput->menu())[i-1].flags = FL_NORMAL_LABEL;
+			const_cast<Fl_Menu_Item*>(gui->portInputSimple->menu())[i-1].flags = FL_NORMAL_LABEL;
+		}
+		else
+		{
+			const_cast<Fl_Menu_Item*>(gui->portInput->menu())[i-1].flags = FL_NO_LABEL;
+			const_cast<Fl_Menu_Item*>(gui->portInputSimple->menu())[i-1].flags = FL_NO_LABEL;
+		}
+
+	}
+	return highestCom;
+}
+
+void ModelViewController::setSerialSpeed(int s )
+{
+	ProcessControl.m_iSerialSpeed = s;
+	CopySettingsToGUI();
+}
+
+void ModelViewController::setPort(string s)
+{
+	ProcessControl.m_sPortName = s;
+	CopySettingsToGUI();
 }
 
 void ModelViewController::CenterView()
@@ -265,7 +337,6 @@ void ModelViewController::draw()
 	glFlush ();														// Flush The GL Rendering Pipeline
 //	swap_buffers();
 }
-
 
 int ModelViewController::handle(int event) 
 {
@@ -450,8 +521,10 @@ void ModelViewController::CopySettingsToGUI()
 	gui->RaftInterfaceThicknessSlider->value(ProcessControl.RaftInterfaceThickness);
 	gui->RaftInterfaceTemperatureSlider->value(ProcessControl.RaftInterfaceTemperature);
 
-	gui->portInput->value(ProcessControl.m_sPortName.c_str());
+	gui->portInput->value(ProcessControl.m_sPortName.c_str()[3]-'1');
+	gui->portInputSimple->value(ProcessControl.m_sPortName.c_str()[3]-'1');
 	gui->SerialSpeedInput->value(ProcessControl.m_iSerialSpeed);
+	gui->SerialSpeedInputSimple->value(ProcessControl.m_iSerialSpeed);
 
 	// GCode
 	gui->GCodeDrawStartSlider->value(ProcessControl.GCodeDrawStart);
@@ -543,11 +616,16 @@ void ModelViewController::CopySettingsToGUI()
 	gui->shrinkNiceButton->value(ProcessControl.m_ShrinkQuality == SHRINK_NICE);
 
 	gui->MVC->RefreshCustomButtonLabels();
-
+    gui->MVC->GetCustomButtonText(0);
 }
 
 void ModelViewController::Continue()
 {
+	gui->ContinueButton->label("Pause");
+	gui->ContinueButton->value(0);
+	gui->PrintButton->value(1);
+	gui->PrintButton->label("Print");
+	gui->PrintButton->deactivate();
 	serial.m_bPrinting = true;
 	serial.SendNextLine();
 }
@@ -557,16 +635,104 @@ void ModelViewController::Restart()
 	serial.Clear();	// resets line nr and clears buffer
 	Print();
 }
+
+void ModelViewController::ContinuePauseButton()
+{
+	if( gui->ContinueButton->label() == "Pause" )
+	{
+		Pause();
+	}
+	else
+	{
+		Continue();
+	}
+}
+
+
+void ModelViewController::PrintButton()
+{
+	if( gui->PrintButton->label() == "Print" )
+	{
+		Print();
+	}
+	else
+	{
+		Restart();
+	}
+}
+
 void ModelViewController::PrintDone()
 {
 	serial.Clear();	// resets line nr and buffer
 	serial.m_bPrinting = false;
 	gui->PrintButton->label("Print");
 	gui->PrintButton->value(0);
+	gui->PrintButton->activate();
+	gui->ContinueButton->value(0);
+	gui->ContinueButton->label("Pause");
 	gui->ContinueButton->deactivate();
 }
+
+void ModelViewController::ConnectToPrinter(char on)
+{
+	if(on)
+	{
+		serial.Connect(ProcessControl.m_sPortName, ProcessControl.m_iSerialSpeed);
+	}
+	else
+	{
+		serial.DisConnect();
+	}
+}
+
+void ModelViewController::SimplePrint()
+{
+	if( serial.isPrinting() )
+	{
+		MessageBoxA(0, "Already printing.", "Cannot start printing", 0);
+	}
+
+	if( !serial.isConnected() )
+	{
+		ConnectToPrinter(true);
+		WaitForConnection(5.0);
+	}
+
+	Print();
+}
+	
+void ModelViewController::WaitForConnection(float seconds)
+{
+	serial.WaitForConnection(seconds*1000);
+}
+
+void ModelViewController::serialConnected()
+{
+	gui->ConnectToPrinterButton->set();
+	gui->ConnectToPrinterSimpleButton->set();
+}
+
+void ModelViewController::serialConnectionLost()
+{
+	gui->ConnectToPrinterButton->clear();
+	gui->ConnectToPrinterSimpleButton->clear();
+}
+
 void ModelViewController::Print()
 {
+	if( !serial.isConnected() )
+	{
+		MessageBoxA(0, "Not connected to printer.", "Cannot start printing", 0);
+		return;
+	}
+
+	gui->ContinueButton->value(0);
+	gui->ContinueButton->activate();
+	gui->ContinueButton->label("Pause");
+	gui->PrintButton->value(1);
+	gui->PrintButton->label("Print");
+	gui->PrintButton->deactivate();
+
 	// Snack one line at a time from the Gcode view, and buffer it.
 /*
 	if(gui->PrintButton->value() == 0)	// Turned off print, cancel buffer and flush
@@ -606,7 +772,15 @@ void ModelViewController::Print()
 
 void ModelViewController::Pause()
 {
-	serial.m_bPrinting = false;
+	if( serial.isPrinting() )
+	{
+		gui->ContinueButton->value(1);
+		gui->ContinueButton->label("Continue");
+		gui->PrintButton->value(0);
+		gui->PrintButton->activate();
+		gui->PrintButton->label("Restart");
+		serial.m_bPrinting = false;
+	}
 }
 
 void ModelViewController::SwitchHeat(bool on, float temp)
@@ -929,8 +1103,10 @@ void ModelViewController::RunLua(char* script)
 			[
 			luabind::class_<ModelViewController>("ModelViewController")
 			.def("ReadStl", &ModelViewController::ReadStl)			// To use: base:ReadStl("c:/Vertex.stl")
-			.def("ClearGcode", &ModelViewController::ClearGcode)	// To use: base:ClearGcode()
+			.def("ConvertToGCode", &ModelViewController::ConvertToGCode)			// To use: base:ConvertToGCode()
+			.def("ClearGCode", &ModelViewController::ClearGcode)	// To use: base:ClearGcode()
 			.def("AddText", &ModelViewController::AddText)			// To use: base:AddText("text\n")
+			.def("Print", &ModelViewController::SimplePrint)			// To use: base:Print()
 			];
 
 		luabind::globals(myLuaState)["base"] = this;
@@ -1124,7 +1300,7 @@ RFO_File* ModelViewController::AddStl(STL stl, string filename)
 	r.node = 0;	//???
 	parent->files.push_back(r);
 	ProcessControl.rfo.BuildBrowser(ProcessControl);
-
+	parent->files[parent->files.size()-1].node->select(true); // select the new stl file.
 	ProcessControl.CalcBoundingBoxAndZoom();
 	redraw();
 	return &parent->files.back();

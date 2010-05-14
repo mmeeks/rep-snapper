@@ -701,19 +701,33 @@ void ProcessController::LoadXML(XMLElement *e)
 
 
 	if(gui && gui ->MVC )
+	{
 		gui->MVC->RefreshCustomButtonLabels();
+	}
 
-	x->FindVariableZ("GCodeLayerText", true, "M106                            ;cooler on \nG1 F2000;\nG1 X-250 E0 F2000.0       ;horizontal move\nG1 X-249.9                  ;horizontal move\nG1 X-250.0 E0 F50.0        ;horizontal move\nG92 X0                         ;set x 0\nG1 F2000;\nG1 Y-250 E0 F2000.0       ;horizontal move\nG1 Y-249.9  E0 F200          ;horizontal move\nG1 Y-250.0 F50.0        ;horizontal move\nG92 Y0                         ;set y 0\nG1 F500;\nG1 X20 E20 F500       ;Shield\nG1 X0 E20 F500         ;Shield\nT0                                 ;select new extruder\nG92 E0                         ;zero the extruded length\n")->GetValue(buffer);
+	x->FindVariableZ("GCodeLayerText", true, "")->GetValue(buffer);
 	GCodeLayerText = string(buffer);
 	memset(buffer,0,10000);
-	x->FindVariableZ("GCodeEndText", true, "M107                            ;cooler off\nG1 X0 Y0 E0 F2000.0       ;feed for start of next move\nM104 S0.0                    ;Heater off\n")->GetValue(buffer);
+	x->FindVariableZ("GCodeEndText", true, "G1 X0 Y0 F2000.0       ;feed for start of next move\nM104 S0.0                    ;Heater off\n")->GetValue(buffer);
 	GCodeEndText = string(buffer);
 	memset(buffer,0,10000);
 	x->FindVariableZ("Notes", true, "")->GetValue(buffer);
 	Notes = string(buffer);
 
 	memset(buffer,0,10000);
-	x->FindVariableZ("m_sPortName", true, "COM5")->GetValue(buffer);
+	x->FindVariableZ("m_sPortName", true, "COM ")->GetValue(buffer);
+	if( buffer[3] == ' ' )
+	{
+		int highestCom = MVC->CheckComPorts();
+		if( highestCom==0 ) 
+		{
+			buffer[3] = 5;
+		}
+		else
+		{
+			buffer[3] = '0'+highestCom;
+		}
+	}
 	m_sPortName = string(buffer);
 
 	y=x->FindVariableZ("m_iSerialSpeed", true, "19200");
@@ -723,13 +737,13 @@ void ProcessController::LoadXML(XMLElement *e)
 	if(y)	GCodeDrawStart = y->GetValueFloat();
 	y=x->FindVariableZ("GCodeDrawEnd", true, "1");
 	if(y)	GCodeDrawEnd = y->GetValueFloat();
-	y=x->FindVariableZ("MinPrintSpeedXY", true, "400");
+	y=x->FindVariableZ("MinPrintSpeedXY", true, "2300");
 	if(y)	MinPrintSpeedXY = y->GetValueFloat();
-	y=x->FindVariableZ("MaxPrintSpeedXY", true, "1500");
+	y=x->FindVariableZ("MaxPrintSpeedXY", true, "2300");
 	if(y)	MaxPrintSpeedXY = y->GetValueFloat();
-	y=x->FindVariableZ("MinPrintSpeedZ", true, "50");
+	y=x->FindVariableZ("MinPrintSpeedZ", true, "70");
 	if(y)	MinPrintSpeedZ = y->GetValueFloat();
-	y=x->FindVariableZ("MaxPrintSpeedZ", true, "150");
+	y=x->FindVariableZ("MaxPrintSpeedZ", true, "70");
 	if(y)	MaxPrintSpeedZ = y->GetValueFloat();
 
 	y=x->FindVariableZ("DistanceToReachFullSpeed", true, "3");
@@ -763,7 +777,7 @@ void ProcessController::LoadXML(XMLElement *e)
 	// CuttingPlane
 	y=x->FindVariableZ("InfillDistance", true, "2");
 	if(y)	InfillDistance = y->GetValueFloat();
-	y=x->FindVariableZ("InfillRotation", true, "90");
+	y=x->FindVariableZ("InfillRotation", true, "45");
 	if(y)	InfillRotation = y->GetValueFloat();
 	y=x->FindVariableZ("InfillRotationPrLayer", true, "90");
 	if(y)	InfillRotationPrLayer = y->GetValueFloat();
@@ -771,9 +785,9 @@ void ProcessController::LoadXML(XMLElement *e)
 	if(y)	ShellOnly = y->GetValueFloat();
 	y=x->FindVariableZ("ShellCount", true, "1");
 	if(y)	ShellCount = y->GetValueFloat();
-	y=x->FindVariableZ("EnableAcceleration", true, "1");
+	y=x->FindVariableZ("EnableAcceleration", true, "0");
 	if(y)	EnableAcceleration = (bool)y->GetValueInt();
-	y=x->FindVariableZ("UseIncrementalEcode", true, "0");
+	y=x->FindVariableZ("UseIncrementalEcode", true, "1");
 	if(y)	UseIncrementalEcode= (bool)y->GetValueInt();
 	y=x->FindVariableZ("Use3DGcode", true, "0");
 	if(y)	Use3DGcode= (bool)y->GetValueInt();
@@ -863,7 +877,7 @@ void ProcessController::LoadXML(XMLElement *e)
 	y=x->FindVariableZ("LuminanceShowsSpeed", true, "1");
 	if(y)	LuminanceShowsSpeed = (bool)y->GetValueInt();
 
-	y=x->FindVariableZ("RaftEnable", true, "1");
+	y=x->FindVariableZ("RaftEnable", true, "0");
 	if(y)	RaftEnable = (bool)y->GetValueInt();
 	y=x->FindVariableZ("ApronEnable", true, "0");
 	if(y)	ApronEnable = (bool)y->GetValueInt();

@@ -84,20 +84,22 @@ PWM (D 14) PD6 20|        |21  PD7 (D 15) PWM
 #include "UI.h"
 #include "AsyncSerial.h"
 
-class RepRapSerial : public BufferedAsyncSerial
+class RepRapSerial
 {
-public:
-	RepRapSerial(){m_bPrinting = false; m_iLineNr = 0; gui=0;m_bConnected=false; debugMask =  DEBUG_ECHO | DEBUG_INFO | DEBUG_ERRORS;logFile=0;}
-	void open(const std::string& devname, unsigned int baud_rate)
+private:
+	class RepRapBufferedAsyncSerial : public BufferedAsyncSerial
 	{
-		try{
-			BufferedAsyncSerial::open(devname, baud_rate);
-		} catch (std::exception& e) {
-			stringstream oss;
-			oss<<"Exception: " << e.what() << ":" << devname << endl;
-			debugPrint(oss.str(), true);
-		}
-	}
+	private:
+		RepRapSerial* _owner;
+	public:
+		void OnEvent(char* data, size_t size) { _owner->OnEvent(data,size); }
+		RepRapBufferedAsyncSerial(RepRapSerial* owner) : BufferedAsyncSerial() {_owner=owner;}
+	};
+public:
+
+	RepRapBufferedAsyncSerial* com;
+	RepRapSerial()  { m_bConnecting = false; m_bConnected = false; _startEvent = CreateEvent(NULL, true, false, NULL); com = new RepRapBufferedAsyncSerial(this); m_bPrinting = false; m_iLineNr = 0; gui=0;m_bConnected=false; debugMask =  DEBUG_ECHO | DEBUG_INFO | DEBUG_ERRORS;logFile=0;}
+
 	// Event handler
 //	virtual void OnEvent (EEvent eEvent, EError eError);
 
@@ -116,22 +118,30 @@ public:
 	void SendData(string s, const int lineNr);
 	void Connect(string port, int speed);
 	void DisConnect();
+	void DisConnect(char* reason);
 	bool isPrinting(){return m_bPrinting;}
 	bool isConnected(){return m_bConnected;}
+	bool isConnecting(){return m_bConnecting;}
+	DWORD GetConnectAttempt() { return ConnectAttempt; }
 	bool m_bPrinting;
-
+	void WaitForConnection(DWORD timeoutMS);
 private:
+	void internalWrite(string s, const int lineNr);
 	void debugPrint(string s, bool selectLine = false);
 	void echo(string s);
 	vector<string> buffer;
 	bool m_bConnected;
+	bool m_bConnecting;
 	uint m_iLineNr;
 	string InBuffer;
 	short debugMask;
+	DWORD ConnectAttempt;
+
+	HANDLE _startEvent;
 
 	GUI* gui;
 	FILE* logFile;
-	
+
 /*
 	// Very private :P
 	FT_HANDLE fthandle;

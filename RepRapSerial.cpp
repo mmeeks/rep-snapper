@@ -125,13 +125,18 @@ void RepRapSerial::StartPrint()
 	SendNextLine();
 	SendNextLine();
 	SendNextLine();
-
-
 }
 
 void RepRapSerial::SendNextLine()
 {
-
+	if( com->errorStatus() ) 
+	{
+		m_bConnecting = false;
+		m_bConnected = false;
+		m_bPrinting = false;
+		gui->MVC->serialConnectionLost();
+		return;
+	}
 	if(m_bPrinting == false)
 		return;
 	if(m_iLineNr < buffer.size())
@@ -154,14 +159,23 @@ void RepRapSerial::SendNextLine()
 
 void RepRapSerial::SendNow(string s)
 {
-
 	s+= "\n";
 	debugPrint( string("Sending:") + s);
-	write(s);
+	com->write(s);
 
 }
 void RepRapSerial::SendData(string s, const int lineNr)
 {
+	if( !m_bConnected ) return;
+
+	if( com->errorStatus() ) 
+	{
+		m_bConnecting = false;
+		m_bConnected = false;
+		m_bPrinting = false;
+		gui->MVC->serialConnectionLost();
+		return;
+	}
 
 	// Apply Downstream Multiplier
 
@@ -222,28 +236,82 @@ void RepRapSerial::SendData(string s, const int lineNr)
 
 	debugPrint( string("SendData:") + buffer);
 	buffer += "\r\n";
-	write(buffer);
+	com->write(buffer);
 }
-
 
 extern void TempReadTimer(void *);
 
+class ConnectionTimeOut
+{
+public:
+	RepRapSerial* serial;
+	DWORD ConnectAttempt;
+};
+
+void ConnectionTimeOutMethod(void *data)
+{
+	ConnectionTimeOut* timeout = (ConnectionTimeOut*)data;
+	if( timeout->serial->isConnecting() && timeout->ConnectAttempt == timeout->serial->GetConnectAttempt() )
+	{
+		timeout->serial->DisConnect("Connection attempt timed out");
+	}
+	delete timeout;
+}
+
 void RepRapSerial::Connect(string port, int speed)
 {
+	bool error = false;
+	if( m_bConnecting ) return;
+	ResetEvent(_startEvent);
+	m_bConnected = false;
+	m_bConnecting = true;
 	std::stringstream oss;
 	oss << "Connecting to port: " << port  << " at speed " << speed;
 	debugPrint( oss.str() );
-	open(port.c_str(), speed);
+	delete com;
+	com = new RepRapBufferedAsyncSerial(this);
+	try{
+		com->open(port.c_str(), speed);
+	} catch (std::exception& e) 
+	{
+		error = true;
+		stringstream oss;
+		oss<<"Exception: " << e.what() << ":" << port.c_str() << endl;
+		debugPrint(oss.str(), true);
+	}
+	if( error )
+	{
+		m_bConnecting = false;
+		gui->MVC->serialConnectionLost();
+		return;
+	}
+
+	ConnectionTimeOut* timeout= new ConnectionTimeOut();
+	timeout->serial = this;
+	timeout->ConnectAttempt = ++ConnectAttempt;
+
+	Fl::add_timeout(5.0f, &ConnectionTimeOutMethod, timeout);
 	Fl::add_timeout(1.0f, &TempReadTimer);
-	m_bConnected = true;
 }
 
+void RepRapSerial::DisConnect(char* reason)
+{
+	debugPrint(reason);
+	DisConnect();
+}
 
 void RepRapSerial::DisConnect()
 {
-	SendNow("M81");
-	close();
-	m_bConnected = false;
+	if( m_bConnected )
+	{
+		SendNow("M81");
+		m_bConnected = false;
+	}
+	m_bConnecting = false;
+	com->close();
+	ResetEvent(_startEvent);
+	Clear();
+	gui->MVC->serialConnectionLost();
 }
 
 void RepRapSerial::SetLineNr(int nr)
@@ -334,6 +402,10 @@ void RepRapSerial::OnEvent(char* data, size_t dwBytesRead)
 				debugPrint( string("Received: start"));
 				// Tell GUI we are ready to go.
 				int a=0;
+				m_bConnected = true;
+				m_bConnecting = false;
+				gui->MVC->serialConnected();
+				SetEvent(_startEvent);
 			}
 			else if(command.substr(0,3) == "E: ") // search, there's a parameter int (temperature_error, wait_till_hot)
 			{
@@ -388,3 +460,12 @@ void RepRapSerial::OnEvent(char* data, size_t dwBytesRead)
 		}
 	}
 }
+
+void RepRapSerial::WaitForConnection(DWORD timeoutMS)
+{
+	if( m_bConnecting )
+	{
+		WaitForSingleObject(_startEvent, timeoutMS);
+	}
+}
+

@@ -38,6 +38,7 @@ public:
 
 	// RFO Functions
 	void ReadRFO(string filename);
+	void ClearRFO() { ProcessControl.rfo.clear(ProcessControl); }
 
 	// STL Functions
 	void ReadStl(string filename);
@@ -74,7 +75,10 @@ public:
 
 	// Callback functions
 	void resize (int x,int y, int width, int height);		// Reshape The Window When It's Moved Or Resized
-
+	int  CheckComPorts();
+	static void Static_Timer_CB(void *userdata);
+	void Timer_CB();
+	
 	// LUA
 	void RunLua(char* buffer);
 
@@ -182,17 +186,11 @@ public:
 	ProcessController &getProcessController();
 
 	// Communication
-	void ConnectToPrinter(char on){
-		if(on)
-			{
-			serial.Connect(ProcessControl.m_sPortName, ProcessControl.m_iSerialSpeed);
-			}
-		else
-			{
-			serial.DisConnect();
-			}
+	void ConnectToPrinter(char on);
+	bool IsConnected() { return serial.isConnected(); }
+	void SimplePrint();
+	void WaitForConnection(float seconds);
 
-	}
 	void Print();
 	void Pause();
 	void Continue();
@@ -205,8 +203,8 @@ public:
 	void SetExtruderLength(int length);
 	void SetExtruderDirection(bool reverse);
 	void SendNow(string str);
-	void setPort(string s){ProcessControl.m_sPortName = s;}
-	void setSerialSpeed(int s ){ProcessControl.m_iSerialSpeed = s;}
+	void setPort(string s);
+	void setSerialSpeed(int s );
 	
 	void SetKeepLines(float val){ ProcessControl.KeepLines = (int)val;}
 
@@ -264,7 +262,13 @@ public:
 	void GetCustomButtonText(int nr);
 	void RefreshCustomButtonLabels();
 
+	void PrintButton();
+	void ContinuePauseButton();
+
 	/*--------------User interface (View)-------------------*/
 	GUI *gui;
 	ProcessController ProcessControl;
+
+	void serialConnected();
+	void serialConnectionLost();
 };

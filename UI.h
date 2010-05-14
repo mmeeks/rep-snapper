@@ -13,14 +13,16 @@ class ModelViewController;
 #include <FL/Fl_Tabs.H>
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Button.H>
-#include <FL/Fl_Light_Button.H>
-#include <FL/Fl_Text_Editor.H>
-#include "Flu_Tree_Browser.h"
+#include <FL/Fl_Text_Display.H>
 #include <FL/Fl_Value_Input.H>
+#include <FL/Fl_Choice.H>
+#include <FL/Fl_Light_Button.H>
+#include "Flu_Tree_Browser.h"
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Value_Slider.H>
 #include <FL/Fl_File_Chooser.H>
 #include <FL/Fl_Output.H>
+#include <FL/Fl_Text_Editor.H>
 #include <FL/Fl_Slider.H>
 #include <FL/Fl_Multi_Browser.H>
 #include <FL/Fl_Return_Button.H>
@@ -33,8 +35,32 @@ public:
   ModelViewController *MVC;
   Fl_Tabs *Tabs;
 private:
+  void cb_Tabs_i(Fl_Tabs*, void*);
+  static void cb_Tabs(Fl_Tabs*, void*);
   void cb_Load_i(Fl_Button*, void*);
   static void cb_Load(Fl_Button*, void*);
+  void cb_Convert_i(Fl_Button*, void*);
+  static void cb_Convert(Fl_Button*, void*);
+public:
+  Fl_Value_Input *SerialSpeedInputSimple;
+private:
+  void cb_SerialSpeedInputSimple_i(Fl_Value_Input*, void*);
+  static void cb_SerialSpeedInputSimple(Fl_Value_Input*, void*);
+public:
+  Fl_Choice *portInputSimple;
+private:
+  void cb_portInputSimple_i(Fl_Choice*, void*);
+  static void cb_portInputSimple(Fl_Choice*, void*);
+  static Fl_Menu_Item menu_portInputSimple[];
+public:
+  Fl_Light_Button *ConnectToPrinterSimpleButton;
+private:
+  void cb_ConnectToPrinterSimpleButton_i(Fl_Light_Button*, void*);
+  static void cb_ConnectToPrinterSimpleButton(Fl_Light_Button*, void*);
+  void cb_Print_i(Fl_Button*, void*);
+  static void cb_Print(Fl_Button*, void*);
+  void cb_Load1_i(Fl_Button*, void*);
+  static void cb_Load1(Fl_Button*, void*);
 public:
   Fl_Light_Button *FixSTLerrorsButton;
 private:
@@ -64,14 +90,8 @@ private:
   static void cb_RotateZButton(Fl_Button*, void*);
   void cb_Save1_i(Fl_Button*, void*);
   static void cb_Save1(Fl_Button*, void*);
-public:
-  Fl_Text_Editor *LuaScriptEditor;
-  Fl_Button *RunLuaButton;
-private:
-  void cb_RunLuaButton_i(Fl_Button*, void*);
-  static void cb_RunLuaButton(Fl_Button*, void*);
-  void cb_Load1_i(Fl_Button*, void*);
-  static void cb_Load1(Fl_Button*, void*);
+  void cb_Load2_i(Fl_Button*, void*);
+  static void cb_Load2(Fl_Button*, void*);
 public:
   Flu_Tree_Browser *RFP_Browser;
 private:
@@ -152,6 +172,7 @@ private:
   void cb_Duplicate_i(Fl_Button*, void*);
   static void cb_Duplicate(Fl_Button*, void*);
 public:
+  Fl_Group *PrinterDefinitionTab;
   Fl_Value_Input *VolumeX;
   Fl_Value_Input *VolumeY;
   Fl_Value_Input *VolumeZ;
@@ -225,15 +246,16 @@ private:
   void cb_Use3DGcodeButton_i(Fl_Light_Button*, void*);
   static void cb_Use3DGcodeButton(Fl_Light_Button*, void*);
 public:
-  Fl_Input *portInput;
-private:
-  void cb_portInput_i(Fl_Input*, void*);
-  static void cb_portInput(Fl_Input*, void*);
-public:
   Fl_Value_Input *SerialSpeedInput;
 private:
   void cb_SerialSpeedInput_i(Fl_Value_Input*, void*);
   static void cb_SerialSpeedInput(Fl_Value_Input*, void*);
+public:
+  Fl_Choice *portInput;
+private:
+  void cb_portInput_i(Fl_Choice*, void*);
+  static void cb_portInput(Fl_Choice*, void*);
+  static Fl_Menu_Item menu_portInput[];
 public:
   Fl_Light_Button *shrinkFastButton;
 private:
@@ -341,13 +363,13 @@ private:
   static void cb_RaftEnableButton(Fl_Light_Button*, void*);
   void cb_Preview_i(Fl_Light_Button*, void*);
   static void cb_Preview(Fl_Light_Button*, void*);
-  void cb_Load2_i(Fl_Button*, void*);
-  static void cb_Load2(Fl_Button*, void*);
+  void cb_Load3_i(Fl_Button*, void*);
+  static void cb_Load3(Fl_Button*, void*);
 public:
   Fl_Output *GCodeLengthText;
 private:
-  void cb_Convert_i(Fl_Button*, void*);
-  static void cb_Convert(Fl_Button*, void*);
+  void cb_Convert1_i(Fl_Button*, void*);
+  static void cb_Convert1(Fl_Button*, void*);
 public:
   Fl_Text_Editor *GCodeStart;
   Fl_Text_Editor *GCodeLayer;
@@ -549,6 +571,7 @@ private:
   void cb_Enable3_i(Fl_Light_Button*, void*);
   static void cb_Enable3(Fl_Light_Button*, void*);
 public:
+  Fl_Group *PrintTab;
   Fl_Multi_Browser *CommunationLog;
   Fl_Multi_Browser *ErrorLog;
   Fl_Multi_Browser *Echo;
@@ -581,11 +604,6 @@ private:
   static void cb_Speed(Fl_Value_Slider*, void*);
   void cb_Length_i(Fl_Value_Slider*, void*);
   static void cb_Length(Fl_Value_Slider*, void*);
-public:
-  Fl_Input *GCodeInput;
-private:
-  void cb_GCodeInput_i(Fl_Input*, void*);
-  static void cb_GCodeInput(Fl_Input*, void*);
 public:
   Fl_Output *CurrentTempText;
 private:
@@ -672,19 +690,12 @@ private:
   void cb_FileLogginEnabledButton_i(Fl_Light_Button*, void*);
   static void cb_FileLogginEnabledButton(Fl_Light_Button*, void*);
 public:
-  Fl_Light_Button *TempReadingEnabledButton;
-private:
-  void cb_TempReadingEnabledButton_i(Fl_Light_Button*, void*);
-  static void cb_TempReadingEnabledButton(Fl_Light_Button*, void*);
-public:
   Fl_Light_Button *ClearLogfilesWhenPrintStartsButton;
 private:
   void cb_ClearLogfilesWhenPrintStartsButton_i(Fl_Light_Button*, void*);
   static void cb_ClearLogfilesWhenPrintStartsButton(Fl_Light_Button*, void*);
   void cb_Clear_i(Fl_Button*, void*);
   static void cb_Clear(Fl_Button*, void*);
-  void cb_Send_i(Fl_Return_Button*, void*);
-  static void cb_Send(Fl_Return_Button*, void*);
 public:
   Fl_Button *CustomButton1;
 private:
@@ -786,6 +797,11 @@ private:
   void cb_CustomButton20_i(Fl_Button*, void*);
   static void cb_CustomButton20(Fl_Button*, void*);
 public:
+  Fl_Light_Button *TempReadingEnabledButton;
+private:
+  void cb_TempReadingEnabledButton_i(Fl_Light_Button*, void*);
+  static void cb_TempReadingEnabledButton(Fl_Light_Button*, void*);
+public:
   Fl_Text_Editor *CustomButtonText;
   Fl_Input *CustomButtonLabel;
   Fl_Value_Slider *CustomButtonSelectorSlider;
@@ -831,11 +847,6 @@ public:
 private:
   void cb_PrintButton_i(Fl_Light_Button*, void*);
   static void cb_PrintButton(Fl_Light_Button*, void*);
-public:
-  Fl_Button *ContinueButton;
-private:
-  void cb_ContinueButton_i(Fl_Button*, void*);
-  static void cb_ContinueButton(Fl_Button*, void*);
   void cb_Power_i(Fl_Light_Button*, void*);
   static void cb_Power(Fl_Light_Button*, void*);
 public:
@@ -843,6 +854,11 @@ public:
 private:
   void cb_KickButton_i(Fl_Button*, void*);
   static void cb_KickButton(Fl_Button*, void*);
+public:
+  Fl_Light_Button *ContinueButton;
+private:
+  void cb_ContinueButton_i(Fl_Light_Button*, void*);
+  static void cb_ContinueButton(Fl_Light_Button*, void*);
   void cb_Errors_i(Fl_Light_Button*, void*);
   static void cb_Errors(Fl_Light_Button*, void*);
   void cb_Info_i(Fl_Light_Button*, void*);
@@ -859,6 +875,19 @@ public:
 private:
   void cb_FanPowerSlider_i(Fl_Value_Slider*, void*);
   static void cb_FanPowerSlider(Fl_Value_Slider*, void*);
+public:
+  Fl_Input *GCodeInput;
+private:
+  void cb_GCodeInput_i(Fl_Input*, void*);
+  static void cb_GCodeInput(Fl_Input*, void*);
+  void cb_Send_i(Fl_Return_Button*, void*);
+  static void cb_Send(Fl_Return_Button*, void*);
+public:
+  Fl_Text_Editor *LuaScriptEditor;
+  Fl_Button *RunLuaButton;
+private:
+  void cb_RunLuaButton_i(Fl_Button*, void*);
+  static void cb_RunLuaButton(Fl_Button*, void*);
 public:
   Fl_Progress *ProgressBar;
   void show(int argc, char **argv);
