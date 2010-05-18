@@ -718,7 +718,7 @@ void ProcessController::LoadXML(XMLElement *e)
 	x->FindVariableZ("m_sPortName", true, "COM ")->GetValue(buffer);
 	if( buffer[3] == ' ' )
 	{
-		int highestCom = MVC->CheckComPorts();
+		int highestCom = MVC->CheckComPorts(); // warning this code is likely to be called with MVC == null, extremely ugly. TODO: REWRITE!
 		if( highestCom==0 ) 
 		{
 			buffer[3] = 5;

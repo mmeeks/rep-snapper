@@ -222,13 +222,19 @@ int ModelViewController::CheckComPorts()
 		if( r != 87 )
 		{
 			highestCom = i;
-			const_cast<Fl_Menu_Item*>(gui->portInput->menu())[i-1].flags = FL_NORMAL_LABEL;
-			const_cast<Fl_Menu_Item*>(gui->portInputSimple->menu())[i-1].flags = FL_NORMAL_LABEL;
+			if( this ) // oups extremely ugly, should move this code to a static method and a callback
+			{
+				const_cast<Fl_Menu_Item*>(gui->portInput->menu())[i-1].flags = FL_NORMAL_LABEL;
+				const_cast<Fl_Menu_Item*>(gui->portInputSimple->menu())[i-1].flags = FL_NORMAL_LABEL;
+			}
 		}
 		else
 		{
-			const_cast<Fl_Menu_Item*>(gui->portInput->menu())[i-1].flags = FL_NO_LABEL;
-			const_cast<Fl_Menu_Item*>(gui->portInputSimple->menu())[i-1].flags = FL_NO_LABEL;
+			if( this ) // oups extremely ugly, should move this code to a static method and a callback
+			{
+				const_cast<Fl_Menu_Item*>(gui->portInput->menu())[i-1].flags = FL_NO_LABEL;
+				const_cast<Fl_Menu_Item*>(gui->portInputSimple->menu())[i-1].flags = FL_NO_LABEL;
+			}
 		}
 
 	}
