@@ -13,7 +13,7 @@ class GUI {open
   Function {GUI()} {open
   } {
     Fl_Window mainWindow {
-      label {RepSnapper by Kulitorum www.kulitorum.com} open selected
+      label {RepSnapper by Kulitorum www.kulitorum.com} open
       xywh {248 117 1280 835} type Double box UP_BOX color 39 selection_color 39 labelsize 12 resizable visible
     } {
       Fl_Box MVC {
@@ -31,11 +31,11 @@ class GUI {open
       } {
         Fl_Group {} {
           label Simple open
-          xywh {715 25 550 765} hide
+          xywh {715 25 555 765}
         } {
           Fl_Group {} {
             label Model open
-            xywh {720 157 535 88} box ENGRAVED_FRAME color 39
+            xywh {720 157 530 139} box ENGRAVED_FRAME color 39
           } {
             Fl_Button {} {
               label {Load STL}
@@ -68,6 +68,32 @@ MVC->redraw();
             Fl_Text_Display {} {
               label {And convert it into GCODE}
               xywh {880 205 15 25} box NO_BOX align 8
+            }
+            Fl_Button {} {
+              label {Load GCode}
+              callback {Fl_File_Chooser chooser("\\\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
+chooser.show();
+while (chooser.shown())
+	Fl::wait();
+if(chooser.value() == 0)
+	return;
+std::string dir(chooser.value());
+
+
+if(dir.length())
+{
+MVC->ReadGCode(dir);
+MVC->redraw();
+};} selected
+              xywh {735 255 145 25}
+            }
+            Fl_Text_Display {} {
+              label {Or just load previously generated GCODE directly}
+              xywh {880 255 15 25} box NO_BOX align 8
+            }
+            Fl_Box {} {
+              label {-----------------------------------------------------------------------------------------------------}
+              xywh {730 230 510 25}
             }
           }
           Fl_Group {} {
@@ -144,29 +170,29 @@ MVC->ConnectToPrinter(o->value());}
           }
           Fl_Group {} {
             label Print open
-            xywh {720 272 535 56} box ENGRAVED_FRAME color 39
+            xywh {720 329 535 56} box ENGRAVED_FRAME color 39
           } {
             Fl_Text_Display {} {
               label {Make a print}
-              xywh {885 285 15 25} box NO_BOX align 8
+              xywh {885 342 15 25} box NO_BOX align 8
             }
             Fl_Button {} {
               label Print
               callback {MVC->SimplePrint();}
-              xywh {735 285 145 25}
+              xywh {735 342 145 25}
             }
           }
           Fl_Group {} {
             label Calibrate open
-            xywh {720 354 535 54} box ENGRAVED_FRAME color 39
+            xywh {720 416 535 54} box ENGRAVED_FRAME color 39
           } {
             Fl_Text_Display {} {
               label {Makes a test print with various settings. (Disabled)}
-              xywh {885 367 15 25} box NO_BOX align 8
+              xywh {885 429 15 25} box NO_BOX align 8
             }
             Fl_Button {} {
               label {Calibration Print}
-              xywh {735 367 145 25} labelcolor 29
+              xywh {735 429 145 25} labelcolor 29
             }
           }
         }
@@ -1630,7 +1656,7 @@ MVC->SetFan(o->value()*(255.0f/12.0f));}
         }
         Fl_Group {} {
           label Lua
-          xywh {715 25 545 805} resizable
+          xywh {715 25 545 805} hide resizable
         } {
           Fl_Group {} {
             label {Lua script} open

@@ -14,6 +14,7 @@ class ModelViewController;
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Text_Display.H>
+#include <FL/Fl_Box.H>
 #include <FL/Fl_Value_Input.H>
 #include <FL/Fl_Choice.H>
 #include <FL/Fl_Light_Button.H>
@@ -41,6 +42,8 @@ private:
   static void cb_Load(Fl_Button*, void*);
   void cb_Convert_i(Fl_Button*, void*);
   static void cb_Convert(Fl_Button*, void*);
+  void cb_Load1_i(Fl_Button*, void*);
+  static void cb_Load1(Fl_Button*, void*);
 public:
   Fl_Value_Input *SerialSpeedInputSimple;
 private:
@@ -59,8 +62,8 @@ private:
   static void cb_ConnectToPrinterSimpleButton(Fl_Light_Button*, void*);
   void cb_Print_i(Fl_Button*, void*);
   static void cb_Print(Fl_Button*, void*);
-  void cb_Load1_i(Fl_Button*, void*);
-  static void cb_Load1(Fl_Button*, void*);
+  void cb_Load2_i(Fl_Button*, void*);
+  static void cb_Load2(Fl_Button*, void*);
 public:
   Fl_Light_Button *FixSTLerrorsButton;
 private:
@@ -90,8 +93,8 @@ private:
   static void cb_RotateZButton(Fl_Button*, void*);
   void cb_Save1_i(Fl_Button*, void*);
   static void cb_Save1(Fl_Button*, void*);
-  void cb_Load2_i(Fl_Button*, void*);
-  static void cb_Load2(Fl_Button*, void*);
+  void cb_Load3_i(Fl_Button*, void*);
+  static void cb_Load3(Fl_Button*, void*);
 public:
   Flu_Tree_Browser *RFP_Browser;
 private:
@@ -363,8 +366,8 @@ private:
   static void cb_RaftEnableButton(Fl_Light_Button*, void*);
   void cb_Preview_i(Fl_Light_Button*, void*);
   static void cb_Preview(Fl_Light_Button*, void*);
-  void cb_Load3_i(Fl_Button*, void*);
-  static void cb_Load3(Fl_Button*, void*);
+  void cb_Load4_i(Fl_Button*, void*);
+  static void cb_Load4(Fl_Button*, void*);
 public:
   Fl_Output *GCodeLengthText;
 private:

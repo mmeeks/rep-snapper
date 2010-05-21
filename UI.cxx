@@ -37,6 +37,26 @@ void GUI::cb_Convert(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Convert_i(o,v);
 }
 
+void GUI::cb_Load1_i(Fl_Button*, void*) {
+  Fl_File_Chooser chooser("\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
+chooser.show();
+while (chooser.shown())
+	Fl::wait();
+if(chooser.value() == 0)
+	return;
+std::string dir(chooser.value());
+
+
+if(dir.length())
+{
+MVC->ReadGCode(dir);
+MVC->redraw();
+};
+}
+void GUI::cb_Load1(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Load1_i(o,v);
+}
+
 void GUI::cb_SerialSpeedInputSimple_i(Fl_Value_Input* o, void*) {
   MVC->setSerialSpeed(o->value());
 }
@@ -80,7 +100,7 @@ void GUI::cb_Print(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Print_i(o,v);
 }
 
-void GUI::cb_Load1_i(Fl_Button*, void*) {
+void GUI::cb_Load2_i(Fl_Button*, void*) {
   Fl_File_Chooser chooser("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose GCode");
 chooser.show();
 while (chooser.shown())
@@ -96,8 +116,8 @@ MVC->ReadStl(dir);
 MVC->redraw();
 };
 }
-void GUI::cb_Load1(Fl_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load1_i(o,v);
+void GUI::cb_Load2(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load2_i(o,v);
 }
 
 void GUI::cb_FixSTLerrorsButton_i(Fl_Light_Button*, void*) {
@@ -182,7 +202,7 @@ void GUI::cb_Save1(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Save1_i(o,v);
 }
 
-void GUI::cb_Load2_i(Fl_Button*, void*) {
+void GUI::cb_Load3_i(Fl_Button*, void*) {
   Fl_File_Chooser chooser("C:/code/printed-parts", "*.xml", Fl_File_Chooser::SINGLE, "Choose RFO file");
 chooser.show();
 while (chooser.shown())
@@ -198,8 +218,8 @@ MVC->ReadRFO(dir);
 MVC->redraw();
 };
 }
-void GUI::cb_Load2(Fl_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load2_i(o,v);
+void GUI::cb_Load3(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load3_i(o,v);
 }
 
 void GUI::cb_RFP_Browser_i(Flu_Tree_Browser*, void*) {
@@ -627,7 +647,7 @@ void GUI::cb_Preview(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Preview_i(o,v);
 }
 
-void GUI::cb_Load3_i(Fl_Button*, void*) {
+void GUI::cb_Load4_i(Fl_Button*, void*) {
   Fl_File_Chooser chooser("\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
 chooser.show();
 while (chooser.shown())
@@ -643,8 +663,8 @@ MVC->ReadGCode(dir);
 MVC->redraw();
 };
 }
-void GUI::cb_Load3(Fl_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load3_i(o,v);
+void GUI::cb_Load4(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load4_i(o,v);
 }
 
 void GUI::cb_Convert1_i(Fl_Button*, void*) {
@@ -1639,9 +1659,8 @@ GUI::GUI() {
       Tabs->callback((Fl_Callback*)cb_Tabs);
       Tabs->align(FL_ALIGN_TOP_LEFT);
       Tabs->when(FL_WHEN_CHANGED);
-      { Fl_Group* o = new Fl_Group(715, 25, 550, 765, "Simple");
-        o->hide();
-        { Fl_Group* o = new Fl_Group(720, 157, 535, 88, "Model");
+      { Fl_Group* o = new Fl_Group(715, 25, 555, 765, "Simple");
+        { Fl_Group* o = new Fl_Group(720, 157, 530, 139, "Model");
           o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
           { Fl_Button* o = new Fl_Button(735, 175, 145, 25, "Load STL");
@@ -1658,6 +1677,16 @@ GUI::GUI() {
             o->box(FL_NO_BOX);
             o->align(FL_ALIGN_RIGHT);
           } // Fl_Text_Display* o
+          { Fl_Button* o = new Fl_Button(735, 255, 145, 25, "Load GCode");
+            o->callback((Fl_Callback*)cb_Load1);
+          } // Fl_Button* o
+          { Fl_Text_Display* o = new Fl_Text_Display(880, 255, 15, 25, "Or just load previously generated GCODE directly");
+            o->box(FL_NO_BOX);
+            o->align(FL_ALIGN_RIGHT);
+          } // Fl_Text_Display* o
+          { new Fl_Box(730, 230, 510, 25, "-----------------------------------------------------------------------------\
+------------------------");
+          } // Fl_Box* o
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(720, 47, 535, 88, "Printer");
@@ -1682,26 +1711,26 @@ GUI::GUI() {
           } // Fl_Text_Display* o
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(720, 272, 535, 56, "Print");
+        { Fl_Group* o = new Fl_Group(720, 329, 535, 56, "Print");
           o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
-          { Fl_Text_Display* o = new Fl_Text_Display(885, 285, 15, 25, "Make a print");
+          { Fl_Text_Display* o = new Fl_Text_Display(885, 342, 15, 25, "Make a print");
             o->box(FL_NO_BOX);
             o->align(FL_ALIGN_RIGHT);
           } // Fl_Text_Display* o
-          { Fl_Button* o = new Fl_Button(735, 285, 145, 25, "Print");
+          { Fl_Button* o = new Fl_Button(735, 342, 145, 25, "Print");
             o->callback((Fl_Callback*)cb_Print);
           } // Fl_Button* o
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(720, 354, 535, 54, "Calibrate");
+        { Fl_Group* o = new Fl_Group(720, 416, 535, 54, "Calibrate");
           o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
-          { Fl_Text_Display* o = new Fl_Text_Display(885, 367, 15, 25, "Makes a test print with various settings. (Disabled)");
+          { Fl_Text_Display* o = new Fl_Text_Display(885, 429, 15, 25, "Makes a test print with various settings. (Disabled)");
             o->box(FL_NO_BOX);
             o->align(FL_ALIGN_RIGHT);
           } // Fl_Text_Display* o
-          { Fl_Button* o = new Fl_Button(735, 367, 145, 25, "Calibration Print");
+          { Fl_Button* o = new Fl_Button(735, 429, 145, 25, "Calibration Print");
             o->labelcolor((Fl_Color)29);
           } // Fl_Button* o
           o->end();
@@ -1711,7 +1740,7 @@ GUI::GUI() {
       { Fl_Group* o = new Fl_Group(715, 25, 560, 790, "Input file");
         o->hide();
         { Fl_Button* o = new Fl_Button(725, 35, 130, 25, "Load STL");
-          o->callback((Fl_Callback*)cb_Load1);
+          o->callback((Fl_Callback*)cb_Load2);
         } // Fl_Button* o
         { FixSTLerrorsButton = new Fl_Light_Button(995, 35, 135, 25, "Fix STL errors");
           FixSTLerrorsButton->value(1);
@@ -1743,7 +1772,7 @@ GUI::GUI() {
           o->callback((Fl_Callback*)cb_Save1);
         } // Fl_Button* o
         { Fl_Button* o = new Fl_Button(725, 65, 130, 25, "Load RFO");
-          o->callback((Fl_Callback*)cb_Load2);
+          o->callback((Fl_Callback*)cb_Load3);
         } // Fl_Button* o
         { RFP_Browser = new Flu_Tree_Browser(725, 95, 355, 440, "RFO file");
           RFP_Browser->box(FL_UP_BOX);
@@ -2285,7 +2314,7 @@ e rest of the print.");
       { Fl_Group* o = new Fl_Group(715, 25, 540, 790, "GCode");
         o->hide();
         { Fl_Button* o = new Fl_Button(715, 75, 145, 25, "Load Gcode");
-          o->callback((Fl_Callback*)cb_Load3);
+          o->callback((Fl_Callback*)cb_Load4);
         } // Fl_Button* o
         { GCodeLengthText = new Fl_Output(865, 76, 225, 24);
         } // Fl_Output* GCodeLengthText
@@ -3054,6 +3083,7 @@ e rest of the print.");
         PrintTab->end();
       } // Fl_Group* PrintTab
       { Fl_Group* o = new Fl_Group(715, 25, 545, 805, "Lua");
+        o->hide();
         { Fl_Group* o = new Fl_Group(715, 45, 535, 785, "Lua script");
           o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
