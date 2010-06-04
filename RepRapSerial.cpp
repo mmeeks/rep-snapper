@@ -11,7 +11,6 @@ RepRapSerial::RepRapSerial()
 	m_bPrinting = false;
 	m_iLineNr = 0;
 	gui = 0;
-	m_bConnected = false;
 	debugMask = DEBUG_ECHO | DEBUG_INFO | DEBUG_ERRORS;
 	logFile = 0;
 }

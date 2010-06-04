@@ -177,17 +177,14 @@ void ModelViewController::Static_Timer_CB(void *userdata) {
     Fl::repeat_timeout(0.25, Static_Timer_CB, userdata);
 }
 
+/* Called every 250ms (0.25 of a second) */
 void ModelViewController::Timer_CB() 
 {
 	if( gui->Tabs->value() == gui->PrinterDefinitionTab )
 	{
-		static ULONGLONG lastCheckForComPorts = -1;
-		ULONGLONG tick = GetTickCount64();
-		if( tick-lastCheckForComPorts > 10000 )
-		{
-			lastCheckForComPorts = tick;
-			CheckComPorts();
-		}
+	  static uint count = 0;
+	  if ((count++ % 4) == 0) /* every second */
+		CheckComPorts();
 	}
 	if( gui->Tabs->value() == gui->PrintTab )
 	{
@@ -204,6 +201,7 @@ void ModelViewController::resize(int x,int y, int width, int height)					// Resh
 int ModelViewController::CheckComPorts()
 {
 	int highestCom = 0;
+#ifdef WIN32
 	for(int i = 1; i <=9 ; i++ )
 	{
         TCHAR strPort[32] = {0};
@@ -238,6 +236,11 @@ int ModelViewController::CheckComPorts()
 		}
 
 	}
+#else // Linux
+	// FIXME: this API needs massaging to return a string vector
+	highestCom = 1;
+#endif
+
 	return highestCom;
 }
 
@@ -695,7 +698,7 @@ void ModelViewController::SimplePrint()
 {
 	if( serial.isPrinting() )
 	{
-		MessageBoxA(0, "Already printing.", "Cannot start printing", 0);
+		fl_alert ("Already printing.\nCannot start printing");
 	}
 
 	if( !serial.isConnected() )
@@ -728,7 +731,7 @@ void ModelViewController::Print()
 {
 	if( !serial.isConnected() )
 	{
-		MessageBoxA(0, "Not connected to printer.", "Cannot start printing", 0);
+		fl_alert ("Not connected to printer.\nCannot start printing");
 		return;
 	}
 
