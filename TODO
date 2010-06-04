@@ -1,0 +1,19 @@
+Native Linux File selector integration
+
+Makefile header dependencies are mandatory [URGH!]
+
+Command-line file opening
+
+Default to:
+	* Incremental E-code
+	* Remove G92 E0 from 'next layer'
+
+* Sizing / get side panel working [!?]
+
+* Read / grok gcode
+	+ work out why extrusion is different / odd ...
+
+Don't reverse at top speed for ages & break my extruder
+
+Have a 'gears' and 'whatnot' conversion thingit (?)
+

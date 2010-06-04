@@ -145,10 +145,6 @@ private:
 	short debugMask;
 	ulong ConnectAttempt;
 
-#ifdef WIN32
-	HANDLE _startEvent;
-#endif
-
 	GUI* gui;
 	FILE* logFile;
 
