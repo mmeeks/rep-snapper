@@ -1,7 +1,5 @@
 Native Linux File selector integration
 
-Command-line file opening
-
 Default to:
 	* Incremental E-code
 	* Remove G92 E0 from 'next layer'
