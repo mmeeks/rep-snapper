@@ -7,3 +7,19 @@ svn co http://svn.kulitorum.com/RepSnapper
 
 then copy this source over RepSnapper/Src
 And ln -s ../Libraries .
+
+Why do I do that ? - well, almost none of the (800Mb)
+of Libraries/ are required on Linux:
+
+du -m Libraries | sort -n | tail:
+
+48      Libraries/Boost1.40/doc/html/boost
+51      Libraries/Boost1.40/doc/html/boost_asio
+72      Libraries/Boost1.40/libs/math
+77      Libraries/Boost1.40/lib
+127     Libraries/Boost1.40/doc/html
+130     Libraries/Boost1.40/doc
+148     Libraries/Boost1.40/boost
+322     Libraries/Boost1.40/libs
+712     Libraries/Boost1.40
+805     Libraries
