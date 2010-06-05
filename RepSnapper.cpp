@@ -49,7 +49,7 @@ GUI *gui;
 
 using namespace std;
 
-int main()
+int main(int argc, char **argv)
 {
 	//initialize threading support in FLTK
 	Fl::lock();
@@ -63,7 +63,16 @@ int main()
 	MVC->gui = gui;
 	MVC->serial.setGUI(gui);
 	MVC->ProcessControl.gui = gui;
+
+	/* All command-line arguments are file-names */
+	if (argc > 1) {
+	  for (int i = 1; i < argc; i++)
+	    MVC->ReadStl(argv[i]);
+	} else
+	  MVC->ReadStl("C:/code/printed-parts/z-tensioner_1off.stl");
+
 	gui->show(1,&W);
+
 	return Fl::run();
 }
 

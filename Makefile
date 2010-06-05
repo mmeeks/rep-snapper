@@ -15,6 +15,9 @@ all: $(SOURCES) $(EXECUTABLE)
 $(EXECUTABLE): $(OBJECTS)
 	$(CXX) ${INC} $(OBJECTS) $(LDFLAGS) -o $@ 
 
+UI.h UI.cpp : UI.fl
+	fluid -c UI.fl
+
 .cpp.o:
 	$(CXX) ${INC} $(CFLAGS) $< -o $@
 .c.o:
@@ -30,7 +33,7 @@ clean:
 #	<Kulitorum> search.*
 #	<Kulitorum> simulator.*
 
-# DO NOT DELETE THIS LINE -- make depend depends on it.
+# DO NOT DELETE THIS LINE -- make depend depends on it, deletes after here and updates the deps.
 
 ArcBall.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
 ArcBall.o: stl.h ProcessController.h Printer.h RFO.h glutils.h RepRapSerial.h

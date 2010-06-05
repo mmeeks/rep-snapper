@@ -1,5 +1,4 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0110 
 header_name {.h} 
 code_name {.cxx}
 decl {\#pragma warning( disable : 4311 4312 4244 4267 4800)} {public global
@@ -1687,7 +1686,6 @@ MVC->SetFan(o->value()*(255.0f/12.0f));}
     code {Fl::visual( FL_DOUBLE | FL_RGB);
 Fl::scheme("plastic");
 mainWindow->show(argc, argv);
-MVC->ReadStl("C:/code/printed-parts/z-tensioner_1off.stl");
 MVC->init();
 MVC->CopySettingsToGUI();
 MVC->draw();
