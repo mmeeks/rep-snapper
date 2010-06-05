@@ -10,14 +10,17 @@ HEADERS=ArcBall.h AsyncSerial.h Convert.h Flu_DND.h Flu_Enumerations.h flu_expor
 OBJECTS=gpc.o $(SOURCES:.cpp=.o)
 EXECUTABLE=repsnapper
 
+Libraries:
+	@echo "Missing a sym-link to the libraries we need, read the README ..."
+
 all: $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CXX) ${INC} $(OBJECTS) $(LDFLAGS) -o $@ 
 
-.cpp.o:
+.cpp.o: Libraries
 	$(CXX) ${INC} $(CFLAGS) $< -o $@
-.c.o:
+.c.o: Libraries
 	$(CC) ${INC} $(CFLAGS) $< -o $@
 
 clean:
