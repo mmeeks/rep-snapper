@@ -10,17 +10,14 @@ HEADERS=ArcBall.h AsyncSerial.h Convert.h Flu_DND.h Flu_Enumerations.h flu_expor
 OBJECTS=gpc.o $(SOURCES:.cpp=.o)
 EXECUTABLE=repsnapper
 
-Libraries:
-	@echo "Missing a sym-link to the libraries we need, read the README ..."
-
 all: $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CXX) ${INC} $(OBJECTS) $(LDFLAGS) -o $@ 
 
-.cpp.o: Libraries
+.cpp.o:
 	$(CXX) ${INC} $(CFLAGS) $< -o $@
-.c.o: Libraries
+.c.o:
 	$(CC) ${INC} $(CFLAGS) $< -o $@
 
 clean:
@@ -32,3 +29,47 @@ clean:
 #	<Kulitorum> reprapusb.h
 #	<Kulitorum> search.*
 #	<Kulitorum> simulator.*
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+ArcBall.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
+ArcBall.o: stl.h ProcessController.h Printer.h RFO.h glutils.h RepRapSerial.h
+AsyncSerial.o: ArcBall.h gcode.h ModelViewController.h
+AsyncSerial.o: Printer.h RFO.h glutils.h RepRapSerial.h
+fillet.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
+fillet.o: stl.h ProcessController.h Printer.h RFO.h glutils.h RepRapSerial.h
+Flu_DND.o: flu_export.h
+flu_pixmaps.o: flu_pixmaps.h flu_export.h
+Flu_Tree_Browser.o: flu_pixmaps.h
+GCode.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
+GCode.o: stl.h ProcessController.h Printer.h RFO.h glutils.h RepRapSerial.h
+glutils.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
+glutils.o: stl.h ProcessController.h Printer.h RFO.h glutils.h RepRapSerial.h
+Main.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
+ModelViewController.o: ProcessController.h Printer.h RFO.h glutils.h
+Printer.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
+Printer.o: stl.h ProcessController.h Printer.h RFO.h glutils.h RepRapSerial.h
+ProcessController.o: Printer.h RFO.h glutils.h RepRapSerial.h
+RepRapSerial.o: ArcBall.h gcode.h ModelViewController.h
+RepRapSerial.o: Printer.h RFO.h glutils.h RepRapSerial.h
+RepRapSerial.o: Convert.h
+RepSnapper.o: ArcBall.h gcode.h ModelViewController.h
+RepSnapper.o: Printer.h RFO.h glutils.h RepRapSerial.h
+Search.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
+Search.o: stl.h ProcessController.h Printer.h RFO.h glutils.h RepRapSerial.h
+stdafx.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
+stdafx.o: stl.h ProcessController.h Printer.h RFO.h glutils.h RepRapSerial.h
+Flu_DND.o: flu_export.h
+Flu_Enumerations.o: flu_export.h
+flu_pixmaps.o: flu_export.h
+ModelViewController.o: ModelViewController.h stl.h ProcessController.h
+ModelViewController.o: Printer.h RFO.h Flu_Tree_Browser.h
+Printer.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
+Printer.o: stl.h ProcessController.h Printer.h RFO.h glutils.h RepRapSerial.h
+ProcessController.o: Printer.h RFO.h glutils.h RepRapSerial.h
+RepRapSerial.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
+Serial.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
+Serial.o: stl.h ProcessController.h Printer.h RFO.h glutils.h RepRapSerial.h
+stdafx.o: ProcessController.h stl.h RFO.h Flu_Tree_Browser.h
+stdafx.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
+stdafx.o: glutils.h RepRapSerial.h

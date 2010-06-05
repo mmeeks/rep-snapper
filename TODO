@@ -1,7 +1,5 @@
 Native Linux File selector integration
 
-Makefile header dependencies are mandatory [URGH!]
-
 Command-line file opening
 
 Default to:
