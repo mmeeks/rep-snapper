@@ -165,7 +165,7 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 
 	m_bExtruderDirection = true;
 	m_iExtruderSpeed = 3000;
-	m_iExtruderLength = 750;
+	m_iExtruderLength = 150;
 	m_fTargetTemp = 63.0f;
 
 	Fl::add_timeout(0.25, Static_Timer_CB, (void*)this);
@@ -529,8 +529,8 @@ void ModelViewController::CopySettingsToGUI()
 	gui->RaftInterfaceThicknessSlider->value(ProcessControl.RaftInterfaceThickness);
 	gui->RaftInterfaceTemperatureSlider->value(ProcessControl.RaftInterfaceTemperature);
 
-	gui->portInput->value(ProcessControl.m_sPortName.c_str()[3]-'1');
-	gui->portInputSimple->value(ProcessControl.m_sPortName.c_str()[3]-'1');
+	gui->portInput->value(ProcessControl.m_sPortName.c_str());
+	gui->portInputSimple->value(ProcessControl.m_sPortName.c_str());
 	gui->SerialSpeedInput->value(ProcessControl.m_iSerialSpeed);
 	gui->SerialSpeedInputSimple->value(ProcessControl.m_iSerialSpeed);
 
