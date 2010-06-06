@@ -150,8 +150,6 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 	ThisRot.M[3]=0.0f;ThisRot.M[4]=1.0f;ThisRot.M[5]=0.0f;					// NEW: Last Rotation
 	ThisRot.M[6]=0.0f;ThisRot.M[7]=0.0f;ThisRot.M[8]=1.0f;					// NEW: Last Rotation
 
-	quadratic=gluNewQuadric();										// Create A Pointer To The Quadric Object
-
 	ProcessControl.LoadXML();
 	CopySettingsToGUI();
 
@@ -312,6 +310,7 @@ void ModelViewController::draw()
 		glEnable (GL_DEPTH_TEST);										// Enable Depth Testing
 		glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);				// Set Perspective Calculations To Most Accurate
 
+		quadratic=gluNewQuadric();										// Create A Pointer To The Quadric Object
 		gluQuadricNormals(quadratic, GLU_SMOOTH);						// Create Smooth Normals
 		gluQuadricTexture(quadratic, GL_TRUE);							// Create Texture Coords
 	}
