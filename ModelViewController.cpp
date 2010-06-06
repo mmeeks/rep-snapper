@@ -135,12 +135,6 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 {
 	gui = 0;
 	zoom = 100.0f;
-	glClearColor (0.0f, 0.0f, 0.0f, 0.5f);							// Black Background
-	glClearDepth (1.0f);											// Depth Buffer Setup
-	glDepthFunc (GL_LEQUAL);										// The Type Of Depth Testing (Less Or Equal)
-	glEnable (GL_DEPTH_TEST);										// Enable Depth Testing
-	glShadeModel (GL_FLAT);											// Select Flat Shading (Nice Definition Of Objects)
-	glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);				// Set Perspective Calculations To Most Accurate
 
 	ArcBall = new ArcBallT((GLfloat)w, (GLfloat)h);				                // NEW: ArcBall Instance
 
@@ -315,6 +309,10 @@ void ModelViewController::draw()
 
 		// enable lighting
 		glDisable ( GL_LIGHTING);
+
+		glDepthFunc (GL_LEQUAL);										// The Type Of Depth Testing (Less Or Equal)
+		glEnable (GL_DEPTH_TEST);										// Enable Depth Testing
+		glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);				// Set Perspective Calculations To Most Accurate
 	}
 //    glEnable(GL_BLEND);
 //    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
