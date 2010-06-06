@@ -13,7 +13,6 @@
 #include <vector>
 #include <boost/thread.hpp> 
 #include <boost/asio.hpp>
-#include <boost/thread.hpp>
 #include <boost/utility.hpp>
 #include <boost/function.hpp>
 #include <boost/shared_array.hpp>

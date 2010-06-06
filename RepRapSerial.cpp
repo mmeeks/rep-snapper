@@ -2,6 +2,19 @@
 #include "RepRapSerial.h"
 #include "Convert.h"
 
+
+RepRapSerial::RepRapSerial()
+{
+	m_bConnecting = false;
+	m_bConnected = false;
+	com = new RepRapBufferedAsyncSerial(this);
+	m_bPrinting = false;
+	m_iLineNr = 0;
+	gui = 0;
+	debugMask = DEBUG_ECHO | DEBUG_INFO | DEBUG_ERRORS;
+	logFile = 0;
+}
+
 void RepRapSerial::debugPrint(string s, bool selectLine)
 {
 	uint a=0;
@@ -245,7 +258,7 @@ class ConnectionTimeOut
 {
 public:
 	RepRapSerial* serial;
-	DWORD ConnectAttempt;
+	ulong ConnectAttempt;
 };
 
 void ConnectionTimeOutMethod(void *data)
@@ -262,9 +275,9 @@ void RepRapSerial::Connect(string port, int speed)
 {
 	bool error = false;
 	if( m_bConnecting ) return;
-	ResetEvent(_startEvent);
 	m_bConnected = false;
 	m_bConnecting = true;
+	c.notify_all();
 	std::stringstream oss;
 	oss << "Connecting to port: " << port  << " at speed " << speed;
 	debugPrint( oss.str() );
@@ -309,7 +322,7 @@ void RepRapSerial::DisConnect()
 	}
 	m_bConnecting = false;
 	com->close();
-	ResetEvent(_startEvent);
+	c.notify_all();
 	Clear();
 	gui->MVC->serialConnectionLost();
 }
@@ -338,6 +351,11 @@ void RepRapSerial::SetDebugMask()
 	SendNow(buffer);
 }
 
+/*
+ * King sized, man-trap for the un-wary. This method is called
+ * from a separate AsyncSerial thread; we need to get data
+ * synchronisation right.
+ */
 void RepRapSerial::OnEvent(char* data, size_t dwBytesRead)
 {
 	int a=0;
@@ -405,7 +423,7 @@ void RepRapSerial::OnEvent(char* data, size_t dwBytesRead)
 				m_bConnected = true;
 				m_bConnecting = false;
 				gui->MVC->serialConnected();
-				SetEvent(_startEvent);
+				c.notify_all();
 			}
 			else if(command.substr(0,3) == "E: ") // search, there's a parameter int (temperature_error, wait_till_hot)
 			{
@@ -461,11 +479,14 @@ void RepRapSerial::OnEvent(char* data, size_t dwBytesRead)
 	}
 }
 
-void RepRapSerial::WaitForConnection(DWORD timeoutMS)
+void RepRapSerial::WaitForConnection(ulong timeoutMS)
 {
-	if( m_bConnecting )
-	{
-		WaitForSingleObject(_startEvent, timeoutMS);
-	}
+	Guard a(m);
+	boost::system_time until;
+
+	until = boost::get_system_time() + boost::posix_time::milliseconds(timeoutMS);
+
+	while (m_bConnecting && c.timed_wait(a, until));
+
 }
 

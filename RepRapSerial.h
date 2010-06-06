@@ -1,5 +1,8 @@
 #pragma once
 
+#include <boost/thread.hpp> 
+
+
 //Physical Pin Mappings for Direct Drive
 
 /*
@@ -87,6 +90,11 @@ PWM (D 14) PD6 20|        |21  PD7 (D 15) PWM
 class RepRapSerial
 {
 private:
+	boost::mutex m;
+	boost::condition_variable c;
+
+	typedef boost::unique_lock<boost::mutex> Guard;
+  
 	class RepRapBufferedAsyncSerial : public BufferedAsyncSerial
 	{
 	private:
@@ -98,8 +106,8 @@ private:
 public:
 
 	RepRapBufferedAsyncSerial* com;
-	RepRapSerial()  { m_bConnecting = false; m_bConnected = false; _startEvent = CreateEvent(NULL, true, false, NULL); com = new RepRapBufferedAsyncSerial(this); m_bPrinting = false; m_iLineNr = 0; gui=0;m_bConnected=false; debugMask =  DEBUG_ECHO | DEBUG_INFO | DEBUG_ERRORS;logFile=0;}
-
+	RepRapSerial();
+	
 	// Event handler
 //	virtual void OnEvent (EEvent eEvent, EError eError);
 
@@ -122,9 +130,9 @@ public:
 	bool isPrinting(){return m_bPrinting;}
 	bool isConnected(){return m_bConnected;}
 	bool isConnecting(){return m_bConnecting;}
-	DWORD GetConnectAttempt() { return ConnectAttempt; }
+	ulong GetConnectAttempt() { return ConnectAttempt; }
 	bool m_bPrinting;
-	void WaitForConnection(DWORD timeoutMS);
+	void WaitForConnection(ulong timeoutMS);
 private:
 	void internalWrite(string s, const int lineNr);
 	void debugPrint(string s, bool selectLine = false);
@@ -135,9 +143,8 @@ private:
 	uint m_iLineNr;
 	string InBuffer;
 	short debugMask;
-	DWORD ConnectAttempt;
+	ulong ConnectAttempt;
 
-	HANDLE _startEvent;
 
 	GUI* gui;
 	FILE* logFile;

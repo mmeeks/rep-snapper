@@ -3116,6 +3116,7 @@ void GUI::show(int argc, char **argv) {
 Fl::scheme("plastic");
 mainWindow->show(argc, argv);
 MVC->ReadStl("C:/code/printed-parts/z-tensioner_1off.stl");
+MVC->ReadStl("C:/code/printed-parts/z-tensioner_1off.stl");
 MVC->init();
 MVC->CopySettingsToGUI();
 MVC->draw();
