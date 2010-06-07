@@ -43,7 +43,6 @@ typedef unsigned int        UINT;
 #include "ModelViewController.h"
 #include "Printer.h"
 #include "ProcessController.h"
-#include "search.h"
 #include "stl.h"
 #include "UI.h"
 #include "xml/XML.H"
