@@ -53,8 +53,6 @@ namespace {
 
       Fl::lock();
 
-      fprintf (stderr, "open gtk\n");
-
       switch (a->type) {
       case Fl_File_Chooser::CREATE:
 	button_text = GTK_STOCK_SAVE;

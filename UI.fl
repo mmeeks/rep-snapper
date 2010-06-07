@@ -38,21 +38,14 @@ class GUI {open
           } {
             Fl_Button {} {
               label {Load STL}
-              callback {Fl_File_Chooser chooser("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose GCode");
-chooser.show();
-while (chooser.shown())
-	Fl::wait();
-if(chooser.value() == 0)
+              callback {
+  std::string dir = FileChooser::open ("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose GCode");
+  if (!dir.length())
 	return;
-std::string dir(chooser.value());
-
-
-if(dir.length())
-{
-MVC->ClearRFO();
-MVC->ReadStl(dir);
-MVC->redraw();
-};}
+  MVC->ClearRFO();
+  MVC->ReadStl(dir);
+  MVC->redraw();
+}
               xywh {735 175 145 25}
             }
             Fl_Button {} {
@@ -70,20 +63,14 @@ MVC->redraw();
             }
             Fl_Button {} {
               label {Load GCode}
-              callback {Fl_File_Chooser chooser("\\\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
-chooser.show();
-while (chooser.shown())
-	Fl::wait();
-if(chooser.value() == 0)
+              callback {
+  std::string dir = FileChooser::open ("\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
+  if (!dir.length())
 	return;
-std::string dir(chooser.value());
 
-
-if(dir.length())
-{
-MVC->ReadGCode(dir);
-MVC->redraw();
-};}
+  MVC->ReadGCode(dir);
+  MVC->redraw();
+}
               xywh {735 255 145 25}
             }
             Fl_Text_Display {} {
