@@ -46,6 +46,7 @@ typedef unsigned int        UINT;
 #include "stl.h"
 #include "UI.h"
 #include "xml/XML.H"
+#include "File.h"
 
 typedef unsigned int uint;
 

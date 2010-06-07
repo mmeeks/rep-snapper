@@ -10,21 +10,12 @@ void GUI::cb_Tabs(Fl_Tabs* o, void* v) {
 }
 
 void GUI::cb_Load_i(Fl_Button*, void*) {
-  Fl_File_Chooser chooser("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose GCode");
-chooser.show();
-while (chooser.shown())
-	Fl::wait();
-if(chooser.value() == 0)
+  std::string dir = FileChooser::open ("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose GCode");
+  if (!dir.length())
 	return;
-std::string dir(chooser.value());
-
-
-if(dir.length())
-{
 MVC->ClearRFO();
 MVC->ReadStl(dir);
 MVC->redraw();
-};
 }
 void GUI::cb_Load(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Load_i(o,v);
