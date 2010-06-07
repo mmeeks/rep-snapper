@@ -125,7 +125,7 @@ public:
 	void SendData(string s, const int lineNr);
 	void Connect(string port, int speed);
 	void DisConnect();
-	void DisConnect(char* reason);
+	void DisConnect(const char* reason);
 	bool isPrinting(){return m_bPrinting;}
 	bool isConnected(){return m_bConnected;}
 	bool isConnecting(){return m_bConnecting;}
