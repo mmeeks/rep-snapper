@@ -84,6 +84,9 @@ namespace {
       GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
       gtk_file_chooser_set_current_folder (chooser, a->directory);
       gtk_file_chooser_set_select_multiple (chooser, multiple);
+      GtkFileFilter *filter = gtk_file_filter_new ();
+      gtk_file_filter_add_pattern (filter, a->filter);
+      gtk_file_chooser_add_filter (chooser, filter);
       if (gtk_dialog_run (GTK_DIALOG (chooser)) == GTK_RESPONSE_ACCEPT) {
 	gchar *fname = gtk_file_chooser_get_filename (chooser);
 	a->result = std::string (fname ? fname : "");
