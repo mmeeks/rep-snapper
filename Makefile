@@ -7,23 +7,31 @@ INC=-I/usr/include -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR) -I$(LIB_DIR)/ann_1.1
 LDFLAGS=-L/usr/lib -L$(LIB_DIR)/xml -lGLU -lfltk -lfltk_gl -lfltk_forms -lglut -lcustomxml -lboost_thread-mt -lboost_system-mt
 SOURCES=AsyncSerial.cpp RepSnapper.cpp stl.cpp gpc.c RepRapSerial.cpp ProcessController.cpp Printer.cpp ModelViewController.cpp glutils.cpp GCode.cpp ArcBall.cpp stdafx.cpp UI.cxx RFO.cpp Flu_DND.cpp flu_pixmaps.cpp FluSimpleString.cpp Flu_Tree_Browser.cpp ivcon.cpp
 HEADERS=ArcBall.h AsyncSerial.h Convert.h Flu_DND.h Flu_Enumerations.h flu_export.h flu_pixmaps.h FluSimpleString.h Flu_Tree_Browser.h gcode.h glutils.h gpc.h ivcon.h miniball.h ModelViewController.h Printer.h ProcessController.h RepRapSerial.h RFO.h search.h Serial.h stdafx.h stl.h triangle.h UI.h
-OBJECTS=gpc.o $(SOURCES:.cpp=.o)
+OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(SOURCES))))
+
 EXECUTABLE=repsnapper
 
-all: $(SOURCES) $(EXECUTABLE)
+all: xml $(SOURCES) $(EXECUTABLE)
+
+.phony: xml
+
+xml:
+	make -C ../Libraries/xml
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CXX) ${INC} $(OBJECTS) $(LDFLAGS) -o $@ 
 
-UI.h UI.cpp : UI.fl
-	fluid -c UI.fl
-
-.cpp.o:
+%.cxx:%.fl
+	fluid -c $<
+%.o:%.cxx
 	$(CXX) ${INC} $(CFLAGS) $< -o $@
-.c.o:
+%.o:%.cpp
+	$(CXX) ${INC} $(CFLAGS) $< -o $@
+%.o:%.c
 	$(CC) ${INC} $(CFLAGS) $< -o $@
 
 clean:
+	make -C ../Libraries/xml clean
 	rm -f *.o
 
 # not needed
