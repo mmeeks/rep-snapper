@@ -29,7 +29,7 @@ class GUI {open
         xywh {715 5 560 825} align 5 when 1
       } {
         Fl_Group {} {
-          label Simple open
+          label Simple open selected
           xywh {715 25 555 765}
         } {
           Fl_Group {} {
@@ -83,7 +83,7 @@ if(dir.length())
 {
 MVC->ReadGCode(dir);
 MVC->redraw();
-};} selected
+};}
               xywh {735 255 145 25}
             }
             Fl_Text_Display {} {
@@ -104,58 +104,6 @@ MVC->redraw();
               callback {MVC->setSerialSpeed(o->value());}
               xywh {1040 97 205 24}
             }
-            Fl_Choice portInputSimple {
-              label {Port:}
-              callback {char buf[] = "COM1\\0"; buf[3] = buf[3]+o->value();
-MVC->setPort(std::string(buf));} open
-              xywh {770 96 215 25} down_box BORDER_BOX when 1
-            } {
-              MenuItem {} {
-                label {COM 1}
-                user_data 1 user_data_type long
-                xywh {25 25 100 20} value 1
-              }
-              MenuItem {} {
-                label {COM 2}
-                user_data 2 user_data_type long
-                xywh {35 35 100 20} value 1
-              }
-              MenuItem {} {
-                label {COM 3}
-                user_data 3 user_data_type long
-                xywh {45 45 100 20} value 1
-              }
-              MenuItem {} {
-                label {COM 4}
-                user_data 4 user_data_type long
-                xywh {55 55 100 20} value 1
-              }
-              MenuItem {} {
-                label {COM 5}
-                user_data 5 user_data_type long
-                xywh {65 65 100 20} value 1
-              }
-              MenuItem {} {
-                label {COM 6}
-                user_data 6 user_data_type long
-                xywh {75 75 100 20} value 1
-              }
-              MenuItem {} {
-                label {COM 7}
-                user_data 7 user_data_type long
-                xywh {85 85 100 20} value 1
-              }
-              MenuItem {} {
-                label {COM 8}
-                user_data 8 user_data_type long
-                xywh {95 95 100 20} value 1
-              }
-              MenuItem {} {
-                label {COM 9}
-                user_data 8 user_data_type long
-                xywh {105 105 100 20} value 1
-              }
-            }
             Fl_Light_Button ConnectToPrinterSimpleButton {
               label {Connect to printer}
               callback {MVC->serialConnected();
@@ -165,6 +113,57 @@ MVC->ConnectToPrinter(o->value());}
             Fl_Text_Display {} {
               label {First lets connect to the printer}
               xywh {885 60 15 25} box NO_BOX align 8
+            }
+            Fl_Input_Choice portInputSimple {
+              label {Port:}
+              callback {MVC->setPort(std::string(o->input()->value()));} open
+              xywh {770 95 215 25} when 1
+            } {
+              MenuItem {} {
+                label COM1
+                user_data 1 user_data_type long
+                xywh {20 20 100 20} value 1
+              }
+              MenuItem {} {
+                label COM2
+                user_data 2 user_data_type long
+                xywh {30 30 100 20} value 1
+              }
+              MenuItem {} {
+                label COM3
+                user_data 3 user_data_type long
+                xywh {40 40 100 20} value 1
+              }
+              MenuItem {} {
+                label COM4
+                user_data 4 user_data_type long
+                xywh {50 50 100 20} value 1
+              }
+              MenuItem {} {
+                label COM5
+                user_data 5 user_data_type long
+                xywh {60 60 100 20} value 1
+              }
+              MenuItem {} {
+                label COM6
+                user_data 6 user_data_type long
+                xywh {70 70 100 20} value 1
+              }
+              MenuItem {} {
+                label COM7
+                user_data 7 user_data_type long
+                xywh {80 80 100 20} value 1
+              }
+              MenuItem {} {
+                label COM8
+                user_data 8 user_data_type long
+                xywh {90 90 100 20} value 1
+              }
+              MenuItem {} {
+                label COM9
+                user_data 8 user_data_type long
+                xywh {100 100 100 20} value 1
+              }
             }
           }
           Fl_Group {} {
@@ -531,7 +530,7 @@ distanceToReachFullSpeedSlider->deactivate();
             Fl_Value_Slider LayerThicknessSlider {
               label {Layer Thickness}
               callback {MVC->SetLayerThickness(o->value());}
-              xywh {730 290 515 20} type {Horz Knob} selection_color 2 align 5 minimum 0.1 maximum 3 step 0.1 value 0.4 textsize 14
+              xywh {730 290 515 20} type {Horz Knob} selection_color 2 align 5 minimum 0.1 maximum 3 value 0.4 textsize 14
             }
             Fl_Light_Button Use3DGcodeButton {
               label {Use 3D Gcode (for non-stepper extruders)}
@@ -541,63 +540,62 @@ distanceToReachFullSpeedSlider->deactivate();
           }
           Fl_Group {} {
             label Port open
-            xywh {720 736 535 53} box ENGRAVED_FRAME color 39
+            xywh {720 736 535 69} box ENGRAVED_FRAME color 39
           } {
             Fl_Value_Input SerialSpeedInput {
               label {Speed:}
               callback {MVC->setSerialSpeed(o->value());}
               xywh {1040 751 205 24}
             }
-            Fl_Choice portInput {
+            Fl_Input_Choice portInput {
               label {Port:}
-              callback {char buf[] = "COM1\\0"; buf[3] = buf[3]+o->value();
-MVC->setPort(std::string(buf));} open
-              xywh {770 750 215 25} down_box BORDER_BOX when 1
+              callback {MVC->setPort(std::string(o->input()->value()));} open
+              xywh {770 750 215 25} when 1
             } {
               MenuItem {} {
-                label {COM 1}
+                label COM1
                 user_data 1 user_data_type long
-                xywh {10 10 100 20} value 1
+                xywh {15 15 100 20} value 1
               }
               MenuItem {} {
-                label {COM 2}
+                label COM2
                 user_data 2 user_data_type long
-                xywh {20 20 100 20} value 1
+                xywh {25 25 100 20} value 1
               }
               MenuItem {} {
-                label {COM 3}
+                label COM3
                 user_data 3 user_data_type long
-                xywh {30 30 100 20} value 1
+                xywh {35 35 100 20} value 1
               }
               MenuItem {} {
-                label {COM 4}
+                label COM4
                 user_data 4 user_data_type long
-                xywh {40 40 100 20} value 1
+                xywh {45 45 100 20} value 1
               }
               MenuItem {} {
-                label {COM 5}
+                label COM5
                 user_data 5 user_data_type long
-                xywh {50 50 100 20} value 1
+                xywh {55 55 100 20} value 1
               }
               MenuItem {} {
-                label {COM 6}
+                label COM6
                 user_data 6 user_data_type long
-                xywh {60 60 100 20} value 1
+                xywh {65 65 100 20} value 1
               }
               MenuItem {} {
-                label {COM 7}
+                label COM7
                 user_data 7 user_data_type long
-                xywh {70 70 100 20} value 1
+                xywh {75 75 100 20} value 1
               }
               MenuItem {} {
-                label {COM 8}
+                label COM8
                 user_data 8 user_data_type long
-                xywh {80 80 100 20} value 1
+                xywh {85 85 100 20} value 1
               }
               MenuItem {} {
-                label {COM 9}
+                label COM9
                 user_data 8 user_data_type long
-                xywh {90 90 100 20} value 1
+                xywh {95 95 100 20} value 1
               }
             }
           }
@@ -1685,6 +1683,7 @@ MVC->SetFan(o->value()*(255.0f/12.0f));}
   } {
     code {Fl::visual( FL_DOUBLE | FL_RGB);
 Fl::scheme("plastic");
+MVC->ReadStl("C:/code/printed-parts/z-tensioner_1off.stl");
 mainWindow->show(argc, argv);
 MVC->init();
 MVC->CopySettingsToGUI();

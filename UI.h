@@ -16,8 +16,8 @@ class ModelViewController;
 #include <FL/Fl_Text_Display.H>
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Value_Input.H>
-#include <FL/Fl_Choice.H>
 #include <FL/Fl_Light_Button.H>
+#include <FL/Fl_Input_Choice.H>
 #include "Flu_Tree_Browser.h"
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Value_Slider.H>
@@ -50,16 +50,16 @@ private:
   void cb_SerialSpeedInputSimple_i(Fl_Value_Input*, void*);
   static void cb_SerialSpeedInputSimple(Fl_Value_Input*, void*);
 public:
-  Fl_Choice *portInputSimple;
-private:
-  void cb_portInputSimple_i(Fl_Choice*, void*);
-  static void cb_portInputSimple(Fl_Choice*, void*);
-  static Fl_Menu_Item menu_portInputSimple[];
-public:
   Fl_Light_Button *ConnectToPrinterSimpleButton;
 private:
   void cb_ConnectToPrinterSimpleButton_i(Fl_Light_Button*, void*);
   static void cb_ConnectToPrinterSimpleButton(Fl_Light_Button*, void*);
+public:
+  Fl_Input_Choice *portInputSimple;
+private:
+  void cb_portInputSimple_i(Fl_Input_Choice*, void*);
+  static void cb_portInputSimple(Fl_Input_Choice*, void*);
+  static Fl_Menu_Item menu_portInputSimple[];
   void cb_Print_i(Fl_Button*, void*);
   static void cb_Print(Fl_Button*, void*);
   void cb_Load2_i(Fl_Button*, void*);
@@ -254,10 +254,10 @@ private:
   void cb_SerialSpeedInput_i(Fl_Value_Input*, void*);
   static void cb_SerialSpeedInput(Fl_Value_Input*, void*);
 public:
-  Fl_Choice *portInput;
+  Fl_Input_Choice *portInput;
 private:
-  void cb_portInput_i(Fl_Choice*, void*);
-  static void cb_portInput(Fl_Choice*, void*);
+  void cb_portInput_i(Fl_Input_Choice*, void*);
+  static void cb_portInput(Fl_Input_Choice*, void*);
   static Fl_Menu_Item menu_portInput[];
 public:
   Fl_Light_Button *shrinkFastButton;

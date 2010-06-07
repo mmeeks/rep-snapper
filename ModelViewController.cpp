@@ -135,12 +135,6 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 {
 	gui = 0;
 	zoom = 100.0f;
-	glClearColor (0.0f, 0.0f, 0.0f, 0.5f);							// Black Background
-	glClearDepth (1.0f);											// Depth Buffer Setup
-	glDepthFunc (GL_LEQUAL);										// The Type Of Depth Testing (Less Or Equal)
-	glEnable (GL_DEPTH_TEST);										// Enable Depth Testing
-	glShadeModel (GL_FLAT);											// Select Flat Shading (Nice Definition Of Objects)
-	glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);				// Set Perspective Calculations To Most Accurate
 
 	ArcBall = new ArcBallT((GLfloat)w, (GLfloat)h);				                // NEW: ArcBall Instance
 
@@ -156,16 +150,12 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 	ThisRot.M[3]=0.0f;ThisRot.M[4]=1.0f;ThisRot.M[5]=0.0f;					// NEW: Last Rotation
 	ThisRot.M[6]=0.0f;ThisRot.M[7]=0.0f;ThisRot.M[8]=1.0f;					// NEW: Last Rotation
 
-	quadratic=gluNewQuadric();										// Create A Pointer To The Quadric Object
-	gluQuadricNormals(quadratic, GLU_SMOOTH);						// Create Smooth Normals
-	gluQuadricTexture(quadratic, GL_TRUE);							// Create Texture Coords
-
 	ProcessControl.LoadXML();
 	CopySettingsToGUI();
 
 	m_bExtruderDirection = true;
 	m_iExtruderSpeed = 3000;
-	m_iExtruderLength = 750;
+	m_iExtruderLength = 150;
 	m_fTargetTemp = 63.0f;
 
 	Fl::add_timeout(0.25, Static_Timer_CB, (void*)this);
@@ -316,6 +306,14 @@ void ModelViewController::draw()
 
 		// enable lighting
 		glDisable ( GL_LIGHTING);
+
+		glDepthFunc (GL_LEQUAL);										// The Type Of Depth Testing (Less Or Equal)
+		glEnable (GL_DEPTH_TEST);										// Enable Depth Testing
+		glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);				// Set Perspective Calculations To Most Accurate
+
+		quadratic=gluNewQuadric();										// Create A Pointer To The Quadric Object
+		gluQuadricNormals(quadratic, GLU_SMOOTH);						// Create Smooth Normals
+		gluQuadricTexture(quadratic, GL_TRUE);							// Create Texture Coords
 	}
 //    glEnable(GL_BLEND);
 //    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -530,8 +528,8 @@ void ModelViewController::CopySettingsToGUI()
 	gui->RaftInterfaceThicknessSlider->value(ProcessControl.RaftInterfaceThickness);
 	gui->RaftInterfaceTemperatureSlider->value(ProcessControl.RaftInterfaceTemperature);
 
-	gui->portInput->value(ProcessControl.m_sPortName.c_str()[3]-'1');
-	gui->portInputSimple->value(ProcessControl.m_sPortName.c_str()[3]-'1');
+	gui->portInput->value(ProcessControl.m_sPortName.c_str());
+	gui->portInputSimple->value(ProcessControl.m_sPortName.c_str());
 	gui->SerialSpeedInput->value(ProcessControl.m_iSerialSpeed);
 	gui->SerialSpeedInputSimple->value(ProcessControl.m_iSerialSpeed);
 

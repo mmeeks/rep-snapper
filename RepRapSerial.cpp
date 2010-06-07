@@ -278,7 +278,6 @@ void RepRapSerial::Connect(string port, int speed)
 	m_bConnected = false;
 	m_bConnecting = true;
 	c.notify_all();
-
 	std::stringstream oss;
 	oss << "Connecting to port: " << port  << " at speed " << speed;
 	debugPrint( oss.str() );
@@ -324,7 +323,6 @@ void RepRapSerial::DisConnect()
 	m_bConnecting = false;
 	com->close();
 	c.notify_all();
-
 	Clear();
 	gui->MVC->serialConnectionLost();
 }
@@ -489,5 +487,6 @@ void RepRapSerial::WaitForConnection(ulong timeoutMS)
 	until = boost::get_system_time() + boost::posix_time::milliseconds(timeoutMS);
 
 	while (m_bConnecting && c.timed_wait(a, until));
+
 }
 

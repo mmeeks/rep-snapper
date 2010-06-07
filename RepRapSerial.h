@@ -107,7 +107,7 @@ public:
 
 	RepRapBufferedAsyncSerial* com;
 	RepRapSerial();
-
+	
 	// Event handler
 //	virtual void OnEvent (EEvent eEvent, EError eError);
 
@@ -144,6 +144,7 @@ private:
 	string InBuffer;
 	short debugMask;
 	ulong ConnectAttempt;
+
 
 	GUI* gui;
 	FILE* logFile;

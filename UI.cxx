@@ -64,27 +64,6 @@ void GUI::cb_SerialSpeedInputSimple(Fl_Value_Input* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_SerialSpeedInputSimple_i(o,v);
 }
 
-void GUI::cb_portInputSimple_i(Fl_Choice* o, void*) {
-  char buf[] = "COM1\0"; buf[3] = buf[3]+o->value();
-MVC->setPort(std::string(buf));
-}
-void GUI::cb_portInputSimple(Fl_Choice* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_portInputSimple_i(o,v);
-}
-
-Fl_Menu_Item GUI::menu_portInputSimple[] = {
- {"COM 1", 0,  0, (void*)(1), 4, FL_NORMAL_LABEL, 0, 14, 0},
- {"COM 2", 0,  0, (void*)(2), 4, FL_NORMAL_LABEL, 0, 14, 0},
- {"COM 3", 0,  0, (void*)(3), 4, FL_NORMAL_LABEL, 0, 14, 0},
- {"COM 4", 0,  0, (void*)(4), 4, FL_NORMAL_LABEL, 0, 14, 0},
- {"COM 5", 0,  0, (void*)(5), 4, FL_NORMAL_LABEL, 0, 14, 0},
- {"COM 6", 0,  0, (void*)(6), 4, FL_NORMAL_LABEL, 0, 14, 0},
- {"COM 7", 0,  0, (void*)(7), 4, FL_NORMAL_LABEL, 0, 14, 0},
- {"COM 8", 0,  0, (void*)(8), 4, FL_NORMAL_LABEL, 0, 14, 0},
- {"COM 9", 0,  0, (void*)(8), 4, FL_NORMAL_LABEL, 0, 14, 0},
- {0,0,0,0,0,0,0,0,0}
-};
-
 void GUI::cb_ConnectToPrinterSimpleButton_i(Fl_Light_Button* o, void*) {
   MVC->serialConnected();
 MVC->ConnectToPrinter(o->value());
@@ -92,6 +71,26 @@ MVC->ConnectToPrinter(o->value());
 void GUI::cb_ConnectToPrinterSimpleButton(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_ConnectToPrinterSimpleButton_i(o,v);
 }
+
+void GUI::cb_portInputSimple_i(Fl_Input_Choice* o, void*) {
+  MVC->setPort(std::string(o->input()->value()));
+}
+void GUI::cb_portInputSimple(Fl_Input_Choice* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_portInputSimple_i(o,v);
+}
+
+Fl_Menu_Item GUI::menu_portInputSimple[] = {
+ {"COM1", 0,  0, (void*)(1), 4, FL_NORMAL_LABEL, 0, 14, 0},
+ {"COM2", 0,  0, (void*)(2), 4, FL_NORMAL_LABEL, 0, 14, 0},
+ {"COM3", 0,  0, (void*)(3), 4, FL_NORMAL_LABEL, 0, 14, 0},
+ {"COM4", 0,  0, (void*)(4), 4, FL_NORMAL_LABEL, 0, 14, 0},
+ {"COM5", 0,  0, (void*)(5), 4, FL_NORMAL_LABEL, 0, 14, 0},
+ {"COM6", 0,  0, (void*)(6), 4, FL_NORMAL_LABEL, 0, 14, 0},
+ {"COM7", 0,  0, (void*)(7), 4, FL_NORMAL_LABEL, 0, 14, 0},
+ {"COM8", 0,  0, (void*)(8), 4, FL_NORMAL_LABEL, 0, 14, 0},
+ {"COM9", 0,  0, (void*)(8), 4, FL_NORMAL_LABEL, 0, 14, 0},
+ {0,0,0,0,0,0,0,0,0}
+};
 
 void GUI::cb_Print_i(Fl_Button*, void*) {
   MVC->SimplePrint();
@@ -461,24 +460,23 @@ void GUI::cb_SerialSpeedInput(Fl_Value_Input* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_SerialSpeedInput_i(o,v);
 }
 
-void GUI::cb_portInput_i(Fl_Choice* o, void*) {
-  char buf[] = "COM1\0"; buf[3] = buf[3]+o->value();
-MVC->setPort(std::string(buf));
+void GUI::cb_portInput_i(Fl_Input_Choice* o, void*) {
+  MVC->setPort(std::string(o->input()->value()));
 }
-void GUI::cb_portInput(Fl_Choice* o, void* v) {
+void GUI::cb_portInput(Fl_Input_Choice* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_portInput_i(o,v);
 }
 
 Fl_Menu_Item GUI::menu_portInput[] = {
- {"COM 1", 0,  0, (void*)(1), 4, FL_NORMAL_LABEL, 0, 14, 0},
- {"COM 2", 0,  0, (void*)(2), 4, FL_NORMAL_LABEL, 0, 14, 0},
- {"COM 3", 0,  0, (void*)(3), 4, FL_NORMAL_LABEL, 0, 14, 0},
- {"COM 4", 0,  0, (void*)(4), 4, FL_NORMAL_LABEL, 0, 14, 0},
- {"COM 5", 0,  0, (void*)(5), 4, FL_NORMAL_LABEL, 0, 14, 0},
- {"COM 6", 0,  0, (void*)(6), 4, FL_NORMAL_LABEL, 0, 14, 0},
- {"COM 7", 0,  0, (void*)(7), 4, FL_NORMAL_LABEL, 0, 14, 0},
- {"COM 8", 0,  0, (void*)(8), 4, FL_NORMAL_LABEL, 0, 14, 0},
- {"COM 9", 0,  0, (void*)(8), 4, FL_NORMAL_LABEL, 0, 14, 0},
+ {"COM1", 0,  0, (void*)(1), 4, FL_NORMAL_LABEL, 0, 14, 0},
+ {"COM2", 0,  0, (void*)(2), 4, FL_NORMAL_LABEL, 0, 14, 0},
+ {"COM3", 0,  0, (void*)(3), 4, FL_NORMAL_LABEL, 0, 14, 0},
+ {"COM4", 0,  0, (void*)(4), 4, FL_NORMAL_LABEL, 0, 14, 0},
+ {"COM5", 0,  0, (void*)(5), 4, FL_NORMAL_LABEL, 0, 14, 0},
+ {"COM6", 0,  0, (void*)(6), 4, FL_NORMAL_LABEL, 0, 14, 0},
+ {"COM7", 0,  0, (void*)(7), 4, FL_NORMAL_LABEL, 0, 14, 0},
+ {"COM8", 0,  0, (void*)(8), 4, FL_NORMAL_LABEL, 0, 14, 0},
+ {"COM9", 0,  0, (void*)(8), 4, FL_NORMAL_LABEL, 0, 14, 0},
  {0,0,0,0,0,0,0,0,0}
 };
 
@@ -1695,12 +1693,6 @@ GUI::GUI() {
           { SerialSpeedInputSimple = new Fl_Value_Input(1040, 97, 205, 24, "Speed:");
             SerialSpeedInputSimple->callback((Fl_Callback*)cb_SerialSpeedInputSimple);
           } // Fl_Value_Input* SerialSpeedInputSimple
-          { portInputSimple = new Fl_Choice(770, 96, 215, 25, "Port:");
-            portInputSimple->down_box(FL_BORDER_BOX);
-            portInputSimple->callback((Fl_Callback*)cb_portInputSimple);
-            portInputSimple->when(FL_WHEN_CHANGED);
-            portInputSimple->menu(menu_portInputSimple);
-          } // Fl_Choice* portInputSimple
           { ConnectToPrinterSimpleButton = new Fl_Light_Button(735, 61, 145, 25, "Connect to printer");
             ConnectToPrinterSimpleButton->selection_color((Fl_Color)2);
             ConnectToPrinterSimpleButton->callback((Fl_Callback*)cb_ConnectToPrinterSimpleButton);
@@ -1709,6 +1701,11 @@ GUI::GUI() {
             o->box(FL_NO_BOX);
             o->align(FL_ALIGN_RIGHT);
           } // Fl_Text_Display* o
+          { portInputSimple = new Fl_Input_Choice(770, 95, 215, 25, "Port:");
+            portInputSimple->callback((Fl_Callback*)cb_portInputSimple);
+            portInputSimple->when(FL_WHEN_CHANGED);
+            portInputSimple->menu(menu_portInputSimple);
+          } // Fl_Input_Choice* portInputSimple
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(720, 329, 535, 56, "Print");
@@ -2030,7 +2027,6 @@ GUI::GUI() {
             LayerThicknessSlider->selection_color((Fl_Color)2);
             LayerThicknessSlider->minimum(0.1);
             LayerThicknessSlider->maximum(3);
-            LayerThicknessSlider->step(0.1);
             LayerThicknessSlider->value(0.4);
             LayerThicknessSlider->textsize(14);
             LayerThicknessSlider->callback((Fl_Callback*)cb_LayerThicknessSlider);
@@ -2042,18 +2038,17 @@ GUI::GUI() {
           } // Fl_Light_Button* Use3DGcodeButton
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(720, 736, 535, 53, "Port");
+        { Fl_Group* o = new Fl_Group(720, 736, 535, 69, "Port");
           o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)FL_DARK3);
           { SerialSpeedInput = new Fl_Value_Input(1040, 751, 205, 24, "Speed:");
             SerialSpeedInput->callback((Fl_Callback*)cb_SerialSpeedInput);
           } // Fl_Value_Input* SerialSpeedInput
-          { portInput = new Fl_Choice(770, 750, 215, 25, "Port:");
-            portInput->down_box(FL_BORDER_BOX);
+          { portInput = new Fl_Input_Choice(770, 750, 215, 25, "Port:");
             portInput->callback((Fl_Callback*)cb_portInput);
             portInput->when(FL_WHEN_CHANGED);
             portInput->menu(menu_portInput);
-          } // Fl_Choice* portInput
+          } // Fl_Input_Choice* portInput
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(720, 360, 535, 50, "Shrinking quality");
@@ -3114,6 +3109,7 @@ e rest of the print.");
 void GUI::show(int argc, char **argv) {
   Fl::visual( FL_DOUBLE | FL_RGB);
 Fl::scheme("plastic");
+MVC->ReadStl("C:/code/printed-parts/z-tensioner_1off.stl");
 mainWindow->show(argc, argv);
 MVC->init();
 MVC->CopySettingsToGUI();

@@ -874,7 +874,7 @@ void ProcessController::LoadXML(XMLElement *e)
 
 	y=x->FindVariableZ("DisplayGCode", true, "1");
 	if(y)	DisplayGCode = (bool)y->GetValueInt();
-	y=x->FindVariableZ("LuminanceShowsSpeed", true, "1");
+	y=x->FindVariableZ("LuminanceShowsSpeed", true, "0");
 	if(y)	LuminanceShowsSpeed = (bool)y->GetValueInt();
 
 	y=x->FindVariableZ("RaftEnable", true, "0");
