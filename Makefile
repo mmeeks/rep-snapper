@@ -16,7 +16,7 @@ all: xml $(SOURCES) $(EXECUTABLE)
 .phony: xml
 
 xml:
-	make -C ../Libraries/xml
+	make -C $(LIB_DIR)/xml
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CXX) ${INC} $(OBJECTS) $(LDFLAGS) -o $@ 
