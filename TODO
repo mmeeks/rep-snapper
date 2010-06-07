@@ -11,5 +11,6 @@ Default to:
 
 Don't reverse at top speed for ages & break my extruder
 
-Have a 'gears' and 'whatnot' conversion thingit (?)
+Have a 'calculate steps_per_mm' for geared extruders etc.
+
 
