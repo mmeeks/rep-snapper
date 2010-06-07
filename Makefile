@@ -11,12 +11,7 @@ OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(SOURCES))))
 
 EXECUTABLE=repsnapper
 
-all: xml $(SOURCES) $(EXECUTABLE)
-
-.phony: xml
-
-xml:
-	make -C $(LIB_DIR)/xml
+all: $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CXX) ${INC} $(OBJECTS) $(LDFLAGS) -o $@ 
