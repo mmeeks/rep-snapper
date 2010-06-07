@@ -1,4 +1,34 @@
+GCode:
+	Printer Temperature:
+		+ No toggle-able for this; why not - [ 235 ]
+		+ this is the 'M104'
+			+ why are we using M104 - should use:
+			+ M109 - set temp & wait for it ...
+		+ why not move to the purge location ?
+
+	Raft layers:
+		+ bad news - look buggy ...
+
+	Reversing extruder:
+		+ we *need* a G92 E0 between each layuer [!]
+		+ but not each foundation layer ?
+
+	Temperature Ratio:
+		+ does it work ? why set to 1.90 ? [ most odd ! ]
+		+ no M codes generated to change the raft temperature [!]
+
+
+Using it to generage gcode:
+	JGlauche: not
+	EbiDK: not
+	
+	
+
+
 Search for USB ttys on Linux ... :-)
+
+
+/* 
 
 Default to:
 	* Incremental E-code
@@ -42,3 +72,41 @@ Have a 'calculate steps_per_mm' for geared extruders etc.
 * Queue up patches removing affl headers - un-needed ... clean that up
 
 * Queue up file-chooser pieces ...
+
+
+
+** sooo ! ...
+	+ it seems the movements are all clocked off the extruder:
+		+ there is a mm/minute metric there ...
+	+ Hence, 'E22.4' - will extrude 22.4 mm - as it moves A->B
+
+
+  G1: Controlled move
+
+Example: G1 X90.6 Y13.8 E22.4
+
+Go in a straight line from the current (X, Y) point to the point (90.6, 13.8), extruding material as the move happens from the current extruded length to a length of 22.4 mm.
+
+RepRap does subtle things with feedrates. Thus:
+
+G1 F1500
+G1 X90.6 Y13.8 E22.4
+
+Will set a feedrate of 1500 mm/minute, then do the move described above at that feedrate. But
+
+G1 F1500
+G1 X90.6 Y13.8 E22.4 F3000
+
+Will set a feedrate of 1500 mm/minute, then do the move described above accelerating to a feedrate of 3000 mm/minute as it does so. The extrusion will accelerate along with the X, Y movement so everything stays synchronized.
+
+RepRap thus treats feedrate as simply another variable (like X, Y, Z, and E) to be linearly interpolated. This gives complete control over accelerations and decelerations in a way that ensures that everything moves together and the right volume of material is extruded at all points.
+
+The first example shows how to get a constant-speed movement. The second how to accelerate or decelerate. Thus
+
+G1 F1500
+G1 X90.6 Y13.8 E22.4 F3000
+G1 X80 Y20 E36 F1500
+
+Will do the first movement accelerating as before, and the second decelerating from 3000 mm/minute back to 1500 mm/minute.
+
+To reverse the extruder by a given amount (for example to reduce its internal pressure while it does an in-air movement so that it doesn't dribble) simply use G1 to send an E value that is less than the currently extruded length. 

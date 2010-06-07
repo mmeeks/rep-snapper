@@ -109,7 +109,6 @@ public:
 	RepRapSerial();
 	
 	// Event handler
-//	virtual void OnEvent (EEvent eEvent, EError eError);
 
 	void OnEvent(char* data, size_t size);
 
