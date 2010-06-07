@@ -1,7 +1,7 @@
 
 CC=gcc
 CXX=g++
-CFLAGS=-c -ggdb
+CFLAGS=-c -O0 -g
 GTK_LIBS=`pkg-config --libs gtk+-2.0 gthread-2.0`
 GTK_CFLAGS=`pkg-config --cflags gtk+-2.0 gthread-2.0`
 LIB_DIR=Libraries
