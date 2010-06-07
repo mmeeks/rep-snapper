@@ -64,7 +64,7 @@ class GUI {open
             Fl_Button {} {
               label {Load GCode}
               callback {
-  std::string dir = FileChooser::open ("\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
+  std::string dir = FileChooser::open ("\\\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
   if (!dir.length())
 	return;
 
@@ -187,20 +187,14 @@ MVC->ConnectToPrinter(o->value());}
         } {
           Fl_Button {} {
             label {Load STL}
-            callback {Fl_File_Chooser chooser("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose GCode");
-chooser.show();
-while (chooser.shown())
-	Fl::wait();
-if(chooser.value() == 0)
+            callback {
+
+  std::string dir = FileChooser::open ("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose STL");
+  if (!dir.length())
 	return;
-std::string dir(chooser.value());
-
-
-if(dir.length())
-{
-MVC->ReadStl(dir);
-MVC->redraw();
-};}
+  MVC->ReadStl(dir);
+  MVC->redraw();
+}
             xywh {725 35 130 25}
           }
           Fl_Light_Button FixSTLerrorsButton {
@@ -210,20 +204,13 @@ MVC->redraw();
           }
           Fl_Button {} {
             label {Save STL}
-            callback {Fl_File_Chooser chooser("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose GCode");
-chooser.show();
-while (chooser.shown())
-	Fl::wait();
-if(chooser.value() == 0)
+            callback {
+  std::string dir = FileChooser::open ("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose STL");
+  if (!dir.length())
 	return;
-std::string dir(chooser.value());
-
-
-if(dir.length())
-{
-MVC->ReadStl(dir);
-MVC->redraw();
-};}
+  MVC->ReadStl(dir);
+  MVC->redraw();
+}
             xywh {855 35 135 25} deactivate
           }
           Fl_Group {} {
@@ -278,20 +265,14 @@ MVC->ProcessControl.SaveXML();}
           }
           Fl_Button {} {
             label {Load RFO}
-            callback {Fl_File_Chooser chooser("C:/code/printed-parts", "*.xml", Fl_File_Chooser::SINGLE, "Choose RFO file");
-chooser.show();
-while (chooser.shown())
-	Fl::wait();
-if(chooser.value() == 0)
+            callback {
+
+  std::string dir = FileChooser::open ("C:/code/printed-parts", "*.xml", Fl_File_Chooser::SINGLE, "Choose RFO file");
+  if (!dir.length())
 	return;
-std::string dir(chooser.value());
-
-
-if(dir.length())
-{
-MVC->ReadRFO(dir);
-MVC->redraw();
-};}
+  MVC->ReadRFO(dir);
+  MVC->redraw();
+}
             xywh {725 65 130 25}
           }
           Fl_Box RFP_Browser {
@@ -758,20 +739,15 @@ MVC->redraw();}
         } {
           Fl_Button {} {
             label {Load Gcode}
-            callback {Fl_File_Chooser chooser("\\\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
-chooser.show();
-while (chooser.shown())
-	Fl::wait();
-if(chooser.value() == 0)
+            callback {
+
+  std::string dir = FileChooser::open ("\\\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
+  if (!dir.length())
 	return;
-std::string dir(chooser.value());
 
-
-if(dir.length())
-{
-MVC->ReadGCode(dir);
-MVC->redraw();
-};}
+  MVC->ReadGCode(dir);
+  MVC->redraw();
+}
             xywh {715 75 145 25}
             code0 {\#include <FL/Fl_File_Chooser.H>}
           }
@@ -813,20 +789,14 @@ MVC->redraw();
           }
           Fl_Button {} {
             label {Save Gcode}
-            callback {Fl_File_Chooser chooser("\\\\", "*.gcode", Fl_File_Chooser::CREATE, "Choose filename");
-chooser.show();
-while (chooser.shown())
-	Fl::wait();
-if(chooser.value() == 0)
+            callback {
+  std::string dir = FileChooser::open ("\\\\", "*.gcode", Fl_File_Chooser::CREATE, "Choose GCode filename");
+  if (!dir.length())
 	return;
-std::string dir(chooser.value());
 
-
-if(dir.length())
-{
 Fl_Text_Buffer *buffer = GCodeResult->buffer();
 
-int result = buffer->savefile(chooser.value());
+int result = buffer->savefile(dir.c_str());
 
 switch(result)
 {
@@ -841,7 +811,7 @@ break;
 }
 
 MVC->redraw();
-};}
+}
             xywh {1095 75 145 25}
             code0 {\#include <FL/Fl_File_Chooser.H>}
           }
