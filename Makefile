@@ -22,7 +22,7 @@ ifeq ($(UNAME),Darwin)
 # sudo port install boost fltk lua
     OPT_DIR=/opt/local
 	INC=-I$(OPT_DIR)/include -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)/ann_1.1.1/include -I$(LIB_DIR)
-	LDFLAGS=-L$(OPT_DIR)/lib -lpthread -lfltk -lfltk_forms -lfltk_gl -L$(LIB_DIR)/xml -lcustomxml
+	LDFLAGS=-L$(OPT_DIR)/lib -lpthread -lfltk -lfltk_forms -lfltk_gl -L$(LIB_DIR)/xml
 	LDFLAGS+= -lboost_thread-mt -l boost_system-mt
     LDFLAGS+= -framework Carbon -framework OpenGL -framework GLUT -framework AGL
 endif
@@ -61,7 +61,7 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) ${INC} $(CFLAGS) $< -o $@
 
 clean:
-	rm -f *.o
+	rm -f $(OBJECTS) $(EXECUTABLE)
 
 # make update-deps will re-write the dependenciues below
 update-depends:
