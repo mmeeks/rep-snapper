@@ -133,7 +133,7 @@ void AsyncSerial::readStart()
             asio::placeholders::bytes_transferred));
 }
 
-void AsyncSerial::readEnd(const system::error_code& error,
+void AsyncSerial::readEnd(const boost::system::error_code& error,
         size_t bytes_transferred)
 {
     if(error)
@@ -167,7 +167,7 @@ void AsyncSerial::doWrite()
     }
 }
 
-void AsyncSerial::writeEnd(const system::error_code& error)
+void AsyncSerial::writeEnd(const boost::system::error_code& error)
 {
     if(!error)
     {
@@ -193,7 +193,7 @@ void AsyncSerial::writeEnd(const system::error_code& error)
 
 void AsyncSerial::doClose()
 {
-    system::error_code ec;
+    boost::system::error_code ec;
     port_.close(ec);
     if(ec) setErrorStatus(true);
 }

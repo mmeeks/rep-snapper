@@ -12,6 +12,8 @@
 
 #include <vector>
 #include <boost/thread.hpp> 
+#include <boost/system/error_code.hpp> 
+#include <boost/system/system_error.hpp> 
 #include <boost/asio.hpp>
 #include <boost/utility.hpp>
 #include <boost/function.hpp>

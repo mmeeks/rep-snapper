@@ -3,8 +3,6 @@
 // Program Entry (WinMain)
 
 //#include <windows.h>													// Header File For The Windows Library
-#include <GL/gl.h>														// Header File For The OpenGL32 Library
-#include <GL/glu.h>														// Header File For The GLu32 Library
 
 #include "gcode.h"
 #include "UI.h"

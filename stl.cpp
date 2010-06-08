@@ -19,9 +19,6 @@
 #include "math.h"
 //#include "pathfinder.h"
 
-#include <GL/glu.h>
-#include <GL/glut.h>
-
 #include <iostream>
 #include <fstream>
 #include <algorithm>

@@ -21,6 +21,7 @@
 #endif						
 
 #pragma warning( disable : 4311 4312 4244 4267 4800)
+typedef unsigned int        uint;
 
 #define DEBUG_ECHO (1<<0)
 #define DEBUG_INFO (1<<1)
@@ -31,12 +32,10 @@
 typedef unsigned int        uint;
 #endif
 typedef unsigned int        UINT;
+#include "platform.h"
 #include <stdio.h>
 #include <FL/Fl.H>
 #include <vmmlib/vmmlib.h>
-#include <GL/gl.h>												// Header File For The OpenGL32 Library
-#include <GL/glu.h>												// Header File For The GLu32 Library
-//#include <gl\glaux.h>											// Header File For The GLaux Library
 #include "math.h"                                               // Needed for sqrtf
 #include "ArcBall.h"
 #include "gcode.h"

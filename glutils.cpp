@@ -1,6 +1,4 @@
 #include "stdafx.h"
-//#include <windows.h>
-#include <GL/gl.h>
 
 // This class was snagged from the opengl tutorial at http://www.gamedev.net/reference/articles/article1172.asp
 
