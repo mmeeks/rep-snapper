@@ -73,6 +73,7 @@ int main(int argc, char **argv)
   
 	
 	gui->show(1,&W);
+
 	return Fl::run();
 }
 

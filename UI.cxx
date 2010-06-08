@@ -10,21 +10,12 @@ void GUI::cb_Tabs(Fl_Tabs* o, void* v) {
 }
 
 void GUI::cb_Load_i(Fl_Button*, void*) {
-  Fl_File_Chooser chooser("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose GCode");
-chooser.show();
-while (chooser.shown())
-	Fl::wait();
-if(chooser.value() == 0)
+  std::string dir = FileChooser::open ("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose STL");
+  if (!dir.length())
 	return;
-std::string dir(chooser.value());
-
-
-if(dir.length())
-{
 MVC->ClearRFO();
 MVC->ReadStl(dir);
 MVC->redraw();
-};
 }
 void GUI::cb_Load(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Load_i(o,v);
@@ -38,20 +29,12 @@ void GUI::cb_Convert(Fl_Button* o, void* v) {
 }
 
 void GUI::cb_Load1_i(Fl_Button*, void*) {
-  Fl_File_Chooser chooser("\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
-chooser.show();
-while (chooser.shown())
-	Fl::wait();
-if(chooser.value() == 0)
+  std::string dir = FileChooser::open ("\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
+  if (!dir.length())
 	return;
-std::string dir(chooser.value());
 
-
-if(dir.length())
-{
-MVC->ReadGCode(dir);
-MVC->redraw();
-};
+  MVC->ReadGCode(dir);
+  MVC->redraw();
 }
 void GUI::cb_Load1(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Load1_i(o,v);
@@ -100,20 +83,11 @@ void GUI::cb_Print(Fl_Button* o, void* v) {
 }
 
 void GUI::cb_Load2_i(Fl_Button*, void*) {
-  Fl_File_Chooser chooser("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose GCode");
-chooser.show();
-while (chooser.shown())
-	Fl::wait();
-if(chooser.value() == 0)
+  std::string dir = FileChooser::open ("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose STL");
+  if (!dir.length())
 	return;
-std::string dir(chooser.value());
-
-
-if(dir.length())
-{
-MVC->ReadStl(dir);
-MVC->redraw();
-};
+  MVC->ReadStl(dir);
+  MVC->redraw();
 }
 void GUI::cb_Load2(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load2_i(o,v);
@@ -127,20 +101,11 @@ void GUI::cb_FixSTLerrorsButton(Fl_Light_Button* o, void* v) {
 }
 
 void GUI::cb_Save_i(Fl_Button*, void*) {
-  Fl_File_Chooser chooser("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose GCode");
-chooser.show();
-while (chooser.shown())
-	Fl::wait();
-if(chooser.value() == 0)
+  std::string dir = FileChooser::open ("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose STL");
+  if (!dir.length())
 	return;
-std::string dir(chooser.value());
-
-
-if(dir.length())
-{
-MVC->ReadStl(dir);
-MVC->redraw();
-};
+  MVC->ReadStl(dir);
+  MVC->redraw();
 }
 void GUI::cb_Save(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Save_i(o,v);
@@ -202,20 +167,11 @@ void GUI::cb_Save1(Fl_Button* o, void* v) {
 }
 
 void GUI::cb_Load3_i(Fl_Button*, void*) {
-  Fl_File_Chooser chooser("C:/code/printed-parts", "*.xml", Fl_File_Chooser::SINGLE, "Choose RFO file");
-chooser.show();
-while (chooser.shown())
-	Fl::wait();
-if(chooser.value() == 0)
+  std::string dir = FileChooser::open ("C:/code/printed-parts", "*.xml", Fl_File_Chooser::SINGLE, "Choose RFO file");
+  if (!dir.length())
 	return;
-std::string dir(chooser.value());
-
-
-if(dir.length())
-{
-MVC->ReadRFO(dir);
-MVC->redraw();
-};
+  MVC->ReadRFO(dir);
+  MVC->redraw();
 }
 void GUI::cb_Load3(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load3_i(o,v);
@@ -646,20 +602,11 @@ void GUI::cb_Preview(Fl_Light_Button* o, void* v) {
 }
 
 void GUI::cb_Load4_i(Fl_Button*, void*) {
-  Fl_File_Chooser chooser("\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
-chooser.show();
-while (chooser.shown())
-	Fl::wait();
-if(chooser.value() == 0)
+  std::string dir = FileChooser::open ("\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
+  if (!dir.length())
 	return;
-std::string dir(chooser.value());
-
-
-if(dir.length())
-{
-MVC->ReadGCode(dir);
-MVC->redraw();
-};
+  MVC->ReadGCode(dir);
+  MVC->redraw();
 }
 void GUI::cb_Load4(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load4_i(o,v);
@@ -673,20 +620,13 @@ void GUI::cb_Convert1(Fl_Button* o, void* v) {
 }
 
 void GUI::cb_Save3_i(Fl_Button*, void*) {
-  Fl_File_Chooser chooser("\\", "*.gcode", Fl_File_Chooser::CREATE, "Choose filename");
-chooser.show();
-while (chooser.shown())
-	Fl::wait();
-if(chooser.value() == 0)
+  std::string dir = FileChooser::open ("\\", "*.gcode", Fl_File_Chooser::CREATE, "Choose GCode filename");
+  if (!dir.length())
 	return;
-std::string dir(chooser.value());
 
-
-if(dir.length())
-{
 Fl_Text_Buffer *buffer = GCodeResult->buffer();
 
-int result = buffer->savefile(chooser.value());
+int result = buffer->savefile(dir.c_str());
 
 switch(result)
 {
@@ -701,7 +641,6 @@ break;
 }
 
 MVC->redraw();
-};
 }
 void GUI::cb_Save3(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Save3_i(o,v);
@@ -3111,7 +3050,6 @@ void GUI::show(int argc, char **argv) {
 Fl::scheme("plastic");
 MVC->ReadStl("C:/code/printed-parts/z-tensioner_1off.stl");
 mainWindow->show(argc, argv);
-MVC->ReadStl("C:/code/printed-parts/z-tensioner_1off.stl");
 MVC->init();
 MVC->CopySettingsToGUI();
 MVC->draw();

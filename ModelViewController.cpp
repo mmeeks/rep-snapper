@@ -167,13 +167,14 @@ void ModelViewController::Static_Timer_CB(void *userdata) {
     Fl::repeat_timeout(0.25, Static_Timer_CB, userdata);
 }
 
+/* Called every 250ms (0.25 of a second) */
 void ModelViewController::Timer_CB() 
 {
 	if( gui->Tabs->value() == gui->PrinterDefinitionTab )
 	{
 	  static uint count = 0;
 	  if ((count++ % 4) == 0) /* every second */
-	  CheckComPorts();
+		CheckComPorts();
 	}
 	if( gui->Tabs->value() == gui->PrintTab )
 	{
@@ -431,7 +432,7 @@ int ModelViewController::handle(int event)
 		case FL_SHORTCUT: // shortcut, key is in Fl::event_key(), ascii in Fl::event_text() ... Return 1 if you understand/use the shortcut event, 0 otherwise...
 			return 1;
 		case FL_CLOSE:
-			if(fl_ask("Save settings?"))
+			if (fl_choice("Save settings ?", "Exit", "Save then exit", NULL))
 			{
 				int a=0;
 //				ProcessControl.SaveXML();

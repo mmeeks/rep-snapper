@@ -307,7 +307,7 @@ void RepRapSerial::Connect(string port, int speed)
 	Fl::add_timeout(1.0f, &TempReadTimer);
 }
 
-void RepRapSerial::DisConnect(char* reason)
+void RepRapSerial::DisConnect(const char* reason)
 {
 	debugPrint(reason);
 	DisConnect();

@@ -17,7 +17,11 @@ THIS CODE IS AS OF YET UNUSED
 #include <vmmlib/vmmlib.h>
 #include <vector>
 
-#include <ANN/ANN.h>
+
+typedef ANNcoord* ANNpoint;			// a point
+typedef ANNpoint* ANNpointArray;	// an array of points 
+typedef ANNdist*  ANNdistArray;		// an array of distances 
+typedef ANNidx*   ANNidxArray;		// an array of point indices
 
 using namespace std;					// make std:: accessible
 using namespace vmml;
