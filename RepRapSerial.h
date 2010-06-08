@@ -136,6 +136,8 @@ private:
 	void internalWrite(string s, const int lineNr);
 	void debugPrint(string s, bool selectLine = false);
 	void echo(string s);
+	void notifyConnection (bool connected);
+
 	vector<string> buffer;
 	bool m_bConnected;
 	bool m_bConnecting;
