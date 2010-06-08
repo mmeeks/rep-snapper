@@ -9,7 +9,6 @@
 
 #include <string>
 #include <algorithm>
-#include <boost/bind.hpp>
 
 using namespace std;
 using namespace boost;
@@ -71,8 +70,8 @@ void AsyncSerial::close()
     thread_.join();
     if(errorStatus())
     {
-        throw(system::system_error(system::error_code(),
-                "Error while closing the device"));
+      throw(boost::system::system_error(boost::system::error_code(),
+					"Error while closing the device"));
     }
 }
 

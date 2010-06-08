@@ -1,14 +1,45 @@
+#
+# Combined Makefile for Linux and OS/X
+#
 
 CC=gcc
 CXX=g++
-CFLAGS=-c -O0 -g
-GTK_LIBS=`pkg-config --libs gtk+-2.0 gthread-2.0`
-GTK_CFLAGS=`pkg-config --cflags gtk+-2.0 gthread-2.0`
+CFLAGS=-c -O2 -g
+UNAME := $(shell uname)
 LIB_DIR=../Libraries
-INC=$(GTK_CFLAGS) -I/usr/include -I$(LIB_DIR) -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)/ann_1.1.1/include -I/usr/include/boost -I/usr/include/lua5.1
-LDFLAGS=$(GTK_LIBS) -L/usr/lib -lGLU -lfltk -lfltk_gl -lfltk_forms -lglut -lboost_thread-mt -lboost_system-mt 
-SOURCES=AsyncSerial.cpp RepSnapper.cpp stl.cpp gpc.c RepRapSerial.cpp ProcessController.cpp Printer.cpp ModelViewController.cpp glutils.cpp GCode.cpp ArcBall.cpp stdafx.cpp UI.cxx RFO.cpp Flu_DND.cpp flu_pixmaps.cpp FluSimpleString.cpp Flu_Tree_Browser.cpp ivcon.cpp File.cpp $(LIB_DIR)/xml/XML.CPP 
-HEADERS=ArcBall.h AsyncSerial.h Convert.h Flu_DND.h Flu_Enumerations.h flu_export.h flu_pixmaps.h FluSimpleString.h Flu_Tree_Browser.h gcode.h glutils.h gpc.h ivcon.h miniball.h ModelViewController.h Printer.h ProcessController.h RepRapSerial.h RFO.h search.h Serial.h stdafx.h stl.h triangle.h UI.h
+
+# Linux
+ifeq ($(UNAME),Linux)
+    GTK_LIBS=`pkg-config --libs gtk+-2.0 gthread-2.0`
+    GTK_CFLAGS=`pkg-config --cflags gtk+-2.0 gthread-2.0`
+    INC=$(GTK_CFLAGS) -I/usr/include -I$(LIB_DIR) -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)/ann_1.1.1/include -I/usr/include/boost -I/usr/include/lua5.1
+    LDFLAGS=$(GTK_LIBS) -L/usr/lib -lGLU -lfltk -lfltk_gl -lfltk_forms -lglut -lboost_thread-mt -lboost_system-mt 
+endif
+
+# Mac
+ifeq ($(UNAME),Darwin)
+# assumes you installed MacPorts http://www.macports.org and run:
+# sudo port install boost fltk lua
+    OPT_DIR=/opt/local
+	INC=-I$(OPT_DIR)/include -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)/ann_1.1.1/include -I$(LIB_DIR)
+	LDFLAGS=-L$(OPT_DIR)/lib -lpthread -lfltk -lfltk_forms -lfltk_gl -L$(LIB_DIR)/xml -lcustomxml
+	LDFLAGS+= -lboost_thread-mt -l boost_system-mt
+    LDFLAGS+= -framework Carbon -framework OpenGL -framework GLUT -framework AGL
+endif
+
+SOURCES=AsyncSerial.cpp RepSnapper.cpp stl.cpp gpc.c RepRapSerial.cpp \
+	ProcessController.cpp Printer.cpp ModelViewController.cpp \
+	glutils.cpp GCode.cpp ArcBall.cpp stdafx.cpp UI.cxx \
+	RFO.cpp Flu_DND.cpp flu_pixmaps.cpp FluSimpleString.cpp \
+	Flu_Tree_Browser.cpp ivcon.cpp File.cpp \
+	$(LIB_DIR)/xml/XML.CPP 
+
+HEADERS=ArcBall.h AsyncSerial.h Convert.h Flu_DND.h Flu_Enumerations.h \
+	flu_export.h flu_pixmaps.h FluSimpleString.h Flu_Tree_Browser.h \
+	gcode.h glutils.h gpc.h ivcon.h miniball.h ModelViewController.h \
+	Printer.h ProcessController.h RepRapSerial.h RFO.h search.h \
+	Serial.h stdafx.h stl.h triangle.h UI.h platform.h
+
 OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(subst .CPP,.o,$(SOURCES)))))
 
 EXECUTABLE=repsnapper
@@ -64,7 +95,7 @@ RepSnapper.o: ArcBall.h gcode.h ModelViewController.h
 RepSnapper.o: Printer.h RFO.h glutils.h RepRapSerial.h
 Search.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
 Search.o: stl.h ProcessController.h Printer.h RFO.h glutils.h RepRapSerial.h
-stdafx.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
+stdafx.o: Flu_Enumerations.h flu_export.h FluSimpleString.h platform.h
 stdafx.o: stl.h ProcessController.h Printer.h RFO.h glutils.h RepRapSerial.h
 Flu_DND.o: flu_export.h
 Flu_Enumerations.o: flu_export.h
