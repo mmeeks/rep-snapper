@@ -4,10 +4,6 @@
  */
 #include "stdafx.h"
 
-#ifndef WIN32
-#define HAVE_GTK 1
-#endif
-
 #ifdef HAVE_GTK
 #include <glib/gthread.h>
 #include <gtk/gtk.h>
