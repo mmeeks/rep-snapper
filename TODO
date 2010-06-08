@@ -1,4 +1,6 @@
 GCode:
+	* 
+
 	Printer Temperature:
 		+ No toggle-able for this; why not - [ 235 ]
 		+ this is the 'M104'
@@ -9,6 +11,16 @@ GCode:
 	Raft layers:
 		+ bad news - look buggy ...
 
+
+	GCode:
+		+ add mimimal comments: 'new layer'
+		+ 'start outline %d', 'start in-fill'
+		+ Why bother with all this 'F2300' -everywhere-
+		  on each command ?
+			+ it is not changing, so ... why bother ?
+		+ Why F70 and not F5 during the G1 Z command ?
+
+
 	Reversing extruder:
 		+ we *need* a G92 E0 between each layuer [!]
 		+ but not each foundation layer ?
@@ -18,10 +30,10 @@ GCode:
 		+ no M codes generated to change the raft temperature [!]
 
 
+
 Using it to generage gcode:
 	JGlauche: not
 	EbiDK: not
-	
 	
 
 

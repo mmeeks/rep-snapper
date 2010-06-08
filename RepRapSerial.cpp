@@ -307,6 +307,13 @@ void RepRapSerial::Connect(string port, int speed)
 	Fl::add_timeout(1.0f, &TempReadTimer);
 }
 
+void RepRapSerial::notifyConnection (bool connected)
+{
+	m_bConnecting = false;
+	m_bConnected = connected;
+	c.notify_all();
+}
+
 void RepRapSerial::DisConnect(const char* reason)
 {
 	debugPrint(reason);
@@ -316,13 +323,9 @@ void RepRapSerial::DisConnect(const char* reason)
 void RepRapSerial::DisConnect()
 {
 	if( m_bConnected )
-	{
 		SendNow("M81");
-		m_bConnected = false;
-	}
-	m_bConnecting = false;
+	notifyConnection (false);
 	com->close();
-	c.notify_all();
 	Clear();
 	gui->MVC->serialConnectionLost();
 }
@@ -385,7 +388,9 @@ void RepRapSerial::OnEvent(char* data, size_t dwBytesRead)
 
 		while (found!=string::npos && found != 0)
 		{
+			bool knownCommand = true;
 			string command = InBuffer.substr(0,found);
+
 			if(0)
 			{
 				stringstream oss;
@@ -394,11 +399,8 @@ void RepRapSerial::OnEvent(char* data, size_t dwBytesRead)
 			}
 			if (command == "ok")	// most common, first
 			{
-				//					debugPrint("Recieved: Ok");
 				if(m_bPrinting)
-				{
 					SendNextLine();
-				}
 			}
 			else if(command.substr(0,5) == "Echo:") // search, there's a parameter int (temperature)
 			{
@@ -413,24 +415,16 @@ void RepRapSerial::OnEvent(char* data, size_t dwBytesRead)
 
 				gui->CurrentTempText->value(parameter.c_str());
 				// Check parameter
-
 			}
 			else if(command == "start")
 			{
 				debugPrint( string("Received: start"));
-				// Tell GUI we are ready to go.
-				int a=0;
-				m_bConnected = true;
-				m_bConnecting = false;
-				gui->MVC->serialConnected();
-				c.notify_all();
 			}
 			else if(command.substr(0,3) == "E: ") // search, there's a parameter int (temperature_error, wait_till_hot)
 			{
 				string parameter = command.substr(3,command.length()-3);
 				debugPrint( string("Received:") + command+ " with parameter " + parameter);
 				// Check parameter
-
 			}
 			else if(command.substr(0,3) == "ok ") // search, there's a parameter string (debugstring)
 			{
@@ -443,9 +437,7 @@ void RepRapSerial::OnEvent(char* data, size_t dwBytesRead)
 				debugPrint( string("Received:") + command+ " with parameter " + parameter, true);
 
 				if(m_bPrinting)
-				{
 					SendNextLine();
-				}
 			}
 			else if(command.substr(0,7) == "Resend:") // search, there's a parameter string (unknown command)
 			{
@@ -456,10 +448,7 @@ void RepRapSerial::OnEvent(char* data, size_t dwBytesRead)
 				iss >> m_iLineNr;	// Rewind to requested line
 
 				if(m_bPrinting)
-				{
 					SendNextLine();
-				}
-
 			}
 			else if(command.substr(0,45) == "[FIRMWARE WARNING] invalid M-Code received: M") // search, there's a parameter string (unknown Mcode)
 			{
@@ -469,12 +458,22 @@ void RepRapSerial::OnEvent(char* data, size_t dwBytesRead)
 			else	// Unknown response
 			{
 				debugPrint( string("Received:") + command+"\n", true);
+				knownCommand = false;
 			}
+
+			if (knownCommand)
+			{
+				// Tell GUI we are ready to go.
+				notifyConnection(true);
+				gui->MVC->serialConnected();
+			}
+			  
 			InBuffer = InBuffer.substr(found);	// 2 end-line characters, \n\r
-			// Empty eol crap
+
+			// Empty eol control characters
 			while(InBuffer.length() > 0 && (InBuffer.substr(0,1) == "\n" ||  InBuffer.substr(0,1) == "\r"))
 				InBuffer = InBuffer.substr(1, InBuffer.length()-1);
-			found=InBuffer.find_first_of("\r");
+			found = InBuffer.find_first_of("\r");
 		}
 	}
 }
