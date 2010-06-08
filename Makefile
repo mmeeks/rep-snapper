@@ -55,6 +55,8 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CXX) ${INC} $(CFLAGS) $< -o $@
 %.o:%.cpp
 	$(CXX) ${INC} $(CFLAGS) $< -o $@
+%.o:%.CPP # sexy XML.CPP naming ...
+	$(CXX) ${INC} $(CFLAGS) $< -o $@
 %.o:%.c
 	$(CC) ${INC} $(CFLAGS) $< -o $@
 
