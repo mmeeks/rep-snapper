@@ -394,7 +394,7 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("GCodeStartText", true,"[Empty]")->SetValue(GCodeStartText.c_str());	
 	x->FindVariableZ("GCodeLayerText", true,"[Empty]")->SetValue(GCodeLayerText.c_str());	
 	x->FindVariableZ("GCodeEndText", true,"[Empty]")->SetValue(GCodeEndText.c_str());	
-	x->FindVariableZ("Notes", true,"[Empty]")->SetValue(Notes.c_str());	
+        //x->FindVariableZ("Notes", true,"[Empty]")->SetValue(Notes.c_str()); // overwriting GCodeEndText	
 	x->FindVariableZ("m_sPortName", true,"COM5")->SetValue(m_sPortName.c_str());	
 
 	x->FindVariableZ("CustomButton1Text", true,"[Empty]")->SetValue(CustomButtonGcode[0].c_str());	
@@ -711,10 +711,10 @@ void ProcessController::LoadXML(XMLElement *e)
 	x->FindVariableZ("GCodeEndText", true, "G1 X0 Y0 F2000.0       ;feed for start of next move\nM104 S0.0                    ;Heater off\n")->GetValue(buffer);
 	GCodeEndText = string(buffer);
 	memset(buffer,0,10000);
-	x->FindVariableZ("Notes", true, "")->GetValue(buffer);
-	Notes = string(buffer);
+        //x->FindVariableZ("Notes", true, "")->GetValue(buffer);
+        //Notes = string(buffer); // no UI element was overwriting GCodeEndText 
 
-	memset(buffer,0,10000);
+        //memset(buffer,0,10000);
 	x->FindVariableZ("m_sPortName", true, "COM ")->GetValue(buffer);
 	if( buffer[3] == ' ' )
 	{

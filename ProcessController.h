@@ -235,7 +235,7 @@ public:
 	bool DisplayCuttingPlane;
 	bool DrawVertexNumbers;
 	bool DrawLineNumbers;
-	string Notes;
+	//string Notes; // Thers is no ui element for this field, it was causing problems with GCodeEnd UI field
 
 	// Rendering
 	float PolygonVal;
