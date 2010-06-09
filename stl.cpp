@@ -19,6 +19,10 @@
 #include "math.h"
 //#include "pathfinder.h"
 
+#ifdef WIN32
+	#include <GL/glut.h>	// Header GLUT Library
+#endif
+
 #include <iostream>
 #include <fstream>
 #include <algorithm>

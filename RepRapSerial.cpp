@@ -461,7 +461,7 @@ void RepRapSerial::OnEvent(char* data, size_t dwBytesRead)
 				knownCommand = false;
 			}
 
-			if (knownCommand)
+			if (knownCommand && m_bConnecting)
 			{
 				// Tell GUI we are ready to go.
 				notifyConnection(true);

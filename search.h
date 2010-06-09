@@ -16,7 +16,7 @@ THIS CODE IS AS OF YET UNUSED
 
 #include <vmmlib/vmmlib.h>
 #include <vector>
-
+#include <ANN/ANN.h>
 
 typedef ANNcoord* ANNpoint;			// a point
 typedef ANNpoint* ANNpointArray;	// an array of points 

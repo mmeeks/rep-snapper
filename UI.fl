@@ -1,4 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
+version 1.0110 
 header_name {.h} 
 code_name {.cxx}
 decl {\#pragma warning( disable : 4311 4312 4244 4267 4800)} {public global
@@ -29,7 +30,7 @@ class GUI {open
         xywh {715 5 560 825} align 5 when 1
       } {
         Fl_Group {} {
-          label Simple open selected
+          label Simple open
           xywh {715 25 555 765}
         } {
           Fl_Group {} {
@@ -38,14 +39,12 @@ class GUI {open
           } {
             Fl_Button {} {
               label {Load STL}
-              callback {
-  std::string dir = FileChooser::open ("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose GCode");
+              callback {std::string dir = FileChooser::open ("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose STL");
   if (!dir.length())
 	return;
   MVC->ClearRFO();
   MVC->ReadStl(dir);
-  MVC->redraw();
-}
+  MVC->redraw();}
               xywh {735 175 145 25}
             }
             Fl_Button {} {
@@ -63,14 +62,12 @@ class GUI {open
             }
             Fl_Button {} {
               label {Load GCode}
-              callback {
-  std::string dir = FileChooser::open ("\\\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
+              callback {std::string dir = FileChooser::open ("\\\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
   if (!dir.length())
 	return;
 
   MVC->ReadGCode(dir);
-  MVC->redraw();
-}
+  MVC->redraw();}
               xywh {735 255 145 25}
             }
             Fl_Text_Display {} {
@@ -94,7 +91,7 @@ class GUI {open
             Fl_Light_Button ConnectToPrinterSimpleButton {
               label {Connect to printer}
               callback {MVC->serialConnected();
-MVC->ConnectToPrinter(o->value());}
+MVC->ConnectToPrinter(o->value());} selected
               xywh {735 61 145 25} selection_color 2
             }
             Fl_Text_Display {} {
@@ -187,14 +184,11 @@ MVC->ConnectToPrinter(o->value());}
         } {
           Fl_Button {} {
             label {Load STL}
-            callback {
-
-  std::string dir = FileChooser::open ("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose STL");
+            callback {std::string dir = FileChooser::open ("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose STL");
   if (!dir.length())
 	return;
   MVC->ReadStl(dir);
-  MVC->redraw();
-}
+  MVC->redraw();}
             xywh {725 35 130 25}
           }
           Fl_Light_Button FixSTLerrorsButton {
@@ -204,13 +198,11 @@ MVC->ConnectToPrinter(o->value());}
           }
           Fl_Button {} {
             label {Save STL}
-            callback {
-  std::string dir = FileChooser::open ("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose STL");
+            callback {std::string dir = FileChooser::open ("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose STL");
   if (!dir.length())
 	return;
   MVC->ReadStl(dir);
-  MVC->redraw();
-}
+  MVC->redraw();}
             xywh {855 35 135 25} deactivate
           }
           Fl_Group {} {
@@ -265,14 +257,11 @@ MVC->ProcessControl.SaveXML();}
           }
           Fl_Button {} {
             label {Load RFO}
-            callback {
-
-  std::string dir = FileChooser::open ("C:/code/printed-parts", "*.xml", Fl_File_Chooser::SINGLE, "Choose RFO file");
+            callback {std::string dir = FileChooser::open ("C:/code/printed-parts", "*.xml", Fl_File_Chooser::SINGLE, "Choose RFO file");
   if (!dir.length())
 	return;
   MVC->ReadRFO(dir);
-  MVC->redraw();
-}
+  MVC->redraw();}
             xywh {725 65 130 25}
           }
           Fl_Box RFP_Browser {
@@ -739,15 +728,12 @@ MVC->redraw();}
         } {
           Fl_Button {} {
             label {Load Gcode}
-            callback {
-
-  std::string dir = FileChooser::open ("\\\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
+            callback {std::string dir = FileChooser::open ("\\\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
   if (!dir.length())
 	return;
 
   MVC->ReadGCode(dir);
-  MVC->redraw();
-}
+  MVC->redraw();}
             xywh {715 75 145 25}
             code0 {\#include <FL/Fl_File_Chooser.H>}
           }
@@ -789,8 +775,7 @@ MVC->redraw();}
           }
           Fl_Button {} {
             label {Save Gcode}
-            callback {
-  std::string dir = FileChooser::open ("\\\\", "*.gcode", Fl_File_Chooser::CREATE, "Choose GCode filename");
+            callback {std::string dir = FileChooser::open ("\\\\", "*.gcode", Fl_File_Chooser::CREATE, "Choose GCode filename");
   if (!dir.length())
 	return;
 
@@ -810,8 +795,7 @@ fl_alert("Error saving GCode file, while writing file, is the disk full?.", "OK"
 break;
 }
 
-MVC->redraw();
-}
+MVC->redraw();}
             xywh {1095 75 145 25}
             code0 {\#include <FL/Fl_File_Chooser.H>}
           }
