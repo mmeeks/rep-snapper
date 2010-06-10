@@ -151,6 +151,7 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 	ThisRot.M[6]=0.0f;ThisRot.M[7]=0.0f;ThisRot.M[8]=1.0f;					// NEW: Last Rotation
 
 	ProcessControl.LoadXML();
+	serial.SetReceivingBufferSize(ProcessControl.ReceivingBufferSize);
 	CopySettingsToGUI();
 
 	m_bExtruderDirection = true;
@@ -180,7 +181,6 @@ void ModelViewController::Timer_CB()
 	{
 		gui->PrintTab->redraw();
 	}
-	
 }
 
 void ModelViewController::resize(int x,int y, int width, int height)					// Reshape The Window When It's Moved Or Resized
@@ -619,8 +619,20 @@ void ModelViewController::CopySettingsToGUI()
 	gui->DisplayGCodeButton->value(ProcessControl.DisplayGCode);
 	gui->LuminanceShowsSpeedButton->value(ProcessControl.LuminanceShowsSpeed);
 
-	gui->shrinkFastButton->value(ProcessControl.m_ShrinkQuality == SHRINK_FAST);
-	gui->shrinkNiceButton->value(ProcessControl.m_ShrinkQuality == SHRINK_NICE);
+	switch(ProcessControl.m_ShrinkQuality)
+	{
+	case SHRINK_FAST:
+		gui->shrinkAlgorithm->value(0);
+		break;
+	case SHRINK_NICE:
+		gui->shrinkAlgorithm->value(1);
+		break;
+	case SHRINK_LOGICK:
+		gui->shrinkAlgorithm->value(2);
+		break;
+	}
+	gui->OptimizationSlider->value(ProcessControl.Optimization);
+	gui->ReceivingBufferSizeSlider->value(ProcessControl.ReceivingBufferSize);
 
 	gui->MVC->RefreshCustomButtonLabels();
     gui->MVC->GetCustomButtonText(0);
@@ -829,8 +841,14 @@ void ModelViewController::SetLogFileClear(bool on)
 }
 void ModelViewController::ClearLogs()
 {
-
+	if( gui )
+	{
+		gui->CommunationLog->clear();
+		gui->ErrorLog->clear();
+		gui->Echo->clear();
+	}
 }
+
 void ModelViewController::SwitchPower(bool on)
 {
 	if(on)
@@ -1382,6 +1400,8 @@ void ModelViewController::SetShrinkQuality(string quality)
 {
 	if(quality == "Fast")
 		ProcessControl.m_ShrinkQuality = SHRINK_FAST;
+	else if(quality == "Logick")
+		ProcessControl.m_ShrinkQuality = SHRINK_LOGICK;
 	else
 		ProcessControl.m_ShrinkQuality = SHRINK_NICE;
 }

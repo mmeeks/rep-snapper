@@ -85,6 +85,7 @@ public:
 		InfillRotation = 45.0f;
 		InfillRotationPrLayer = 90.0f;
 		Examine = 0.5f;
+		Optimization = 0.02f;
 
 		DisplayDebuginFill = false;
 		DisplayDebug = false;
@@ -165,6 +166,9 @@ public:
 	RFO rfo;
 	GCode gcode;						// Gcode as binary data
 	string GcodeTxt;					// Final GCode as text
+
+	float Optimization;
+	int ReceivingBufferSize;
 
 	// Raft
 	float RaftSize;

@@ -14,7 +14,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {248 117 1280 835} type Double box UP_BOX color 39 selection_color 39 labelsize 12 resizable visible
+      xywh {138 28 1290 837} type Double box UP_BOX color 39 selection_color 39 labelsize 12 resizable visible
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -27,10 +27,10 @@ class GUI {open
       }
       Fl_Tabs Tabs {
         callback {// here} open
-        xywh {715 5 560 825} align 5 when 1
+        xywh {710 5 575 825} align 5 when 1
       } {
         Fl_Group {} {
-          label Simple open
+          label Simple open selected
           xywh {715 25 555 765}
         } {
           Fl_Group {} {
@@ -91,7 +91,7 @@ class GUI {open
             Fl_Light_Button ConnectToPrinterSimpleButton {
               label {Connect to printer}
               callback {MVC->serialConnected();
-MVC->ConnectToPrinter(o->value());} selected
+MVC->ConnectToPrinter(o->value());}
               xywh {735 61 145 25} selection_color 2
             }
             Fl_Text_Display {} {
@@ -378,7 +378,7 @@ MVC->ProcessControl.SaveXML();}
         }
         Fl_Group PrinterDefinitionTab {
           label {Printer definition} open
-          xywh {715 25 545 790} hide
+          xywh {715 25 545 800} hide
         } {
           Fl_Group {} {
             label {Build volume (mm)} open
@@ -419,12 +419,12 @@ MVC->ProcessControl.SaveXML();}
           }
           Fl_Group {} {
             label Acceleration open
-            xywh {720 630 535 80} box ENGRAVED_FRAME color 39
+            xywh {720 565 535 80} box ENGRAVED_FRAME color 39
           } {
             Fl_Value_Slider distanceToReachFullSpeedSlider {
               label {Distance used to read full speed(mm)}
               callback {MVC->SetDistanceToReachFullSpeed(o->value())}
-              xywh {730 680 515 20} type {Horz Knob} selection_color 2 align 5 maximum 10 value 0.1 textsize 14
+              xywh {730 615 515 20} type {Horz Knob} selection_color 2 align 5 maximum 10 value 0.1 textsize 14
             }
             Fl_Light_Button EnableAccelerationButton {
               label {Enable Acceleration}
@@ -437,32 +437,32 @@ else
 {
 distanceToReachFullSpeedSlider->deactivate();
 }}
-              xywh {730 640 255 20} selection_color 63
+              xywh {730 575 255 20} selection_color 63
             }
           }
           Fl_Group {} {
             label {Print speeds}
-            xywh {720 435 535 170} box ENGRAVED_FRAME color 39
+            xywh {720 365 535 170} box ENGRAVED_FRAME color 39
           } {
             Fl_Value_Slider MaxPrintSpeedXYSlider {
               label {Max PrintSpeed XY (mm/minute)}
               callback {MVC->SetMaxPrintSpeedXY(o->value());}
-              xywh {730 495 515 20} type {Horz Knob} selection_color 2 align 5 maximum 8000 step 100 value 4000 textsize 14
+              xywh {730 425 515 20} type {Horz Knob} selection_color 2 align 5 maximum 8000 step 100 value 4000 textsize 14
             }
             Fl_Value_Slider MinPrintSpeedZSlider {
               label {Min PrintSpeed Z (mm/minute)}
               callback {MVC->SetMinPrintSpeedZ(o->value());}
-              xywh {730 535 515 20} type {Horz Knob} selection_color 2 align 5 minimum 1 maximum 2500 step 10 value 50 textsize 14
+              xywh {730 465 515 20} type {Horz Knob} selection_color 2 align 5 minimum 1 maximum 2500 step 10 value 50 textsize 14
             }
             Fl_Value_Slider MinPrintSpeedXYSlider {
               label {Min PrintSpeed XY (mm/minute)}
               callback {MVC->SetMinPrintSpeedXY(o->value());}
-              xywh {730 455 515 20} type {Horz Knob} selection_color 2 align 5 maximum 8000 step 100 value 1000 textsize 14
+              xywh {730 385 515 20} type {Horz Knob} selection_color 2 align 5 maximum 8000 step 100 value 1000 textsize 14
             }
             Fl_Value_Slider MaxPrintSpeedZSlider {
               label {Max PrintSpeed Z (mm/minute)}
               callback {MVC->SetMaxPrintSpeedZ(o->value());}
-              xywh {730 575 515 20} type {Horz Knob} selection_color 2 align 5 maximum 2500 step 10 value 150 textsize 14
+              xywh {730 505 515 20} type {Horz Knob} selection_color 2 align 5 maximum 2500 step 10 value 150 textsize 14
             }
           }
           Fl_Group {} {
@@ -497,17 +497,17 @@ distanceToReachFullSpeedSlider->deactivate();
           }
           Fl_Group {} {
             label Port open
-            xywh {720 736 535 69} box ENGRAVED_FRAME color 39
+            xywh {720 756 535 69} box ENGRAVED_FRAME color 39
           } {
             Fl_Value_Input SerialSpeedInput {
               label {Speed:}
               callback {MVC->setSerialSpeed(o->value());}
-              xywh {1040 751 205 24}
+              xywh {1040 771 205 24}
             }
             Fl_Input_Choice portInput {
               label {Port:}
               callback {MVC->setPort(std::string(o->input()->value()));} open
-              xywh {770 750 215 25} when 1
+              xywh {770 770 215 25} when 1
             } {
               MenuItem {} {
                 label COM1
@@ -557,37 +557,18 @@ distanceToReachFullSpeedSlider->deactivate();
             }
           }
           Fl_Group {} {
-            label {Shrinking quality} open
-            xywh {720 360 535 50} box ENGRAVED_FRAME color 2
+            label {Receiving buffer size} open
+            xywh {720 670 535 55} box ENGRAVED_FRAME color 39
           } {
-            Fl_Light_Button shrinkFastButton {
-              label {Fast, can have errors (rarely)}
-              callback {if(o->value())
-{
-MVC->SetShrinkQuality("Fast");
-MVC->redraw();
-shrinkNiceButton->value(0);
-}}
-              xywh {735 375 250 20} type Radio selection_color 2
-            }
-            Fl_Group {} {open
-              xywh {995 375 250 25}
-            } {
-              Fl_Light_Button shrinkNiceButton {
-                label {Much slower, perfekt, small details}
-                callback {if(o->value())
-{
-MVC->SetShrinkQuality("nice");
-MVC->redraw();
-shrinkFastButton->value(0);
-}}
-                xywh {995 375 250 20} type Radio color 47 selection_color 2
-              }
+            Fl_Value_Slider ReceivingBufferSizeSlider {
+              label {Buffer size on printer, in number of gcodes}
+              callback {MVC->SetReceivingBufferSize(o->value())}
+              tooltip {Recommended value for FiveD is 4} xywh {730 695 515 20} type {Horz Knob} selection_color 2 align 5 minimum 1 maximum 100 step 1 value 4 textsize 14
             }
           }
         }
         Fl_Group {} {
-          label Infill
+          label {Print options} open
           xywh {715 25 540 755} hide
         } {
           Fl_Group {} {
@@ -618,6 +599,39 @@ shrinkFastButton->value(0);
               label {Shell count}
               callback {MVC->SetShellCount(o->value());}
               xywh {990 70 255 20} type {Horz Knob} selection_color 2 align 5 minimum 1 maximum 10 step 1 value 1 textsize 14
+            }
+          }
+          Fl_Group {} {
+            label {Shrinking quality} open
+            xywh {720 240 535 110} box ENGRAVED_FRAME color 2
+          } {
+            Fl_Choice shrinkAlgorithm {
+              label {Shrinking Algorithm:} open
+              xywh {865 255 270 25} down_box BORDER_BOX
+            } {
+              MenuItem {} {
+                label {Fast, can have errors}
+                callback {MVC->SetShrinkQuality("Fast");
+MVC->redraw();}
+                xywh {5 5 30 20}
+              }
+              MenuItem {} {
+                label {Much slower, perfect, small details}
+                callback {MVC->SetShrinkQuality("Nice");
+MVC->redraw();}
+                xywh {15 15 30 20}
+              }
+              MenuItem {} {
+                label {Logick's Algorithm}
+                callback {MVC->SetShrinkQuality("Logick");
+MVC->redraw();}
+                xywh {15 15 30 20} hide deactivate
+              }
+            }
+            Fl_Value_Slider OptimizationSlider {
+              label Optimization
+              callback {MVC->SetOptimization(o->value());}
+              xywh {730 320 515 20} type {Horz Knob} selection_color 2 align 5 minimum 0.001 step 0.001 value 0.05 textsize 14
             }
           }
         }
@@ -802,7 +816,7 @@ MVC->redraw();}
         }
         Fl_Group {} {
           label Rendering
-          xywh {715 25 540 755} color 47 hide
+          xywh {715 25 545 805} color 47 hide
         } {
           Fl_Group {} {
             label {STL rendering} open
@@ -1082,36 +1096,116 @@ MVC->redraw();}
               xywh {1110 735 130 20} deactivate
             }
           }
+          Fl_Light_Button DisplayDebuginFillButton {
+            label {Display Debug inFill}
+            callback {MVC->SetDisplayDebuginFill(o->value());}
+            xywh {800 795 145 25} selection_color 63
+          }
+          Fl_Light_Button DisplayDebugButton {
+            label Debug
+            callback {if(o->value())
+{
+DisplayDebuginFillButton->show();
+ExamineSlider->show();
+}
+else
+{
+DisplayDebuginFillButton->hide();
+ExamineSlider->hide();
+}
+
+
+MVC->redraw();}
+            xywh {725 795 70 25} selection_color 63
+          }
+          Fl_Light_Button DrawVertexNumbersButton {
+            label {Draw vertex numbers}
+            callback {MVC->SetDrawVertexNumbers(o->value());}
+            xywh {950 795 155 25} selection_color 63
+          }
+          Fl_Light_Button DrawLineNumbersButton {
+            label {Draw line numbers}
+            callback {MVC->SetDrawLineNumbers(o->value());}
+            xywh {1105 795 155 25} selection_color 63
+          }
+          Fl_Value_Slider ExamineSlider {
+            label Examine
+            callback {MVC->SetExamine(o->value());}
+            xywh {785 770 470 20} type Horizontal align 4 step 0.001 value 0.098 textsize 14
+          }
         }
         Fl_Group PrintTab {
           label Print open
-          xywh {715 25 550 805} color 47 hide
+          xywh {710 25 575 805} color 47 hide
         } {
           Fl_Tabs {} {open
-            xywh {715 230 550 600}
+            xywh {710 230 575 600}
           } {
             Fl_Group {} {
               label {Communation Log} open
-              xywh {720 255 545 575} hide
+              xywh {710 255 575 575} hide
             } {
-              Fl_Browser CommunationLog {
-                label {Errors / warnings}
-                xywh {720 260 540 570} selection_color 31 align 16
-                code0 {\#include <FL/Fl_Multi_Browser.H>}
-                class Fl_Multi_Browser
+              Fl_Tabs {} {open
+                xywh {710 260 570 470}
+              } {
+                Fl_Group {} {
+                  label {Communication Log} open
+                  xywh {715 285 565 445} hide
+                } {
+                  Fl_Browser CommunationLog {
+                    label {Errors / warnings}
+                    xywh {715 290 560 435} selection_color 31 align 16
+                    code0 {\#include <FL/Fl_Multi_Browser.H>}
+                    class Fl_Multi_Browser
+                  }
+                }
+                Fl_Group {} {
+                  label {Errors / warnings} open
+                  xywh {710 285 565 445} hide
+                } {
+                  Fl_Browser ErrorLog {
+                    label {Errors / warnings}
+                    xywh {715 290 560 435} selection_color 31 align 16
+                    code0 {\#include <FL/Fl_Multi_Browser.H>}
+                    class Fl_Multi_Browser
+                  }
+                }
+                Fl_Group {} {
+                  label Echo open
+                  xywh {715 285 560 445}
+                } {
+                  Fl_Browser Echo {
+                    label Echo
+                    xywh {715 290 560 435} selection_color 31 align 16
+                    code0 {\#include <FL/Fl_Multi_Browser.H>}
+                    class Fl_Multi_Browser
+                  }
+                }
               }
-            }
-            Fl_Browser ErrorLog {
-              label {Errors / warnings}
-              xywh {720 260 540 570} selection_color 31 align 16 hide
-              code0 {\#include <FL/Fl_Multi_Browser.H>}
-              class Fl_Multi_Browser
-            }
-            Fl_Browser Echo {
-              label Echo
-              xywh {720 260 540 570} selection_color 31 align 16 hide
-              code0 {\#include <FL/Fl_Multi_Browser.H>}
-              class Fl_Multi_Browser
+              Fl_Light_Button AutoscrollButton {
+                label {Auto scroll}
+                xywh {725 755 105 25} value 1 selection_color 2
+              }
+              Fl_Value_Slider LinesToKeepSlider {
+                label {Keep only the last \# lines:}
+                callback {MVC->SetKeepLines(o->value());}
+                xywh {835 755 400 25} type {Horz Knob} align 5 minimum 100 maximum 100000 step 1 value 1000 textsize 14
+              }
+              Fl_Light_Button FileLogginEnabledButton {
+                label LogFiles
+                callback {MVC->SetFileLogging(o->value());}
+                xywh {725 785 105 25} value 1 selection_color 2
+              }
+              Fl_Light_Button ClearLogfilesWhenPrintStartsButton {
+                label {Clear logs when print starts}
+                callback {MVC->SetLogFileClear(o->value());}
+                xywh {835 785 205 25} value 1 selection_color 2
+              }
+              Fl_Button {} {
+                label {Clear logs now}
+                callback {MVC->ClearLogs();}
+                xywh {1090 785 145 25}
+              }
             }
             Fl_Group {} {
               label {Interactive control} open
@@ -1120,22 +1214,22 @@ MVC->redraw();}
               Fl_Light_Button SwitchHeatOnButton {
                 label {Switch heat on}
                 callback {MVC->SwitchHeat(o->value(), TargetTempText->value());}
-                xywh {730 420 220 25}
+                xywh {730 427 220 25}
               }
               Fl_Value_Input TargetTempText {
                 label {Target temp}
                 callback {MVC->SetTargetTemp(o->value());}
-                xywh {1185 421 55 24} maximum 300 value 200
+                xywh {1185 428 55 24} maximum 300 value 200
               }
               Fl_Light_Button RunExtruderButton {
                 label {Run extruder}
                 callback {MVC->RunExtruder();}
-                xywh {730 450 115 25}
+                xywh {730 457 115 25}
               }
               Fl_Light_Button SetExtruderDirectionButton {
                 label Reverse
                 callback {MVC->SetExtruderDirection(o->value());}
-                xywh {850 450 100 25}
+                xywh {850 457 100 25}
               }
               Fl_Button {} {
                 label Home
@@ -1159,16 +1253,16 @@ MVC->redraw();}
               Fl_Value_Slider {} {
                 label Speed
                 callback {MVC->SetExtruderSpeed(o->value());}
-                xywh {1005 450 235 25} type {Horz Knob} align 4 minimum 5 maximum 9999 step 1 value 3000 textsize 14
+                xywh {1005 457 235 25} type {Horz Knob} align 4 minimum 5 maximum 9999 step 1 value 3000 textsize 14
               }
               Fl_Value_Slider {} {
                 label Length
                 callback {MVC->SetExtruderLength(o->value());}
-                xywh {1005 480 235 25} type {Horz Knob} align 4 minimum 10 maximum 850 step 1 value 150 textsize 14
+                xywh {1005 487 235 25} type {Horz Knob} align 4 minimum 10 maximum 850 step 1 value 150 textsize 14
               }
               Fl_Output CurrentTempText {
                 label {Current temp}
-                xywh {1045 421 55 24}
+                xywh {1045 428 55 24}
               }
               Fl_Button {} {
                 label {Home all}
@@ -1309,36 +1403,12 @@ MVC->redraw();}
               }
               Fl_Value_Slider DownstreamMultiplierSlider {
                 label {Downstream speed multiplier}
-                xywh {730 515 510 25} type {Horz Knob} align 5 minimum 0.01 maximum 25 value 1 textsize 14
+                xywh {730 540 510 25} type {Horz Knob} align 5 minimum 0.01 maximum 25 value 1 textsize 14
               }
               Fl_Value_Slider TempUpdateSpeedSlider {
                 label {Temperature update interval}
                 callback {MVC->SetTempUpdateSpeed(o->value());}
-                xywh {915 390 235 25} type {Horz Knob} align 4 minimum 0.1 maximum 10 step 0.1 value 3 textsize 14
-              }
-              Fl_Light_Button AutoscrollButton {
-                label {Auto scroll}
-                xywh {730 560 105 25} value 1 selection_color 2
-              }
-              Fl_Value_Slider LinesToKeepSlider {
-                label {Keep only the last \# lines:}
-                callback {MVC->SetKeepLines(o->value());}
-                xywh {840 560 400 25} type {Horz Knob} align 5 minimum 100 maximum 100000 step 1 value 1000 textsize 14
-              }
-              Fl_Light_Button FileLogginEnabledButton {
-                label LogFiles
-                callback {MVC->SetFileLogging(o->value());}
-                xywh {730 590 105 25} value 1 selection_color 2
-              }
-              Fl_Light_Button ClearLogfilesWhenPrintStartsButton {
-                label {Clear logs when print starts}
-                callback {MVC->SetLogFileClear(o->value());}
-                xywh {840 590 205 25} value 1 selection_color 2
-              }
-              Fl_Button {} {
-                label {Clear logs now}
-                callback {MVC->ClearLogs();}
-                xywh {1095 590 145 25}
+                xywh {915 397 235 25} type {Horz Knob} align 4 minimum 0.1 maximum 10 step 0.1 value 3 textsize 14
               }
               Fl_Button CustomButton1 {
                 label {Custom button 1}
@@ -1443,74 +1513,41 @@ MVC->redraw();}
               Fl_Light_Button TempReadingEnabledButton {
                 label Enable
                 callback {MVC->EnableTempReading(o->value());}
-                xywh {1160 390 85 25} value 1 selection_color 2
+                xywh {1160 397 85 25} value 1 selection_color 2
+              }
+              Fl_Value_Slider DownstreamExtrusionMultiplierSlider {
+                label {Downstream extrusion multiplier}
+                xywh {730 585 510 25} type {Horz Knob} align 5 minimum 0.01 maximum 25 value 1 textsize 14
               }
             }
             Fl_Group {} {
               label {Custom buttons} open
-              xywh {725 260 540 570} hide
+              xywh {710 260 540 570} hide
             } {
               Fl_Text_Editor CustomButtonText {
                 label {Button gcode}
-                xywh {725 335 540 485} selection_color 31
+                xywh {710 335 540 485} selection_color 31
                 code0 {Fl_Text_Buffer *CustomButtonBuffer = new Fl_Text_Buffer();}
                 code1 {o->buffer(CustomButtonBuffer);}
               }
               Fl_Input CustomButtonLabel {
                 label {Button label:}
-                xywh {815 291 450 24}
+                xywh {800 291 450 24}
               }
               Fl_Value_Slider CustomButtonSelectorSlider {
                 label {Button to edit:}
                 callback {MVC->GetCustomButtonText(o->value()-1);}
-                xywh {820 260 320 25} type Horizontal align 4 minimum 1 maximum 20 step 1 value 1 textsize 14
+                xywh {805 260 320 25} type Horizontal align 4 minimum 1 maximum 20 step 1 value 1 textsize 14
               }
               Fl_Button {} {
                 label Test
                 callback {MVC->TestCustomButton();}
-                xywh {1215 260 50 25}
+                xywh {1200 260 50 25}
               }
               Fl_Button {} {
                 label Save
                 callback {MVC->SaveCustomButton();}
-                xywh {1145 260 64 25}
-              }
-              Fl_Light_Button DisplayDebuginFillButton {
-                label {Display Debug inFill}
-                callback {MVC->SetDisplayDebuginFill(o->value());}
-                xywh {805 830 145 0} selection_color 63
-              }
-              Fl_Light_Button DisplayDebugButton {
-                label Debug
-                callback {if(o->value())
-{
-DisplayDebuginFillButton->show();
-ExamineSlider->show();
-}
-else
-{
-DisplayDebuginFillButton->hide();
-ExamineSlider->hide();
-}
-
-
-MVC->redraw();}
-                xywh {730 830 70 0} selection_color 63
-              }
-              Fl_Light_Button DrawVertexNumbersButton {
-                label {Draw vertex numbers}
-                callback {MVC->SetDrawVertexNumbers(o->value());}
-                xywh {955 830 155 0} selection_color 63
-              }
-              Fl_Light_Button DrawLineNumbersButton {
-                label {Draw line numbers}
-                callback {MVC->SetDrawLineNumbers(o->value());}
-                xywh {1110 830 155 0} selection_color 63
-              }
-              Fl_Value_Slider ExamineSlider {
-                label Examine
-                callback {MVC->SetExamine(o->value());}
-                xywh {785 825 200 5} type Horizontal align 4 step 0.001 value 0.098 textsize 14
+                xywh {1130 260 64 25}
               }
             }
           }

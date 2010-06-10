@@ -134,10 +134,11 @@ void RepRapSerial::StartPrint()
 {
 	m_iLineNr = 0;
 	m_bPrinting = true;
-	SendNextLine();
-	SendNextLine();
-	SendNextLine();
-	SendNextLine();
+
+	for( int i = 0; i<ReceivingBufferSize; i++)
+	{
+		SendNextLine();
+	}
 }
 
 void RepRapSerial::SendNextLine()
@@ -193,8 +194,12 @@ void RepRapSerial::SendData(string s, const int lineNr)
 	// Apply Downstream Multiplier
 
 	float DSMultiplier = 1.0f;
+	float ExtrusionMultiplier = 1.0f;
 	if(gui)
+	{
 		DSMultiplier = gui->DownstreamMultiplierSlider->value();
+		ExtrusionMultiplier = gui->DownstreamExtrusionMultiplierSlider->value();
+	}
 
 	if(DSMultiplier != 1.0f)
 	{
@@ -211,6 +216,25 @@ void RepRapSerial::SendData(string s, const int lineNr)
 			s.clear();
 			std::stringstream oss;
 			oss << start << old_speed*DSMultiplier << " " <<after;
+			s=oss.str();
+		}
+	}
+
+	if(ExtrusionMultiplier != 1.0f)
+	{
+		size_t pos = s.find( "E", 0);
+		if( pos != string::npos )	//string::npos means not defined
+		{
+			size_t end = s.find( " ", pos);
+			if(end == string::npos)
+				end = s.length()-1;
+			string number = s.substr(pos+1,end);
+			string start = s.substr(0,pos+1);
+			string after = s.substr(end+1,s.length()-1);
+			float old_speed = ToFloat(number);
+			s.clear();
+			std::stringstream oss;
+			oss << start << old_speed*ExtrusionMultiplier << " " <<after;
 			s=oss.str();
 		}
 	}
