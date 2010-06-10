@@ -19,6 +19,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <list>
 
 #include <FL/Fl_Gl_Window.H>
 #include <FL/gl.h>
