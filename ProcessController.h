@@ -136,6 +136,7 @@ public:
 
 	// Load and save settings
 	void LoadXML();
+	void LoadXML(string filename);
 	void SaveXML();
 	void SaveXML(string filename);
 	void LoadXML(XMLElement *e);

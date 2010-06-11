@@ -813,16 +813,21 @@ void ProcessController::LoadXML(XMLElement *e)
 	if(y && (bool)y->GetValueInt())	m_ShrinkQuality = SHRINK_LOGICK;
 }
 
+void ProcessController::LoadXML(string filename)
+{
+	XML* xml = new XML (filename.c_str()); 
+	XMLElement* e = xml->GetRootElement ();
+	LoadXML (e);
+}
+
 void ProcessController::LoadXML()
 {
-	string filename = m_Filename+".xml";
-	XML* xml = new XML(filename.c_str()); 
-	XMLElement* e = xml->GetRootElement();
-	LoadXML(e);
+	LoadXML (m_Filename + ".xml");
 }
+
 void ProcessController::SaveXML()
 {
-	string filename = m_Filename+".xml";
+	string filename = m_Filename + ".xml";
 
 	XML* xml = new XML(filename.c_str()); 
 	XMLElement* e = xml->GetRootElement();
