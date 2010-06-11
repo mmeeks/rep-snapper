@@ -13,17 +13,14 @@
 
 #include "stdafx.h"
 #include "Printer.h"
-#include "xml/XML.H"
 #include <vmmlib/vmmlib.h>
-#include "UI.h"
-#include "stl.h"
 #include "gcode.h"
-
 #include "RFO.h"
 
-class GCode;
-struct lua_State;
+// struct lua_State;
 using namespace std;
+
+class XML_Element;
 
 class ProcessController
 {

@@ -3,6 +3,7 @@
  * native gtk+ file selection under Unix.
  */
 #include "stdafx.h"
+#include "File.h"
 
 #ifdef HAVE_GTK
 #include <glib/gthread.h>

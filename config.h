@@ -3,6 +3,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define ENABLE_LUA    1
+#ifdef WIN32
+#  define ENABLE_LUA    1
+#endif
 
 #endif

@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 	char WindowTitle[100] = "GCodeView";
 	char* W = &WindowTitle[0];
 	MVC->gui = gui;
-	MVC->serial.setGUI(gui);
+	MVC->serial->setGUI(gui);
 	MVC->ProcessControl.gui = gui;
 	
 

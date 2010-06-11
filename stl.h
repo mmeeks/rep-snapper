@@ -37,8 +37,6 @@ namespace std
 using namespace stdext;
 #endif
 
-class GUI;
-class GCode;
 /*
 Vector3f position, normal;
 // fill vertices
@@ -97,12 +95,8 @@ struct locator{
 };
 
 
-class Segment2f;
-
-class Point2f;
-
 // A (set of) 2D polygon extracted from a 3D model
-class  CuttingPlane{
+class CuttingPlane{
 public:
 	CuttingPlane();
 	~CuttingPlane();

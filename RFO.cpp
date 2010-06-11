@@ -1,9 +1,11 @@
 
 #include "stdafx.h"
+#include "UI.h"
 #include "RFO.h"
 #include "flu_pixmaps.h"
 #include <exception>
 #include <stdexcept>
+#include "ProcessController.h"
 
 Fl_Pixmap plus((char * const*)plus_xpm),
 minus((char * const*)minus_xpm),

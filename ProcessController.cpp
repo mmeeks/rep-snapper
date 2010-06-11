@@ -10,13 +10,9 @@
 *
 * ------------------------------------------------------------------------- */
 #include "stdafx.h"
+#include "xml/XML.H"
+#include "ModelViewController.h"
 #include "ProcessController.h"
-
-
-/*ProcessController::~ProcessController()
-{
-	SaveXML();
-}*/
 
 void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd)
 {
@@ -383,7 +379,7 @@ void ProcessController::SaveXML(string filename)
 namespace {
 	std::string setXMLString (XMLElement *x, const char *name, const char *value)
 	{
-		x->FindVariableZ ((char *)name, true, "")->SetValue (value);
+		x->FindVariableZ ((char *)name, true, "")->SetValue ((char *)value);
 	}
 
 	std::string setXMLString (XMLElement *x, const std::ostringstream &name, const char *value)
@@ -536,41 +532,6 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("STLPath", true, "[Empty]")->SetValue(STLPath.c_str());
 	x->FindVariableZ("RFOPath", true, "[Empty]")->SetValue(RFOPath.c_str());
 	x->FindVariableZ("GCodePath", true, "[Empty]")->SetValue(GCodePath.c_str());
-	/*
-
-	XMLElement *x = e->FindElementZ("RED_ProcessingSettings", true);
-
-	char text[200];
-	sprintf(text,"%s",ImageProcessingLimits::GammaCurveLabels[(int)GammaCurve]);
-	x->FindVariableZ("GammaCurve", true,text)->SetValue(text);	
-
-	sprintf(text,"%s",ImageProcessingLimits::ColorSpaceLabels[(int)ColorSpace]);
-	x->FindVariableZ("ColorSpace", true,text)->SetValue(text);	
-
-	x->FindVariableZ("ISO", true, "320")->SetValueInt((int)ISO);	
-
-	x->FindVariableZ("Kelvin", true, "3200")->SetValueFloat(Kelvin);	
-	x->FindVariableZ("Tint", true, "0")->SetValueFloat(Tint);	
-	x->FindVariableZ("ExposureCompensation", true, "0")->SetValueFloat(ExposureCompensation);	
-	x->FindVariableZ("GainRed", true, "1")->SetValueFloat(GainRed);	
-	x->FindVariableZ("GainGreen", true, "1")->SetValueFloat(GainGreen);	
-	x->FindVariableZ("GainBlue", true, "1")->SetValueFloat(GainBlue);	
-	x->FindVariableZ("Saturation", true, "1")->SetValueFloat(Saturation);	
-	x->FindVariableZ("Contrast", true, "1")->SetValueFloat(Contrast);	
-	x->FindVariableZ("Brightness", true, "1")->SetValueFloat(Brightness);	
-	x->FindVariableZ("DRX", true, "0")->SetValueFloat(DRX);	
-	x->FindVariableZ("CustomPDLogGamma", true, "0")->SetValueFloat(CustomPDLogGamma);	
-	x->FindVariableZ("UserCurve0", true, "0.00")->SetValueFloat(UserCurve[0]);	
-	x->FindVariableZ("UserCurve1", true, "0.00")->SetValueFloat(UserCurve[1]);	
-	x->FindVariableZ("UserCurve2", true, "0.25")->SetValueFloat(UserCurve[2]);	
-	x->FindVariableZ("UserCurve3", true, "0.25")->SetValueFloat(UserCurve[3]);	
-	x->FindVariableZ("UserCurve4", true, "0.50")->SetValueFloat(UserCurve[4]);	
-	x->FindVariableZ("UserCurve5", true, "0.50")->SetValueFloat(UserCurve[5]);	
-	x->FindVariableZ("UserCurve6", true, "0.75")->SetValueFloat(UserCurve[6]);	
-	x->FindVariableZ("UserCurve7", true, "0.75")->SetValueFloat(UserCurve[7]);	
-	x->FindVariableZ("UserCurve8", true, "1.00")->SetValueFloat(UserCurve[8]);	
-	x->FindVariableZ("UserCurve9", true, "1.00")->SetValueFloat(UserCurve[9]);	
-*/
 }
 
 namespace {
@@ -850,112 +811,6 @@ void ProcessController::LoadXML(XMLElement *e)
 	if(y && (bool)y->GetValueInt())	m_ShrinkQuality = SHRINK_NICE;
 	y=x->FindVariableZ("ShrinkLogick", true, "0");
 	if(y && (bool)y->GetValueInt())	m_ShrinkQuality = SHRINK_LOGICK;
-
-	/*
-	ImageProcessingSettings();
-	UserCurve[0] = UserCurve[1] = 0.0f;
-	UserCurve[2] = UserCurve[3] = 0.250f;
-	UserCurve[4] = UserCurve[5] = 0.50f;
-	UserCurve[6] = UserCurve[7] = 0.750f;
-	UserCurve[8] = UserCurve[9] = 1.0f;
-	XMLElement *x = e->FindElementZ("RED_ProcessingSettings", true);
-
-
-	Detail = R3DSDK::ImageDetail::ImageDetailHigh;
-	OLPFCompensation = R3DSDK::ImageOLPFCompensation::ImageOLPFCompHigh;
-	Denoise = R3DSDK::ImageDenoise::ImageDenoiseMaximum;
-
-	XMLVariable* y;
-
-	char buffer[100];
-	memset(buffer,0,100);
-	x->FindVariableZ("GammaCurve", true, "None")->GetValue(buffer);
-	string GammaC(buffer);
-	for(uint i=0;i<ImageProcessingLimits::GammaCurveCount;i++)
-	{
-		string ThisCurveName(ImageProcessingLimits::GammaCurveLabels[i]);
-		if(GammaC == ThisCurveName)
-			GammaCurve = ImageProcessingLimits::GammaCurveMap[i];
-	}
-
-	memset(buffer,0,100);
-	x->FindVariableZ("ColorSpace", true, "None")->GetValue(buffer);
-	string ColSp(buffer);
-	for(uint i=0;i<ImageProcessingLimits::ColorSpaceCount;i++)
-	{
-		string ThisCurveName(ImageProcessingLimits::ColorSpaceLabels[i]);
-		if(ColSp == ThisCurveName)
-			ColorSpace = ImageProcessingLimits::ColorSpaceMap[i];
-	}
-
-	y=x->FindVariableZ("ISO", false, "320");
-	if(y)
-		ISO				= y->GetValueInt();	
-	y=x->FindVariableZ("Kelvin", false, "3200");
-	if(y)
-		Kelvin				= y->GetValueFloat();	
-	y = x->FindVariableZ("Tint", false, "0");
-	if(y)
-		Tint					= y->GetValueFloat();	
-	y = x->FindVariableZ("ExposureCompensation", false, "0");
-	if(y)
-		ExposureCompensation	=y->GetValueFloat();	
-	y = x->FindVariableZ("GainRed", false, "1");
-	if(y)
-		GainRed				= y->GetValueFloat();	
-	y = x->FindVariableZ("GainGreen", false, "1");
-	if(y)
-		GainGreen			= y->GetValueFloat();	
-	y = x->FindVariableZ("GainBlue", false, "1");
-	if(y)
-		GainBlue			= y->GetValueFloat();	
-	y = x->FindVariableZ("Saturation", false, "1");
-	if(y)
-		Saturation			= y->GetValueFloat();	
-	y = x->FindVariableZ("Contrast", false, "1");
-	if(y)
-		Contrast			= y->GetValueFloat();	
-	y = x->FindVariableZ("Brightness", false, "1");
-	if(y)
-		Brightness			= y->GetValueFloat();	
-	y = x->FindVariableZ("DRX", false, "0");
-	if(y)
-		DRX					= y->GetValueFloat();	
-
-	y = x->FindVariableZ("CustomPDLogGamma", false, "0");
-	if(y)
-		CustomPDLogGamma			= y->GetValueFloat();	
-
-	y = x->FindVariableZ("UserCurve0", false, "0.00");
-	if(y)
-		UserCurve[0]  = y->GetValueFloat();	
-	y = x->FindVariableZ("UserCurve1", false, "0.00");
-	if(y)
-		UserCurve[1]  = y->GetValueFloat();	
-	y = x->FindVariableZ("UserCurve2", false, "0.25");
-	if(y)
-		UserCurve[2]  = y->GetValueFloat();	
-	y = x->FindVariableZ("UserCurve3", false, "0.25");
-	if(y)
-		UserCurve[3]  = y->GetValueFloat();	
-	y = x->FindVariableZ("UserCurve4", false, "0.50");
-	if(y)
-		UserCurve[4]  = y->GetValueFloat();	
-	y = x->FindVariableZ("UserCurve5", false, "0.50");
-	if(y)
-		UserCurve[5]  = y->GetValueFloat();	
-	y = x->FindVariableZ("UserCurve6", false, "0.75");
-	if(y)
-		UserCurve[6]  = y->GetValueFloat();	
-	y = x->FindVariableZ("UserCurve7", false, "0.75");
-	if(y)
-		UserCurve[7]  = y->GetValueFloat();	
-	y = x->FindVariableZ("UserCurve8", false, "1.00");
-	if(y)
-		UserCurve[8]  = y->GetValueFloat();	
-	y = x->FindVariableZ("UserCurve9", false, "1.00");
-	if(y)
-		UserCurve[9]  = y->GetValueFloat();	*/
 }
 
 void ProcessController::LoadXML()
@@ -979,7 +834,7 @@ void ProcessController::SaveXML()
 /*
 void ProcessController::BindLua(lua_State *myLuaState)
 {
-#ifdef WIN32
+#ifdef ENABLE_LUA
 	// Export our class with LuaBind
 	luabind::module(myLuaState)
 		[
@@ -1111,6 +966,6 @@ void ProcessController::BindLua(lua_State *myLuaState)
 			.def ("ApronDistanceToObject", ApronDistanceToObject)
 			.def ("ApronInfillDistance", ApronInfillDistance)
 		];
-#endif
+#endif // ENABLE_LUA
 }
 */

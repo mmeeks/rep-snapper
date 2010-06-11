@@ -1,4 +1,5 @@
-#pragma once
+#ifndef REPRAP_SERIAL_H
+#define REPRAP_SERIAL_H
 
 #include <boost/thread.hpp> 
 
@@ -167,3 +168,5 @@ private:
 
 
 };
+
+#endif // REPRAP_SERIAL_H

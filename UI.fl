@@ -19,7 +19,9 @@ class GUI {open
         label {An instace of ModelViewController}
         xywh {10 25 700 805} box UP_BOX align 16
         code0 {\#include "config.h"
-\#include "stdafx.h"}
+\#include "stdafx.h"
+\#include "File.h"
+}
         code1 {\#ifndef M_PI
 \#define M_PI 3.14159265358979323846
 \#endif}
@@ -1541,17 +1543,17 @@ MVC->ConnectToPrinter(o->value());}
           } {
             Fl_Light_Button {} {
               label Errors
-              callback {MVC->serial.SetDebugMask(DEBUG_ERRORS, (bool)o->value());}
+              callback {MVC->serial->SetDebugMask(DEBUG_ERRORS, (bool)o->value());}
               xywh {730 165 165 20} value 1 selection_color 2
             }
             Fl_Light_Button {} {
               label Info
-              callback {MVC->serial.SetDebugMask(DEBUG_INFO, (bool)o->value());}
+              callback {MVC->serial->SetDebugMask(DEBUG_INFO, (bool)o->value());}
               xywh {900 165 165 20} value 1 selection_color 2
             }
             Fl_Light_Button {} {
               label Echo
-              callback {MVC->serial.SetDebugMask(DEBUG_ECHO, (bool)o->value());}
+              callback {MVC->serial->SetDebugMask(DEBUG_ECHO, (bool)o->value());}
               xywh {1070 165 165 20} value 1 selection_color 2
             }
           }
@@ -1583,11 +1585,11 @@ MVC->SetFan(o->value()*(255.0f/12.0f));}
           }
         }
         Fl_Group {} {
-          label Lua
-          xywh {715 25 545 805} hide resizable
+          label lua open
+          xywh {715 25 545 805} resizable
         } {
-          Fl_Group {} {
-            label {Lua script} open
+          Fl_Group LuaTab {
+            label {Lua script} open selected
             xywh {715 45 535 785} box ENGRAVED_FRAME color 39
           } {
             Fl_Text_Editor LuaScriptEditor {
@@ -1615,6 +1617,9 @@ MVC->SetFan(o->value()*(255.0f/12.0f));}
     code {Fl::visual( FL_DOUBLE | FL_RGB);
 Fl::scheme("plastic");
 MVC->ReadStl("C:/code/printed-parts/z-tensioner_1off.stl");
+#ifndef ENABLE_LUA
+    LuaTab->hide();
+#endif
 mainWindow->show(argc, argv);
 MVC->init();
 MVC->CopySettingsToGUI();
@@ -1630,7 +1635,7 @@ Function {TempReadTimer(void *)} {open return_type void
 } {
   code {if(gui->TempReadingEnabledButton->value())
 {
-MVC->serial.SendNow("M105");
+MVC->serial->SendNow("M105");
 Fl::repeat_timeout(MVC->gui ? MVC->ProcessControl.TempUpdateSpeed: 10.0f , &TempReadTimer);
 }} {}
 } 

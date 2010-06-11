@@ -32,6 +32,7 @@ typedef unsigned int        uint;
 typedef unsigned int        uint;
 #endif
 typedef unsigned int        UINT;
+#include "config.h"
 #include "platform.h"
 #include <stdio.h>
 #include <FL/Fl.H>
@@ -39,14 +40,33 @@ typedef unsigned int        UINT;
 #include <alloca.h>
 #include "math.h"                                               // Needed for sqrtf
 #include "ArcBall.h"
-#include "gcode.h"
-#include "ModelViewController.h"
-#include "Printer.h"
-#include "ProcessController.h"
-#include "stl.h"
-#include "UI.h"
-#include "xml/XML.H"
-#include "File.h"
+
+// Unpleasant needs un-winding ...
+using namespace std;
+using namespace vmml;
+
+// try to avoid compile time explosion by reducing includes
+class GUI;
+class Poly;
+class GCode;
+class Command;
+class Point2f;
+class Printer;
+class Triangle;
+class Segment2f;
+class AsyncSerial;
+class RepRapSerial;
+class CuttingPlane;
+class ProcessController;
+class ModelViewController;
+
+class RFO;
+class RFO_File;
+class RFO_Object;
+class RFO_Transform3D;
+
+struct Segment;
+struct InFillHit;
 
 typedef unsigned int uint;
 
@@ -61,20 +81,19 @@ extern void	RGBTOYUV	(float r, float g, float b, float &y, float &u, float &v);
 extern void YUVTORGB	(float y, float u, float v, float &r, float &g, float &b);
 
 
-#include "ModelViewController.h"
+// #include "ModelViewController.h"
 
-#include "AsyncSerial.h"
-#ifdef WIN32
-extern "C"
-{
-//#include <lua.h>
-#include <lua.hpp>
+// #include "AsyncSerial.h"
+
+#ifdef ENABLE_LUA
+
+extern "C" {
+  #include <lua.hpp>
 }
-
 #include <luabind/luabind.hpp>
-
 using namespace luabind;
-#endif
+
+#endif // ENABLE_LUA
 
 extern ModelViewController *MVC;
 
