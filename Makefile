@@ -4,7 +4,7 @@
 
 CC=gcc
 CXX=g++
-CFLAGS=-c -O2 -g
+CFLAGS=-c -O0 -g -Wall
 UNAME := $(shell uname)
 LIB_DIR=../Libraries
 

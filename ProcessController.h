@@ -145,8 +145,6 @@ public:
 	// LUA
 //	void BindLua(lua_State *myLuaState);
 
-
-
 	// Process functions
 	string m_Filename;
 
