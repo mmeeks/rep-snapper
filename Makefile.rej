@@ -1,0 +1,39 @@
+***************
+*** 2,8 ****
+  CFLAGS=-c -ggdb
+  LIB_DIR=../Libraries
+- INC=-I/usr/include -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR) -I$(LIB_DIR)/ann_1.1.1/include -I/usr/include/boost -I/usr/include/lua5.1
+- LDFLAGS=-L/usr/lib -L$(LIB_DIR)/xml -lGLU -lfltk -lfltk_gl -lfltk_forms -lglut -lcustomxml -lboost_thread-mt -lboost_system-mt
+- SOURCES=AsyncSerial.cpp RepSnapper.cpp stl.cpp gpc.c RepRapSerial.cpp ProcessController.cpp Printer.cpp ModelViewController.cpp glutils.cpp GCode.cpp ArcBall.cpp stdafx.cpp UI.cxx RFO.cpp Flu_DND.cpp flu_pixmaps.cpp FluSimpleString.cpp Flu_Tree_Browser.cpp ivcon.cpp
+- HEADERS=ArcBall.h AsyncSerial.h Convert.h Flu_DND.h Flu_Enumerations.h flu_export.h flu_pixmaps.h FluSimpleString.h Flu_Tree_Browser.h gcode.h glutils.h gpc.h ivcon.h miniball.h ModelViewController.h Printer.h ProcessController.h RepRapSerial.h RFO.h search.h Serial.h stdafx.h stl.h triangle.h UI.h
+  OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(SOURCES))))
+--- 4,32 ----
+  CFLAGS=-c -ggdb
++ CFLAGS=-c -O2
+  LIB_DIR=../Libraries
++ 
++ UNAME := $(shell uname)
++ ifeq ($(UNAME),Linux)
++ 	INC=-I/usr/include -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR) -I$(LIB_DIR)/ann_1.1.1/include -I/usr/include/boost -I/usr/include/lua5.1
++     LDFLAGS=-L/usr/lib -L$(LIB_DIR)/xml -lGLU -lfltk -lfltk_gl -lfltk_forms -lglut -lcustomxml -lboost_thread-mt -lboost_system-mt
++ endif
++ 
++ ifeq ($(UNAME),Darwin)
++ # assumes you installed MacPorts http://www.macports.org and run:
++ # sudo port install boost fltk lua
++     OPT_DIR=/opt/local
++ 	INC=-I$(OPT_DIR)/include -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)/ann_1.1.1/include -I$(LIB_DIR)
++ 	LDFLAGS=-L$(OPT_DIR)/lib -lpthread -lfltk -lfltk_forms -lfltk_gl -L$(LIB_DIR)/xml -lcustomxml
++ 	LDFLAGS+= -lboost_thread-mt -l boost_system-mt
++     LDFLAGS+= -framework Carbon -framework OpenGL -framework GLUT -framework AGL
++ endif
++ 
++ SOURCES=AsyncSerial.cpp RepSnapper.cpp stl.cpp gpc.c RepRapSerial.cpp ProcessController.cpp Printer.cpp
++ SOURCES+=ModelViewController.cpp glutils.cpp GCode.cpp ArcBall.cpp stdafx.cpp UI.cxx
++ SOURCES+=RFO.cpp Flu_DND.cpp flu_pixmaps.cpp FluSimpleString.cpp Flu_Tree_Browser.cpp ivcon.cpp
++ 
++ HEADERS=ArcBall.h AsyncSerial.h Convert.h Flu_DND.h Flu_Enumerations.h flu_export.h flu_pixmaps.h FluSimpleString.h
++ HEADERS+=Flu_Tree_Browser.h gcode.h glutils.h gpc.h ivcon.h miniball.h ModelViewController.h Printer.h ProcessController.h
++ HEADERS+=RepRapSerial.h RFO.h search.h Serial.h stdafx.h stl.h triangle.h UI.h platform.h
++ 
+  OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(SOURCES))))

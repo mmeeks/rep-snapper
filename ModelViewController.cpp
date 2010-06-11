@@ -151,6 +151,7 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 	ThisRot.M[6]=0.0f;ThisRot.M[7]=0.0f;ThisRot.M[8]=1.0f;					// NEW: Last Rotation
 
 	ProcessControl.LoadXML();
+	serial.SetReceivingBufferSize(ProcessControl.ReceivingBufferSize);
 	CopySettingsToGUI();
 
 	m_bExtruderDirection = true;
@@ -180,7 +181,6 @@ void ModelViewController::Timer_CB()
 	{
 		gui->PrintTab->redraw();
 	}
-	
 }
 
 void ModelViewController::resize(int x,int y, int width, int height)					// Reshape The Window When It's Moved Or Resized
@@ -489,7 +489,7 @@ void ModelViewController::init()
 	buffer->text(ProcessControl.GCodeLayerText.c_str());
 	buffer = gui->GCodeEnd->buffer();
 	buffer->text(ProcessControl.GCodeEndText.c_str());
-	buffer->text(ProcessControl.Notes.c_str());
+    //buffer->text(ProcessControl.Notes.c_str());
 
 	buffer = gui->LuaScriptEditor->buffer();
 	buffer->text("--Clear existing gcode\nbase:ClearGcode()\n-- Set start speed for acceleration firmware\nbase:AddText(\"G1 F2600\\n\")\n\n	 z=0.0\n	 e=0;\n	oldx = 0;\n	oldy=0;\n	while(z<47) do\n	angle=0\n		while (angle < math.pi*2) do\n	x=(50*math.cos(z/30)*math.sin(angle))+70\n		y=(50*math.cos(z/30)*math.cos(angle))+70\n\n		--how much to extrude\n\n		dx=oldx-x\n		dy=oldy-y\n		if not (angle==0) then\n			e = e+math.sqrt(dx*dx+dy*dy)\n			end\n\n			-- Make gcode string\n\n			s=string.format(\"G1 X%f Y%f Z%f F2600 E%f\\n\", x,y,z,e)\n			if(angle == 0) then\n				s=string.format(\"G1 X%f Y%f Z%f F2600 E%f\\n\", x,y,z,e)\n				end\n				-- Add gcode to gcode result\nbase:AddText(s)\n	 angle=angle+0.2\n	 oldx=x\n	 oldy=y\n	 end\n	 z=z+0.4\n	 end\n	 ");
@@ -497,6 +497,26 @@ void ModelViewController::init()
 	//	buffer = gui->CommunationsLogText->buffer();
 //	buffer->text("Dump");
 }
+
+
+void ModelViewController::WriteGCode (string filename)
+{
+  Fl_Text_Buffer* buffer = gui->GCodeResult->buffer();
+  int result = buffer->savefile (filename.c_str());
+  
+  switch (result)
+    {
+    case 0: // Succes
+      break;
+    case 1: // Open for write failed
+      fl_alert ("Error saving GCode file, error creating file.", "OK");
+      break;
+    case 2: // Partially saved file
+      fl_alert ("Error saving GCode file, while writing file, is the disk full?.", "OK");
+      break;
+    }
+}
+
 
 //Make the remaining buttons work
 //implement acceleration
@@ -511,7 +531,7 @@ void ModelViewController::CopySettingsToGUI()
 	buffer->text(ProcessControl.GCodeLayerText.c_str());
 	buffer = gui->GCodeEnd->buffer();
 	buffer->text(ProcessControl.GCodeEndText.c_str());
-	buffer->text(ProcessControl.Notes.c_str());
+    //buffer->text(ProcessControl.Notes.c_str());
 
 	gui->RaftEnableButton->value(ProcessControl.RaftEnable);
 	gui->RaftSizeSlider->value(ProcessControl.RaftSize);
@@ -619,8 +639,20 @@ void ModelViewController::CopySettingsToGUI()
 	gui->DisplayGCodeButton->value(ProcessControl.DisplayGCode);
 	gui->LuminanceShowsSpeedButton->value(ProcessControl.LuminanceShowsSpeed);
 
-	gui->shrinkFastButton->value(ProcessControl.m_ShrinkQuality == SHRINK_FAST);
-	gui->shrinkNiceButton->value(ProcessControl.m_ShrinkQuality == SHRINK_NICE);
+	switch(ProcessControl.m_ShrinkQuality)
+	{
+	case SHRINK_FAST:
+		gui->shrinkAlgorithm->value(0);
+		break;
+	case SHRINK_NICE:
+		gui->shrinkAlgorithm->value(1);
+		break;
+	case SHRINK_LOGICK:
+		gui->shrinkAlgorithm->value(2);
+		break;
+	}
+	gui->OptimizationSlider->value(ProcessControl.Optimization);
+	gui->ReceivingBufferSizeSlider->value(ProcessControl.ReceivingBufferSize);
 
 	gui->MVC->RefreshCustomButtonLabels();
     gui->MVC->GetCustomButtonText(0);
@@ -829,8 +861,14 @@ void ModelViewController::SetLogFileClear(bool on)
 }
 void ModelViewController::ClearLogs()
 {
-
+	if( gui )
+	{
+		gui->CommunationLog->clear();
+		gui->ErrorLog->clear();
+		gui->Echo->clear();
+	}
 }
+
 void ModelViewController::SwitchPower(bool on)
 {
 	if(on)
@@ -1382,6 +1420,8 @@ void ModelViewController::SetShrinkQuality(string quality)
 {
 	if(quality == "Fast")
 		ProcessControl.m_ShrinkQuality = SHRINK_FAST;
+	else if(quality == "Logick")
+		ProcessControl.m_ShrinkQuality = SHRINK_LOGICK;
 	else
 		ProcessControl.m_ShrinkQuality = SHRINK_NICE;
 }

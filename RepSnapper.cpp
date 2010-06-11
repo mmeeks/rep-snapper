@@ -33,10 +33,6 @@ Connect to printer crashes if settings are not first saved, even if com port is 
 
 #include "stdafx.h"
 
-//#include <windows.h>													// Header File For The Windows Library
-#include <GL/gl.h>														// Header File For The OpenGL32 Library
-#include <GL/glu.h>														// Header File For The GLu32 Library
-
 #include "ModelViewController.h"
 
 #include "gcode.h"

@@ -12,6 +12,7 @@
 #include "stdafx.h"
 #include "ProcessController.h"
 
+
 /*ProcessController::~ProcessController()
 {
 	SaveXML();
@@ -20,7 +21,8 @@
 void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd)
 {
 	if(gui)
-	{gui->ProgressBar->value(0);
+	{
+		gui->ProgressBar->value(0);
 		gui->ProgressBar->label("Converting");
 		gui->ProgressBar->maximum(Max.z);
 	}
@@ -36,10 +38,10 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 	float destinationZ=PrintMargin.z;
 
 	if(RaftEnable)
-		{
+	{
 		printOffset += Vector3f(RaftSize, RaftSize, 0);
 		MakeRaft(destinationZ);
-		}
+	}
 	float E=0.0f;
 	while(z<Max.z+LayerThickness*0.5f)
 	{
@@ -50,8 +52,9 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 			Fl::check();
 		}
 		for(uint o=0;o<rfo.Objects.size();o++)
+		{
 			for(uint f=0;f<rfo.Objects[o].files.size();f++)
-				{
+			{
 				STL* stl = &rfo.Objects[o].files[f].stl;	// Get a pointer to the object
 				Matrix4f T = GetSTLTransformationMatrix(o,f);
 				Vector3f t = T.getTranslation();
@@ -61,35 +64,40 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 				stl->CalcCuttingPlane(z, plane, T);	// output is alot of un-connected line segments with individual vertices, describing the outline
 
 				float hackedZ = z;
-				while(plane.LinkSegments(hackedZ, ExtrudedMaterialWidth*0.5f, DisplayCuttingPlane, m_ShrinkQuality, ShellCount) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
-					{										// This happens when there's triangles missing in the input STL
+				while(plane.LinkSegments(hackedZ, ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, m_ShrinkQuality, ShellCount) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
+				{										// This happens when there's triangles missing in the input STL
 					hackedZ+= 0.1f;
-					plane.polygons.clear();
-					stl->CalcCuttingPlane(hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices, describing the outline
-					}
+					stl->CalcCuttingPlane(hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices
+				}
 
 				// inFill
 				vector<Vector2f> infill;
 
-				CuttingPlane infillCuttingPlane = plane;
-				infillCuttingPlane.polygons = infillCuttingPlane.offsetPolygons;
-//				infillCuttingPlane.vertices = infillCuttingPlane.offsetVertices;
-				infillCuttingPlane.offsetPolygons.clear();
-//				infillCuttingPlane.offsetVertices.clear();
+//				CuttingPlane infillCuttingPlane;
+//				plane.MakeContainedPlane(infillCuttingPlane);
 				if(ShellOnly == false)
+				{
+					switch( m_ShrinkQuality )
 					{
-					if(m_ShrinkQuality == SHRINK_FAST)
-						infillCuttingPlane.ShrinkFast(ExtrudedMaterialWidth*0.5f, z, DisplayCuttingPlane, false, ShellCount);
-					else
-						infillCuttingPlane.ShrinkNice(ExtrudedMaterialWidth*0.5f, z, DisplayCuttingPlane, false, ShellCount);
-					infillCuttingPlane.CalcInFill(infill, LayerNr, destinationZ, InfillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
+					case SHRINK_FAST:
+						plane.ShrinkFast(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);
+						break;
+					case SHRINK_NICE:
+						plane.ShrinkNice(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);
+						break;
+					case SHRINK_LOGICK:
+						plane.ShrinkLogick(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);
+						break;
 					}
+					plane.CalcInFill(infill, LayerNr, destinationZ, InfillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
+				}
 				// Make the GCode from the plane and the infill
 				plane.MakeGcode(infill, gcode, E, destinationZ, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, DistanceToReachFullSpeed, extrusionFactor, UseIncrementalEcode, Use3DGcode, EnableAcceleration);
-				}
-	LayerNr++;
-	destinationZ += LayerThickness;
-	z+=LayerThickness;
+			}
+		}
+		LayerNr++;
+		destinationZ += LayerThickness;
+		z+=LayerThickness;
 	}
 
 	GcodeTxt.clear();
@@ -318,10 +326,11 @@ void ProcessController::Draw(Flu_Tree_Browser::Node *selected_node)
 	{
 		glTranslatef(-(translation.x+printOffset.x), -(translation.y+printOffset.y), -(translation.z+PrintMargin.z));
 		gcode.draw(*this);
+	}
 		glTranslatef(translation.x+printOffset.x, translation.y+printOffset.y, translation.z+PrintMargin.z);
+	
 		glPolygonOffset (-0.5f, -0.5f);
 		rfo.Draw(*this, PolygonOpasity);
-	}
 //	float z=0;
 //	MakeRaft(z);
 
@@ -394,7 +403,7 @@ void ProcessController::SaveXML(XMLElement *e)
 	x->FindVariableZ("GCodeStartText", true,"[Empty]")->SetValue(GCodeStartText.c_str());	
 	x->FindVariableZ("GCodeLayerText", true,"[Empty]")->SetValue(GCodeLayerText.c_str());	
 	x->FindVariableZ("GCodeEndText", true,"[Empty]")->SetValue(GCodeEndText.c_str());	
-	x->FindVariableZ("Notes", true,"[Empty]")->SetValue(Notes.c_str());	
+        //x->FindVariableZ("Notes", true,"[Empty]")->SetValue(Notes.c_str()); // overwriting GCodeEndText	
 	x->FindVariableZ("m_sPortName", true,"COM5")->SetValue(m_sPortName.c_str());	
 
 	x->FindVariableZ("CustomButton1Text", true,"[Empty]")->SetValue(CustomButtonGcode[0].c_str());	
@@ -537,6 +546,10 @@ void ProcessController::SaveXML(XMLElement *e)
 
 	x->FindVariableZ("ShrinkFast", true, "1")->SetValueInt(m_ShrinkQuality == SHRINK_FAST);
 	x->FindVariableZ("ShrinkNice", true, "1")->SetValueInt(m_ShrinkQuality == SHRINK_NICE);
+	x->FindVariableZ("ShrinkLogick", true, "1")->SetValueInt(m_ShrinkQuality == SHRINK_LOGICK);
+	x->FindVariableZ("Optimization", true, "0.05")->SetValueFloat(Optimization);
+	x->FindVariableZ("ReceivingBufferSize", true, "4")->SetValueInt(ReceivingBufferSize);
+
 	x->FindVariableZ("ApronInfillDistance", true, "1")->SetValueFloat(ApronInfillDistance);
 	/*
 
@@ -711,10 +724,10 @@ void ProcessController::LoadXML(XMLElement *e)
 	x->FindVariableZ("GCodeEndText", true, "G1 X0 Y0 F2000.0       ;feed for start of next move\nM104 S0.0                    ;Heater off\n")->GetValue(buffer);
 	GCodeEndText = string(buffer);
 	memset(buffer,0,10000);
-	x->FindVariableZ("Notes", true, "")->GetValue(buffer);
-	Notes = string(buffer);
+        //x->FindVariableZ("Notes", true, "")->GetValue(buffer);
+        //Notes = string(buffer); // no UI element was overwriting GCodeEndText 
 
-	memset(buffer,0,10000);
+        //memset(buffer,0,10000);
 	x->FindVariableZ("m_sPortName", true, "COM ")->GetValue(buffer);
 	if( buffer[3] == ' ' )
 	{
@@ -781,6 +794,10 @@ void ProcessController::LoadXML(XMLElement *e)
 	if(y)	InfillRotation = y->GetValueFloat();
 	y=x->FindVariableZ("InfillRotationPrLayer", true, "90");
 	if(y)	InfillRotationPrLayer = y->GetValueFloat();
+	y=x->FindVariableZ("Optimization", true, "0.05");
+	if(y)	Optimization = y->GetValueFloat();
+	y=x->FindVariableZ("ReceivingBufferSize", true, "4");
+	if(y)	ReceivingBufferSize = y->GetValueInt();
 	y=x->FindVariableZ("ShellOnly", true, "0");
 	if(y)	ShellOnly = y->GetValueFloat();
 	y=x->FindVariableZ("ShellCount", true, "1");
@@ -896,9 +913,12 @@ void ProcessController::LoadXML(XMLElement *e)
 	y=x->FindVariableZ("ApronInfillDistance", true, "2");
 	if(y)	ApronInfillDistance = (bool)y->GetValueFloat();
 
+	y=x->FindVariableZ("ShrinkFast", true, "1"); // "1" makes this the default, must be on top to allow the others to overwrite if set. 
+	if(y && (bool)y->GetValueInt())	m_ShrinkQuality = SHRINK_FAST;
 	y=x->FindVariableZ("ShrinkNice", true, "0");
-	if(y)	m_ShrinkQuality = (bool)y->GetValueInt() ? SHRINK_NICE : SHRINK_FAST;
-
+	if(y && (bool)y->GetValueInt())	m_ShrinkQuality = SHRINK_NICE;
+	y=x->FindVariableZ("ShrinkLogick", true, "0");
+	if(y && (bool)y->GetValueInt())	m_ShrinkQuality = SHRINK_LOGICK;
 
 	/*
 	ImageProcessingSettings();
@@ -1100,6 +1120,7 @@ void ProcessController::BindLua(lua_State *myLuaState)
 			.def ("InfillDistance", InfillDistance)
 			.def ("InfillRotation", InfillRotation)
 			.def ("InfillRotationPrLayer", InfillRotationPrLayer)
+			.def ("Optimization", Optimization)
 			.def ("Examine", Examine)
 
 			.def ("ShellOnly", ShellOnly)

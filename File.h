@@ -5,8 +5,19 @@
 #ifndef FILE_H
 #define FILE_H
 
+#include "ModelViewController.h"
+
 namespace FileChooser {
-  std::string open (const char *directory, const char *filter, int type, const char *title);
+  enum Type {
+    STL,
+    RFO,
+    GCODE,
+  };
+  enum Op {
+    OPEN,
+    SAVE
+  };
+  void ioDialog (ModelViewController *mvc, Op o, Type t, bool dropRFO = false);
 };
 
 #endif

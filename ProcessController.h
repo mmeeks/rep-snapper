@@ -85,6 +85,7 @@ public:
 		InfillRotation = 45.0f;
 		InfillRotationPrLayer = 90.0f;
 		Examine = 0.5f;
+		Optimization = 0.02f;
 
 		DisplayDebuginFill = false;
 		DisplayDebug = false;
@@ -166,6 +167,9 @@ public:
 	GCode gcode;						// Gcode as binary data
 	string GcodeTxt;					// Final GCode as text
 
+	float Optimization;
+	int ReceivingBufferSize;
+
 	// Raft
 	float RaftSize;
 	uint RaftBaseLayerCount;
@@ -235,7 +239,7 @@ public:
 	bool DisplayCuttingPlane;
 	bool DrawVertexNumbers;
 	bool DrawLineNumbers;
-	string Notes;
+	//string Notes; // Thers is no ui element for this field, it was causing problems with GCodeEnd UI field
 
 	// Rendering
 	float PolygonVal;

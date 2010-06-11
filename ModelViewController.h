@@ -24,7 +24,7 @@
 #include "glutils.h"
 #include "RepRapSerial.h"
 
-enum SHRINK_QUALITY {SHRINK_FAST, SHRINK_NICE};
+enum SHRINK_QUALITY {SHRINK_FAST, SHRINK_NICE, SHRINK_LOGICK};
 
 #pragma warning( disable : 4244 4267)
 
@@ -48,6 +48,8 @@ public:
 	void RotateObject(float x, float y, float z, float a) {ProcessControl.RotateObject(Vector3f(x,y,z),a);}
 
 	void SetShrinkQuality(string quality);
+	void SetOptimization(float val) {ProcessControl.Optimization = val; redraw(); }
+	void SetReceivingBufferSize(float val) {ProcessControl.ReceivingBufferSize = val; serial.SetReceivingBufferSize(val); }
 
 	void setObjectname(string name);
 	void setFileMaterial(string material);
@@ -64,7 +66,7 @@ public:
 	// My own view functions
 	void draw();
 	void DrawGridAndAxis();
-	void WriteGCode(string filename) {/*ProcessControl.WriteGCode(filename);*/}
+	void WriteGCode(string filename);
 	void CopySettingsToGUI();
 
 	void CenterView();

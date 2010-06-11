@@ -9,7 +9,6 @@
 
 #include <string>
 #include <algorithm>
-#include <boost/bind.hpp>
 
 using namespace std;
 using namespace boost;
@@ -71,8 +70,8 @@ void AsyncSerial::close()
     thread_.join();
     if(errorStatus())
     {
-        throw(system::system_error(system::error_code(),
-                "Error while closing the device"));
+      throw(boost::system::system_error(boost::system::error_code(),
+					"Error while closing the device"));
     }
 }
 
@@ -133,7 +132,7 @@ void AsyncSerial::readStart()
             asio::placeholders::bytes_transferred));
 }
 
-void AsyncSerial::readEnd(const system::error_code& error,
+void AsyncSerial::readEnd(const boost::system::error_code& error,
         size_t bytes_transferred)
 {
     if(error)
@@ -167,7 +166,7 @@ void AsyncSerial::doWrite()
     }
 }
 
-void AsyncSerial::writeEnd(const system::error_code& error)
+void AsyncSerial::writeEnd(const boost::system::error_code& error)
 {
     if(!error)
     {
@@ -193,7 +192,7 @@ void AsyncSerial::writeEnd(const system::error_code& error)
 
 void AsyncSerial::doClose()
 {
-    system::error_code ec;
+    boost::system::error_code ec;
     port_.close(ec);
     if(ec) setErrorStatus(true);
 }

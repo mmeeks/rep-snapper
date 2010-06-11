@@ -132,6 +132,7 @@ public:
 	ulong GetConnectAttempt() { return ConnectAttempt; }
 	bool m_bPrinting;
 	void WaitForConnection(ulong timeoutMS);
+	void SetReceivingBufferSize(int val) { ReceivingBufferSize = val; }
 private:
 	void internalWrite(string s, const int lineNr);
 	void debugPrint(string s, bool selectLine = false);
@@ -150,6 +151,7 @@ private:
 	GUI* gui;
 	FILE* logFile;
 
+	int ReceivingBufferSize;
 /*
 	// Very private :P
 	FT_HANDLE fthandle;

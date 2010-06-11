@@ -1,0 +1,26 @@
+15:51:23 Send >>Connecting to port: COM1 at speed 19200
+15:51:23 Send >>Exception: No such file or directory:COM1 
+15:51:24 Send >>Connecting to port: COM1 at speed 19200
+15:51:24 Send >>Exception: No such file or directory:COM1 
+15:51:28 Send >>Connecting to port: /dev/tty1 at speed 19200
+15:51:28 Send >>Exception: Permission denied:/dev/tty1 
+15:51:28 Send >>Connecting to port: /dev/tty1 at speed 19200
+15:51:28 Send >>Exception: Permission denied:/dev/tty1 
+15:51:32 Send >>Connecting to port: /dev/ttyUSB0 at speed 19200
+15:51:32 Send >>Exception: No such file or directory:/dev/ttyUSB0 
+15:51:33 Send >>Connecting to port: /dev/ttyUSB0 at speed 19200
+15:51:33 Send >>Exception: No such file or directory:/dev/ttyUSB0 
+15:51:33 Send >>Connecting to port: /dev/ttyUSB0 at speed 19200
+15:51:33 Send >>Exception: No such file or directory:/dev/ttyUSB0 
+15:51:33 Send >>Connecting to port: /dev/ttyUSB0 at speed 19200
+15:51:33 Send >>Exception: No such file or directory:/dev/ttyUSB0 
+15:51:33 Send >>Connecting to port: /dev/ttyUSB0 at speed 19200
+15:51:33 Send >>Exception: No such file or directory:/dev/ttyUSB0 
+15:51:33 Send >>Connecting to port: /dev/ttyUSB0 at speed 19200
+15:51:33 Send >>Exception: No such file or directory:/dev/ttyUSB0 
+15:51:33 Send >>Connecting to port: /dev/ttyUSB0 at speed 19200
+15:51:33 Send >>Exception: No such file or directory:/dev/ttyUSB0 
+15:51:34 Send >>Connecting to port: /dev/ttyUSB0 at speed 19200
+15:51:34 Send >>Exception: No such file or directory:/dev/ttyUSB0 
+15:51:34 Send >>Connecting to port: /dev/ttyUSB0 at speed 19200
+15:51:34 Send >>Exception: No such file or directory:/dev/ttyUSB0 

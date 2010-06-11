@@ -11,10 +11,7 @@
 * ------------------------------------------------------------------------- */
 #pragma once
 #include <vector>
-//#include <windows.h>											// Header File For Windows
-#include <GL/gl.h>												// Header File For The OpenGL32 Library
-#include <GL/glu.h>												// Header File For The GLu32 Library
-//#include <gl\glaux.h>											// Header File For The GLaux Library
+#include "platform.h"
 
 #include "math.h"                                               // Needed for sqrtf
 
@@ -22,11 +19,23 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <list>
 
 #include <FL/Fl_Gl_Window.H>
 #include <FL/gl.h>
 
 #include <vmmlib/vmmlib.h>
+
+#ifdef __GNUC__
+#include <ext/hash_map>
+namespace std
+{
+ using namespace __gnu_cxx;
+}
+#else
+#include <hash_map>
+using namespace stdext;
+#endif
 
 class GUI;
 class GCode;
@@ -75,8 +84,8 @@ class Poly{
 public:
 	Poly(){};
 	void cleanup();				// Removed vertices that are on a straight line
-	int calcHole();
-	vector<Vector2f> points;			// points
+	void calcHole(vector<Vector2f> &offsetVertices);
+	vector<uint> points;			// points, indices into ..... a CuttingPlane or a GCode object
 	bool hole;
 };
 
@@ -87,31 +96,147 @@ struct locator{
 	float t;
 };
 
+
+class Segment2f;
+
+class Point2f;
+
 // A (set of) 2D polygon extracted from a 3D model
 class  CuttingPlane{
 public:
 	CuttingPlane();
-	void ShrinkFast(float distance, float z, bool DisplayCuttingPlane, bool useFillets, int ShellCount);		// Contracts polygons
-	void ShrinkNice(float distance, float z, bool DisplayCuttingPlane, bool useFillets, int ShellCount);		// Contracts polygons
-	void selfIntersectAndDivide(float z);
-	void selfIntersectAndDivideTest(float z);
+	~CuttingPlane();
+	void ShrinkFast(float distance, float optimization, bool DisplayCuttingPlane, bool useFillets, int ShellCount);		// Contracts polygons
+	void ShrinkLogick(float distance, float optimization, bool DisplayCuttingPlane, bool useFillets, int ShellCount);		// Contracts polygons
+	void ShrinkNice(float distance, float optimization, bool DisplayCuttingPlane, bool useFillets, int ShellCount);		// Contracts polygons
+	void selfIntersectAndDivide();
+	uint selfIntersectAndDivideRecursive(float z, uint startPolygon, uint startVertex, vector<outline> &outlines, const Vector2f endVertex, uint &level);
+
+	void MakeContainedPlane(CuttingPlane& res)
+	{
+		res = *this;
+		res.polygons = res.offsetPolygons;
+		res.vertices = res.offsetVertices;
+		res.advVertices = res.advVertices;
+		res.offsetPolygons.clear();
+		res.offsetVertices.clear();
+	}
+	void ClearShrink()
+	{
+		offsetPolygons.clear();
+		offsetVertices.clear();
+	}
+	void recurseSelfIntersectAndDivide(float z, vector<locator> &EndPointStack, vector<outline> &outlines, vector<locator> &visited);
 	void CalcInFill(vector<Vector2f> &infill, uint LayerNr, float z, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill);	// Collide a infill-line with the polygons
-	void Draw(float z, bool DrawVertexNumbers, bool DrawLineNumbers);
-	bool LinkSegments(float z, float shrinkValue, bool DisplayCuttingPlane, bool ShrinkNice, int ShellCount);		// Link Segments to form polygons
-	void CleanupPolygons();			// remove redudant points
-	void CleanupOffsetPolygons();			// remove redudant points
+	void Draw(bool DrawVertexNumbers, bool DrawLineNumbers);
+	bool LinkSegments(float z, float shrinkValue, float Optimization, bool DisplayCuttingPlane, bool ShrinkNice, int ShellCount);		// Link Segments to form polygons
+	void CleanupPolygons(float Optimization);			// remove redudant points
+	void CleanupOffsetPolygons(float Optimization);			// remove redudant points
 	void MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float &E, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, float DistanceToReachFullSpeed, float extrusionFactor, bool UseIncrementalEcode, bool Use3DGcode, bool EnableAcceleration);	// Convert Cuttingplane to GCode
 	bool VertexIsOutsideOriginalPolygon( Vector2f point, float z);
 
 	Vector2f Min, Max;				// Bounding box
+
+	void Clear() 
+	{ 	
+		lines.clear();
+		vertices.clear();
+		advVertices.clear();
+		polygons.clear();
+		points.clear();
+		offsetPolygons.clear();
+		offsetVertices.clear();
+	}
+	void SetZ(float value)
+	{
+		Z = value;
+		Clear();
+	}
+
+	int RegisterPoint(Vector2f &p);
+	void AddLine(Segment &line);
+
+	vector<Poly>& GetPolygons() { return polygons; }
+	vector<Vector2f>& GetVertices() { return vertices; }
+	vector<Point2f*>& GetAdvVertices() { return advVertices; }
+
+private:
+	uint GetHash(float x, float y);
+	uint IndexOfPoint(uint hash, Vector2f &p);
+	hash_map<uint, pair<Point2f*, int> > points;
+
 	vector<Segment> lines;			// Segments - 2 points pr. line-segment
 
 	vector<Poly> polygons;			// Closed loops
 	vector<Vector2f> vertices;		// points
+	vector<Point2f*> advVertices;	// points
+	float Z;
 
 	vector<Poly> offsetPolygons;	// Shrinked closed loops
-//	vector<Vector2f> offsetVertices;// points for shrinked closed loops
+	vector<Vector2f> offsetVertices;// points for shrinked closed loops
 };
+
+
+#define sqr(x) (x*x)
+
+class Point2f
+{
+public:
+	static uint GetHash(float x, float y) { return ((uint)(x*1000))+((uint)(y*1000))*1000000; }
+	Point2f(Vector2f p, int idx)
+	{
+		Point = p;
+		Index = idx;
+	}
+	list<Point2f*> ConnectedPoints;
+	list<Segment2f*> Lines;
+	Vector2f Point;
+	int Index;
+	bool FindNextPoint(Point2f* origin, Point2f* destination, bool expansion);
+	float AngleTo(Point2f* point);
+};
+
+class Segment2f
+{
+public:
+	Segment2f(Point2f* p1, Point2f* p2) { Point1 = p1; Point2 = p2; }
+	Point2f* Point1;
+	Point2f* Point2;
+};
+
+class Outline2f
+{
+public:
+	list<Segment2f> Segments;
+};
+
+class Polygon2f
+{
+public:
+	vector<Vector2f> vertices;
+	bool hole;
+	list<Polygon2f> containedHoles;
+	list<Polygon2f> containedSolids;
+	
+	void Optimize(float minAngle);
+	bool ContainsPoint(Vector2f point);
+	bool InsertPolygon(Polygon2f& poly);
+	void InsertToList(list<Polygon2f>& list);
+	void Shrink(float distance, list<Polygon2f> &polygons);
+};
+
+class CuttingPlaneOptimizer
+{
+public:
+	float Z;
+	CuttingPlaneOptimizer(float z) { Z = z; }
+	CuttingPlaneOptimizer(CuttingPlane* cuttingPlane, float z);
+	list<Polygon2f> positivePolygons;
+	void Shrink(float distance, bool useFillets, list<Polygon2f> &resPolygons);
+};
+
+
+
 
 class STL
 {
