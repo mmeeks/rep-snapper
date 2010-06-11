@@ -193,9 +193,9 @@ void RepRapSerial::SendNextLine()
 		if (remaining_hours > 0)
 			oss << "%dh" << remaining_hours;
 		if (remaining_minutes > 0 || oss.tellp())
-			oss << setw(2) << remaining_minutes;
+			oss << setw(2) << remaining_minutes << "m";
 		if (remaining_seconds > 0 || oss.tellp())
-			oss << setw(2) << remaining_seconds;
+			oss << setw(2) << remaining_seconds << "s";
 		if (!oss.tellp())
 			oss << "no estimate";
 
