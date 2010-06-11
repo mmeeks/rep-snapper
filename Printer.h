@@ -13,8 +13,6 @@
 
 #include "stdafx.h"
 
-class ProcessController;
-
 class Printer
 {
 public:

@@ -10,13 +10,9 @@
 *
 * ------------------------------------------------------------------------- */
 #include "stdafx.h"
+#include "xml/XML.H"
+#include "ModelViewController.h"
 #include "ProcessController.h"
-
-
-/*ProcessController::~ProcessController()
-{
-	SaveXML();
-}*/
 
 void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd)
 {
@@ -370,685 +366,494 @@ void WriteGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeL
 
 void ProcessController::SaveXML(string filename)
 {
-	filename = filename+".xml";
+	filename = filename + ".xml";
 
-	XML* xml = new XML(filename.c_str()); 
+	XML* xml = new XML(filename.c_str());
 	XMLElement* e = xml->GetRootElement();
 	SaveXML(e);
 	if (xml->IntegrityTest())
 		xml->Save(); // Saves back to file
 	delete xml;
 }
+
+namespace {
+	void setXMLString (XMLElement *x, const char *name, const char *value)
+	{
+		x->FindVariableZ ((char *)name, true, (char *)"")->SetValue ((char *)value);
+	}
+
+	void setXMLString (XMLElement *x, const std::ostringstream &name, const char *value)
+	{
+		std::string s = name.str();
+		setXMLString (x, s.c_str(), value);
+	}
+	
+	// Calm our warning problem down ...
+	XMLVariable *setVariable (XMLElement *x, const char *variable)
+	{
+		return x->FindVariableZ ((char *)variable, true, (char *)"");
+	}
+
+};
 
 void ProcessController::SaveXML(XMLElement *e)
 {
 	XMLElement *x = e->FindElementZ("ProcessController", true);
 
 	// Raft parameters
-	x->FindVariableZ("RaftSize", true, "1.7")->SetValueFloat(RaftSize);
-	x->FindVariableZ("RaftBaseLayerCount", true, "1")->SetValueInt(RaftBaseLayerCount);
-	x->FindVariableZ("RaftMaterialPrDistanceRatio", true, "1.7")->SetValueFloat(RaftMaterialPrDistanceRatio);
-	x->FindVariableZ("RaftRotation", true, "90")->SetValueFloat(RaftRotation);
-	x->FindVariableZ("RaftBaseDistance", true, "2.5")->SetValueFloat(RaftBaseDistance);
-	x->FindVariableZ("RaftBaseThickness", true, "1.7")->SetValueFloat(RaftBaseThickness);
-	x->FindVariableZ("RaftBaseTemperature", true, "190")->SetValueFloat(RaftBaseTemperature);
-	x->FindVariableZ("RaftInterfaceLayerCount", true, "1")->SetValueInt(RaftInterfaceLayerCount);
-	x->FindVariableZ("RaftInterfaceMaterialPrDistanceRatio", true, "1")->SetValueFloat(RaftInterfaceMaterialPrDistanceRatio);
-	x->FindVariableZ("RaftRotationPrLayer", true, "90")->SetValueFloat(RaftRotationPrLayer);
-	x->FindVariableZ("RaftInterfaceDistance", true, "2")->SetValueFloat(RaftInterfaceDistance);
-	x->FindVariableZ("RaftInterfaceThickness", true, "1")->SetValueFloat(RaftInterfaceThickness);
-	x->FindVariableZ("RaftInterfaceTemperature", true, "190")->SetValueFloat(RaftInterfaceTemperature);
+	setVariable (x, "RaftSize")->SetValueFloat(RaftSize);
+	setVariable (x, "RaftBaseLayerCount")->SetValueInt(RaftBaseLayerCount);
+	setVariable (x, "RaftMaterialPrDistanceRatio")->SetValueFloat(RaftMaterialPrDistanceRatio);
+	setVariable (x, "RaftRotation")->SetValueFloat(RaftRotation);
+	setVariable (x, "RaftBaseDistance")->SetValueFloat(RaftBaseDistance);
+	setVariable (x, "RaftBaseThickness")->SetValueFloat(RaftBaseThickness);
+	setVariable (x, "RaftBaseTemperature")->SetValueFloat(RaftBaseTemperature);
+	setVariable (x, "RaftInterfaceLayerCount")->SetValueInt(RaftInterfaceLayerCount);
+	setVariable (x, "RaftInterfaceMaterialPrDistanceRatio")->SetValueFloat(RaftInterfaceMaterialPrDistanceRatio);
+	setVariable (x, "RaftRotationPrLayer")->SetValueFloat(RaftRotationPrLayer);
+	setVariable (x, "RaftInterfaceDistance")->SetValueFloat(RaftInterfaceDistance);
+	setVariable (x, "RaftInterfaceThickness")->SetValueFloat(RaftInterfaceThickness);
+	setVariable (x, "RaftInterfaceTemperature")->SetValueFloat(RaftInterfaceTemperature);
 
 	// GCode parameters
-	x->FindVariableZ("GCodeStartText", true,"[Empty]")->SetValue(GCodeStartText.c_str());	
-	x->FindVariableZ("GCodeLayerText", true,"[Empty]")->SetValue(GCodeLayerText.c_str());	
-	x->FindVariableZ("GCodeEndText", true,"[Empty]")->SetValue(GCodeEndText.c_str());	
-        //x->FindVariableZ("Notes", true,"[Empty]")->SetValue(Notes.c_str()); // overwriting GCodeEndText	
-	x->FindVariableZ("m_sPortName", true,"COM5")->SetValue(m_sPortName.c_str());	
+	setVariable (x, "GCodeStartText")->SetValue(GCodeStartText.c_str());	
+	setVariable (x, "GCodeLayerText")->SetValue(GCodeLayerText.c_str());	
+	setVariable (x, "GCodeEndText")->SetValue(GCodeEndText.c_str());	
+        //setVariable (x, "Notes", true,"[Empty]")->SetValue(Notes.c_str()); // overwriting GCodeEndText	
+	setVariable (x, "m_sPortName")->SetValue(m_sPortName.c_str());	
 
-	x->FindVariableZ("CustomButton1Text", true,"[Empty]")->SetValue(CustomButtonGcode[0].c_str());	
-	x->FindVariableZ("CustomButton2Text", true,"[Empty]")->SetValue(CustomButtonGcode[1].c_str());	
-	x->FindVariableZ("CustomButton3Text", true,"[Empty]")->SetValue(CustomButtonGcode[2].c_str());	
-	x->FindVariableZ("CustomButton4Text", true,"[Empty]")->SetValue(CustomButtonGcode[3].c_str());	
-	x->FindVariableZ("CustomButton5Text", true,"[Empty]")->SetValue(CustomButtonGcode[4].c_str());	
-	x->FindVariableZ("CustomButton6Text", true,"[Empty]")->SetValue(CustomButtonGcode[5].c_str());	
-	x->FindVariableZ("CustomButton7Text", true,"[Empty]")->SetValue(CustomButtonGcode[6].c_str());	
-	x->FindVariableZ("CustomButton8Text", true,"[Empty]")->SetValue(CustomButtonGcode[7].c_str());	
-	x->FindVariableZ("CustomButton9Text", true,"[Empty]")->SetValue(CustomButtonGcode[8].c_str());	
-	x->FindVariableZ("CustomButton10Text", true,"[Empty]")->SetValue(CustomButtonGcode[9].c_str());	
-	x->FindVariableZ("CustomButton11Text", true,"[Empty]")->SetValue(CustomButtonGcode[10].c_str());	
-	x->FindVariableZ("CustomButton12Text", true,"[Empty]")->SetValue(CustomButtonGcode[11].c_str());	
-	x->FindVariableZ("CustomButton13Text", true,"[Empty]")->SetValue(CustomButtonGcode[12].c_str());	
-	x->FindVariableZ("CustomButton14Text", true,"[Empty]")->SetValue(CustomButtonGcode[13].c_str());	
-	x->FindVariableZ("CustomButton15Text", true,"[Empty]")->SetValue(CustomButtonGcode[14].c_str());	
-	x->FindVariableZ("CustomButton16Text", true,"[Empty]")->SetValue(CustomButtonGcode[15].c_str());	
-	x->FindVariableZ("CustomButton17Text", true,"[Empty]")->SetValue(CustomButtonGcode[16].c_str());	
-	x->FindVariableZ("CustomButton81Text", true,"[Empty]")->SetValue(CustomButtonGcode[17].c_str());	
-	x->FindVariableZ("CustomButton19Text", true,"[Empty]")->SetValue(CustomButtonGcode[18].c_str());	
-	x->FindVariableZ("CustomButton20Text", true,"[Empty]")->SetValue(CustomButtonGcode[19].c_str());	
+	for (int i = 0; i < 20; i++) {
+		std::ostringstream os, name;
 
-	x->FindVariableZ("CustomButton1Label", true,"Custom button 1")->SetValue(CustomButtonLabel[0].c_str());	
-	x->FindVariableZ("CustomButton2Label", true,"Custom button 2")->SetValue(CustomButtonLabel[1].c_str());	
-	x->FindVariableZ("CustomButton3Label", true,"Custom button 3")->SetValue(CustomButtonLabel[2].c_str());	
-	x->FindVariableZ("CustomButton4Label", true,"Custom button 4")->SetValue(CustomButtonLabel[3].c_str());	
-	x->FindVariableZ("CustomButton5Label", true,"Custom button 5")->SetValue(CustomButtonLabel[4].c_str());	
-	x->FindVariableZ("CustomButton6Label", true,"Custom button 6")->SetValue(CustomButtonLabel[5].c_str());	
-	x->FindVariableZ("CustomButton7Label", true,"Custom button 7")->SetValue(CustomButtonLabel[6].c_str());	
-	x->FindVariableZ("CustomButton8Label", true,"Custom button 8")->SetValue(CustomButtonLabel[7].c_str());	
-	x->FindVariableZ("CustomButton9Label", true,"Custom button 9")->SetValue(CustomButtonLabel[8].c_str());	
-	x->FindVariableZ("CustomButton10Label", true,"Custom button 10")->SetValue(CustomButtonLabel[9].c_str());	
-	x->FindVariableZ("CustomButton11Label", true,"Custom button 11")->SetValue(CustomButtonLabel[10].c_str());	
-	x->FindVariableZ("CustomButton12Label", true,"Custom button 12")->SetValue(CustomButtonLabel[11].c_str());	
-	x->FindVariableZ("CustomButton13Label", true,"Custom button 13")->SetValue(CustomButtonLabel[12].c_str());	
-	x->FindVariableZ("CustomButton14Label", true,"Custom button 14")->SetValue(CustomButtonLabel[13].c_str());	
-	x->FindVariableZ("CustomButton15Label", true,"Custom button 15")->SetValue(CustomButtonLabel[14].c_str());	
-	x->FindVariableZ("CustomButton16Label", true,"Custom button 16")->SetValue(CustomButtonLabel[15].c_str());	
-	x->FindVariableZ("CustomButton17Label", true,"Custom button 17")->SetValue(CustomButtonLabel[16].c_str());	
-	x->FindVariableZ("CustomButton18Label", true,"Custom button 18")->SetValue(CustomButtonLabel[17].c_str());	
-	x->FindVariableZ("CustomButton19Label", true,"Custom button 19")->SetValue(CustomButtonLabel[18].c_str());	
-	x->FindVariableZ("CustomButton20Label", true,"Custom button 20")->SetValue(CustomButtonLabel[19].c_str());	
+		os << "CustomButton" << i + 1 << "Text";
+		setXMLString (x, os, CustomButtonGcode[i].c_str());
 
+		name << "CustomButton" << i + 1 << "Label";
+		setXMLString (x, name, CustomButtonLabel[i].c_str());
+	}
 
-	x->FindVariableZ("m_iSerialSpeed", true,"19200")->SetValueInt(m_iSerialSpeed);	
+	setVariable (x, "m_iSerialSpeed")->SetValueInt(m_iSerialSpeed);	
 
-	x->FindVariableZ("GCodeDrawStart", true, "190")->SetValueFloat(GCodeDrawStart);
-	x->FindVariableZ("GCodeDrawEnd", true, "190")->SetValueFloat(GCodeDrawEnd);
-	x->FindVariableZ("ShellOnly", true, "0.66")->SetValueInt((int)ShellOnly);
-	x->FindVariableZ("ShellCount", true, "0.66")->SetValueInt(ShellCount);
+	setVariable (x, "GCodeDrawStart")->SetValueFloat(GCodeDrawStart);
+	setVariable (x, "GCodeDrawEnd")->SetValueFloat(GCodeDrawEnd);
+	setVariable (x, "ShellOnly")->SetValueInt((int)ShellOnly);
+	setVariable (x, "ShellCount")->SetValueInt(ShellCount);
 
 	// Printer parameters
-	x->FindVariableZ("MinPrintSpeedXY", true, "400")->SetValueFloat(MinPrintSpeedXY);
-	x->FindVariableZ("MaxPrintSpeedXY", true, "1500")->SetValueFloat(MaxPrintSpeedXY);
-	x->FindVariableZ("MinPrintSpeedZ", true, "50")->SetValueFloat(MinPrintSpeedZ);
-	x->FindVariableZ("MaxPrintSpeedZ", true, "150")->SetValueFloat(MaxPrintSpeedZ);
-//	x->FindVariableZ("accelerationSteps", true, "3")->SetValueInt(accelerationSteps);
-	x->FindVariableZ("DistanceToReachFullSpeed", true, "5")->SetValueFloat(DistanceToReachFullSpeed);
-//	x->FindVariableZ("UseFirmwareAcceleration", true, "5")->SetValueInt(UseFirmwareAcceleration);
-	x->FindVariableZ("extrusionFactor", true, "0.66")->SetValueFloat(extrusionFactor);
-	x->FindVariableZ("EnableAcceleration", true, "0.66")->SetValueInt((int)EnableAcceleration);
-	x->FindVariableZ("UseIncrementalEcode", true, "1")->SetValueInt((int)UseIncrementalEcode);
-	x->FindVariableZ("Use3DGcode", true, "0")->SetValueInt((int)Use3DGcode);
+	setVariable (x, "MinPrintSpeedXY")->SetValueFloat(MinPrintSpeedXY);
+	setVariable (x, "MaxPrintSpeedXY")->SetValueFloat(MaxPrintSpeedXY);
+	setVariable (x, "MinPrintSpeedZ")->SetValueFloat(MinPrintSpeedZ);
+	setVariable (x, "MaxPrintSpeedZ")->SetValueFloat(MaxPrintSpeedZ);
+//	setVariable (x, "accelerationSteps")->SetValueInt(accelerationSteps);
+	setVariable (x, "DistanceToReachFullSpeed")->SetValueFloat(DistanceToReachFullSpeed);
+//	setVariable (x, "UseFirmwareAcceleration")->SetValueInt(UseFirmwareAcceleration);
+	setVariable (x, "extrusionFactor")->SetValueFloat(extrusionFactor);
+	setVariable (x, "EnableAcceleration")->SetValueInt((int)EnableAcceleration);
+	setVariable (x, "UseIncrementalEcode")->SetValueInt((int)UseIncrementalEcode);
+	setVariable (x, "Use3DGcode")->SetValueInt((int)Use3DGcode);
 	
-	x->FindVariableZ("FileLogginEnabled", true, "1")->SetValueInt((int)FileLogginEnabled);
-	x->FindVariableZ("TempReadingEnabled", true, "1")->SetValueInt((int)TempReadingEnabled);
-	x->FindVariableZ("ClearLogfilesWhenPrintStarts", true, "1")->SetValueInt((int)ClearLogfilesWhenPrintStarts);
+	setVariable (x, "FileLogginEnabled")->SetValueInt((int)FileLogginEnabled);
+	setVariable (x, "TempReadingEnabled")->SetValueInt((int)TempReadingEnabled);
+	setVariable (x, "ClearLogfilesWhenPrintStarts")->SetValueInt((int)ClearLogfilesWhenPrintStarts);
 	
-	x->FindVariableZ("m_fVolume.x", true, "200")->SetValueFloat(m_fVolume.x);
-	x->FindVariableZ("m_fVolume.y", true, "200")->SetValueFloat(m_fVolume.y);
-	x->FindVariableZ("m_fVolume.z", true, "140")->SetValueFloat(m_fVolume.z);
-	x->FindVariableZ("PrintMargin.x", true, "10")->SetValueFloat(PrintMargin.x);
-	x->FindVariableZ("PrintMargin.y", true, "10")->SetValueFloat(PrintMargin.y);
-	x->FindVariableZ("PrintMargin.z", true, "0")->SetValueFloat(PrintMargin.z);
-	x->FindVariableZ("extrusionFactor", true, "1")->SetValueFloat(extrusionFactor);
-	x->FindVariableZ("ExtrudedMaterialWidth", true, "0.66")->SetValueFloat(ExtrudedMaterialWidth);
-	x->FindVariableZ("LayerThickness", true, "0.4")->SetValueFloat(LayerThickness);
+	setVariable (x, "m_fVolume.x")->SetValueFloat(m_fVolume.x);
+	setVariable (x, "m_fVolume.y")->SetValueFloat(m_fVolume.y);
+	setVariable (x, "m_fVolume.z")->SetValueFloat(m_fVolume.z);
+	setVariable (x, "PrintMargin.x")->SetValueFloat(PrintMargin.x);
+	setVariable (x, "PrintMargin.y")->SetValueFloat(PrintMargin.y);
+	setVariable (x, "PrintMargin.z")->SetValueFloat(PrintMargin.z);
+	setVariable (x, "extrusionFactor")->SetValueFloat(extrusionFactor);
+	setVariable (x, "ExtrudedMaterialWidth")->SetValueFloat(ExtrudedMaterialWidth);
+	setVariable (x, "LayerThickness")->SetValueFloat(LayerThickness);
 
 	// CuttingPlane parameters
-	x->FindVariableZ("InfillDistance", true, "2")->SetValueFloat(InfillDistance);
-	x->FindVariableZ("InfillRotation", true, "90")->SetValueFloat(InfillRotation);
-	x->FindVariableZ("InfillRotationPrLayer", true, "90")->SetValueFloat(InfillRotationPrLayer);
-	x->FindVariableZ("PolygonOpasity", true, "0.66")->SetValueFloat(PolygonOpasity);
+	setVariable (x, "InfillDistance")->SetValueFloat(InfillDistance);
+	setVariable (x, "InfillRotation")->SetValueFloat(InfillRotation);
+	setVariable (x, "InfillRotationPrLayer")->SetValueFloat(InfillRotationPrLayer);
+	setVariable (x, "PolygonOpasity")->SetValueFloat(PolygonOpasity);
 
 
 	// GUI parameters
-	x->FindVariableZ("CuttingPlaneValue", true, "0.66")->SetValueFloat(CuttingPlaneValue);
-	x->FindVariableZ("Examine", true, "0.66")->SetValueFloat(Examine);
+	setVariable (x, "CuttingPlaneValue")->SetValueFloat(CuttingPlaneValue);
+	setVariable (x, "Examine")->SetValueFloat(Examine);
 
-	x->FindVariableZ("DisplayEndpoints", true, "0")->SetValueInt((int)DisplayEndpoints);
-	x->FindVariableZ("DisplayNormals", true, "0")->SetValueInt((int)DisplayNormals);
-	x->FindVariableZ("DisplayWireframe", true, "0")->SetValueInt((int)DisplayWireframe);
-	x->FindVariableZ("DisplayWireframeShaded", true, "1")->SetValueInt((int)DisplayWireframeShaded);
+	setVariable (x, "DisplayEndpoints")->SetValueInt((int)DisplayEndpoints);
+	setVariable (x, "DisplayNormals")->SetValueInt((int)DisplayNormals);
+	setVariable (x, "DisplayWireframe")->SetValueInt((int)DisplayWireframe);
+	setVariable (x, "DisplayWireframeShaded")->SetValueInt((int)DisplayWireframeShaded);
 
-	x->FindVariableZ("DisplayPolygons", true, "1")->SetValueInt((int)DisplayPolygons);
-	x->FindVariableZ("DisplayAllLayers", true, "0")->SetValueInt((int)DisplayAllLayers);
-	x->FindVariableZ("DisplayinFill", true, "1")->SetValueInt((int)DisplayinFill);
-	x->FindVariableZ("DisplayDebuginFill", true, "0")->SetValueInt((int)DisplayDebuginFill);
-	x->FindVariableZ("DisplayDebug", true, "0")->SetValueInt((int)DisplayDebug);
-	x->FindVariableZ("DisplayCuttingPlane", true, "0")->SetValueInt((int)DisplayCuttingPlane);
-	x->FindVariableZ("DrawVertexNumbers", true, "0")->SetValueInt((int)DrawVertexNumbers);
-	x->FindVariableZ("DrawLineNumbers", true, "0")->SetValueInt((int)DrawLineNumbers);
+	setVariable (x, "DisplayPolygons")->SetValueInt((int)DisplayPolygons);
+	setVariable (x, "DisplayAllLayers")->SetValueInt((int)DisplayAllLayers);
+	setVariable (x, "DisplayinFill")->SetValueInt((int)DisplayinFill);
+	setVariable (x, "DisplayDebuginFill")->SetValueInt((int)DisplayDebuginFill);
+	setVariable (x, "DisplayDebug")->SetValueInt((int)DisplayDebug);
+	setVariable (x, "DisplayCuttingPlane")->SetValueInt((int)DisplayCuttingPlane);
+	setVariable (x, "DrawVertexNumbers")->SetValueInt((int)DrawVertexNumbers);
+	setVariable (x, "DrawLineNumbers")->SetValueInt((int)DrawLineNumbers);
 	
-	x->FindVariableZ("PolygonVal", true, "0.5")->SetValueFloat(PolygonVal);
-	x->FindVariableZ("PolygonSat", true, "1")->SetValueFloat(PolygonSat);
-	x->FindVariableZ("PolygonHue", true, "0.2")->SetValueFloat(PolygonHue);
-	x->FindVariableZ("WireframeVal", true, "0.5")->SetValueFloat(WireframeVal);
-	x->FindVariableZ("WireframeSat", true, "1")->SetValueFloat(WireframeSat);
-	x->FindVariableZ("WireframeHue", true, "0.3")->SetValueFloat(WireframeHue);
-	x->FindVariableZ("NormalsSat", true, "0.5")->SetValueFloat(NormalsSat);
-	x->FindVariableZ("NormalsVal", true, "1")->SetValueFloat(NormalsVal);
-	x->FindVariableZ("NormalsHue", true, "0.4")->SetValueFloat(NormalsHue);
-	x->FindVariableZ("EndpointsSat", true, "1")->SetValueFloat(EndpointsSat);
-	x->FindVariableZ("EndpointsVal", true, "0.5")->SetValueFloat(EndpointsVal);
-	x->FindVariableZ("EndpointsHue", true, "0.5")->SetValueFloat(EndpointsHue);
-	x->FindVariableZ("GCodeExtrudeHue", true, "0.6")->SetValueFloat(GCodeExtrudeHue);
-	x->FindVariableZ("GCodeExtrudeSat", true, "1")->SetValueFloat(GCodeExtrudeSat);
-	x->FindVariableZ("GCodeExtrudeVal", true, "0.5")->SetValueFloat(GCodeExtrudeVal);
-	x->FindVariableZ("GCodeMoveHue", true, "0.7")->SetValueFloat(GCodeMoveHue);
-	x->FindVariableZ("GCodeMoveSat", true, "1")->SetValueFloat(GCodeMoveSat);
-	x->FindVariableZ("GCodeMoveVal", true, "0.5")->SetValueFloat(GCodeMoveVal);
-	x->FindVariableZ("Highlight", true, "0.4")->SetValueFloat(Highlight);
-	x->FindVariableZ("NormalsLength", true, "10")->SetValueFloat(NormalsLength);
-	x->FindVariableZ("EndPointSize", true, "8")->SetValueFloat(EndPointSize);
-	x->FindVariableZ("TempUpdateSpeed", true,"3")->SetValueFloat(TempUpdateSpeed);
+	setVariable (x, "PolygonVal")->SetValueFloat(PolygonVal);
+	setVariable (x, "PolygonSat")->SetValueFloat(PolygonSat);
+	setVariable (x, "PolygonHue")->SetValueFloat(PolygonHue);
+	setVariable (x, "WireframeVal")->SetValueFloat(WireframeVal);
+	setVariable (x, "WireframeSat")->SetValueFloat(WireframeSat);
+	setVariable (x, "WireframeHue")->SetValueFloat(WireframeHue);
+	setVariable (x, "NormalsSat")->SetValueFloat(NormalsSat);
+	setVariable (x, "NormalsVal")->SetValueFloat(NormalsVal);
+	setVariable (x, "NormalsHue")->SetValueFloat(NormalsHue);
+	setVariable (x, "EndpointsSat")->SetValueFloat(EndpointsSat);
+	setVariable (x, "EndpointsVal")->SetValueFloat(EndpointsVal);
+	setVariable (x, "EndpointsHue")->SetValueFloat(EndpointsHue);
+	setVariable (x, "GCodeExtrudeHue")->SetValueFloat(GCodeExtrudeHue);
+	setVariable (x, "GCodeExtrudeSat")->SetValueFloat(GCodeExtrudeSat);
+	setVariable (x, "GCodeExtrudeVal")->SetValueFloat(GCodeExtrudeVal);
+	setVariable (x, "GCodeMoveHue")->SetValueFloat(GCodeMoveHue);
+	setVariable (x, "GCodeMoveSat")->SetValueFloat(GCodeMoveSat);
+	setVariable (x, "GCodeMoveVal")->SetValueFloat(GCodeMoveVal);
+	setVariable (x, "Highlight")->SetValueFloat(Highlight);
+	setVariable (x, "NormalsLength")->SetValueFloat(NormalsLength);
+	setVariable (x, "EndPointSize")->SetValueFloat(EndPointSize);
+	setVariable (x, "TempUpdateSpeed")->SetValueFloat(TempUpdateSpeed);
 
-	x->FindVariableZ("DisplayGCode", true, "1")->SetValueFloat(DisplayGCode);
-	x->FindVariableZ("LuminanceShowsSpeed", true, "1")->SetValueFloat(LuminanceShowsSpeed);
+	setVariable (x, "DisplayGCode")->SetValueFloat(DisplayGCode);
+	setVariable (x, "LuminanceShowsSpeed")->SetValueFloat(LuminanceShowsSpeed);
 
-	x->FindVariableZ("RaftEnable", true, "1")->SetValueFloat(RaftEnable);
-	x->FindVariableZ("ApronEnable", true, "1")->SetValueFloat(ApronEnable);
-	x->FindVariableZ("ApronPreview", true, "1")->SetValueFloat(ApronPreview);
-	x->FindVariableZ("ApronSize", true, "1")->SetValueFloat(ApronSize);
-	x->FindVariableZ("ApronHeight", true, "1")->SetValueFloat(ApronHeight);
-	x->FindVariableZ("ApronCoverageX", true, "1")->SetValueFloat(ApronCoverageX);
-	x->FindVariableZ("ApronCoverageY", true, "1")->SetValueFloat(ApronCoverageY);
-	x->FindVariableZ("ApronDistanceToObject", true, "1")->SetValueFloat(ApronDistanceToObject);
-	x->FindVariableZ("ApronInfillDistance", true, "1")->SetValueFloat(ApronInfillDistance);
+	setVariable (x, "RaftEnable")->SetValueFloat(RaftEnable);
+	setVariable (x, "ApronEnable")->SetValueFloat(ApronEnable);
+	setVariable (x, "ApronPreview")->SetValueFloat(ApronPreview);
+	setVariable (x, "ApronSize")->SetValueFloat(ApronSize);
+	setVariable (x, "ApronHeight")->SetValueFloat(ApronHeight);
+	setVariable (x, "ApronCoverageX")->SetValueFloat(ApronCoverageX);
+	setVariable (x, "ApronCoverageY")->SetValueFloat(ApronCoverageY);
+	setVariable (x, "ApronDistanceToObject")->SetValueFloat(ApronDistanceToObject);
+	setVariable (x, "ApronInfillDistance")->SetValueFloat(ApronInfillDistance);
 
-	x->FindVariableZ("ShrinkFast", true, "1")->SetValueInt(m_ShrinkQuality == SHRINK_FAST);
-	x->FindVariableZ("ShrinkNice", true, "1")->SetValueInt(m_ShrinkQuality == SHRINK_NICE);
-	x->FindVariableZ("ShrinkLogick", true, "1")->SetValueInt(m_ShrinkQuality == SHRINK_LOGICK);
-	x->FindVariableZ("Optimization", true, "0.05")->SetValueFloat(Optimization);
-	x->FindVariableZ("ReceivingBufferSize", true, "4")->SetValueInt(ReceivingBufferSize);
+	setVariable (x, "ShrinkFast")->SetValueInt(m_ShrinkQuality == SHRINK_FAST);
+	setVariable (x, "ShrinkNice")->SetValueInt(m_ShrinkQuality == SHRINK_NICE);
+	setVariable (x, "ShrinkLogick")->SetValueInt(m_ShrinkQuality == SHRINK_LOGICK);
+	setVariable (x, "Optimization")->SetValueFloat(Optimization);
+	setVariable (x, "ReceivingBufferSize")->SetValueInt(ReceivingBufferSize);
 
-	x->FindVariableZ("ApronInfillDistance", true, "1")->SetValueFloat(ApronInfillDistance);
-	/*
+	setVariable (x, "ApronInfillDistance")->SetValueFloat(ApronInfillDistance);
 
-	XMLElement *x = e->FindElementZ("RED_ProcessingSettings", true);
-
-	char text[200];
-	sprintf(text,"%s",ImageProcessingLimits::GammaCurveLabels[(int)GammaCurve]);
-	x->FindVariableZ("GammaCurve", true,text)->SetValue(text);	
-
-	sprintf(text,"%s",ImageProcessingLimits::ColorSpaceLabels[(int)ColorSpace]);
-	x->FindVariableZ("ColorSpace", true,text)->SetValue(text);	
-
-	x->FindVariableZ("ISO", true, "320")->SetValueInt((int)ISO);	
-
-	x->FindVariableZ("Kelvin", true, "3200")->SetValueFloat(Kelvin);	
-	x->FindVariableZ("Tint", true, "0")->SetValueFloat(Tint);	
-	x->FindVariableZ("ExposureCompensation", true, "0")->SetValueFloat(ExposureCompensation);	
-	x->FindVariableZ("GainRed", true, "1")->SetValueFloat(GainRed);	
-	x->FindVariableZ("GainGreen", true, "1")->SetValueFloat(GainGreen);	
-	x->FindVariableZ("GainBlue", true, "1")->SetValueFloat(GainBlue);	
-	x->FindVariableZ("Saturation", true, "1")->SetValueFloat(Saturation);	
-	x->FindVariableZ("Contrast", true, "1")->SetValueFloat(Contrast);	
-	x->FindVariableZ("Brightness", true, "1")->SetValueFloat(Brightness);	
-	x->FindVariableZ("DRX", true, "0")->SetValueFloat(DRX);	
-	x->FindVariableZ("CustomPDLogGamma", true, "0")->SetValueFloat(CustomPDLogGamma);	
-	x->FindVariableZ("UserCurve0", true, "0.00")->SetValueFloat(UserCurve[0]);	
-	x->FindVariableZ("UserCurve1", true, "0.00")->SetValueFloat(UserCurve[1]);	
-	x->FindVariableZ("UserCurve2", true, "0.25")->SetValueFloat(UserCurve[2]);	
-	x->FindVariableZ("UserCurve3", true, "0.25")->SetValueFloat(UserCurve[3]);	
-	x->FindVariableZ("UserCurve4", true, "0.50")->SetValueFloat(UserCurve[4]);	
-	x->FindVariableZ("UserCurve5", true, "0.50")->SetValueFloat(UserCurve[5]);	
-	x->FindVariableZ("UserCurve6", true, "0.75")->SetValueFloat(UserCurve[6]);	
-	x->FindVariableZ("UserCurve7", true, "0.75")->SetValueFloat(UserCurve[7]);	
-	x->FindVariableZ("UserCurve8", true, "1.00")->SetValueFloat(UserCurve[8]);	
-	x->FindVariableZ("UserCurve9", true, "1.00")->SetValueFloat(UserCurve[9]);	
-*/
+	setVariable (x, "STLPath")->SetValue(STLPath.c_str());
+	setVariable (x, "RFOPath")->SetValue(RFOPath.c_str());
+	setVariable (x, "GCodePath")->SetValue(GCodePath.c_str());
 }
+
+namespace {
+	std::string getXMLString (XMLElement *x, const char *name, const char *default_value)
+	{
+		XMLVariable *v = x->FindVariableZ ((char *)name, true, (char *)default_value);
+		if (v) {
+			int size = v->MemoryUsage() + 1024;
+			char buffer[size];
+			buffer[0] = '\0';
+			v->GetValue (buffer);
+			return std::string (buffer);
+		} else
+			return std::string();
+	}
+
+	std::string getXMLString (XMLElement *x, const std::ostringstream &name,
+				  const std::ostringstream &default_value)
+	{
+		std::string s = name.str();
+		std::string d = default_value.str();
+		return getXMLString (x, s.c_str(), d.c_str());
+	}
+
+	// Calm our warning problem down ...
+	XMLVariable *getVariable (XMLElement *x, const char *variable, const char *default_value)
+	{
+		return x->FindVariableZ ((char *)variable, true, (char *)default_value);
+	}
+};
+
 void ProcessController::LoadXML(XMLElement *e)
 {
 	XMLElement *x = e->FindElementZ("ProcessController", true);
 
 	XMLVariable* y;
 
-	y=x->FindVariableZ("RaftSize", true, "1.33");
+	y = getVariable (x, "RaftSize", "1.33");
 	if(y)	RaftSize = y->GetValueFloat();
-	y=x->FindVariableZ("RaftBaseLayerCount", true, "1");
+	y = getVariable (x, "RaftBaseLayerCount", "1");
 	if(y)	RaftBaseLayerCount = y->GetValueInt();
-	y=x->FindVariableZ("RaftMaterialPrDistanceRatio", true, "1.7");
+	y = getVariable (x, "RaftMaterialPrDistanceRatio", "1.7");
 	if(y)	RaftMaterialPrDistanceRatio = y->GetValueFloat();
-	y=x->FindVariableZ("RaftRotation", true, "90");
+	y = getVariable (x, "RaftRotation", "90");
 	if(y)	RaftRotation = y->GetValueFloat();
-	y=x->FindVariableZ("RaftBaseDistance", true, "2.5");
+	y = getVariable (x, "RaftBaseDistance", "2.5");
 	if(y)	RaftBaseDistance = y->GetValueFloat();
-	y=x->FindVariableZ("RaftBaseThickness", true, "1");
+	y = getVariable (x, "RaftBaseThickness", "1");
 	if(y)	RaftBaseThickness = y->GetValueFloat();
-	y=x->FindVariableZ("RaftBaseTemperature", true, "190");
+	y = getVariable (x, "RaftBaseTemperature", "190");
 	if(y)	RaftBaseTemperature = y->GetValueFloat();
-	y=x->FindVariableZ("RaftInterfaceLayerCount", true, "2");
+	y = getVariable (x, "RaftInterfaceLayerCount", "2");
 	if(y)	RaftInterfaceLayerCount = y->GetValueInt();
-	y=x->FindVariableZ("RaftInterfaceMaterialPrDistanceRatio", true, "1");
+	y = getVariable (x, "RaftInterfaceMaterialPrDistanceRatio", "1");
 	if(y)	RaftInterfaceMaterialPrDistanceRatio = y->GetValueFloat();
-	y=x->FindVariableZ("RaftRotationPrLayer", true, "90");
+	y = getVariable (x, "RaftRotationPrLayer", "90");
 	if(y)	RaftRotationPrLayer = y->GetValueFloat();
-	y=x->FindVariableZ("RaftInterfaceDistance", true, "2");
+	y = getVariable (x, "RaftInterfaceDistance", "2");
 	if(y)	RaftInterfaceDistance = y->GetValueFloat();
-	y=x->FindVariableZ("RaftInterfaceThickness", true, "1");
+	y = getVariable (x, "RaftInterfaceThickness", "1");
 	if(y)	RaftInterfaceThickness = y->GetValueFloat();
-	y=x->FindVariableZ("RaftInterfaceTemperature", true, "190");
+	y = getVariable (x, "RaftInterfaceTemperature", "190");
 	if(y)	RaftInterfaceTemperature = y->GetValueFloat();
 
 	// GCode parameters
 
-	char buffer[10000];
-	memset(buffer,0,10000);
-	x->FindVariableZ("GCodeStartText", true, "; GCode generated by RepSnapper by Kulitorum\nG21                              ;metric is good!\nG90                              ;absolute positioning\nT0                                 ;select new extruder\nG28                               ;go home\nG92 E0                          ;set extruder home\nM104 S73.0                   ;set temperature\nG1 X20 Y20 F500            ;Move away from 0.0, so we use the same reset (in the layer code) for each layer\n\n")->GetValue(buffer);
-	GCodeStartText = string(buffer);
-	memset(buffer,0,10000);
+	GCodeStartText = getXMLString (x, "GCodeStartText",
+				       "; GCode generated by RepSnapper by Kulitorum\n"
+				       "G21                              ;metric is good!\n"
+				       "G90                              ;absolute positioning\n"
+				       "T0                                 ;select new extruder\n"
+				       "G28                               ;go home\n"
+				       "G92 E0                          ;set extruder home\n"
+				       "M104 S73.0                   ;set temperature\n"
+				       "G1 X20 Y20 F500            ;Move away from 0.0, so we use the same reset (in the layer code) for each layer\n"
+				       "\n");
 
+	for (int i = 0; i < 20; i++) {
+		std::ostringstream os, empty, name, label;
 
-	x->FindVariableZ("CustomButton1Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[0] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton2Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[1] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton3Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[2] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton4Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[3] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton5Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[4] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton6Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[5] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton7Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[6] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton8Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[7] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton9Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[8] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton10Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[9] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton11Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[10] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton12Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[11] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton13Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[12] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton14Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[13] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton15Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[14] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton16Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[15] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton17Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[16] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton18Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[17] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton19Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[18] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton20Text", true, "")->GetValue(buffer);
-	CustomButtonGcode[19] = string(buffer);	memset(buffer,0,10000);
+		os << "CustomButton" << i + 1 << "Text";
+		CustomButtonGcode[i] = getXMLString (x, os, empty);
 
+		name << "CustomButton" << i + 1 << "Label";
+		label << "Custom button" << i + 1;
+		CustomButtonLabel[i] = getXMLString (x, name, label);
+	}
 
-	x->FindVariableZ("CustomButton1Label", true, "Custom button 1")->GetValue(buffer);
-	CustomButtonLabel[0] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton2Label", true, "Custom button 2")->GetValue(buffer);
-	CustomButtonLabel[1] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton3Label", true, "Custom button 3")->GetValue(buffer);
-	CustomButtonLabel[2] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton4Label", true, "Custom button 4")->GetValue(buffer);
-	CustomButtonLabel[3] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton5Label", true, "Custom button 5")->GetValue(buffer);
-	CustomButtonLabel[4] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton6Label", true, "Custom button 6")->GetValue(buffer);
-	CustomButtonLabel[5] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton7Label", true, "Custom button 7")->GetValue(buffer);
-	CustomButtonLabel[6] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton8Label", true, "Custom button 8")->GetValue(buffer);
-	CustomButtonLabel[7] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton9Label", true, "Custom button 9")->GetValue(buffer);
-	CustomButtonLabel[8] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton10Label", true, "Custom button 10")->GetValue(buffer);
-	CustomButtonLabel[9] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton11Label", true, "Custom button 11")->GetValue(buffer);
-	CustomButtonLabel[10] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton12Label", true, "Custom button 12")->GetValue(buffer);
-	CustomButtonLabel[11] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton13Label", true, "Custom button 13")->GetValue(buffer);
-	CustomButtonLabel[12] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton14Label", true, "Custom button 14")->GetValue(buffer);
-	CustomButtonLabel[13] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton15Label", true, "Custom button 15")->GetValue(buffer);
-	CustomButtonLabel[14] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton16Label", true, "Custom button 16")->GetValue(buffer);
-	CustomButtonLabel[15] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton17Label", true, "Custom button 17")->GetValue(buffer);
-	CustomButtonLabel[16] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton18Label", true, "Custom button 18")->GetValue(buffer);
-	CustomButtonLabel[17] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton19Label", true, "Custom button 19")->GetValue(buffer);
-	CustomButtonLabel[18] = string(buffer);	memset(buffer,0,10000);
-	x->FindVariableZ("CustomButton20Label", true, "Custom button 20")->GetValue(buffer);
-	CustomButtonLabel[19] = string(buffer);	memset(buffer,0,10000);
-
-
-	if(gui && gui ->MVC )
-	{
+	if (gui && gui ->MVC )
 		gui->MVC->RefreshCustomButtonLabels();
-	}
 
-	x->FindVariableZ("GCodeLayerText", true, "")->GetValue(buffer);
-	GCodeLayerText = string(buffer);
-	memset(buffer,0,10000);
-	x->FindVariableZ("GCodeEndText", true, "G1 X0 Y0 F2000.0       ;feed for start of next move\nM104 S0.0                    ;Heater off\n")->GetValue(buffer);
-	GCodeEndText = string(buffer);
-	memset(buffer,0,10000);
-        //x->FindVariableZ("Notes", true, "")->GetValue(buffer);
-        //Notes = string(buffer); // no UI element was overwriting GCodeEndText 
+	GCodeLayerText = getXMLString (x, "GCodeLayerText", "");
+	GCodeEndText = getXMLString (x, "GCodeEndText", 
+				     "G1 X0 Y0 F2000.0       ;feed for start of next move\n"
+				     "M104 S0.0              ;Heater off\n");
 
-        //memset(buffer,0,10000);
-	x->FindVariableZ("m_sPortName", true, "COM ")->GetValue(buffer);
-	if( buffer[3] == ' ' )
+	m_sPortName = getXMLString (x, "m_sPortName", "");
+	if (m_sPortName.length() == 0)
 	{
+		std::ostringstream port;
 		int highestCom = MVC->CheckComPorts(); // warning this code is likely to be called with MVC == null, extremely ugly. TODO: REWRITE!
-		if( highestCom==0 ) 
-		{
-			buffer[3] = 5;
-		}
-		else
-		{
-			buffer[3] = '0'+highestCom;
-		}
+		port << "COM" << highestCom;
+		m_sPortName = port.str();
 	}
-	m_sPortName = string(buffer);
 
-	y=x->FindVariableZ("m_iSerialSpeed", true, "19200");
+	STLPath = getXMLString (x, "STLPath", "");
+	RFOPath = getXMLString (x, "RFOPath", "");
+	GCodePath = getXMLString (x, "GCodePath", "");
+
+	y = getVariable (x, "m_iSerialSpeed", "19200");
 	if(y)	m_iSerialSpeed = y->GetValueInt();
 
-	y=x->FindVariableZ("GCodeDrawStart", true, "0");
+	y = getVariable (x, "GCodeDrawStart", "0");
 	if(y)	GCodeDrawStart = y->GetValueFloat();
-	y=x->FindVariableZ("GCodeDrawEnd", true, "1");
+	y = getVariable (x, "GCodeDrawEnd", "1");
 	if(y)	GCodeDrawEnd = y->GetValueFloat();
-	y=x->FindVariableZ("MinPrintSpeedXY", true, "2300");
+	y = getVariable (x, "MinPrintSpeedXY", "2300");
 	if(y)	MinPrintSpeedXY = y->GetValueFloat();
-	y=x->FindVariableZ("MaxPrintSpeedXY", true, "2300");
+	y = getVariable (x, "MaxPrintSpeedXY", "2300");
 	if(y)	MaxPrintSpeedXY = y->GetValueFloat();
-	y=x->FindVariableZ("MinPrintSpeedZ", true, "70");
+	y = getVariable (x, "MinPrintSpeedZ", "70");
 	if(y)	MinPrintSpeedZ = y->GetValueFloat();
-	y=x->FindVariableZ("MaxPrintSpeedZ", true, "70");
+	y = getVariable (x, "MaxPrintSpeedZ", "70");
 	if(y)	MaxPrintSpeedZ = y->GetValueFloat();
 
-	y=x->FindVariableZ("DistanceToReachFullSpeed", true, "3");
+	y = getVariable (x, "DistanceToReachFullSpeed", "3");
 	if(y)	DistanceToReachFullSpeed = y->GetValueFloat();
-	y=x->FindVariableZ("extrusionFactor", true, "1");
+	y = getVariable (x, "extrusionFactor", "1");
 	if(y)	extrusionFactor = y->GetValueFloat();
 
 	// Printer parameters
-	y=x->FindVariableZ("m_fVolume.x", true, "200");
+	y = getVariable (x, "m_fVolume.x", "200");
 	if(y)	m_fVolume.x = y->GetValueFloat();
-	y=x->FindVariableZ("m_fVolume.y", true, "200");
+	y = getVariable (x, "m_fVolume.y", "200");
 	if(y)	m_fVolume.y = y->GetValueFloat();
-	y=x->FindVariableZ("m_fVolume.z", true, "140");
+	y = getVariable (x, "m_fVolume.z", "140");
 	if(y)	m_fVolume.z = y->GetValueFloat();
-	y=x->FindVariableZ("PrintMargin.x", true, "10");
+	y = getVariable (x, "PrintMargin.x", "10");
 	if(y)	PrintMargin.x = y->GetValueFloat();
-	y=x->FindVariableZ("PrintMargin.y", true, "10");
+	y = getVariable (x, "PrintMargin.y", "10");
 	if(y)	PrintMargin.y = y->GetValueFloat();
-	y=x->FindVariableZ("PrintMargin.z", true, "0");
+	y = getVariable (x, "PrintMargin.z", "0");
 	if(y)	PrintMargin.z = y->GetValueFloat();
-	y=x->FindVariableZ("ExtrudedMaterialWidth", true, "0.7");
+	y = getVariable (x, "ExtrudedMaterialWidth", "0.7");
 	if(y)	ExtrudedMaterialWidth = y->GetValueFloat();
 
 
 	// STL parameters
-	y=x->FindVariableZ("LayerThickness", true, "0.4");
+	y = getVariable (x, "LayerThickness", "0.4");
 	if(y)	LayerThickness = y->GetValueFloat();
-	y=x->FindVariableZ("CuttingPlaneValue", true, "0.5");
+	y = getVariable (x, "CuttingPlaneValue", "0.5");
 	if(y)	CuttingPlaneValue = y->GetValueFloat();
 
 	// CuttingPlane
-	y=x->FindVariableZ("InfillDistance", true, "2");
+	y = getVariable (x, "InfillDistance", "2");
 	if(y)	InfillDistance = y->GetValueFloat();
-	y=x->FindVariableZ("InfillRotation", true, "45");
+	y = getVariable (x, "InfillRotation", "45");
 	if(y)	InfillRotation = y->GetValueFloat();
-	y=x->FindVariableZ("InfillRotationPrLayer", true, "90");
+	y = getVariable (x, "InfillRotationPrLayer", "90");
 	if(y)	InfillRotationPrLayer = y->GetValueFloat();
-	y=x->FindVariableZ("Optimization", true, "0.05");
+	y = getVariable (x, "Optimization", "0.05");
 	if(y)	Optimization = y->GetValueFloat();
-	y=x->FindVariableZ("ReceivingBufferSize", true, "4");
+	y = getVariable (x, "ReceivingBufferSize", "4");
 	if(y)	ReceivingBufferSize = y->GetValueInt();
-	y=x->FindVariableZ("ShellOnly", true, "0");
+	y = getVariable (x, "ShellOnly", "0");
 	if(y)	ShellOnly = y->GetValueFloat();
-	y=x->FindVariableZ("ShellCount", true, "1");
+	y = getVariable (x, "ShellCount", "1");
 	if(y)	ShellCount = y->GetValueFloat();
-	y=x->FindVariableZ("EnableAcceleration", true, "0");
+	y = getVariable (x, "EnableAcceleration", "0");
 	if(y)	EnableAcceleration = (bool)y->GetValueInt();
-	y=x->FindVariableZ("UseIncrementalEcode", true, "1");
+	y = getVariable (x, "UseIncrementalEcode", "1");
 	if(y)	UseIncrementalEcode= (bool)y->GetValueInt();
-	y=x->FindVariableZ("Use3DGcode", true, "0");
+	y = getVariable (x, "Use3DGcode", "0");
 	if(y)	Use3DGcode= (bool)y->GetValueInt();
 	
-	y=x->FindVariableZ("FileLogginEnabled", true, "1");
+	y = getVariable (x, "FileLogginEnabled", "1");
 	if(y)	FileLogginEnabled= (bool)y->GetValueInt();
-	y=x->FindVariableZ("TempReadingEnabled", true, "1");
+	y = getVariable (x, "TempReadingEnabled", "1");
 	if(y)	TempReadingEnabled= (bool)y->GetValueInt();
-	y=x->FindVariableZ("ClearLogfilesWhenPrintStarts", true, "1");
+	y = getVariable (x, "ClearLogfilesWhenPrintStarts", "1");
 	if(y)	ClearLogfilesWhenPrintStarts= (bool)y->GetValueInt();
 
 	// GUI... ?
-	y=x->FindVariableZ("DisplayEndpoints", true, "0");
+	y = getVariable (x, "DisplayEndpoints", "0");
 	if(y)	DisplayEndpoints = (bool)y->GetValueInt();
-	y=x->FindVariableZ("DisplayNormals", true, "0");
+	y = getVariable (x, "DisplayNormals", "0");
 	if(y)	DisplayNormals = (bool)y->GetValueInt();
-	y=x->FindVariableZ("DisplayWireframe", true, "0");
+	y = getVariable (x, "DisplayWireframe", "0");
 	if(y)	DisplayWireframe = (bool)y->GetValueInt();
-	y=x->FindVariableZ("DisplayWireframeShaded", true, "1");
+	y = getVariable (x, "DisplayWireframeShaded", "1");
 	if(y)	DisplayWireframeShaded = (bool)y->GetValueInt();
-	y=x->FindVariableZ("DisplayPolygons", true, "1");
+	y = getVariable (x, "DisplayPolygons", "1");
 	if(y)	DisplayPolygons = (bool)y->GetValueInt();
-	y=x->FindVariableZ("DisplayAllLayers", true, "0");
+	y = getVariable (x, "DisplayAllLayers", "0");
 	if(y)	DisplayAllLayers = (bool)y->GetValueInt();
-	y=x->FindVariableZ("DisplayinFill", true, "1");
+	y = getVariable (x, "DisplayinFill", "1");
 	if(y)	DisplayinFill = (bool)y->GetValueInt();
-	y=x->FindVariableZ("DisplayDebuginFill", true, "0");
+	y = getVariable (x, "DisplayDebuginFill", "0");
 	if(y)	DisplayDebuginFill = (bool)y->GetValueInt();
-	y=x->FindVariableZ("DisplayDebug", true, "0");
+	y = getVariable (x, "DisplayDebug", "0");
 	if(y)	DisplayDebug = (bool)y->GetValueInt();
-	y=x->FindVariableZ("DisplayCuttingPlane", true, "0");
+	y = getVariable (x, "DisplayCuttingPlane", "0");
 	if(y)	DisplayCuttingPlane =(bool)y->GetValueInt();
-	y=x->FindVariableZ("DrawVertexNumbers", true, "0");
+	y = getVariable (x, "DrawVertexNumbers", "0");
 	if(y)	DrawVertexNumbers = (bool)y->GetValueInt();
-	y=x->FindVariableZ("DrawLineNumbers", true, "0");
+	y = getVariable (x, "DrawLineNumbers", "0");
 	if(y)	DrawLineNumbers = (bool)y->GetValueInt();
 
-	y=x->FindVariableZ("PolygonVal", true, "0.5");
+	y = getVariable (x, "PolygonVal", "0.5");
 	if(y)	PolygonVal = y->GetValueFloat();
-	y=x->FindVariableZ("PolygonSat", true, "1");
+	y = getVariable (x, "PolygonSat", "1");
 	if(y)	PolygonSat = y->GetValueFloat();
-	y=x->FindVariableZ("PolygonHue", true, "0.54");
+	y = getVariable (x, "PolygonHue", "0.54");
 	if(y)	PolygonHue = y->GetValueFloat();
-	y=x->FindVariableZ("WireframeVal", true, "1");
+	y = getVariable (x, "WireframeVal", "1");
 	if(y)	WireframeVal = y->GetValueFloat();
-	y=x->FindVariableZ("WireframeSat", true, "1");
+	y = getVariable (x, "WireframeSat", "1");
 	if(y)	WireframeSat = y->GetValueFloat();
-	y=x->FindVariableZ("WireframeHue", true, "0.08");
+	y = getVariable (x, "WireframeHue", "0.08");
 	if(y)	WireframeHue = y->GetValueFloat();
-	y=x->FindVariableZ("NormalsSat", true, "1");
+	y = getVariable (x, "NormalsSat", "1");
 	if(y)	NormalsSat = y->GetValueFloat();
-	y=x->FindVariableZ("NormalsVal", true, "1");
+	y = getVariable (x, "NormalsVal", "1");
 	if(y)	NormalsVal = y->GetValueFloat();
-	y=x->FindVariableZ("NormalsHue", true, "0.23");
+	y = getVariable (x, "NormalsHue", "0.23");
 	if(y)	NormalsHue = y->GetValueFloat();
-	y=x->FindVariableZ("EndpointsSat", true, "1");
+	y = getVariable (x, "EndpointsSat", "1");
 	if(y)	EndpointsSat = y->GetValueFloat();
-	y=x->FindVariableZ("EndpointsVal", true, "1");
+	y = getVariable (x, "EndpointsVal", "1");
 	if(y)	EndpointsVal = y->GetValueFloat();
-	y=x->FindVariableZ("EndpointsHue", true, "0.45");
+	y = getVariable (x, "EndpointsHue", "0.45");
 	if(y)	EndpointsHue = y->GetValueFloat();
-	y=x->FindVariableZ("GCodeExtrudeHue", true, "0.18");
+	y = getVariable (x, "GCodeExtrudeHue", "0.18");
 	if(y)	GCodeExtrudeHue = y->GetValueFloat();
-	y=x->FindVariableZ("GCodeExtrudeSat", true, "1");
+	y = getVariable (x, "GCodeExtrudeSat", "1");
 	if(y)	GCodeExtrudeSat = y->GetValueFloat();
-	y=x->FindVariableZ("GCodeExtrudeVal", true, "1");
+	y = getVariable (x, "GCodeExtrudeVal", "1");
 	if(y)	GCodeExtrudeVal = y->GetValueFloat();
-	y=x->FindVariableZ("GCodeMoveHue", true, "1");
+	y = getVariable (x, "GCodeMoveHue", "1");
 	if(y)	GCodeMoveHue = y->GetValueFloat();
-	y=x->FindVariableZ("GCodeMoveSat", true, "0.95");
+	y = getVariable (x, "GCodeMoveSat", "0.95");
 	if(y)	GCodeMoveSat = y->GetValueFloat();
-	y=x->FindVariableZ("GCodeMoveVal", true, "1");
+	y = getVariable (x, "GCodeMoveVal", "1");
 	if(y)	GCodeMoveVal = y->GetValueFloat();
-	y=x->FindVariableZ("Highlight", true, "0.7");
+	y = getVariable (x, "Highlight", "0.7");
 	if(y)	Highlight = y->GetValueFloat();
-	y=x->FindVariableZ("NormalsLength", true, "10");
+	y = getVariable (x, "NormalsLength", "10");
 	if(y)	NormalsLength = y->GetValueFloat();
-	y=x->FindVariableZ("EndPointSize", true, "8");
+	y = getVariable (x, "EndPointSize", "8");
 	if(y)	EndPointSize = y->GetValueFloat();
 
-	y=x->FindVariableZ("TempUpdateSpeed", true, "3");
+	y = getVariable (x, "TempUpdateSpeed", "3");
 	if(y)	TempUpdateSpeed = y->GetValueFloat();
 
 
-	y=x->FindVariableZ("DisplayGCode", true, "1");
+	y = getVariable (x, "DisplayGCode", "1");
 	if(y)	DisplayGCode = (bool)y->GetValueInt();
-	y=x->FindVariableZ("LuminanceShowsSpeed", true, "0");
+	y = getVariable (x, "LuminanceShowsSpeed", "0");
 	if(y)	LuminanceShowsSpeed = (bool)y->GetValueInt();
 
-	y=x->FindVariableZ("RaftEnable", true, "0");
+	y = getVariable (x, "RaftEnable", "0");
 	if(y)	RaftEnable = (bool)y->GetValueInt();
-	y=x->FindVariableZ("ApronEnable", true, "0");
+	y = getVariable (x, "ApronEnable", "0");
 	if(y)	ApronEnable = (bool)y->GetValueInt();
-	y=x->FindVariableZ("ApronPreview", true, "1");
+	y = getVariable (x, "ApronPreview", "1");
 	if(y)	ApronPreview = (bool)y->GetValueInt();
-	y=x->FindVariableZ("ApronSize", true, "1.33");
+	y = getVariable (x, "ApronSize", "1.33");
 	if(y)	ApronSize = (bool)y->GetValueFloat();
-	y=x->FindVariableZ("ApronHeight", true, "7");
+	y = getVariable (x, "ApronHeight", "7");
 	if(y)	ApronHeight = (bool)y->GetValueFloat();
-	y=x->FindVariableZ("ApronCoverageX", true, "60");
+	y = getVariable (x, "ApronCoverageX", "60");
 	if(y)	ApronCoverageX = (bool)y->GetValueFloat();
-	y=x->FindVariableZ("ApronCoverageY", true, "60");
+	y = getVariable (x, "ApronCoverageY", "60");
 	if(y)	ApronCoverageY = (bool)y->GetValueFloat();
-	y=x->FindVariableZ("ApronDistanceToObject", true, "0.5");
+	y = getVariable (x, "ApronDistanceToObject", "0.5");
 	if(y)	ApronDistanceToObject = (bool)y->GetValueFloat();
-	y=x->FindVariableZ("ApronInfillDistance", true, "2");
+	y = getVariable (x, "ApronInfillDistance", "2");
 	if(y)	ApronInfillDistance = (bool)y->GetValueFloat();
 
-	y=x->FindVariableZ("ShrinkFast", true, "1"); // "1" makes this the default, must be on top to allow the others to overwrite if set. 
+	y = getVariable (x, "ShrinkFast", "1"); // "1" makes this the default, must be on top to allow the others to overwrite if set. 
 	if(y && (bool)y->GetValueInt())	m_ShrinkQuality = SHRINK_FAST;
-	y=x->FindVariableZ("ShrinkNice", true, "0");
+	y = getVariable (x, "ShrinkNice", "0");
 	if(y && (bool)y->GetValueInt())	m_ShrinkQuality = SHRINK_NICE;
-	y=x->FindVariableZ("ShrinkLogick", true, "0");
+	y = getVariable (x, "ShrinkLogick", "0");
 	if(y && (bool)y->GetValueInt())	m_ShrinkQuality = SHRINK_LOGICK;
+}
 
-	/*
-	ImageProcessingSettings();
-	UserCurve[0] = UserCurve[1] = 0.0f;
-	UserCurve[2] = UserCurve[3] = 0.250f;
-	UserCurve[4] = UserCurve[5] = 0.50f;
-	UserCurve[6] = UserCurve[7] = 0.750f;
-	UserCurve[8] = UserCurve[9] = 1.0f;
-	XMLElement *x = e->FindElementZ("RED_ProcessingSettings", true);
-
-
-	Detail = R3DSDK::ImageDetail::ImageDetailHigh;
-	OLPFCompensation = R3DSDK::ImageOLPFCompensation::ImageOLPFCompHigh;
-	Denoise = R3DSDK::ImageDenoise::ImageDenoiseMaximum;
-
-	XMLVariable* y;
-
-	char buffer[100];
-	memset(buffer,0,100);
-	x->FindVariableZ("GammaCurve", true, "None")->GetValue(buffer);
-	string GammaC(buffer);
-	for(uint i=0;i<ImageProcessingLimits::GammaCurveCount;i++)
-	{
-		string ThisCurveName(ImageProcessingLimits::GammaCurveLabels[i]);
-		if(GammaC == ThisCurveName)
-			GammaCurve = ImageProcessingLimits::GammaCurveMap[i];
-	}
-
-	memset(buffer,0,100);
-	x->FindVariableZ("ColorSpace", true, "None")->GetValue(buffer);
-	string ColSp(buffer);
-	for(uint i=0;i<ImageProcessingLimits::ColorSpaceCount;i++)
-	{
-		string ThisCurveName(ImageProcessingLimits::ColorSpaceLabels[i]);
-		if(ColSp == ThisCurveName)
-			ColorSpace = ImageProcessingLimits::ColorSpaceMap[i];
-	}
-
-	y=x->FindVariableZ("ISO", false, "320");
-	if(y)
-		ISO				= y->GetValueInt();	
-	y=x->FindVariableZ("Kelvin", false, "3200");
-	if(y)
-		Kelvin				= y->GetValueFloat();	
-	y = x->FindVariableZ("Tint", false, "0");
-	if(y)
-		Tint					= y->GetValueFloat();	
-	y = x->FindVariableZ("ExposureCompensation", false, "0");
-	if(y)
-		ExposureCompensation	=y->GetValueFloat();	
-	y = x->FindVariableZ("GainRed", false, "1");
-	if(y)
-		GainRed				= y->GetValueFloat();	
-	y = x->FindVariableZ("GainGreen", false, "1");
-	if(y)
-		GainGreen			= y->GetValueFloat();	
-	y = x->FindVariableZ("GainBlue", false, "1");
-	if(y)
-		GainBlue			= y->GetValueFloat();	
-	y = x->FindVariableZ("Saturation", false, "1");
-	if(y)
-		Saturation			= y->GetValueFloat();	
-	y = x->FindVariableZ("Contrast", false, "1");
-	if(y)
-		Contrast			= y->GetValueFloat();	
-	y = x->FindVariableZ("Brightness", false, "1");
-	if(y)
-		Brightness			= y->GetValueFloat();	
-	y = x->FindVariableZ("DRX", false, "0");
-	if(y)
-		DRX					= y->GetValueFloat();	
-
-	y = x->FindVariableZ("CustomPDLogGamma", false, "0");
-	if(y)
-		CustomPDLogGamma			= y->GetValueFloat();	
-
-	y = x->FindVariableZ("UserCurve0", false, "0.00");
-	if(y)
-		UserCurve[0]  = y->GetValueFloat();	
-	y = x->FindVariableZ("UserCurve1", false, "0.00");
-	if(y)
-		UserCurve[1]  = y->GetValueFloat();	
-	y = x->FindVariableZ("UserCurve2", false, "0.25");
-	if(y)
-		UserCurve[2]  = y->GetValueFloat();	
-	y = x->FindVariableZ("UserCurve3", false, "0.25");
-	if(y)
-		UserCurve[3]  = y->GetValueFloat();	
-	y = x->FindVariableZ("UserCurve4", false, "0.50");
-	if(y)
-		UserCurve[4]  = y->GetValueFloat();	
-	y = x->FindVariableZ("UserCurve5", false, "0.50");
-	if(y)
-		UserCurve[5]  = y->GetValueFloat();	
-	y = x->FindVariableZ("UserCurve6", false, "0.75");
-	if(y)
-		UserCurve[6]  = y->GetValueFloat();	
-	y = x->FindVariableZ("UserCurve7", false, "0.75");
-	if(y)
-		UserCurve[7]  = y->GetValueFloat();	
-	y = x->FindVariableZ("UserCurve8", false, "1.00");
-	if(y)
-		UserCurve[8]  = y->GetValueFloat();	
-	y = x->FindVariableZ("UserCurve9", false, "1.00");
-	if(y)
-		UserCurve[9]  = y->GetValueFloat();	*/
+void ProcessController::LoadXML(string filename)
+{
+	XML* xml = new XML (filename.c_str()); 
+	XMLElement* e = xml->GetRootElement ();
+	LoadXML (e);
 }
 
 void ProcessController::LoadXML()
 {
-	string filename = m_Filename+".xml";
-	XML* xml = new XML(filename.c_str()); 
-	XMLElement* e = xml->GetRootElement();
-	LoadXML(e);
+	LoadXML (m_Filename + ".xml");
 }
+
 void ProcessController::SaveXML()
 {
-	string filename = m_Filename+".xml";
+	string filename = m_Filename + ".xml";
 
-	XML* xml = new XML(filename.c_str()); 
-	XMLElement* e = xml->GetRootElement();
-	SaveXML(e);
-	if (xml->IntegrityTest())
-		xml->Save(); // Saves back to file
-	delete xml;
+	XML* xml = new XML (filename.c_str()); 
+	if (xml) {
+		XMLElement* e = xml->GetRootElement();
+		SaveXML (e);
+		if (xml->IntegrityTest())
+			xml->Save(); // Saves back to file
+		delete xml;
+	}
 }
 /*
 void ProcessController::BindLua(lua_State *myLuaState)
 {
-#ifdef WIN32
+#ifdef ENABLE_LUA
 	// Export our class with LuaBind
 	luabind::module(myLuaState)
 		[
@@ -1180,6 +985,6 @@ void ProcessController::BindLua(lua_State *myLuaState)
 			.def ("ApronDistanceToObject", ApronDistanceToObject)
 			.def ("ApronInfillDistance", ApronInfillDistance)
 		];
-#endif
+#endif // ENABLE_LUA
 }
 */

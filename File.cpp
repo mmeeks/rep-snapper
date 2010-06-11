@@ -3,11 +3,14 @@
  * native gtk+ file selection under Unix.
  */
 #include "stdafx.h"
+#include "File.h"
 
 #ifdef HAVE_GTK
 #include <glib/gthread.h>
 #include <gtk/gtk.h>
 #endif
+
+#include <boost/filesystem/path.hpp>
 
 namespace {
 
@@ -128,15 +131,6 @@ namespace {
     const char *v = chooser.value();
     return std::string (v ? v : "");
   }
-
-  std::string open (const char *directory, const char *filter, int type, const char *title)
-  {
-#ifdef HAVE_GTK
-    return openGtk (directory, filter, type, title);
-#else
-    return openFltk (directory, filter, type, title);
-#endif
-  }
 }
 
 /*
@@ -155,33 +149,34 @@ void FileChooser::ioDialog (ModelViewController *mvc, Op o, Type t, bool dropRFO
   case GCODE:
     filter = "*.gcode";
     title = "Choose GCODE filename";
+    directory = mvc->ProcessControl.GCodePath.c_str();
     break;
   case RFO:
     filter = "*.xml";
     title = "Choose RFO filename";
+    directory = mvc->ProcessControl.RFOPath.c_str();
     break;
   case STL:
   default:
     filter = "*.stl";
     title = "Choose STL filename";
+    directory = mvc->ProcessControl.STLPath.c_str();
     break;
   }
 
-#ifdef WIN32
-  if (o == OPEN)
-    directory = "C:/code/printed-parts";
-  else
-    directory = "\\";
-#else
-  directory = NULL;
-#endif
+  if (!directory || directory[0] == '\0')
+    directory = ".";
 
   if (o == OPEN) /* FIXME: impl. multi-selection cleanly */
     type = Fl_File_Chooser::SINGLE;
   else
     type = Fl_File_Chooser::CREATE;
 
-  file = open (directory, filter, type, title);
+#ifdef HAVE_GTK
+    file = openGtk (directory, filter, type, title);
+#else
+    file = openFltk (directory, filter, type, title);
+#endif
 
   if (!file.length())
     return;
@@ -190,18 +185,23 @@ void FileChooser::ioDialog (ModelViewController *mvc, Op o, Type t, bool dropRFO
   if (dropRFO)
     mvc->ClearRFO();
 
+  boost::filesystem::path path(file);
+  std::string directory_path = path.branch_path().native_directory_string();
+
   switch (t) {
   case RFO:
     if (o == OPEN)
       mvc->ReadRFO (file);
     else
       mvc->ProcessControl.rfo.Save(file, mvc->ProcessControl);
+    mvc->ProcessControl.RFOPath = directory_path;
     break;
   case GCODE:
     if (o == OPEN)
       mvc->ReadGCode (file);
     else
       mvc->WriteGCode (file);
+    mvc->ProcessControl.GCodePath = directory_path;
     break;
   default:
   case STL:
@@ -209,6 +209,7 @@ void FileChooser::ioDialog (ModelViewController *mvc, Op o, Type t, bool dropRFO
       mvc->ReadStl (file);
     else
       fl_alert ("STL saving not yet implemented", "Sorry");
+    mvc->ProcessControl.STLPath = directory_path;
     break;
   }
   mvc->redraw();

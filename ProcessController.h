@@ -13,17 +13,14 @@
 
 #include "stdafx.h"
 #include "Printer.h"
-#include "xml/XML.H"
 #include <vmmlib/vmmlib.h>
-#include "UI.h"
-#include "stl.h"
 #include "gcode.h"
-
 #include "RFO.h"
 
-class GCode;
-struct lua_State;
+// struct lua_State;
 using namespace std;
+
+class XML_Element;
 
 class ProcessController
 {
@@ -139,6 +136,7 @@ public:
 
 	// Load and save settings
 	void LoadXML();
+	void LoadXML(string filename);
 	void SaveXML();
 	void SaveXML(string filename);
 	void LoadXML(XMLElement *e);
@@ -146,8 +144,6 @@ public:
 
 	// LUA
 //	void BindLua(lua_State *myLuaState);
-
-
 
 	// Process functions
 	string m_Filename;
@@ -287,6 +283,10 @@ public:
 
 	vector<string>CustomButtonGcode;
 	vector<string>CustomButtonLabel;
+
+	string STLPath;
+	string RFOPath;
+	string GCodePath;
 
 	// Maybe a pointer to the gui
 	GUI *gui;

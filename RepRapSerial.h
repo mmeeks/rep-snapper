@@ -1,4 +1,5 @@
-#pragma once
+#ifndef REPRAP_SERIAL_H
+#define REPRAP_SERIAL_H
 
 #include <boost/thread.hpp> 
 
@@ -146,6 +147,8 @@ private:
 	string InBuffer;
 	short debugMask;
 	ulong ConnectAttempt;
+	ulong startTime;
+	ulong lastUpdateTime;
 
 
 	GUI* gui;
@@ -167,3 +170,5 @@ private:
 
 
 };
+
+#endif // REPRAP_SERIAL_H

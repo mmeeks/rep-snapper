@@ -4,7 +4,7 @@
 
 CC=gcc
 CXX=g++
-CFLAGS=-c -O2 -g
+CFLAGS=-c -O0 -g -Wall
 UNAME := $(shell uname)
 LIB_DIR=Libraries
 
@@ -27,11 +27,13 @@ ifeq ($(UNAME),Darwin)
     LDFLAGS+= -framework Carbon -framework OpenGL -framework GLUT -framework AGL
 endif
 
+GENERATED=UI.cxx UI.h
+
 SOURCES=AsyncSerial.cpp RepSnapper.cpp stl.cpp gpc.c RepRapSerial.cpp \
 	ProcessController.cpp Printer.cpp ModelViewController.cpp \
 	glutils.cpp GCode.cpp ArcBall.cpp stdafx.cpp UI.cxx \
 	RFO.cpp Flu_DND.cpp flu_pixmaps.cpp FluSimpleString.cpp \
-	Flu_Tree_Browser.cpp ivcon.cpp File.cpp \
+	Flu_Tree_Browser.cpp ivcon.cpp File.cpp platform.cpp \
 	$(LIB_DIR)/xml/XML.CPP 
 
 HEADERS=ArcBall.h AsyncSerial.h Convert.h Flu_DND.h Flu_Enumerations.h \
@@ -49,7 +51,7 @@ all: $(SOURCES) $(EXECUTABLE)
 $(EXECUTABLE): $(OBJECTS)
 	$(CXX) ${INC} $(OBJECTS) $(LDFLAGS) -o $@ 
 
-%.cxx:%.fl
+%.cxx %.h:%.fl
 	fluid -c $<
 %.o:%.cxx
 	$(CXX) ${INC} $(CFLAGS) $< -o $@
@@ -61,11 +63,11 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) ${INC} $(CFLAGS) $< -o $@
 
 clean:
-	rm -f $(OBJECTS) $(EXECUTABLE)
+	rm -f $(OBJECTS) $(EXECUTABLE) $(GENERATED)
 
 # make update-deps will re-write the dependenciues below
 update-depends:
-	makedepend -Y $(SOURCES) $(HEADERS)
+	makedepend -Y $(SOURCES)
 
 # not needed
 #	<Kulitorum> fillet.cpp
@@ -76,110 +78,58 @@ update-depends:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it, deletes after here and updates the deps.
 
-AsyncSerial.o: stdafx.h platform.h ArcBall.h gcode.h ModelViewController.h
-AsyncSerial.o: UI.h Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h
-AsyncSerial.o: FluSimpleString.h stl.h ProcessController.h Printer.h RFO.h
-AsyncSerial.o: glutils.h RepRapSerial.h AsyncSerial.h File.h ivcon.h
-RepSnapper.o: stdafx.h platform.h ArcBall.h gcode.h ModelViewController.h
-RepSnapper.o: UI.h Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h
-RepSnapper.o: FluSimpleString.h stl.h ProcessController.h Printer.h RFO.h
-RepSnapper.o: glutils.h RepRapSerial.h AsyncSerial.h File.h ivcon.h
-stl.o: stdafx.h platform.h ArcBall.h gcode.h ModelViewController.h UI.h
+AsyncSerial.o: stdafx.h config.h platform.h ArcBall.h ivcon.h AsyncSerial.h
+RepSnapper.o: stdafx.h config.h platform.h ArcBall.h ivcon.h
+RepSnapper.o: ModelViewController.h UI.h File.h Flu_Tree_Browser.h
+RepSnapper.o: Flu_Enumerations.h flu_export.h FluSimpleString.h gcode.h stl.h
+RepSnapper.o: ProcessController.h Printer.h RFO.h glutils.h RepRapSerial.h
+RepSnapper.o: AsyncSerial.h
+stl.o: stdafx.h config.h platform.h ArcBall.h ivcon.h stl.h gcode.h UI.h
+stl.o: File.h ModelViewController.h ProcessController.h Printer.h RFO.h
 stl.o: Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h FluSimpleString.h
-stl.o: stl.h ProcessController.h Printer.h RFO.h glutils.h RepRapSerial.h
-stl.o: AsyncSerial.h File.h ivcon.h gpc.h
+stl.o: glutils.h RepRapSerial.h AsyncSerial.h gpc.h
 gpc.o: gpc.h
-RepRapSerial.o: stdafx.h platform.h ArcBall.h gcode.h ModelViewController.h
-RepRapSerial.o: UI.h Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h
-RepRapSerial.o: FluSimpleString.h stl.h ProcessController.h Printer.h RFO.h
-RepRapSerial.o: glutils.h RepRapSerial.h AsyncSerial.h File.h ivcon.h
-RepRapSerial.o: Convert.h
-ProcessController.o: stdafx.h platform.h ArcBall.h gcode.h
-ProcessController.o: ModelViewController.h UI.h Flu_Tree_Browser.h
-ProcessController.o: Flu_Enumerations.h flu_export.h FluSimpleString.h stl.h
-ProcessController.o: ProcessController.h Printer.h RFO.h glutils.h
-ProcessController.o: RepRapSerial.h AsyncSerial.h File.h ivcon.h
-Printer.o: stdafx.h platform.h ArcBall.h gcode.h ModelViewController.h UI.h
-Printer.o: Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h
-Printer.o: FluSimpleString.h stl.h ProcessController.h Printer.h RFO.h
-Printer.o: glutils.h RepRapSerial.h AsyncSerial.h File.h ivcon.h
-ModelViewController.o: stdafx.h platform.h ArcBall.h gcode.h
-ModelViewController.o: ModelViewController.h UI.h Flu_Tree_Browser.h
+RepRapSerial.o: stdafx.h config.h platform.h ArcBall.h ivcon.h RepRapSerial.h
+RepRapSerial.o: UI.h File.h ModelViewController.h gcode.h stl.h
+RepRapSerial.o: ProcessController.h Printer.h RFO.h Flu_Tree_Browser.h
+RepRapSerial.o: Flu_Enumerations.h flu_export.h FluSimpleString.h glutils.h
+RepRapSerial.o: AsyncSerial.h Convert.h
+ProcessController.o: stdafx.h config.h platform.h ArcBall.h ivcon.h
+ProcessController.o: ModelViewController.h UI.h File.h Flu_Tree_Browser.h
+ProcessController.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
+ProcessController.o: gcode.h stl.h ProcessController.h Printer.h RFO.h
+ProcessController.o: glutils.h RepRapSerial.h AsyncSerial.h
+Printer.o: stdafx.h config.h platform.h ArcBall.h ivcon.h ProcessController.h
+Printer.o: Printer.h gcode.h RFO.h Flu_Tree_Browser.h Flu_Enumerations.h
+Printer.o: flu_export.h FluSimpleString.h stl.h
+ModelViewController.o: stdafx.h config.h platform.h ArcBall.h ivcon.h
+ModelViewController.o: ModelViewController.h UI.h File.h Flu_Tree_Browser.h
 ModelViewController.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
-ModelViewController.o: stl.h ProcessController.h Printer.h RFO.h glutils.h
-ModelViewController.o: RepRapSerial.h AsyncSerial.h File.h ivcon.h
-glutils.o: stdafx.h platform.h ArcBall.h gcode.h ModelViewController.h UI.h
-glutils.o: Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h
-glutils.o: FluSimpleString.h stl.h ProcessController.h Printer.h RFO.h
-glutils.o: glutils.h RepRapSerial.h AsyncSerial.h File.h ivcon.h
-GCode.o: stdafx.h platform.h ArcBall.h gcode.h ModelViewController.h UI.h
+ModelViewController.o: gcode.h stl.h ProcessController.h Printer.h RFO.h
+ModelViewController.o: glutils.h RepRapSerial.h AsyncSerial.h
+glutils.o: stdafx.h config.h platform.h ArcBall.h ivcon.h glutils.h
+GCode.o: stdafx.h config.h platform.h ArcBall.h ivcon.h gcode.h UI.h File.h
+GCode.o: ModelViewController.h stl.h ProcessController.h Printer.h RFO.h
 GCode.o: Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h FluSimpleString.h
-GCode.o: stl.h ProcessController.h Printer.h RFO.h glutils.h RepRapSerial.h
-GCode.o: AsyncSerial.h File.h ivcon.h
-ArcBall.o: stdafx.h platform.h ArcBall.h gcode.h ModelViewController.h UI.h
-ArcBall.o: Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h
-ArcBall.o: FluSimpleString.h stl.h ProcessController.h Printer.h RFO.h
-ArcBall.o: glutils.h RepRapSerial.h AsyncSerial.h File.h ivcon.h
-stdafx.o: stdafx.h platform.h ArcBall.h gcode.h ModelViewController.h UI.h
-stdafx.o: Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h
-stdafx.o: FluSimpleString.h stl.h ProcessController.h Printer.h RFO.h
-stdafx.o: glutils.h RepRapSerial.h AsyncSerial.h File.h ivcon.h
-UI.o: UI.h stdafx.h platform.h ArcBall.h gcode.h ModelViewController.h stl.h
-UI.o: ProcessController.h Printer.h RFO.h Flu_Tree_Browser.h
-UI.o: Flu_Enumerations.h flu_export.h FluSimpleString.h glutils.h
-UI.o: RepRapSerial.h AsyncSerial.h File.h ivcon.h
-RFO.o: stdafx.h platform.h ArcBall.h gcode.h ModelViewController.h UI.h
-RFO.o: Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h FluSimpleString.h
-RFO.o: stl.h ProcessController.h Printer.h RFO.h glutils.h RepRapSerial.h
-RFO.o: AsyncSerial.h File.h ivcon.h flu_pixmaps.h
+GCode.o: glutils.h RepRapSerial.h AsyncSerial.h
+ArcBall.o: stdafx.h config.h platform.h ArcBall.h ivcon.h
+stdafx.o: stdafx.h config.h platform.h ArcBall.h ivcon.h stl.h
+UI.o: UI.h config.h stdafx.h platform.h ArcBall.h ivcon.h File.h
+UI.o: ModelViewController.h gcode.h stl.h ProcessController.h Printer.h RFO.h
+UI.o: Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h FluSimpleString.h
+UI.o: glutils.h RepRapSerial.h AsyncSerial.h
+RFO.o: stdafx.h config.h platform.h ArcBall.h ivcon.h UI.h File.h
+RFO.o: ModelViewController.h gcode.h stl.h ProcessController.h Printer.h
+RFO.o: RFO.h Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h
+RFO.o: FluSimpleString.h glutils.h RepRapSerial.h AsyncSerial.h flu_pixmaps.h
 Flu_DND.o: Flu_DND.h Flu_Enumerations.h flu_export.h
 flu_pixmaps.o: flu_pixmaps.h flu_export.h
 FluSimpleString.o: FluSimpleString.h Flu_Enumerations.h flu_export.h
 Flu_Tree_Browser.o: Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h
 Flu_Tree_Browser.o: FluSimpleString.h flu_pixmaps.h
 ivcon.o: ivcon.h
-File.o: stdafx.h platform.h ArcBall.h gcode.h ModelViewController.h UI.h
-File.o: Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h FluSimpleString.h
-File.o: stl.h ProcessController.h Printer.h RFO.h glutils.h RepRapSerial.h
-File.o: AsyncSerial.h File.h ivcon.h
+File.o: stdafx.h config.h platform.h ArcBall.h ivcon.h File.h
+File.o: ModelViewController.h UI.h Flu_Tree_Browser.h Flu_Enumerations.h
+File.o: flu_export.h FluSimpleString.h gcode.h stl.h ProcessController.h
+File.o: Printer.h RFO.h glutils.h RepRapSerial.h AsyncSerial.h
 ../Libraries/xml/XML.o: ../Libraries/xml/XML.H
-Flu_DND.o: Flu_Enumerations.h flu_export.h
-Flu_Enumerations.o: flu_export.h
-flu_pixmaps.o: flu_export.h
-FluSimpleString.o: Flu_Enumerations.h flu_export.h
-Flu_Tree_Browser.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
-gcode.o: platform.h
-ModelViewController.o: UI.h stdafx.h platform.h ArcBall.h gcode.h
-ModelViewController.o: ModelViewController.h stl.h ProcessController.h
-ModelViewController.o: Printer.h RFO.h Flu_Tree_Browser.h Flu_Enumerations.h
-ModelViewController.o: flu_export.h FluSimpleString.h glutils.h
-ModelViewController.o: RepRapSerial.h AsyncSerial.h File.h ivcon.h
-Printer.o: stdafx.h platform.h ArcBall.h gcode.h ModelViewController.h UI.h
-Printer.o: Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h
-Printer.o: FluSimpleString.h stl.h ProcessController.h Printer.h RFO.h
-Printer.o: glutils.h RepRapSerial.h AsyncSerial.h File.h ivcon.h
-ProcessController.o: stdafx.h platform.h ArcBall.h gcode.h
-ProcessController.o: ModelViewController.h UI.h Flu_Tree_Browser.h
-ProcessController.o: Flu_Enumerations.h flu_export.h FluSimpleString.h stl.h
-ProcessController.o: ProcessController.h Printer.h RFO.h glutils.h
-ProcessController.o: RepRapSerial.h AsyncSerial.h File.h ivcon.h
-RepRapSerial.o: UI.h stdafx.h platform.h ArcBall.h gcode.h
-RepRapSerial.o: ModelViewController.h stl.h ProcessController.h Printer.h
-RepRapSerial.o: RFO.h Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h
-RepRapSerial.o: FluSimpleString.h glutils.h RepRapSerial.h AsyncSerial.h
-RepRapSerial.o: File.h ivcon.h
-RFO.o: Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h FluSimpleString.h
-RFO.o: stl.h platform.h
-Serial.o: stdafx.h platform.h ArcBall.h gcode.h ModelViewController.h UI.h
-Serial.o: Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h
-Serial.o: FluSimpleString.h stl.h ProcessController.h Printer.h RFO.h
-Serial.o: glutils.h RepRapSerial.h AsyncSerial.h File.h ivcon.h
-stdafx.o: platform.h ArcBall.h gcode.h ModelViewController.h UI.h stdafx.h
-stdafx.o: Printer.h ProcessController.h stl.h RFO.h Flu_Tree_Browser.h
-stdafx.o: Flu_Enumerations.h flu_export.h FluSimpleString.h File.h
-stdafx.o: AsyncSerial.h ivcon.h glutils.h RepRapSerial.h
-stl.o: platform.h
-UI.o: stdafx.h platform.h ArcBall.h gcode.h ModelViewController.h UI.h
-UI.o: Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h FluSimpleString.h
-UI.o: stl.h ProcessController.h Printer.h RFO.h glutils.h RepRapSerial.h
-UI.o: AsyncSerial.h File.h ivcon.h

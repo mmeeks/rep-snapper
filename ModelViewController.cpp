@@ -129,10 +129,13 @@ void tree_callback( Fl_Widget* w, void* )
 
 ModelViewController::~ModelViewController()
 {
+	delete serial;
 }
 
 ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) : Fl_Gl_Window(x,y,w,h,l)
 {
+	serial = new RepRapSerial();
+
 	gui = 0;
 	zoom = 100.0f;
 
@@ -151,7 +154,7 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 	ThisRot.M[6]=0.0f;ThisRot.M[7]=0.0f;ThisRot.M[8]=1.0f;					// NEW: Last Rotation
 
 	ProcessControl.LoadXML();
-	serial.SetReceivingBufferSize(ProcessControl.ReceivingBufferSize);
+	serial->SetReceivingBufferSize(ProcessControl.ReceivingBufferSize);
 	CopySettingsToGUI();
 
 	m_bExtruderDirection = true;
@@ -665,13 +668,13 @@ void ModelViewController::Continue()
 	gui->PrintButton->value(1);
 	gui->PrintButton->label("Print");
 	gui->PrintButton->deactivate();
-	serial.m_bPrinting = true;
-	serial.SendNextLine();
+	serial->m_bPrinting = true;
+	serial->SendNextLine();
 }
 
 void ModelViewController::Restart()
 {
-	serial.Clear();	// resets line nr and clears buffer
+	serial->Clear();	// resets line nr and clears buffer
 	Print();
 }
 
@@ -702,8 +705,8 @@ void ModelViewController::PrintButton()
 
 void ModelViewController::PrintDone()
 {
-	serial.Clear();	// resets line nr and buffer
-	serial.m_bPrinting = false;
+	serial->Clear();	// resets line nr and buffer
+	serial->m_bPrinting = false;
 	gui->PrintButton->label("Print");
 	gui->PrintButton->value(0);
 	gui->PrintButton->activate();
@@ -716,22 +719,26 @@ void ModelViewController::ConnectToPrinter(char on)
 {
 	if(on)
 	{
-		serial.Connect(ProcessControl.m_sPortName, ProcessControl.m_iSerialSpeed);
+		serial->Connect(ProcessControl.m_sPortName, ProcessControl.m_iSerialSpeed);
 	}
 	else
 	{
-		serial.DisConnect();
+		serial->DisConnect();
 	}
+}
+bool ModelViewController::IsConnected()
+{
+	return serial->isConnected();
 }
 
 void ModelViewController::SimplePrint()
 {
-	if( serial.isPrinting() )
+	if( serial->isPrinting() )
 	{
 		fl_alert ("Already printing.\nCannot start printing");
 	}
 
-	if( !serial.isConnected() )
+	if( !serial->isConnected() )
 	{
 		ConnectToPrinter(true);
 		WaitForConnection(5.0);
@@ -742,7 +749,7 @@ void ModelViewController::SimplePrint()
 	
 void ModelViewController::WaitForConnection(float seconds)
 {
-	serial.WaitForConnection(seconds*1000);
+	serial->WaitForConnection(seconds*1000);
 }
 
 void ModelViewController::serialConnected()
@@ -759,7 +766,7 @@ void ModelViewController::serialConnectionLost()
 
 void ModelViewController::Print()
 {
-	if( !serial.isConnected() )
+	if( !serial->isConnected() )
 	{
 		fl_alert ("Not connected to printer.\nCannot start printing");
 		return;
@@ -780,10 +787,10 @@ void ModelViewController::Print()
 		return;
 	}
 */
-	serial.Clear();	// resets line nr and buffer
-	serial.m_bPrinting = false;
-	serial.SetDebugMask();
-	serial.SetLineNr(-1);	// Reset LineNr Count
+	serial->Clear();	// resets line nr and buffer
+	serial->m_bPrinting = false;
+	serial->SetDebugMask();
+	serial->SetLineNr(-1);	// Reset LineNr Count
 	gui->CommunationLog->clear();
 	Fl_Text_Buffer* buffer = gui->GCodeResult->buffer();
 	char* pText = buffer->text();
@@ -798,27 +805,27 @@ void ModelViewController::Print()
 			pos = buffer->line_end(pos)+1;	// skip newline
 			continue;
 			}
-		serial.AddToBuffer(line);
+		serial->AddToBuffer(line);
 		pos = buffer->line_end(pos)+1;	// find end of line
 		}
 
-	gui->ProgressBar->maximum(serial.Length());
+	gui->ProgressBar->maximum(serial->Length());
 	gui->ProgressBar->label("Printing");
 	gui->ProgressBar->value(0);
 	free(pText);
-	serial.StartPrint();
+	serial->StartPrint();
 }
 
 void ModelViewController::Pause()
 {
-	if( serial.isPrinting() )
+	if( serial->isPrinting() )
 	{
 		gui->ContinueButton->value(1);
 		gui->ContinueButton->label("Continue");
 		gui->PrintButton->value(0);
 		gui->PrintButton->activate();
 		gui->PrintButton->label("Restart");
-		serial.m_bPrinting = false;
+		serial->m_bPrinting = false;
 	}
 }
 
@@ -828,9 +835,9 @@ void ModelViewController::SwitchHeat(bool on, float temp)
 	oss << "M104 S" <<temp;
 
 	if(on)
-		serial.SendNow(oss.str());
+		serial->SendNow(oss.str());
 	else
-		serial.SendNow("M104 S0");
+		serial->SendNow("M104 S0");
 }
 void ModelViewController::SetTargetTemp(float temp)
 {
@@ -872,9 +879,9 @@ void ModelViewController::ClearLogs()
 void ModelViewController::SwitchPower(bool on)
 {
 	if(on)
-		serial.SendNow("M80");
+		serial->SendNow("M80");
 	else
-		serial.SendNow("M81");
+		serial->SendNow("M81");
 }
 
 void ModelViewController::SetFan(int val)
@@ -883,10 +890,10 @@ void ModelViewController::SetFan(int val)
 	{
 		std::stringstream oss;
 		oss << "M106 S" << val;
-		serial.SendNow(oss.str());
+		serial->SendNow(oss.str());
 	}
 	else
-		serial.SendNow("M107");
+		serial->SendNow("M107");
 }
 
 void ModelViewController::RunExtruder()
@@ -895,9 +902,9 @@ void ModelViewController::RunExtruder()
 	if(ProcessControl.Use3DGcode)
 	{
 		if(extruderIsRunning)
-			serial.SendNow("M103");
+			serial->SendNow("M103");
 		else
-			serial.SendNow("M101");
+			serial->SendNow("M101");
 		extruderIsRunning = 1-extruderIsRunning;
 		return;
 	}
@@ -906,20 +913,20 @@ void ModelViewController::RunExtruder()
 	string command("G1 F");
 	oss << m_iExtruderSpeed;
 	command += oss.str();
-	serial.SendNow(command);
+	serial->SendNow(command);
 	oss.str("");
 
-	serial.SendNow("G92 E0");	// set extruder zero
+	serial->SendNow("G92 E0");	// set extruder zero
 	oss << m_iExtruderLength;
 	string command2("G1 E");
 
 	if(!m_bExtruderDirection)	// Forwards
 		command2+="-";
 	command2+=oss.str();
-	serial.SendNow(command2);
-	serial.SendNow("G1 F1500.0");
+	serial->SendNow(command2);
+	serial->SendNow("G1 F1500.0");
 
-	serial.SendNow("G92 E0");	// set extruder zero
+	serial->SendNow("G92 E0");	// set extruder zero
 }
 void ModelViewController::SetExtruderDirection(bool reverse)
 {
@@ -927,12 +934,12 @@ void ModelViewController::SetExtruderDirection(bool reverse)
 }
 void ModelViewController::SendNow(string str)
 {
-	serial.SendNow(str);
+	serial->SendNow(str);
 }
 
 void ModelViewController::Home(string axis)
 {
-	if(serial.isPrinting())
+	if(serial->isPrinting())
 	{
 		fl_alert("Can't go home while printing");
 		return;
@@ -990,7 +997,7 @@ void ModelViewController::Home(string axis)
 
 void ModelViewController::Move(string axis, float distance)
 {
-	if(serial.isPrinting())
+	if(serial->isPrinting())
 	{
 		fl_alert("Can't move manually while printing");
 		return;
@@ -1025,7 +1032,7 @@ void ModelViewController::Move(string axis, float distance)
 }
 void ModelViewController::Goto(string axis, float position)
 {
-	if(serial.isPrinting())
+	if(serial->isPrinting())
 	{
 		fl_alert("Can't move manually while printing");
 		return;
@@ -1053,7 +1060,7 @@ void ModelViewController::Goto(string axis, float position)
 void ModelViewController::STOP()
 {
 	SendNow("M112");
-	serial.Clear(); // reset buffer
+	serial->Clear(); // reset buffer
 }
 
 void ModelViewController::SetPrintMargin(string Axis, float value)
@@ -1102,7 +1109,7 @@ size_t getResourceCount() const {
 
  size_t m_ResourceCount;
 };
-#ifdef WIN32
+#ifdef ENABLE_LUA
  
 void print_hello(int number)
 {
@@ -1126,11 +1133,11 @@ void ReportErrors(lua_State * L)
 	fl_alert(oss.str().c_str());
 	lua_pop(L, 1);
 }
-#endif
+#endif // ENABLE_LUA
 
 void ModelViewController::RunLua(char* script)
 {
-#ifdef WIN32
+#ifdef ENABLE_LUA
 	try{
 		
 		lua_State *myLuaState = lua_open();				// Create a new lua state
@@ -1169,7 +1176,7 @@ void ModelViewController::RunLua(char* script)
 		cerr << TheError.what() << endl;
 	}
 	refreshGraphicsView();
-#endif
+#endif // ENABLE_LUA
 }
 void ModelViewController::ReadRFO(string filename)
 {
@@ -1425,12 +1432,16 @@ void ModelViewController::SetShrinkQuality(string quality)
 	else
 		ProcessControl.m_ShrinkQuality = SHRINK_NICE;
 }
+void ModelViewController::SetReceivingBufferSize(float val)
+{
+	ProcessControl.ReceivingBufferSize = val; serial->SetReceivingBufferSize(val);
+}
 
 void ModelViewController::SendCustomButton(int nr)
 {
 	nr--;
 	string gcode = ProcessControl.CustomButtonGcode[nr];
-	serial.SendNow(gcode);
+	serial->SendNow(gcode);
 }
 void ModelViewController::SaveCustomButton()
 {
@@ -1452,7 +1463,7 @@ void ModelViewController::TestCustomButton()
 {
 	Fl_Text_Buffer* buffer = gui->CustomButtonText->buffer();
 	char* pText = buffer->text();
-	serial.SendNow(pText);
+	serial->SendNow(pText);
 }
 void ModelViewController::GetCustomButtonText(int nr)
 {
@@ -1513,3 +1524,4 @@ string ModelViewController::GetText()
 {
 	return MVC->gui->GCodeResult->buffer()->text();
 }
+

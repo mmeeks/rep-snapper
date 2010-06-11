@@ -8,7 +8,10 @@
 * the terms of the GNU General Public License, version 2, or at your
 * option, any later version, incorporated herein by reference.
 *
-* ------------------------------------------------------------------------- */#pragma once
+* ------------------------------------------------------------------------- */
+
+#ifndef MODEL_VIEW_CONTROLLER_H
+#define MODEL_VIEW_CONTROLLER_H
 
 // View related
 #include <FL/Fl_Gl_Window.H>
@@ -49,7 +52,7 @@ public:
 
 	void SetShrinkQuality(string quality);
 	void SetOptimization(float val) {ProcessControl.Optimization = val; redraw(); }
-	void SetReceivingBufferSize(float val) {ProcessControl.ReceivingBufferSize = val; serial.SetReceivingBufferSize(val); }
+	void SetReceivingBufferSize(float val);
 
 	void setObjectname(string name);
 	void setFileMaterial(string material);
@@ -189,7 +192,7 @@ public:
 
 	// Communication
 	void ConnectToPrinter(char on);
-	bool IsConnected() { return serial.isConnected(); }
+	bool IsConnected();
 	void SimplePrint();
 	void WaitForConnection(float seconds);
 
@@ -235,7 +238,7 @@ public:
 	void GetSelectedRFO(RFO_Object **selectedObject, RFO_File **selectedFile);
 	void newObject();
 
-	RepRapSerial serial;
+	RepRapSerial *serial;
 	bool m_bExtruderDirection; // True = forwards
 	int  m_iExtruderSpeed;
 	int m_iExtruderLength;
@@ -274,3 +277,5 @@ public:
 	void serialConnected();
 	void serialConnectionLost();
 };
+
+#endif // MODEL_VIEW_CONTROLLER_H
