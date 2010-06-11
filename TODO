@@ -34,7 +34,8 @@ GCode:
 Using it to generage gcode:
 	JGlauche: not
 	EbiDK: not
-	
+	Rickta59 is ...
+	Logick: is ...	
 
 
 Search for USB ttys on Linux ... :-)
@@ -50,6 +51,8 @@ Default to:
 
 * Read / grok gcode
 	+ work out why extrusion is different / odd ...
+
+[ Rafts dont work: ]
 
 Don't reverse at top speed for ages & break my extruder
 
