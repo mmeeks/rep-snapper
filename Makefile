@@ -27,6 +27,8 @@ ifeq ($(UNAME),Darwin)
     LDFLAGS+= -framework Carbon -framework OpenGL -framework GLUT -framework AGL
 endif
 
+GENERATED=UI.cxx UI.h
+
 SOURCES=AsyncSerial.cpp RepSnapper.cpp stl.cpp gpc.c RepRapSerial.cpp \
 	ProcessController.cpp Printer.cpp ModelViewController.cpp \
 	glutils.cpp GCode.cpp ArcBall.cpp stdafx.cpp UI.cxx \
@@ -49,7 +51,7 @@ all: $(SOURCES) $(EXECUTABLE)
 $(EXECUTABLE): $(OBJECTS)
 	$(CXX) ${INC} $(OBJECTS) $(LDFLAGS) -o $@ 
 
-%.cxx:%.fl
+%.cxx %.h:%.fl
 	fluid -c $<
 %.o:%.cxx
 	$(CXX) ${INC} $(CFLAGS) $< -o $@
@@ -61,11 +63,11 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) ${INC} $(CFLAGS) $< -o $@
 
 clean:
-	rm -f $(OBJECTS) $(EXECUTABLE)
+	rm -f $(OBJECTS) $(EXECUTABLE) $(GENERATED)
 
 # make update-deps will re-write the dependenciues below
 update-depends:
-	makedepend -Y $(SOURCES) $(HEADERS)
+	makedepend -Y $(SOURCES)
 
 # not needed
 #	<Kulitorum> fillet.cpp
@@ -131,32 +133,3 @@ File.o: ModelViewController.h UI.h Flu_Tree_Browser.h Flu_Enumerations.h
 File.o: flu_export.h FluSimpleString.h gcode.h stl.h ProcessController.h
 File.o: Printer.h RFO.h glutils.h RepRapSerial.h AsyncSerial.h
 ../Libraries/xml/XML.o: ../Libraries/xml/XML.H
-Flu_DND.o: Flu_Enumerations.h flu_export.h
-Flu_Enumerations.o: flu_export.h
-flu_pixmaps.o: flu_export.h
-FluSimpleString.o: Flu_Enumerations.h flu_export.h
-Flu_Tree_Browser.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
-gcode.o: platform.h
-ModelViewController.o: UI.h config.h stdafx.h platform.h ArcBall.h ivcon.h
-ModelViewController.o: File.h ModelViewController.h gcode.h stl.h
-ModelViewController.o: ProcessController.h Printer.h RFO.h Flu_Tree_Browser.h
-ModelViewController.o: Flu_Enumerations.h flu_export.h FluSimpleString.h
-ModelViewController.o: glutils.h RepRapSerial.h AsyncSerial.h
-Printer.o: stdafx.h config.h platform.h ArcBall.h ivcon.h
-ProcessController.o: stdafx.h config.h platform.h ArcBall.h ivcon.h Printer.h
-ProcessController.o: gcode.h RFO.h Flu_Tree_Browser.h Flu_Enumerations.h
-ProcessController.o: flu_export.h FluSimpleString.h stl.h
-RepRapSerial.o: UI.h config.h stdafx.h platform.h ArcBall.h ivcon.h File.h
-RepRapSerial.o: ModelViewController.h gcode.h stl.h ProcessController.h
-RepRapSerial.o: Printer.h RFO.h Flu_Tree_Browser.h Flu_Enumerations.h
-RepRapSerial.o: flu_export.h FluSimpleString.h glutils.h RepRapSerial.h
-RepRapSerial.o: AsyncSerial.h
-RFO.o: Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h FluSimpleString.h
-RFO.o: stl.h platform.h
-Serial.o: stdafx.h config.h platform.h ArcBall.h ivcon.h AsyncSerial.h
-stdafx.o: config.h platform.h ArcBall.h ivcon.h
-stl.o: platform.h
-UI.o: config.h stdafx.h platform.h ArcBall.h ivcon.h File.h
-UI.o: ModelViewController.h UI.h Flu_Tree_Browser.h Flu_Enumerations.h
-UI.o: flu_export.h FluSimpleString.h gcode.h stl.h ProcessController.h
-UI.o: Printer.h RFO.h glutils.h RepRapSerial.h AsyncSerial.h
