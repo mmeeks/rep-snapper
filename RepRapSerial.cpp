@@ -9,6 +9,8 @@ RepRapSerial::RepRapSerial()
 	m_bConnected = false;
 	com = new RepRapBufferedAsyncSerial(this);
 	m_bPrinting = false;
+	startTime = 0;
+	lastUpdateTime = 0;
 	m_iLineNr = 0;
 	gui = 0;
 	debugMask = DEBUG_ECHO | DEBUG_INFO | DEBUG_ERRORS;
@@ -143,7 +145,7 @@ void RepRapSerial::StartPrint()
 
 void RepRapSerial::SendNextLine()
 {
-	if( com->errorStatus() ) 
+	if ( com->errorStatus() ) 
 	{
 		m_bConnecting = false;
 		m_bConnected = false;
@@ -151,9 +153,9 @@ void RepRapSerial::SendNextLine()
 		gui->MVC->serialConnectionLost();
 		return;
 	}
-	if(m_bPrinting == false)
+	if (m_bPrinting == false)
 		return;
-	if(m_iLineNr < buffer.size())
+	if (m_iLineNr < buffer.size())
 		{
 		string a = buffer[m_iLineNr];
 		SendData(a.c_str(), m_iLineNr++);
@@ -166,8 +168,43 @@ void RepRapSerial::SendNextLine()
 		MVC->PrintDone();
 		return;
 		}
-	if(gui)
-		gui->ProgressBar->value((float)m_iLineNr);
+	if (gui) {
+		unsigned long time = Platform::getTickCount();
+		if (startTime == 0)
+			startTime = time;
+		// it is just wasteful to update the GUI > 10 times per sec.
+		if (time - lastUpdateTime > 100) {
+			gui->ProgressBar->value ((float)m_iLineNr);
+
+		Fl::lock();
+
+		double elapsed = (time - startTime) / 1000.f;
+		double max = gui->ProgressBar->maximum();
+		double progress = max > 0.0 ? m_iLineNr / gui->ProgressBar->maximum() : 0.0;
+		double total_time = progress > 0.0 ? elapsed / progress : elapsed;
+		double remaining = total_time - elapsed;
+
+		int remaining_seconds = (int)fmod (remaining, 60.0);
+		int remaining_minutes = ((int)fmod (remaining, 3600.0) - remaining_seconds) / 60;
+		int remaining_hours = (int)remaining / 3600;
+
+		std::stringstream oss;
+
+		if (remaining_hours > 0)
+			oss << "%dh" << remaining_hours;
+		if (remaining_minutes > 0 || oss.tellp())
+			oss << setw(2) << remaining_minutes;
+		if (remaining_seconds > 0 || oss.tellp())
+			oss << setw(2) << remaining_seconds;
+		if (!oss.tellp())
+			oss << "no estimate";
+
+		std::string s = oss.str();
+		gui->ProgressBar->label(s.c_str());
+		Fl::unlock();
+		}
+
+	}
 
 }
 

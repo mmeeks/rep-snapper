@@ -147,6 +147,8 @@ private:
 	string InBuffer;
 	short debugMask;
 	ulong ConnectAttempt;
+	ulong startTime;
+	ulong lastUpdateTime;
 
 
 	GUI* gui;

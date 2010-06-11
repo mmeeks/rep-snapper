@@ -139,8 +139,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
   
-	/* All command-line arguments are file-names */
-	for (int i = 1; i < opts.files.size(); i++)
+	for (int i = 0; i < opts.files.size(); i++)
 		MVC->ReadStl (opts.files[i].c_str());
 
 	char WindowTitle[100] = "GCodeView";
