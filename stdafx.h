@@ -36,6 +36,7 @@ typedef unsigned int        UINT;
 #include <stdio.h>
 #include <FL/Fl.H>
 #include <vmmlib/vmmlib.h>
+#include <alloca.h>
 #include "math.h"                                               // Needed for sqrtf
 #include "ArcBall.h"
 #include "gcode.h"

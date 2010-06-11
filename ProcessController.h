@@ -288,6 +288,10 @@ public:
 	vector<string>CustomButtonGcode;
 	vector<string>CustomButtonLabel;
 
+	string STLPath;
+	string RFOPath;
+	string GCodePath;
+
 	// Maybe a pointer to the gui
 	GUI *gui;
 };
