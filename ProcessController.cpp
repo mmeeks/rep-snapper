@@ -380,6 +380,19 @@ void ProcessController::SaveXML(string filename)
 	delete xml;
 }
 
+namespace {
+	std::string setXMLString (XMLElement *x, const char *name, const char *value)
+	{
+		x->FindVariableZ ((char *)name, true, "")->SetValue (value);
+	}
+
+	std::string setXMLString (XMLElement *x, const std::ostringstream &name, const char *value)
+	{
+		std::string s = name.str();
+		return setXMLString (x, s.c_str(), value);
+	}
+};
+
 void ProcessController::SaveXML(XMLElement *e)
 {
 	XMLElement *x = e->FindElementZ("ProcessController", true);
@@ -406,48 +419,16 @@ void ProcessController::SaveXML(XMLElement *e)
         //x->FindVariableZ("Notes", true,"[Empty]")->SetValue(Notes.c_str()); // overwriting GCodeEndText	
 	x->FindVariableZ("m_sPortName", true,"COM5")->SetValue(m_sPortName.c_str());	
 
-	x->FindVariableZ("CustomButton1Text", true,"[Empty]")->SetValue(CustomButtonGcode[0].c_str());	
-	x->FindVariableZ("CustomButton2Text", true,"[Empty]")->SetValue(CustomButtonGcode[1].c_str());	
-	x->FindVariableZ("CustomButton3Text", true,"[Empty]")->SetValue(CustomButtonGcode[2].c_str());	
-	x->FindVariableZ("CustomButton4Text", true,"[Empty]")->SetValue(CustomButtonGcode[3].c_str());	
-	x->FindVariableZ("CustomButton5Text", true,"[Empty]")->SetValue(CustomButtonGcode[4].c_str());	
-	x->FindVariableZ("CustomButton6Text", true,"[Empty]")->SetValue(CustomButtonGcode[5].c_str());	
-	x->FindVariableZ("CustomButton7Text", true,"[Empty]")->SetValue(CustomButtonGcode[6].c_str());	
-	x->FindVariableZ("CustomButton8Text", true,"[Empty]")->SetValue(CustomButtonGcode[7].c_str());	
-	x->FindVariableZ("CustomButton9Text", true,"[Empty]")->SetValue(CustomButtonGcode[8].c_str());	
-	x->FindVariableZ("CustomButton10Text", true,"[Empty]")->SetValue(CustomButtonGcode[9].c_str());	
-	x->FindVariableZ("CustomButton11Text", true,"[Empty]")->SetValue(CustomButtonGcode[10].c_str());	
-	x->FindVariableZ("CustomButton12Text", true,"[Empty]")->SetValue(CustomButtonGcode[11].c_str());	
-	x->FindVariableZ("CustomButton13Text", true,"[Empty]")->SetValue(CustomButtonGcode[12].c_str());	
-	x->FindVariableZ("CustomButton14Text", true,"[Empty]")->SetValue(CustomButtonGcode[13].c_str());	
-	x->FindVariableZ("CustomButton15Text", true,"[Empty]")->SetValue(CustomButtonGcode[14].c_str());	
-	x->FindVariableZ("CustomButton16Text", true,"[Empty]")->SetValue(CustomButtonGcode[15].c_str());	
-	x->FindVariableZ("CustomButton17Text", true,"[Empty]")->SetValue(CustomButtonGcode[16].c_str());	
-	x->FindVariableZ("CustomButton81Text", true,"[Empty]")->SetValue(CustomButtonGcode[17].c_str());	
-	x->FindVariableZ("CustomButton19Text", true,"[Empty]")->SetValue(CustomButtonGcode[18].c_str());	
-	x->FindVariableZ("CustomButton20Text", true,"[Empty]")->SetValue(CustomButtonGcode[19].c_str());	
 
-	x->FindVariableZ("CustomButton1Label", true,"Custom button 1")->SetValue(CustomButtonLabel[0].c_str());	
-	x->FindVariableZ("CustomButton2Label", true,"Custom button 2")->SetValue(CustomButtonLabel[1].c_str());	
-	x->FindVariableZ("CustomButton3Label", true,"Custom button 3")->SetValue(CustomButtonLabel[2].c_str());	
-	x->FindVariableZ("CustomButton4Label", true,"Custom button 4")->SetValue(CustomButtonLabel[3].c_str());	
-	x->FindVariableZ("CustomButton5Label", true,"Custom button 5")->SetValue(CustomButtonLabel[4].c_str());	
-	x->FindVariableZ("CustomButton6Label", true,"Custom button 6")->SetValue(CustomButtonLabel[5].c_str());	
-	x->FindVariableZ("CustomButton7Label", true,"Custom button 7")->SetValue(CustomButtonLabel[6].c_str());	
-	x->FindVariableZ("CustomButton8Label", true,"Custom button 8")->SetValue(CustomButtonLabel[7].c_str());	
-	x->FindVariableZ("CustomButton9Label", true,"Custom button 9")->SetValue(CustomButtonLabel[8].c_str());	
-	x->FindVariableZ("CustomButton10Label", true,"Custom button 10")->SetValue(CustomButtonLabel[9].c_str());	
-	x->FindVariableZ("CustomButton11Label", true,"Custom button 11")->SetValue(CustomButtonLabel[10].c_str());	
-	x->FindVariableZ("CustomButton12Label", true,"Custom button 12")->SetValue(CustomButtonLabel[11].c_str());	
-	x->FindVariableZ("CustomButton13Label", true,"Custom button 13")->SetValue(CustomButtonLabel[12].c_str());	
-	x->FindVariableZ("CustomButton14Label", true,"Custom button 14")->SetValue(CustomButtonLabel[13].c_str());	
-	x->FindVariableZ("CustomButton15Label", true,"Custom button 15")->SetValue(CustomButtonLabel[14].c_str());	
-	x->FindVariableZ("CustomButton16Label", true,"Custom button 16")->SetValue(CustomButtonLabel[15].c_str());	
-	x->FindVariableZ("CustomButton17Label", true,"Custom button 17")->SetValue(CustomButtonLabel[16].c_str());	
-	x->FindVariableZ("CustomButton18Label", true,"Custom button 18")->SetValue(CustomButtonLabel[17].c_str());	
-	x->FindVariableZ("CustomButton19Label", true,"Custom button 19")->SetValue(CustomButtonLabel[18].c_str());	
-	x->FindVariableZ("CustomButton20Label", true,"Custom button 20")->SetValue(CustomButtonLabel[19].c_str());	
+	for (int i = 0; i < 20; i++) {
+		std::ostringstream os, name;
 
+		os << "CustomButton" << i + 1 << "Text";
+		setXMLString (x, os, CustomButtonGcode[i].c_str());
+
+		name << "CustomButton" << i + 1 << "Label";
+		setXMLString (x, name, CustomButtonLabel[i].c_str());
+	}
 
 	x->FindVariableZ("m_iSerialSpeed", true,"19200")->SetValueInt(m_iSerialSpeed);	
 
@@ -606,8 +587,8 @@ namespace {
 			return std::string();
 	}
 
-	std::string getXMLStringS (XMLElement *x, const std::ostringstream &name,
-				   const std::ostringstream &default_value)
+	std::string getXMLString (XMLElement *x, const std::ostringstream &name,
+				  const std::ostringstream &default_value)
 	{
 		std::string s = name.str();
 		std::string d = default_value.str();
@@ -664,12 +645,12 @@ void ProcessController::LoadXML(XMLElement *e)
 	for (int i = 0; i < 20; i++) {
 		std::ostringstream os, empty, name, label;
 
-		os << "CustomButton" << i << "Text";
-		CustomButtonGcode[i] = getXMLStringS (x, os, empty);
+		os << "CustomButton" << i + 1 << "Text";
+		CustomButtonGcode[i] = getXMLString (x, os, empty);
 
-		name << "CustomButton" << i << "Label";
-		label << "Custom button" << i;
-		CustomButtonLabel[i] = getXMLStringS (x, name, label);
+		name << "CustomButton" << i + 1 << "Label";
+		label << "Custom button" << i + 1;
+		CustomButtonLabel[i] = getXMLString (x, name, label);
 	}
 
 	if (gui && gui ->MVC )
