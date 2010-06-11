@@ -17,7 +17,7 @@
 #include "gcode.h"
 #include "UI.h"
 #include "math.h"
-//#include "pathfinder.h"
+#include <boost/numeric/conversion/bounds.hpp> 
 
 #ifdef WIN32
 	#include <GL/glut.h>	// Header GLUT Library
@@ -478,7 +478,7 @@ void STL::draw(const ProcessController &PC, float opasity)
 uint findClosestUnused(std::vector<Vector3f> lines, Vector3f point, std::vector<bool> &used)
 {
 	uint closest = -1;
-	float closestDist = MAXFLOAT;
+	float closestDist = boost::numeric::bounds<float>::highest();
 	
 	uint count = lines.size();
 	
