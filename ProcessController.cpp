@@ -546,10 +546,12 @@ namespace {
 		XMLVariable *v = x->FindVariableZ ((char *)name, true, (char *)default_value);
 		if (v) {
 			int size = v->MemoryUsage() + 1024;
-			char buffer[size];
+			char *buffer = new char[size];
 			buffer[0] = '\0';
 			v->GetValue (buffer);
-			return std::string (buffer);
+			std::string retval(buffer);
+			delete buffer;
+			return retval;
 		} else
 			return std::string();
 	}
