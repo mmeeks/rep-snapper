@@ -1,5 +1,4 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0110 
 header_name {.h} 
 code_name {.cxx}
 decl {\#pragma warning( disable : 4311 4312 4244 4267 4800)} {public global
@@ -39,12 +38,7 @@ class GUI {open
           } {
             Fl_Button {} {
               label {Load STL}
-              callback {std::string dir = FileChooser::open ("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose STL");
-  if (!dir.length())
-	return;
-  MVC->ClearRFO();
-  MVC->ReadStl(dir);
-  MVC->redraw();}
+	      callback { FileChooser::ioDialog (MVC, FileChooser::OPEN, FileChooser::STL, true); }
               xywh {735 175 145 25}
             }
             Fl_Button {} {
@@ -62,12 +56,7 @@ class GUI {open
             }
             Fl_Button {} {
               label {Load GCode}
-              callback {std::string dir = FileChooser::open ("\\\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
-  if (!dir.length())
-	return;
-
-  MVC->ReadGCode(dir);
-  MVC->redraw();}
+              callback { FileChooser::ioDialog (MVC, FileChooser::OPEN, FileChooser::GCODE); }
               xywh {735 255 145 25}
             }
             Fl_Text_Display {} {
@@ -184,11 +173,7 @@ MVC->ConnectToPrinter(o->value());}
         } {
           Fl_Button {} {
             label {Load STL}
-            callback {std::string dir = FileChooser::open ("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose STL");
-  if (!dir.length())
-	return;
-  MVC->ReadStl(dir);
-  MVC->redraw();}
+	    callback { FileChooser::ioDialog (MVC, FileChooser::OPEN, FileChooser::STL); }
             xywh {725 35 130 25}
           }
           Fl_Light_Button FixSTLerrorsButton {
@@ -198,11 +183,7 @@ MVC->ConnectToPrinter(o->value());}
           }
           Fl_Button {} {
             label {Save STL}
-            callback {std::string dir = FileChooser::open ("C:/code/printed-parts", "*.stl", Fl_File_Chooser::SINGLE, "Choose STL");
-  if (!dir.length())
-	return;
-  MVC->ReadStl(dir);
-  MVC->redraw();}
+	    callback { FileChooser::ioDialog (MVC, FileChooser::SAVE, FileChooser::STL); }
             xywh {855 35 135 25} deactivate
           }
           Fl_Group {} {
@@ -257,11 +238,7 @@ MVC->ProcessControl.SaveXML();}
           }
           Fl_Button {} {
             label {Load RFO}
-            callback {std::string dir = FileChooser::open ("C:/code/printed-parts", "*.xml", Fl_File_Chooser::SINGLE, "Choose RFO file");
-  if (!dir.length())
-	return;
-  MVC->ReadRFO(dir);
-  MVC->redraw();}
+	    callback { FileChooser::ioDialog (MVC, FileChooser::OPEN, FileChooser::RFO); }
             xywh {725 65 130 25}
           }
           Fl_Box RFP_Browser {
@@ -362,7 +339,7 @@ MVC->ProcessControl.SaveXML();}
           }
           Fl_Button {} {
             label {Save RFO}
-            callback {MVC->ProcessControl.rfo.Save(string("test.xml"), MVC->ProcessControl);}
+	    callback { FileChooser::ioDialog (MVC, FileChooser::SAVE, FileChooser::RFO); }
             xywh {1130 65 135 25}
           }
           Fl_Button {} {
@@ -742,12 +719,7 @@ MVC->redraw();}
         } {
           Fl_Button {} {
             label {Load Gcode}
-            callback {std::string dir = FileChooser::open ("\\\\", "*.gcode", Fl_File_Chooser::SINGLE, "Choose GCode");
-  if (!dir.length())
-	return;
-
-  MVC->ReadGCode(dir);
-  MVC->redraw();}
+            callback { FileChooser::ioDialog (MVC, FileChooser::OPEN, FileChooser::GCODE); }
             xywh {715 75 145 25}
             code0 {\#include <FL/Fl_File_Chooser.H>}
           }
@@ -789,27 +761,7 @@ MVC->redraw();}
           }
           Fl_Button {} {
             label {Save Gcode}
-            callback {std::string dir = FileChooser::open ("\\\\", "*.gcode", Fl_File_Chooser::CREATE, "Choose GCode filename");
-  if (!dir.length())
-	return;
-
-Fl_Text_Buffer *buffer = GCodeResult->buffer();
-
-int result = buffer->savefile(dir.c_str());
-
-switch(result)
-{
-case 0:	// Succes
-break;
-case 1:	//Open for write failed
-fl_alert("Error saving GCode file, error creating file.", "OK");
-break;
-case 2: // Partially saved file
-fl_alert("Error saving GCode file, while writing file, is the disk full?.", "OK");
-break;
-}
-
-MVC->redraw();}
+            callback { FileChooser::ioDialog (MVC, FileChooser::SAVE, FileChooser::GCODE); }
             xywh {1095 75 145 25}
             code0 {\#include <FL/Fl_File_Chooser.H>}
           }

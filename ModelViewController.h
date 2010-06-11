@@ -66,7 +66,7 @@ public:
 	// My own view functions
 	void draw();
 	void DrawGridAndAxis();
-	void WriteGCode(string filename) {/*ProcessControl.WriteGCode(filename);*/}
+	void WriteGCode(string filename);
 	void CopySettingsToGUI();
 
 	void CenterView();

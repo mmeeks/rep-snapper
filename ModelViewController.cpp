@@ -498,6 +498,26 @@ void ModelViewController::init()
 //	buffer->text("Dump");
 }
 
+
+void ModelViewController::WriteGCode (string filename)
+{
+  Fl_Text_Buffer* buffer = gui->GCodeResult->buffer();
+  int result = buffer->savefile (filename.c_str());
+  
+  switch (result)
+    {
+    case 0: // Succes
+      break;
+    case 1: // Open for write failed
+      fl_alert ("Error saving GCode file, error creating file.", "OK");
+      break;
+    case 2: // Partially saved file
+      fl_alert ("Error saving GCode file, while writing file, is the disk full?.", "OK");
+      break;
+    }
+}
+
+
 //Make the remaining buttons work
 //implement acceleration
 

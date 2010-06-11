@@ -76,7 +76,8 @@ namespace {
 	 GTK_RESPONSE_ACCEPT,
 	 NULL);
       GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
-      gtk_file_chooser_set_current_folder (chooser, a->directory);
+      if (a->directory)
+	gtk_file_chooser_set_current_folder (chooser, a->directory);
       gtk_file_chooser_set_select_multiple (chooser, multiple);
       GtkFileFilter *filter = gtk_file_filter_new ();
       gtk_file_filter_add_pattern (filter, a->filter);
@@ -113,7 +114,6 @@ namespace {
     while (!a.ret)
       Fl::wait();
 
-    fprintf (stderr, "open '%s'\n", a.result.c_str());
     return a.result;
   }
 #endif
@@ -128,15 +128,88 @@ namespace {
     const char *v = chooser.value();
     return std::string (v ? v : "");
   }
-}
 
-std::string FileChooser::open (const char *directory, const char *filter, int type, const char *title)
-{
+  std::string open (const char *directory, const char *filter, int type, const char *title)
+  {
 #ifdef HAVE_GTK
-  return openGtk (directory, filter, type, title);
+    return openGtk (directory, filter, type, title);
 #else
-  return openFltk (directory, filter, type, title);
+    return openFltk (directory, filter, type, title);
 #endif
+  }
 }
 
+/*
+ * Split out code that, otherwise would be busy cluttering
+ * UI.fl in multiple places.
+ */
+void FileChooser::ioDialog (ModelViewController *mvc, Op o, Type t, bool dropRFO)
+{
+  int type;
+  std::string file;
+  const char *filter;
+  const char *directory;
+  const char *title;
 
+  switch (t) {
+  case GCODE:
+    filter = "*.gcode";
+    title = "Choose GCODE filename";
+    break;
+  case RFO:
+    filter = "*.xml";
+    title = "Choose RFO filename";
+    break;
+  case STL:
+  default:
+    filter = "*.stl";
+    title = "Choose STL filename";
+    break;
+  }
+
+#ifdef WIN32
+  if (o == OPEN)
+    directory = "C:/code/printed-parts";
+  else
+    directory = "\\";
+#else
+  directory = NULL;
+#endif
+
+  if (o == OPEN) /* FIXME: impl. multi-selection cleanly */
+    type = Fl_File_Chooser::SINGLE;
+  else
+    type = Fl_File_Chooser::CREATE;
+
+  file = open (directory, filter, type, title);
+
+  if (!file.length())
+    return;
+
+  /* FIXME: we need to drop that RFO much more often here I suspect */
+  if (dropRFO)
+    mvc->ClearRFO();
+
+  switch (t) {
+  case RFO:
+    if (o == OPEN)
+      mvc->ReadRFO (file);
+    else
+      mvc->ProcessControl.rfo.Save(file, mvc->ProcessControl);
+    break;
+  case GCODE:
+    if (o == OPEN)
+      mvc->ReadGCode (file);
+    else
+      mvc->WriteGCode (file);
+    break;
+  default:
+  case STL:
+    if (o == OPEN)
+      mvc->ReadStl (file);
+    else
+      fl_alert ("STL saving not yet implemented", "Sorry");
+    break;
+  }
+  mvc->redraw();
+}
