@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   AsyncSerial.h
  * Author: Terraneo Federico
  * Distributed under the Boost Software License, Version 1.0.
@@ -11,9 +11,9 @@
 #pragma once
 
 #include <vector>
-#include <boost/thread.hpp> 
-#include <boost/system/error_code.hpp> 
-#include <boost/system/system_error.hpp> 
+#include <boost/thread.hpp>
+#include <boost/system/error_code.hpp>
+#include <boost/system/system_error.hpp>
 #include <boost/asio.hpp>
 #include <boost/utility.hpp>
 #include <boost/function.hpp>
@@ -115,6 +115,12 @@ private:
      */
     void readStart();
 
+#ifdef __APPLE__
+    /**
+     * helper function for readEnd on error.value() == 45
+     */
+    void doRead();
+#endif
     /**
      * Callback called at the end of the asynchronous operation
      */
@@ -308,7 +314,7 @@ private:
      */
     static std::vector<char>::iterator findStringInVector(std::vector<char>& v,
             const std::string& s);
-   
+
     std::vector<char> readQueue_;
     boost::mutex readQueueMutex_;
 };
