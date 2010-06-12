@@ -79,7 +79,7 @@ PWM (D 14) PD6 20|        |21  PD7 (D 15) PWM
 #define EXTRUDER_1_VALVE_ENABLE_PIN (byte)5  //Physical Pin - 6       // Valve needs to be redesigned not to need this
 #define EXTRUDER_1_STEP_ENABLE_PIN  (byte)-1  //Physical Pin - NONE      // 7 - Conflicts with the fan; set -ve if no stepper
 */
-#undef WIN32
+//#undef WIN32
 
 #ifdef WIN32
 #include "Serial/SerialEx.h"
