@@ -34,7 +34,7 @@ SOURCES=AsyncSerial.cpp RepSnapper.cpp stl.cpp gpc.c RepRapSerial.cpp \
 	glutils.cpp GCode.cpp ArcBall.cpp stdafx.cpp UI.cxx \
 	RFO.cpp Flu_DND.cpp flu_pixmaps.cpp FluSimpleString.cpp \
 	Flu_Tree_Browser.cpp ivcon.cpp File.cpp platform.cpp \
-	$(LIB_DIR)/xml/XML.CPP 
+	$(LIB_DIR)/xml/xml.cpp 
 
 HEADERS=ArcBall.h AsyncSerial.h Convert.h Flu_DND.h Flu_Enumerations.h \
 	flu_export.h flu_pixmaps.h FluSimpleString.h Flu_Tree_Browser.h \
@@ -132,4 +132,4 @@ File.o: stdafx.h config.h platform.h ArcBall.h ivcon.h File.h
 File.o: ModelViewController.h UI.h Flu_Tree_Browser.h Flu_Enumerations.h
 File.o: flu_export.h FluSimpleString.h gcode.h stl.h ProcessController.h
 File.o: Printer.h RFO.h glutils.h RepRapSerial.h AsyncSerial.h
-../Libraries/xml/XML.o: ../Libraries/xml/XML.H
+../Libraries/xml/xml.o: ../Libraries/xml/xml.h

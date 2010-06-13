@@ -99,7 +99,7 @@ you can also supply a transform on the build level that is applied to each and e
 </reprap-fab-at-home-build>
 */
 #pragma once
-#include "xml/XML.H"
+#include "xml/xml.h"
 #include "stl.h"
 
 class RFO_Transform3D
