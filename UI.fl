@@ -1,4 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
+version 1.0110 
 header_name {.h} 
 code_name {.cxx}
 decl {\#pragma warning( disable : 4311 4312 4244 4267 4800)} {public global
@@ -13,15 +14,14 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {138 28 1290 837} type Double box UP_BOX color 39 selection_color 39 labelsize 12 resizable visible
+      xywh {125 329 1290 837} type Double box UP_BOX color 39 selection_color 39 labelsize 12 resizable visible
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
         xywh {10 25 700 805} box UP_BOX align 16
         code0 {\#include "config.h"
 \#include "stdafx.h"
-\#include "File.h"
-}
+\#include "File.h"}
         code1 {\#ifndef M_PI
 \#define M_PI 3.14159265358979323846
 \#endif}
@@ -32,8 +32,8 @@ class GUI {open
         xywh {710 5 575 825} align 5 when 1
       } {
         Fl_Group {} {
-          label Simple open selected
-          xywh {715 25 555 765}
+          label Simple
+          xywh {715 25 555 765} hide
         } {
           Fl_Group {} {
             label Model open
@@ -41,7 +41,7 @@ class GUI {open
           } {
             Fl_Button {} {
               label {Load STL}
-	      callback { FileChooser::ioDialog (MVC, FileChooser::OPEN, FileChooser::STL, true); }
+              callback {FileChooser::ioDialog (MVC, FileChooser::OPEN, FileChooser::STL, true);}
               xywh {735 175 145 25}
             }
             Fl_Button {} {
@@ -59,7 +59,7 @@ class GUI {open
             }
             Fl_Button {} {
               label {Load GCode}
-              callback { FileChooser::ioDialog (MVC, FileChooser::OPEN, FileChooser::GCODE); }
+              callback {FileChooser::ioDialog (MVC, FileChooser::OPEN, FileChooser::GCODE);}
               xywh {735 255 145 25}
             }
             Fl_Text_Display {} {
@@ -72,7 +72,7 @@ class GUI {open
             }
           }
           Fl_Group {} {
-            label Printer open
+            label Printer
             xywh {720 47 535 88} box ENGRAVED_FRAME color 39
           } {
             Fl_Value_Input SerialSpeedInputSimple {
@@ -172,11 +172,11 @@ MVC->ConnectToPrinter(o->value());}
         }
         Fl_Group {} {
           label {Input file} open
-          xywh {715 25 560 790} hide
+          xywh {715 25 560 790}
         } {
           Fl_Button {} {
             label {Load STL}
-	    callback { FileChooser::ioDialog (MVC, FileChooser::OPEN, FileChooser::STL); }
+            callback {FileChooser::ioDialog (MVC, FileChooser::OPEN, FileChooser::STL);}
             xywh {725 35 130 25}
           }
           Fl_Light_Button FixSTLerrorsButton {
@@ -186,7 +186,7 @@ MVC->ConnectToPrinter(o->value());}
           }
           Fl_Button {} {
             label {Save STL}
-	    callback { FileChooser::ioDialog (MVC, FileChooser::SAVE, FileChooser::STL); }
+            callback {FileChooser::ioDialog (MVC, FileChooser::SAVE, FileChooser::STL);}
             xywh {855 35 135 25} deactivate
           }
           Fl_Group {} {
@@ -224,30 +224,18 @@ MVC->redraw();}
           }
           Fl_Button {} {
             label {Save settings}
-            callback {Fl_Text_Buffer* buffer = GCodeStart->buffer();
-char* pText = buffer->text();
-MVC->ProcessControl.GCodeStartText = string(pText);
-free(pText);
-buffer = GCodeLayer->buffer();
-pText = buffer->text();
-MVC->ProcessControl.GCodeLayerText = string(pText);
-free(pText);
-buffer = GCodeEnd->buffer();
-pText = buffer->text();
-MVC->ProcessControl.GCodeEndText = string(pText);
-free(pText);
-MVC->ProcessControl.SaveXML();}
+            callback {MVC->ProcessControl.SaveSettings();}
             xywh {1130 35 135 25}
           }
           Fl_Button {} {
             label {Load RFO}
-	    callback { FileChooser::ioDialog (MVC, FileChooser::OPEN, FileChooser::RFO); }
+            callback {FileChooser::ioDialog (MVC, FileChooser::OPEN, FileChooser::RFO);} selected
             xywh {725 65 130 25}
           }
           Fl_Box RFP_Browser {
             label {RFO file}
             callback {MVC->redraw();}
-            xywh {725 95 355 440} box UP_BOX align 16 when 1 resizable
+            xywh {725 125 355 440} box UP_BOX align 16 when 1 resizable
             code0 {\#include "Flu_Tree_Browser.h"}
             class Flu_Tree_Browser
           }
@@ -342,22 +330,59 @@ MVC->ProcessControl.SaveXML();}
           }
           Fl_Button {} {
             label {Save RFO}
-	    callback { FileChooser::ioDialog (MVC, FileChooser::SAVE, FileChooser::RFO); }
-            xywh {1130 65 135 25}
+            callback {FileChooser::ioDialog (MVC, FileChooser::SAVE, FileChooser::RFO);}
+            xywh {1130 95 135 25}
           }
           Fl_Button {} {
             label Delete
             callback {MVC->ProcessControl.rfo.DeleteSelected();}
-            xywh {995 65 135 25}
+            xywh {995 95 135 25}
           }
           Fl_Button {} {
             label Duplicate
             callback {MVC->Duplicate();}
-            xywh {1130 95 135 25}
+            xywh {1130 125 135 25}
+          }
+          Fl_Button {} {
+            label {Save Settings As...}
+            callback {Fl_File_Chooser chooser(MVC->ProcessControl.SettingsPath.c_str(), "*.xml", Fl_File_Chooser::SINGLE|Fl_File_Chooser::CREATE, "Save Settings As...");
+chooser.show();
+while (chooser.shown())
+Fl::wait();
+if(chooser.value() == 0)
+return;
+std::string dir(chooser.value());
+
+
+if(dir.length())
+{
+MVC->ProcessControl.SettingsPath = dir;
+MVC->ProcessControl.SaveSettingsAs(dir);
+};}
+            xywh {1130 65 135 25}
+          }
+          Fl_Button {} {
+            label {Load Settings...}
+            callback {Fl_File_Chooser chooser(MVC->ProcessControl.SettingsPath.c_str(), "*.xml", Fl_File_Chooser::SINGLE, "Load settings as...");
+chooser.show();
+while (chooser.shown())
+Fl::wait();
+if(chooser.value() == 0)
+return;
+std::string dir(chooser.value());
+
+
+if(dir.length())
+{
+MVC->ProcessControl.SettingsPath = dir;
+MVC->ProcessControl.LoadXML(dir);
+MVC->CopySettingsToGUI();
+};}
+            xywh {995 65 135 25}
           }
         }
         Fl_Group PrinterDefinitionTab {
-          label {Printer definition} open
+          label {Printer definition}
           xywh {715 25 545 800} hide
         } {
           Fl_Group {} {
@@ -548,8 +573,8 @@ distanceToReachFullSpeedSlider->deactivate();
           }
         }
         Fl_Group {} {
-          label {Print options} open
-          xywh {715 25 540 755} hide
+          label {Print options}
+          xywh {710 25 550 755} hide
         } {
           Fl_Group {} {
             label Infill open
@@ -583,11 +608,11 @@ distanceToReachFullSpeedSlider->deactivate();
           }
           Fl_Group {} {
             label {Shrinking quality} open
-            xywh {720 240 535 110} box ENGRAVED_FRAME color 2
+            xywh {720 380 535 110} box ENGRAVED_FRAME color 2
           } {
             Fl_Choice shrinkAlgorithm {
               label {Shrinking Algorithm:} open
-              xywh {865 255 270 25} down_box BORDER_BOX
+              xywh {865 395 270 25} down_box BORDER_BOX
             } {
               MenuItem {} {
                 label {Fast, can have errors}
@@ -611,7 +636,30 @@ MVC->redraw();}
             Fl_Value_Slider OptimizationSlider {
               label Optimization
               callback {MVC->SetOptimization(o->value());}
-              xywh {730 320 515 20} type {Horz Knob} selection_color 2 align 5 minimum 0.001 step 0.001 value 0.05 textsize 14
+              xywh {730 460 515 20} type {Horz Knob} selection_color 2 align 5 minimum 0.001 step 0.001 value 0.05 textsize 14
+            }
+          }
+          Fl_Group {} {
+            label {Alternate Infill Layers} open
+            xywh {720 240 535 120} box ENGRAVED_FRAME color 39
+          } {
+            Fl_Input AltInfillLayersInput {
+              label Layers
+              callback {MVC->SetAltInfillLayersText(o->value());}
+              xywh {780 290 465 25}
+            }
+            Fl_Text_Display {} {
+              label {Comma separated layer numbers, 0 is the lowest layer, -1 is the highest}
+              xywh {720 245 10 25} box NO_BOX align 8
+            }
+            Fl_Text_Display {} {
+              label {(eg. 0,1,-1,-2 means the top and bottom two layers)}
+              xywh {720 265 10 25} box NO_BOX align 8
+            }
+            Fl_Value_Slider AltInfillDistanceSlider {
+              label {Infill Distance}
+              callback {MVC->SetAltInfillDistance(o->value());}
+              xywh {735 330 515 20} type {Horz Knob} selection_color 2 align 5 minimum 0.1 maximum 10 step 0.1 value 2 textsize 14
             }
           }
         }
@@ -722,7 +770,7 @@ MVC->redraw();}
         } {
           Fl_Button {} {
             label {Load Gcode}
-            callback { FileChooser::ioDialog (MVC, FileChooser::OPEN, FileChooser::GCODE); }
+            callback {FileChooser::ioDialog (MVC, FileChooser::OPEN, FileChooser::GCODE);}
             xywh {715 75 145 25}
             code0 {\#include <FL/Fl_File_Chooser.H>}
           }
@@ -764,7 +812,7 @@ MVC->redraw();}
           }
           Fl_Button {} {
             label {Save Gcode}
-            callback { FileChooser::ioDialog (MVC, FileChooser::SAVE, FileChooser::GCODE); }
+            callback {FileChooser::ioDialog (MVC, FileChooser::SAVE, FileChooser::GCODE);}
             xywh {1095 75 145 25}
             code0 {\#include <FL/Fl_File_Chooser.H>}
           }
@@ -1586,10 +1634,10 @@ MVC->SetFan(o->value()*(255.0f/12.0f));}
         }
         Fl_Group {} {
           label lua open
-          xywh {715 25 545 805} resizable
+          xywh {715 25 545 805} hide resizable
         } {
           Fl_Group LuaTab {
-            label {Lua script} open selected
+            label {Lua script} open
             xywh {715 45 535 785} box ENGRAVED_FRAME color 39
           } {
             Fl_Text_Editor LuaScriptEditor {

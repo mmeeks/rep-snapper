@@ -120,6 +120,8 @@ public:
 	void SetInfillDistance(float val){ProcessControl.InfillDistance = val; redraw();}
 	void SetInfillRotation(float val){ProcessControl.InfillRotation = val; redraw();}
 	void SetInfillRotationPrLayer(float val){ProcessControl.InfillRotationPrLayer = val; redraw();}
+	void SetAltInfillDistance(float val){ProcessControl.AltInfillDistance = val; redraw();}
+	void SetAltInfillLayersText(string val){ProcessControl.AltInfillLayersText = val; redraw();}
 	void SetExamine(float val){ProcessControl.Examine = val; redraw();}
 	void SetExtrudedMaterialWidth(float val){ProcessControl.ExtrudedMaterialWidth = val; redraw();}
 

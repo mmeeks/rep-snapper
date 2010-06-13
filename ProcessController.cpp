@@ -13,6 +13,7 @@
 #include "xml/XML.H"
 #include "ModelViewController.h"
 #include "ProcessController.h"
+#include <boost/algorithm/string.hpp>
 
 void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd)
 {
@@ -25,6 +26,11 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 
 	// Make Layers
 	uint LayerNr = 0;
+	uint LayerCount = (uint)ceil((Max.z+LayerThickness*0.5f)/LayerThickness);
+
+	vector<int> altInfillLayers;
+	GetAltInfillLayers(altInfillLayers, LayerCount);
+
 	printOffset = PrintMargin;
 
 	float z=Min.z+LayerThickness*0.5f;				// Offset it a bit in Z, z=0 gives a empty slice because no triangles crosses this Z value
@@ -85,7 +91,15 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 						plane.ShrinkLogick(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);
 						break;
 					}
-					plane.CalcInFill(infill, LayerNr, destinationZ, InfillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
+
+					// check if this if a layer we should use the alternate infill distance on
+					float infillDistance = InfillDistance;
+					if (std::find(altInfillLayers.begin(), altInfillLayers.end(), LayerNr) != altInfillLayers.end())
+					{
+						infillDistance = AltInfillDistance;
+					}
+
+					plane.CalcInFill(infill, LayerNr, destinationZ, infillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
 				}
 				// Make the GCode from the plane and the infill
 				plane.MakeGcode(infill, gcode, E, destinationZ, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, DistanceToReachFullSpeed, extrusionFactor, UseIncrementalEcode, Use3DGcode, EnableAcceleration);
@@ -366,8 +380,6 @@ void WriteGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeL
 
 void ProcessController::SaveXML(string filename)
 {
-	filename = filename + ".xml";
-
 	XML* xml = new XML(filename.c_str());
 	XMLElement* e = xml->GetRootElement();
 	SaveXML(e);
@@ -470,6 +482,8 @@ void ProcessController::SaveXML(XMLElement *e)
 	setVariable (x, "InfillDistance")->SetValueFloat(InfillDistance);
 	setVariable (x, "InfillRotation")->SetValueFloat(InfillRotation);
 	setVariable (x, "InfillRotationPrLayer")->SetValueFloat(InfillRotationPrLayer);
+	setVariable (x, "AltInfillDistance")->SetValueFloat(AltInfillDistance);
+	setVariable (x, "AltInfillLayers")->SetValue(AltInfillLayersText.c_str());	
 	setVariable (x, "PolygonOpasity")->SetValueFloat(PolygonOpasity);
 
 
@@ -538,6 +552,7 @@ void ProcessController::SaveXML(XMLElement *e)
 	setVariable (x, "STLPath")->SetValue(STLPath.c_str());
 	setVariable (x, "RFOPath")->SetValue(RFOPath.c_str());
 	setVariable (x, "GCodePath")->SetValue(GCodePath.c_str());
+	setVariable (x, "SettingsPath")->SetValue(SettingsPath.c_str());
 }
 
 namespace {
@@ -648,6 +663,7 @@ void ProcessController::LoadXML(XMLElement *e)
 	STLPath = getXMLString (x, "STLPath", "");
 	RFOPath = getXMLString (x, "RFOPath", "");
 	GCodePath = getXMLString (x, "GCodePath", "");
+	SettingsPath = getXMLString (x, "SettingsPath", "");
 
 	y = getVariable (x, "m_iSerialSpeed", "19200");
 	if(y)	m_iSerialSpeed = y->GetValueInt();
@@ -700,6 +716,11 @@ void ProcessController::LoadXML(XMLElement *e)
 	if(y)	InfillRotation = y->GetValueFloat();
 	y = getVariable (x, "InfillRotationPrLayer", "90");
 	if(y)	InfillRotationPrLayer = y->GetValueFloat();
+	y = getVariable (x, "AltInfillDistance", "2");
+	if(y) AltInfillDistance = y->GetValueFloat();
+
+	AltInfillLayersText = getXMLString (x, "AltInfillLayers", "");
+
 	y = getVariable (x, "Optimization", "0.05");
 	if(y)	Optimization = y->GetValueFloat();
 	y = getVariable (x, "ReceivingBufferSize", "4");
@@ -990,3 +1011,58 @@ void ProcessController::BindLua(lua_State *myLuaState)
 #endif // ENABLE_LUA
 }
 */
+
+
+void ProcessController::GetAltInfillLayers(vector<int>& layers, uint layerCount) const
+{
+	vector<string> numstrs;
+	boost::algorithm::split(numstrs, AltInfillLayersText, boost::is_any_of(","));
+
+	vector<string>::iterator numstr_i;
+	for (numstr_i = numstrs.begin(); numstr_i != numstrs.end(); numstr_i++)
+	{
+		int num;
+		int retval = sscanf((*numstr_i).c_str(), "%d", &num);
+		if (retval == 1)
+		{
+			if (num < 0)
+			{
+				num += layerCount;
+			}
+
+			layers.push_back(num);
+		}
+	}
+}
+
+void ProcessController::SaveBuffers()
+{
+	Fl_Text_Buffer* buffer = gui->GCodeStart->buffer();
+	char* pText = buffer->text();
+	GCodeStartText = string(pText);
+	free(pText);
+
+	buffer = gui->GCodeLayer->buffer();
+	pText = buffer->text();
+	GCodeLayerText = string(pText);
+	free(pText);
+
+	buffer = gui->GCodeEnd->buffer();
+	pText = buffer->text();
+	GCodeEndText = string(pText);
+	free(pText);
+
+	AltInfillLayersText = string(gui->AltInfillLayersInput->value());
+}
+
+void ProcessController::SaveSettings()
+{
+	SaveBuffers();
+	SaveXML();
+}
+
+void ProcessController::SaveSettingsAs(string path)
+{
+	SaveBuffers();
+	SaveXML(path);
+}
