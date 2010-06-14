@@ -74,8 +74,6 @@ void GCode::Read(string filename)
 		if(buffer.find( ";", 0) != string::npos)	// COMMENT
 			continue;
 
-		int a=0;
-
 		Command command;
 
 		if( buffer.find( "G21", 0) != string::npos )	//Coordinated Motion
@@ -223,9 +221,6 @@ void GCode::draw(const ProcessController &PC)
 		switch(commands[i].Code)
 		{
 		case SETSPEED:
-			{
-				int a=0;
-			}
 		case ZMOVE:
 		case EXTRUDERON:
 			extruderon = true;
@@ -372,6 +367,7 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 			if(commands[i].where.z != LastPos.z)
 				oss << "Z" << commands[i].where.z << " ";
 			if(commands[i].e != lastE)
+			{
 				if(UseIncrementalEcode)	// in incremental mode, the same is nothing
 					{
 					if(commands[i].e != lastE)
@@ -382,6 +378,7 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 					if(commands[i].e != 0.0f)
 						oss << "E" << commands[i].e << " ";
 					}
+			}
 			oss << "F" << commands[i].f;
 			if(commands[i].comment.length() != 0)
 				oss << " ;" << commands[i].comment << "\n";
@@ -438,13 +435,13 @@ void GCode::Write(string filename)
 
 	switch(result)
 	{
-	case 0:	// Succes
+	case 0:	// Success
 		break;
-	case 1:	//Open for write failed
-		fl_alert("Error saving GCode file, error creating file.", "That's odd, I'll check the output dir.");
+	case 1:	// Open for write failed
+		fl_alert("Error saving GCode file, error creating file.");
 		break;
 	case 2: // Partially saved file
-		fl_alert("Error saving GCode file, while writing file, is the disk full?.", "I'll take a look at it.");
+		fl_alert("Error saving GCode file, while writing file, is the disk full?.");
 		break;
 	}
 
