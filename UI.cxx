@@ -130,19 +130,7 @@ void GUI::cb_RotateZButton(Fl_Button* o, void* v) {
 }
 
 void GUI::cb_Save1_i(Fl_Button*, void*) {
-  Fl_Text_Buffer* buffer = GCodeStart->buffer();
-char* pText = buffer->text();
-MVC->ProcessControl.GCodeStartText = string(pText);
-free(pText);
-buffer = GCodeLayer->buffer();
-pText = buffer->text();
-MVC->ProcessControl.GCodeLayerText = string(pText);
-free(pText);
-buffer = GCodeEnd->buffer();
-pText = buffer->text();
-MVC->ProcessControl.GCodeEndText = string(pText);
-free(pText);
-MVC->ProcessControl.SaveXML();
+  MVC->ProcessControl.SaveSettings();
 }
 void GUI::cb_Save1(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Save1_i(o,v);
@@ -279,6 +267,47 @@ void GUI::cb_Duplicate_i(Fl_Button*, void*) {
 }
 void GUI::cb_Duplicate(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Duplicate_i(o,v);
+}
+
+void GUI::cb_Save3_i(Fl_Button*, void*) {
+  Fl_File_Chooser chooser(MVC->ProcessControl.SettingsPath.c_str(), "*.xml", Fl_File_Chooser::SINGLE|Fl_File_Chooser::CREATE, "Save Settings As...");
+chooser.show();
+while (chooser.shown())
+Fl::wait();
+if(chooser.value() == 0)
+return;
+std::string dir(chooser.value());
+
+
+if(dir.length())
+{
+MVC->ProcessControl.SettingsPath = dir;
+MVC->ProcessControl.SaveSettingsAs(dir);
+};
+}
+void GUI::cb_Save3(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Save3_i(o,v);
+}
+
+void GUI::cb_Load4_i(Fl_Button*, void*) {
+  Fl_File_Chooser chooser(MVC->ProcessControl.SettingsPath.c_str(), "*.xml", Fl_File_Chooser::SINGLE, "Load settings as...");
+chooser.show();
+while (chooser.shown())
+Fl::wait();
+if(chooser.value() == 0)
+return;
+std::string dir(chooser.value());
+
+
+if(dir.length())
+{
+MVC->ProcessControl.SettingsPath = dir;
+MVC->ProcessControl.LoadXML(dir);
+MVC->CopySettingsToGUI();
+};
+}
+void GUI::cb_Load4(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load4_i(o,v);
 }
 
 void GUI::cb_MarginX_i(Fl_Value_Input* o, void*) {
@@ -494,6 +523,20 @@ void GUI::cb_OptimizationSlider(Fl_Value_Slider* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_OptimizationSlider_i(o,v);
 }
 
+void GUI::cb_AltInfillLayersInput_i(Fl_Input* o, void*) {
+  MVC->SetAltInfillLayersText(o->value());
+}
+void GUI::cb_AltInfillLayersInput(Fl_Input* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_AltInfillLayersInput_i(o,v);
+}
+
+void GUI::cb_AltInfillDistanceSlider_i(Fl_Value_Slider* o, void*) {
+  MVC->SetAltInfillDistance(o->value());
+}
+void GUI::cb_AltInfillDistanceSlider(Fl_Value_Slider* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_AltInfillDistanceSlider_i(o,v);
+}
+
 void GUI::cb_RaftMaterialPrDistanceRatioSlider_i(Fl_Value_Slider* o, void*) {
   MVC->SetRaftMaterialPrDistanceRatio(o->value());
 }
@@ -600,11 +643,11 @@ void GUI::cb_Preview(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Preview_i(o,v);
 }
 
-void GUI::cb_Load4_i(Fl_Button*, void*) {
+void GUI::cb_Load5_i(Fl_Button*, void*) {
   FileChooser::ioDialog (MVC, FileChooser::OPEN, FileChooser::GCODE);
 }
-void GUI::cb_Load4(Fl_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load4_i(o,v);
+void GUI::cb_Load5(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Load5_i(o,v);
 }
 
 void GUI::cb_Convert1_i(Fl_Button*, void*) {
@@ -614,11 +657,11 @@ void GUI::cb_Convert1(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Convert1_i(o,v);
 }
 
-void GUI::cb_Save3_i(Fl_Button*, void*) {
+void GUI::cb_Save4_i(Fl_Button*, void*) {
   FileChooser::ioDialog (MVC, FileChooser::SAVE, FileChooser::GCODE);
 }
-void GUI::cb_Save3(Fl_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Save3_i(o,v);
+void GUI::cb_Save4(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->user_data()))->cb_Save4_i(o,v);
 }
 
 void GUI::cb_DisplayPolygonsButton_i(Fl_Light_Button* o, void*) {
@@ -1449,11 +1492,11 @@ void GUI::cb_Test(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_Test_i(o,v);
 }
 
-void GUI::cb_Save4_i(Fl_Button*, void*) {
+void GUI::cb_Save5_i(Fl_Button*, void*) {
   MVC->SaveCustomButton();
 }
-void GUI::cb_Save4(Fl_Button* o, void* v) {
-  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_Save4_i(o,v);
+void GUI::cb_Save5(Fl_Button* o, void* v) {
+  ((GUI*)(o->parent()->parent()->parent()->parent()->parent()->user_data()))->cb_Save5_i(o,v);
 }
 
 void GUI::cb_ConnectToPrinterButton_i(Fl_Light_Button* o, void*) {
@@ -1493,21 +1536,21 @@ void GUI::cb_ContinueButton(Fl_Light_Button* o, void* v) {
 }
 
 void GUI::cb_Errors_i(Fl_Light_Button* o, void*) {
-  MVC->serial.SetDebugMask(DEBUG_ERRORS, (bool)o->value());
+  MVC->serial->SetDebugMask(DEBUG_ERRORS, (bool)o->value());
 }
 void GUI::cb_Errors(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Errors_i(o,v);
 }
 
 void GUI::cb_Info_i(Fl_Light_Button* o, void*) {
-  MVC->serial.SetDebugMask(DEBUG_INFO, (bool)o->value());
+  MVC->serial->SetDebugMask(DEBUG_INFO, (bool)o->value());
 }
 void GUI::cb_Info(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Info_i(o,v);
 }
 
 void GUI::cb_Echo_i(Fl_Light_Button* o, void*) {
-  MVC->serial.SetDebugMask(DEBUG_ECHO, (bool)o->value());
+  MVC->serial->SetDebugMask(DEBUG_ECHO, (bool)o->value());
 }
 void GUI::cb_Echo(Fl_Light_Button* o, void* v) {
   ((GUI*)(o->parent()->parent()->parent()->parent()->user_data()))->cb_Echo_i(o,v);
@@ -1572,6 +1615,7 @@ GUI::GUI() {
       Tabs->align(FL_ALIGN_TOP_LEFT);
       Tabs->when(FL_WHEN_CHANGED);
       { Fl_Group* o = new Fl_Group(715, 25, 555, 765, "Simple");
+        o->hide();
         { Fl_Group* o = new Fl_Group(720, 157, 530, 139, "Model");
           o->box(FL_ENGRAVED_FRAME);
           o->color(FL_DARK3);
@@ -1649,7 +1693,6 @@ GUI::GUI() {
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(715, 25, 560, 790, "Input file");
-        o->hide();
         { Fl_Button* o = new Fl_Button(725, 35, 130, 25, "Load STL");
           o->callback((Fl_Callback*)cb_Load2);
         } // Fl_Button* o
@@ -1685,7 +1728,7 @@ GUI::GUI() {
         { Fl_Button* o = new Fl_Button(725, 65, 130, 25, "Load RFO");
           o->callback((Fl_Callback*)cb_Load3);
         } // Fl_Button* o
-        { RFP_Browser = new Flu_Tree_Browser(725, 95, 355, 440, "RFO file");
+        { RFP_Browser = new Flu_Tree_Browser(725, 125, 355, 440, "RFO file");
           RFP_Browser->box(FL_UP_BOX);
           RFP_Browser->color(FL_BACKGROUND_COLOR);
           RFP_Browser->selection_color(FL_BACKGROUND_COLOR);
@@ -1793,14 +1836,20 @@ GUI::GUI() {
         { Fl_Button* o = new Fl_Button(855, 65, 135, 25, "New RFO Object");
           o->callback((Fl_Callback*)cb_New);
         } // Fl_Button* o
-        { Fl_Button* o = new Fl_Button(1130, 65, 135, 25, "Save RFO");
+        { Fl_Button* o = new Fl_Button(1130, 95, 135, 25, "Save RFO");
           o->callback((Fl_Callback*)cb_Save2);
         } // Fl_Button* o
-        { Fl_Button* o = new Fl_Button(995, 65, 135, 25, "Delete");
+        { Fl_Button* o = new Fl_Button(995, 95, 135, 25, "Delete");
           o->callback((Fl_Callback*)cb_Delete);
         } // Fl_Button* o
-        { Fl_Button* o = new Fl_Button(1130, 95, 135, 25, "Duplicate");
+        { Fl_Button* o = new Fl_Button(1130, 125, 135, 25, "Duplicate");
           o->callback((Fl_Callback*)cb_Duplicate);
+        } // Fl_Button* o
+        { Fl_Button* o = new Fl_Button(1130, 65, 135, 25, "Save Settings As...");
+          o->callback((Fl_Callback*)cb_Save3);
+        } // Fl_Button* o
+        { Fl_Button* o = new Fl_Button(995, 65, 135, 25, "Load Settings...");
+          o->callback((Fl_Callback*)cb_Load4);
         } // Fl_Button* o
         o->end();
       } // Fl_Group* o
@@ -1984,7 +2033,7 @@ GUI::GUI() {
         } // Fl_Group* o
         PrinterDefinitionTab->end();
       } // Fl_Group* PrinterDefinitionTab
-      { Fl_Group* o = new Fl_Group(715, 25, 540, 755, "Print options");
+      { Fl_Group* o = new Fl_Group(710, 25, 550, 755, "Print options");
         o->hide();
         { Fl_Group* o = new Fl_Group(720, 50, 535, 170, "Infill");
           o->box(FL_ENGRAVED_FRAME);
@@ -2037,14 +2086,14 @@ GUI::GUI() {
           } // Fl_Value_Slider* ShellCountSlider
           o->end();
         } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(720, 240, 535, 110, "Shrinking quality");
+        { Fl_Group* o = new Fl_Group(720, 380, 535, 110, "Shrinking quality");
           o->box(FL_ENGRAVED_FRAME);
           o->color((Fl_Color)2);
-          { shrinkAlgorithm = new Fl_Choice(865, 255, 270, 25, "Shrinking Algorithm:");
+          { shrinkAlgorithm = new Fl_Choice(865, 395, 270, 25, "Shrinking Algorithm:");
             shrinkAlgorithm->down_box(FL_BORDER_BOX);
             shrinkAlgorithm->menu(menu_shrinkAlgorithm);
           } // Fl_Choice* shrinkAlgorithm
-          { OptimizationSlider = new Fl_Value_Slider(730, 320, 515, 20, "Optimization");
+          { OptimizationSlider = new Fl_Value_Slider(730, 460, 515, 20, "Optimization");
             OptimizationSlider->type(5);
             OptimizationSlider->selection_color((Fl_Color)2);
             OptimizationSlider->minimum(0.001);
@@ -2054,6 +2103,33 @@ GUI::GUI() {
             OptimizationSlider->callback((Fl_Callback*)cb_OptimizationSlider);
             OptimizationSlider->align(FL_ALIGN_TOP_LEFT);
           } // Fl_Value_Slider* OptimizationSlider
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(720, 240, 535, 120, "Alternate Infill Layers");
+          o->box(FL_ENGRAVED_FRAME);
+          o->color(FL_DARK3);
+          { AltInfillLayersInput = new Fl_Input(780, 290, 465, 25, "Layers");
+            AltInfillLayersInput->callback((Fl_Callback*)cb_AltInfillLayersInput);
+          } // Fl_Input* AltInfillLayersInput
+          { Fl_Text_Display* o = new Fl_Text_Display(720, 245, 10, 25, "Comma separated layer numbers, 0 is the lowest layer, -1 is the highest");
+            o->box(FL_NO_BOX);
+            o->align(FL_ALIGN_RIGHT);
+          } // Fl_Text_Display* o
+          { Fl_Text_Display* o = new Fl_Text_Display(720, 265, 10, 25, "(eg. 0,1,-1,-2 means the top and bottom two layers)");
+            o->box(FL_NO_BOX);
+            o->align(FL_ALIGN_RIGHT);
+          } // Fl_Text_Display* o
+          { AltInfillDistanceSlider = new Fl_Value_Slider(735, 330, 515, 20, "Infill Distance");
+            AltInfillDistanceSlider->type(5);
+            AltInfillDistanceSlider->selection_color((Fl_Color)2);
+            AltInfillDistanceSlider->minimum(0.1);
+            AltInfillDistanceSlider->maximum(10);
+            AltInfillDistanceSlider->step(0.1);
+            AltInfillDistanceSlider->value(2);
+            AltInfillDistanceSlider->textsize(14);
+            AltInfillDistanceSlider->callback((Fl_Callback*)cb_AltInfillDistanceSlider);
+            AltInfillDistanceSlider->align(FL_ALIGN_TOP_LEFT);
+          } // Fl_Value_Slider* AltInfillDistanceSlider
           o->end();
         } // Fl_Group* o
         o->end();
@@ -2240,7 +2316,7 @@ e rest of the print.");
       { Fl_Group* o = new Fl_Group(715, 25, 540, 790, "GCode");
         o->hide();
         { Fl_Button* o = new Fl_Button(715, 75, 145, 25, "Load Gcode");
-          o->callback((Fl_Callback*)cb_Load4);
+          o->callback((Fl_Callback*)cb_Load5);
         } // Fl_Button* o
         { GCodeLengthText = new Fl_Output(865, 76, 225, 24);
         } // Fl_Output* GCodeLengthText
@@ -2276,7 +2352,7 @@ e rest of the print.");
           o->end();
         } // Fl_Tabs* o
         { Fl_Button* o = new Fl_Button(1095, 75, 145, 25, "Save Gcode");
-          o->callback((Fl_Callback*)cb_Save3);
+          o->callback((Fl_Callback*)cb_Save4);
         } // Fl_Button* o
         o->end();
       } // Fl_Group* o
@@ -2950,7 +3026,7 @@ e rest of the print.");
               o->callback((Fl_Callback*)cb_Test);
             } // Fl_Button* o
             { Fl_Button* o = new Fl_Button(1130, 260, 64, 25, "Save");
-              o->callback((Fl_Callback*)cb_Save4);
+              o->callback((Fl_Callback*)cb_Save5);
             } // Fl_Button* o
             o->end();
           } // Fl_Group* o
@@ -3028,11 +3104,11 @@ e rest of the print.");
         } // Fl_Return_Button* o
         PrintTab->end();
       } // Fl_Group* PrintTab
-      { Fl_Group* o = new Fl_Group(715, 25, 545, 805, "Lua");
+      { Fl_Group* o = new Fl_Group(715, 25, 545, 805, "lua");
         o->hide();
-        { Fl_Group* o = new Fl_Group(715, 45, 535, 785, "Lua script");
-          o->box(FL_ENGRAVED_FRAME);
-          o->color(FL_DARK3);
+        { LuaTab = new Fl_Group(715, 45, 535, 785, "Lua script");
+          LuaTab->box(FL_ENGRAVED_FRAME);
+          LuaTab->color(FL_DARK3);
           { Fl_Text_Editor* o = LuaScriptEditor = new Fl_Text_Editor(720, 80, 525, 735, "LUA script:");
             LuaScriptEditor->align(FL_ALIGN_TOP_LEFT);
             Fl_Text_Buffer *luascript = new Fl_Text_Buffer();
@@ -3041,8 +3117,8 @@ e rest of the print.");
           { RunLuaButton = new Fl_Button(1120, 50, 125, 25, "Run");
             RunLuaButton->callback((Fl_Callback*)cb_RunLuaButton);
           } // Fl_Button* RunLuaButton
-          o->end();
-        } // Fl_Group* o
+          LuaTab->end();
+        } // Fl_Group* LuaTab
         o->end();
         Fl_Group::current()->resizable(o);
       } // Fl_Group* o
@@ -3061,6 +3137,9 @@ void GUI::show(int argc, char **argv) {
   Fl::visual( FL_DOUBLE | FL_RGB);
 Fl::scheme("plastic");
 MVC->ReadStl("C:/code/printed-parts/z-tensioner_1off.stl");
+#ifndef ENABLE_LUA
+    Tabs->remove(LuaTab->parent());
+#endif
 mainWindow->show(argc, argv);
 MVC->init();
 MVC->CopySettingsToGUI();
@@ -3073,7 +3152,7 @@ extern GUI* gui;
 void TempReadTimer(void *) {
   if(gui->TempReadingEnabledButton->value())
 {
-MVC->serial.SendNow("M105");
+MVC->serial->SendNow("M105");
 Fl::repeat_timeout(MVC->gui ? MVC->ProcessControl.TempUpdateSpeed: 10.0f , &TempReadTimer);
 }
 }

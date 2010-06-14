@@ -66,7 +66,7 @@ clean:
 	rm -f $(OBJECTS) $(EXECUTABLE) $(GENERATED)
 
 VER=0.1.0
-PKG_NAME=rep-snapper
+PKG_NAME=repsnapper
 PKG_TARBALL=$(PKG_NAME)-$(VER).tar.bz2
 
 dist:

@@ -6,7 +6,9 @@
 #pragma warning( disable : 4311 4312 4244 4267 4800)
 class ModelViewController;
 #include <FL/Fl_Double_Window.H>
+#include "config.h"
 #include "stdafx.h"
+#include "File.h"
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -175,6 +177,10 @@ private:
   static void cb_Delete(Fl_Button*, void*);
   void cb_Duplicate_i(Fl_Button*, void*);
   static void cb_Duplicate(Fl_Button*, void*);
+  void cb_Save3_i(Fl_Button*, void*);
+  static void cb_Save3(Fl_Button*, void*);
+  void cb_Load4_i(Fl_Button*, void*);
+  static void cb_Load4(Fl_Button*, void*);
 public:
   Fl_Group *PrinterDefinitionTab;
   Fl_Value_Input *VolumeX;
@@ -306,6 +312,16 @@ private:
   void cb_OptimizationSlider_i(Fl_Value_Slider*, void*);
   static void cb_OptimizationSlider(Fl_Value_Slider*, void*);
 public:
+  Fl_Input *AltInfillLayersInput;
+private:
+  void cb_AltInfillLayersInput_i(Fl_Input*, void*);
+  static void cb_AltInfillLayersInput(Fl_Input*, void*);
+public:
+  Fl_Value_Slider *AltInfillDistanceSlider;
+private:
+  void cb_AltInfillDistanceSlider_i(Fl_Value_Slider*, void*);
+  static void cb_AltInfillDistanceSlider(Fl_Value_Slider*, void*);
+public:
   Fl_Value_Slider *RaftMaterialPrDistanceRatioSlider;
 private:
   void cb_RaftMaterialPrDistanceRatioSlider_i(Fl_Value_Slider*, void*);
@@ -377,8 +393,8 @@ private:
   static void cb_RaftEnableButton(Fl_Light_Button*, void*);
   void cb_Preview_i(Fl_Light_Button*, void*);
   static void cb_Preview(Fl_Light_Button*, void*);
-  void cb_Load4_i(Fl_Button*, void*);
-  static void cb_Load4(Fl_Button*, void*);
+  void cb_Load5_i(Fl_Button*, void*);
+  static void cb_Load5(Fl_Button*, void*);
 public:
   Fl_Output *GCodeLengthText;
 private:
@@ -390,8 +406,8 @@ public:
   Fl_Text_Editor *GCodeEnd;
   Fl_Text_Editor *GCodeResult;
 private:
-  void cb_Save3_i(Fl_Button*, void*);
-  static void cb_Save3(Fl_Button*, void*);
+  void cb_Save4_i(Fl_Button*, void*);
+  static void cb_Save4(Fl_Button*, void*);
 public:
   Fl_Light_Button *DisplayPolygonsButton;
 private:
@@ -850,8 +866,8 @@ private:
   static void cb_CustomButtonSelectorSlider(Fl_Value_Slider*, void*);
   void cb_Test_i(Fl_Button*, void*);
   static void cb_Test(Fl_Button*, void*);
-  void cb_Save4_i(Fl_Button*, void*);
-  static void cb_Save4(Fl_Button*, void*);
+  void cb_Save5_i(Fl_Button*, void*);
+  static void cb_Save5(Fl_Button*, void*);
 public:
   Fl_Light_Button *ConnectToPrinterButton;
 private:
@@ -898,6 +914,7 @@ private:
   void cb_Send_i(Fl_Return_Button*, void*);
   static void cb_Send(Fl_Return_Button*, void*);
 public:
+  Fl_Group *LuaTab;
   Fl_Text_Editor *LuaScriptEditor;
   Fl_Button *RunLuaButton;
 private:

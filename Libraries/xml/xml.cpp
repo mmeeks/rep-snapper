@@ -3,7 +3,7 @@
 #include "z.h"
 #endif
 
-#include "XML.H"
+#include "xml.h"
 
 
 #ifdef __WATCOMC__
