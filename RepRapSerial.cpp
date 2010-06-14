@@ -200,7 +200,7 @@ void RepRapSerial::SendNextLine()
 			oss << "no estimate";
 
 		std::string s = oss.str();
-		gui->ProgressBar->label(s.c_str());
+		gui->ProgressBar->copy_label(s.c_str());
 		Fl::unlock();
 		}
 

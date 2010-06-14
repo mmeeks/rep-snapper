@@ -91,7 +91,7 @@ public:
 			else if (param && (!strcmp (arg, "-s") ||
 					   !strcmp (arg, "--settings")))
 				settings_path = argv[++i];
-			else if (!strcmp (arg, "--no-gui"))
+			else if (!strcmp (arg, "-t") || !strcmp (arg, "--no-gui"))
 				use_gui = false;
 			else if (!strcmp (arg, "--help") || !strcmp (arg, "-h") ||
 				 !strcmp (arg, "/?"))
