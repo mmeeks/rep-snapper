@@ -208,7 +208,7 @@ void FileChooser::ioDialog (ModelViewController *mvc, Op o, Type t, bool dropRFO
     if (o == OPEN)
       mvc->ReadStl (file);
     else
-      fl_alert ("STL saving not yet implemented", "Sorry");
+      fl_alert ("STL saving not yet implemented");
     mvc->ProcessControl.STLPath = directory_path;
     break;
   }

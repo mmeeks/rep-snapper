@@ -437,7 +437,7 @@ int ModelViewController::handle(int event)
 		case FL_CLOSE:
 			if (fl_choice("Save settings ?", "Exit", "Save then exit", NULL))
 			{
-				int a=0;
+//				int a=0;
 //				ProcessControl.SaveXML();
 			}
 			break;
@@ -512,10 +512,10 @@ void ModelViewController::WriteGCode (string filename)
     case 0: // Succes
       break;
     case 1: // Open for write failed
-      fl_alert ("Error saving GCode file, error creating file.", "OK");
+      fl_alert ("Error saving GCode file, error creating file.");
       break;
     case 2: // Partially saved file
-      fl_alert ("Error saving GCode file, while writing file, is the disk full?.", "OK");
+      fl_alert ("Error saving GCode file, while writing file, is the disk full?.");
       break;
     }
 }
@@ -682,7 +682,7 @@ void ModelViewController::Restart()
 
 void ModelViewController::ContinuePauseButton()
 {
-	if( gui->ContinueButton->label() == "Pause" )
+	if( !strcmp (gui->ContinueButton->label(), "Pause") )
 	{
 		Pause();
 	}
@@ -695,7 +695,7 @@ void ModelViewController::ContinuePauseButton()
 
 void ModelViewController::PrintButton()
 {
-	if( gui->PrintButton->label() == "Print" )
+	if( !strcmp (gui->PrintButton->label(), "Print") )
 	{
 		Print();
 	}
