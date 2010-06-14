@@ -1,6 +1,6 @@
-GCode:
-	* 
+* openSUSE build service ... [!?]
 
+GCode:
 	Printer Temperature:
 		+ No toggle-able for this; why not - [ 235 ]
 		+ this is the 'M104'
@@ -58,36 +58,16 @@ Don't reverse at top speed for ages & break my extruder
 
 Have a 'calculate steps_per_mm' for geared extruders etc.
 
-
-
-** Native Linux File-selector:
-
-	+ create a new thread for gtk+
-	+ Problem:
-		+ X lock ...
-		+ so we need to take and release the fltk lock in there ...
-	+ 
-
-
-	Fl::run():
-		while (Fl::wait());
-
 * Fltk / gtk ...
-
 
 * Threading:
 	+ we should use the:
 		Fl::awake() method to throw stuff to the mainloop ...
 
-* Ascii STL support ...
-	+ fun ! +
-
-* openSUSE build service ... [!?]
 
 * Queue up patches removing affl headers - un-needed ... clean that up
 
 * Queue up file-chooser pieces ...
-
 
 
 ** sooo ! ...
