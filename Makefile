@@ -4,9 +4,10 @@
 
 CC=gcc
 CXX=g++
-CFLAGS=-c -O0 -g -Wall
-UNAME := $(shell uname)
 LIB_DIR=../Libraries
+UNAME := $(shell uname)
+WARNING_FLAGS = -Wall -Wno-pragmas
+CFLAGS = -c -g -O2 $(WARNING_FLAGS)
 
 # Linux
 ifeq ($(UNAME),Linux)
@@ -42,7 +43,7 @@ HEADERS=ArcBall.h AsyncSerial.h Convert.h Flu_DND.h Flu_Enumerations.h \
 	Printer.h ProcessController.h RepRapSerial.h RFO.h search.h \
 	Serial.h stdafx.h stl.h triangle.h UI.h platform.h
 
-OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(subst .CPP,.o,$(SOURCES)))))
+OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(SOURCES))))
 
 EXECUTABLE=repsnapper
 
@@ -56,8 +57,6 @@ $(EXECUTABLE): $(OBJECTS)
 %.o:%.cxx
 	$(CXX) ${INC} $(CFLAGS) $< -o $@
 %.o:%.cpp
-	$(CXX) ${INC} $(CFLAGS) $< -o $@
-%.o:%.CPP # sexy XML.CPP naming ...
 	$(CXX) ${INC} $(CFLAGS) $< -o $@
 %.o:%.c
 	$(CC) ${INC} $(CFLAGS) $< -o $@

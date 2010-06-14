@@ -27,7 +27,8 @@
 #include "glutils.h"
 #include "RepRapSerial.h"
 
-enum SHRINK_QUALITY {SHRINK_FAST, SHRINK_NICE, SHRINK_LOGICK};
+enum SHRINK_QUALITY { SHRINK_FAST, SHRINK_NICE, SHRINK_LOGICK };
+enum FileType { TYPE_STL, TYPE_RFO, TYPE_GCODE, TYPE_AUTO };
 
 #pragma warning( disable : 4244 4267)
 
