@@ -589,6 +589,8 @@ void ModelViewController::CopySettingsToGUI()
 	gui->InfillDistanceSlider->value(ProcessControl.InfillDistance);
 	gui->InfillRotationSlider->value(ProcessControl.InfillRotation);
 	gui->InfillRotationPrLayerSlider->value(ProcessControl.InfillRotationPrLayer);
+	gui->AltInfillLayersInput->value(ProcessControl.AltInfillLayersText.c_str());
+	gui->AltInfillDistanceSlider->value(ProcessControl.AltInfillDistance);
 	gui->ExamineSlider->value(ProcessControl.Examine);
 
 	gui->ShellOnlyButton->value(ProcessControl.ShellOnly);

@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   AsyncSerial.cpp
  * Author: Terraneo Federico
  * Distributed under the Boost Software License, Version 1.0.
@@ -132,12 +132,32 @@ void AsyncSerial::readStart()
             asio::placeholders::bytes_transferred));
 }
 
+#ifdef __APPLE__
+void AsyncSerial::doRead()
+{
+    port_.async_read_some(asio::buffer(readBuffer_,readBufferSize),
+            bind(&AsyncSerial::readEnd,
+            this,
+            asio::placeholders::error,
+            asio::placeholders::bytes_transferred));
+}
+#endif
+
 void AsyncSerial::readEnd(const boost::system::error_code& error,
         size_t bytes_transferred)
 {
     if(error)
     {
-        //error can be true even because the serial port was closed.
+		#ifdef __APPLE__
+		if(error.value()==45)
+		{
+			//Bug on OS X, it might be necessary to repeat the setup
+			//http://osdir.com/ml/lib.boost.asio.user/2008-08/msg00004.html
+			doRead();
+			return;
+		}
+		#endif //__APPLE__
+       //error can be true even because the serial port was closed.
         //In this case it is not a real error, so ignore
         if(isOpen())
         {
@@ -146,7 +166,7 @@ void AsyncSerial::readEnd(const boost::system::error_code& error,
         }
     } else {
         if(callback_) callback_(readBuffer_,bytes_transferred);
-		OnEvent(readBuffer_,bytes_transferred);
+       	OnEvent(readBuffer_,bytes_transferred);
         readStart();
     }
 }
@@ -175,7 +195,7 @@ void AsyncSerial::writeEnd(const boost::system::error_code& error)
         {
             writeBuffer_.reset();
             writeBufferSize_=0;
-            
+
             return;
         }
         writeBufferSize_=writeQueue_.size();

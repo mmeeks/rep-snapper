@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "platform.h"
 #ifndef WIN32
 #  include <sys/time.h>

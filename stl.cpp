@@ -354,6 +354,10 @@ void STL::draw(const ProcessController &PC, float opasity)
 	if(PC.DisplayCuttingPlane)
 	{
 		uint LayerNr = 0;
+		uint LayerCount = (uint)ceil((Max.z+PC.LayerThickness*0.5f)/PC.LayerThickness);
+
+		vector<int> altInfillLayers;
+		PC.GetAltInfillLayers(altInfillLayers, LayerCount);
 
 		float zSize = (Max.z-Min.z);
 		float z=PC.CuttingPlaneValue*zSize+Min.z;
@@ -422,7 +426,15 @@ void STL::draw(const ProcessController &PC, float opasity)
 								infillCuttingPlane.ShrinkLogick(PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane, false, PC.ShellCount);
 								break;
 							}
-							infillCuttingPlane.CalcInFill(infill, LayerNr, z, PC.InfillDistance, PC.InfillRotation, PC.InfillRotationPrLayer, PC.DisplayDebuginFill);
+
+							// check if this if a layer we should use the alternate infill distance on
+							float infillDistance = PC.InfillDistance;
+							if (std::find(altInfillLayers.begin(), altInfillLayers.end(), LayerNr) != altInfillLayers.end())
+							{
+								infillDistance = PC.AltInfillDistance;
+							}
+
+							infillCuttingPlane.CalcInFill(infill, LayerNr, z, infillDistance, PC.InfillRotation, PC.InfillRotationPrLayer, PC.DisplayDebuginFill);
 						}
 						glColor4f(1,1,0,1);
 						glPointSize(5);

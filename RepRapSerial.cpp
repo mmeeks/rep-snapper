@@ -172,8 +172,8 @@ void RepRapSerial::SendNextLine()
 		unsigned long time = Platform::getTickCount();
 		if (startTime == 0)
 			startTime = time;
-		// it is just wasteful to update the GUI > 10 times per sec.
-		if (time - lastUpdateTime > 100) {
+		// it is just wasteful to update the GUI > once per sec.
+		if (time - lastUpdateTime > 1000) {
 			gui->ProgressBar->value ((float)m_iLineNr);
 
 		Fl::lock();
@@ -191,11 +191,11 @@ void RepRapSerial::SendNextLine()
 		std::stringstream oss;
 
 		if (remaining_hours > 0)
-			oss << "%dh" << remaining_hours;
+			oss << setw(2) << remaining_hours << "h";
 		if (remaining_minutes > 0 || oss.tellp())
-			oss << setw(2) << remaining_minutes;
+			oss << setw(2) << remaining_minutes << "m";
 		if (remaining_seconds > 0 || oss.tellp())
-			oss << setw(2) << remaining_seconds;
+			oss << setw(2) << remaining_seconds << "s";
 		if (!oss.tellp())
 			oss << "no estimate";
 
@@ -422,7 +422,6 @@ void RepRapSerial::SetDebugMask()
  */
 void RepRapSerial::OnEvent(char* data, size_t dwBytesRead)
 {
-	int a=0;
 	// Read data, until there is nothing left
 	data[dwBytesRead] = '\0';
 	InBuffer += data;		// Buffer data for later analysis

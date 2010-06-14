@@ -37,7 +37,10 @@ typedef unsigned int        UINT;
 #include <stdio.h>
 #include <FL/Fl.H>
 #include <vmmlib/vmmlib.h>
-#include <alloca.h>
+#ifndef WIN32
+// whatever this is it doesn't exist in windows and doesn't appear to be needed
+#  include <alloca.h>
+#endif
 #include "math.h"                                               // Needed for sqrtf
 #include "ArcBall.h"
 
