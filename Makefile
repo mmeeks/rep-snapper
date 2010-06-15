@@ -19,8 +19,9 @@ endif
 
 # Mac
 ifeq ($(UNAME),Darwin)
-# assumes you installed MacPorts http://www.macports.org and run:
+# assumes you have installed MacPorts from http://www.macports.org and run:
 # sudo port install boost fltk lua
+    CFLAGS=-c -g -O2 -Wall # gcc on mac doesn't support no-pragmas
     OPT_DIR=/opt/local
 	INC=-I$(OPT_DIR)/include -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)/ann_1.1.1/include -I$(LIB_DIR)
 	LDFLAGS=-L$(OPT_DIR)/lib -lpthread -lfltk -lfltk_forms -lfltk_gl -L$(LIB_DIR)/xml
