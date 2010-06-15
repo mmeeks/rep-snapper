@@ -283,6 +283,7 @@ vector<string> ModelViewController::CheckComPorts()
 				Fl::unlock();
 			}
 		}
+		closedir(d);
 	}
 #endif
 
