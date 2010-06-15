@@ -20,7 +20,9 @@
 #define _WIN32_WINNT 0x0501	// Change this to the appropriate value to target other versions of Windows.
 #endif						
 
-#pragma warning( disable : 4311 4312 4244 4267 4800)
+#ifdef WIN32
+#  pragma warning( disable : 4311 4312 4244 4267 4800)
+#endif
 typedef unsigned int        uint;
 
 #define DEBUG_ECHO (1<<0)

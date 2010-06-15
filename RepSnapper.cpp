@@ -139,7 +139,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
   
-	for (int i = 0; i < opts.files.size(); i++)
+	for (uint i = 0; i < opts.files.size(); i++)
 		MVC->ReadStl (opts.files[i].c_str());
 
 	char WindowTitle[100] = "GCodeView";

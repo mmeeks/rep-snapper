@@ -1,7 +1,9 @@
 # data file for the Fltk User Interface Designer (fluid)
 header_name {.h} 
 code_name {.cxx}
-decl {\#pragma warning( disable : 4311 4312 4244 4267 4800)} {public global
+decl {\#ifdef WIN32
+\#  pragma warning( disable : 4311 4312 4244 4267 4800)
+\#endif} {public global
 } 
 
 decl {class ModelViewController;} {public global

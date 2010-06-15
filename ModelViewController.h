@@ -30,7 +30,9 @@
 enum SHRINK_QUALITY { SHRINK_FAST, SHRINK_NICE, SHRINK_LOGICK };
 enum FileType { TYPE_STL, TYPE_RFO, TYPE_GCODE, TYPE_AUTO };
 
-#pragma warning( disable : 4244 4267)
+#ifdef WIN32
+#  pragma warning( disable : 4244 4267)
+#endif
 
 // Construct a model and a view, and link them together.
 

@@ -20,7 +20,8 @@
 #include <boost/numeric/conversion/bounds.hpp> 
 
 #ifdef WIN32
-	#include <GL/glut.h>	// Header GLUT Library
+#  include <GL/glut.h>	// Header GLUT Library
+#  pragma warning( disable : 4018 4267)
 #endif
 
 #include <iostream>
@@ -35,9 +36,7 @@ extern "C" {
 #ifndef WIN32
 }
 #endif
-//#include <ANN/ANN.h>
 
-#pragma warning( disable : 4018 4267)
 /*
 extern "C" {
 	#include "triangle.h"

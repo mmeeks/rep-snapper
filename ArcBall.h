@@ -20,11 +20,10 @@
 #ifndef _ArcBall_h
 #define _ArcBall_h
 
-
-#pragma comment( lib, "opengl32.lib" )								// Search For OpenGL32.lib While Linking
-#pragma comment( lib, "glu32.lib" )									// Search For GLu32.lib While Linking
-//#pragma comment( lib, "glaux.lib" )									// Search For GLaux.lib While Linking
-
+#ifdef WIN32
+#  pragma comment( lib, "opengl32.lib" )								// Search For OpenGL32.lib While Linking
+#  pragma comment( lib, "glu32.lib" )									// Search For GLu32.lib While Linking
+#endif
 
 // 8<--Snip here if you have your own math types/funcs-->8 
 
