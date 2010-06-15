@@ -7,7 +7,7 @@ CXX=g++
 LIB_DIR=../Libraries
 UNAME := $(shell uname)
 WARNING_FLAGS = -Wall -Wno-pragmas
-CFLAGS = -c -g -O2 $(WARNING_FLAGS)
+CFLAGS = -c -g -O2 $(WARNING_FLAGS) #Remember to update in Mac OS X section too.
 
 # Linux
 ifeq ($(UNAME),Linux)
@@ -21,7 +21,7 @@ endif
 ifeq ($(UNAME),Darwin)
 # assumes you have installed MacPorts from http://www.macports.org and run:
 # sudo port install boost fltk lua
-    CFLAGS=-c -g -O2 -Wall # gcc on mac doesn't support no-pragmas
+    CFLAGS=-c -g -O2 -Wall # gcc on mac doesn't support no-pragmas. Remember to update the global CFLAGS too if you're adding something that should also be added for the other platform(s).
     OPT_DIR=/opt/local
 	INC=-I$(OPT_DIR)/include -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)/ann_1.1.1/include -I$(LIB_DIR)
 	LDFLAGS=-L$(OPT_DIR)/lib -lpthread -lfltk -lfltk_forms -lfltk_gl -L$(LIB_DIR)/xml
@@ -50,7 +50,7 @@ EXECUTABLE=repsnapper
 
 all: $(SOURCES) $(EXECUTABLE)
 
-$(EXECUTABLE): $(OBJECTS)
+$(EXECUTABLE): xml_lib $(OBJECTS)
 	$(CXX) ${INC} $(OBJECTS) $(LDFLAGS) -o $@ 
 
 %.cxx %.h:%.fl
@@ -62,8 +62,12 @@ $(EXECUTABLE): $(OBJECTS)
 %.o:%.c
 	$(CC) ${INC} $(CFLAGS) $< -o $@
 
+xml_lib:
+	make -C ../Libraries/xml/ all
+
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE) $(GENERATED)
+	make -C ../Libraries/xml/ clean
 
 # make update-deps will re-write the dependenciues below
 update-depends:
