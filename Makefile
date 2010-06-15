@@ -67,7 +67,7 @@ xml_lib:
 
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE) $(GENERATED)
-	make -C ../Libraries/xml/ clean
+	make -i -C ../Libraries/xml/ clean
 
 # make update-deps will re-write the dependenciues below
 update-depends:
