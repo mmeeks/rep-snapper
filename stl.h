@@ -27,13 +27,14 @@
 #include <vmmlib/vmmlib.h>
 
 #ifdef __GNUC__
-#include <ext/hash_map>
+#  define _BACKWARD_BACKWARD_WARNING_H 1 // kill annoying warning
+#  include <ext/hash_map>
 namespace std
 {
- using namespace __gnu_cxx;
+  using namespace __gnu_cxx;
 }
 #else
-#include <hash_map>
+#  include <hash_map>
 using namespace stdext;
 #endif
 

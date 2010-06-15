@@ -101,7 +101,7 @@ int off_write ( FILE *fileout );
 int pov_write ( FILE *fileout );
 int rcol_find ( float a[][200000], int m, int n, float r[] );	// the 200000 is the define COR3_MAX in incon.cpp
 float rgb_to_hue ( float r, float g, float b );
-bool s_eqi ( char* string1, char* string2 );
+bool s_eqi ( const char* string1, const char* string2 );
 int s_len_trim ( char *s );
 int s_to_i4 ( char *s, int *last, bool *error );
 bool s_to_i4vec ( char *s, int n, int ivec[] );
@@ -141,7 +141,7 @@ unsigned long int tds_read_unknown_section ( FILE *filein );
 unsigned long int tds_read_view_section ( FILE *filein, int *views_read );
 unsigned long int tds_read_vp_section ( FILE *filein, int *views_read );
 int tds_write ( FILE *fileout );
-int tds_write_string ( FILE *fileout, char *string );
+int tds_write_string ( FILE *fileout, const char *string );
 int tds_write_u_short_int ( FILE *fileout, unsigned short int int_val );
 int tec_write ( FILE *fileout );
 void tmat_init ( float a[4][4] );

@@ -223,7 +223,7 @@ int off_write ( FILE *fileout );
 int pov_write ( FILE *fileout );
 int rcol_find ( float a[][COR3_MAX], int m, int n, float r[] );
 float rgb_to_hue ( float r, float g, float b );
-bool s_eqi ( char* string1, char* string2 );
+bool s_eqi ( const char* string1, const char* string2 );
 int s_len_trim ( char *s );
 int s_to_i4 ( char *s, int *last, bool *error );
 bool s_to_i4vec ( char *s, int n, int ivec[] );
@@ -263,7 +263,7 @@ unsigned long int tds_read_unknown_section ( FILE *filein );
 unsigned long int tds_read_view_section ( FILE *filein, int *views_read );
 unsigned long int tds_read_vp_section ( FILE *filein, int *views_read );
 int tds_write ( FILE *fileout );
-int tds_write_string ( FILE *fileout, char *string );
+int tds_write_string ( FILE *fileout, const char *string );
 int tds_write_u_short_int ( FILE *fileout, unsigned short int int_val );
 int tec_write ( FILE *fileout );
 void tmat_init ( float a[4][4] );
@@ -443,7 +443,7 @@ int ase_read ( FILE *filein )
 	float gval;
 	int   i;
 	int   iface;
-	int   ivert;
+	int   ivert = 0;
 	int   iword;
 	int   level;
 	char *next;
@@ -2796,7 +2796,7 @@ bool data_read ( )
 //
 {
 	ifstream file_in;
-	FILE *filein;
+	FILE *filein = NULL;
 	char *filein_type;
 	int icor3;
 	int ierror;
@@ -6306,7 +6306,7 @@ int hrc_read ( FILE *filein )
 	float g;
 	int   i;
 	int   icor3;
-	int   ivert;
+	int   ivert = 0;
 	int   iword;
 	int   jval;
 	int   level;
@@ -8437,13 +8437,13 @@ int iv_read ( FILE *filein )
 	int   count;
 	int   i;
 	int   icol;
-	int   icolor;
+	int   icolor = 0;
 	int   icface;
 	int   inormface;
 	int   iface_num;
 	int   irow;
-	int   iuv;
-	int   ivert;
+	int   iuv = 0;
+	int   ivert = 0;
 	int   iword;
 	int   ix;
 	int   ixyz;
@@ -12058,7 +12058,7 @@ float rgb_to_hue ( float r, float g, float b )
 //    the color is monochromatic.
 //
 {
-	float h;
+	float h = 0.0;
 	float rgbmax;
 	float rgbmin;
 	//
@@ -12156,7 +12156,7 @@ float rgb_to_hue ( float r, float g, float b )
 }
 //****************************************************************************80
 
-bool s_eqi ( char *s1, char *s2 )
+bool s_eqi ( const char *s1, const char *s2 )
 
 //****************************************************************************80
 //
@@ -13031,7 +13031,7 @@ int smf_read ( FILE *filein )
 	int iface_normal;
 	int iface_tex_uv;
 	int imat;
-	int ivert;
+	int ivert = 0;
 	int level;
 	char *next;
 	int node;
@@ -13041,7 +13041,7 @@ int smf_read ( FILE *filein )
 	float r2;
 	float r3;
 	float rgba[4];
-	char *string = "Dummy material";
+	char string[LINE_MAX_LEN] = { 0 };
 	float sx;
 	float sy;
 	float sz;
@@ -16760,7 +16760,7 @@ unsigned long tds_read_vp_section ( FILE *filein, int *views_read )
 	long int           pointer;
 	unsigned int       port;
 	unsigned long int  temp_pointer;
-	char              *viewports[11] = {
+	const char *viewports[11] = {
 		"Bogus",
 		"Top",
 		"Bottom",
@@ -17256,7 +17256,7 @@ int tds_write ( FILE *fileout )
 }
 //****************************************************************************80
 
-int tds_write_string ( FILE *fileout, char *string )
+int tds_write_string ( FILE *fileout, const char *string )
 
 //****************************************************************************80
 //
@@ -17277,7 +17277,7 @@ int tds_write_string ( FILE *fileout, char *string )
 //    John Burkardt
 //
 {
-	char *c;
+	const char *c;
 	int   nchar;
 
 	nchar = 0;
