@@ -197,8 +197,8 @@ vector<string> ModelViewController::CheckComPorts()
 {
 	vector<std::string> currentComports;
 	bool bDirty = false; // did the list of available com ports change
-	int highestCom = 0;
 #ifdef WIN32
+	int highestCom = 0;
 	for(int i = 1; i <=9 ; i++ )
 	{
         TCHAR strPort[32] = {0};
@@ -250,7 +250,7 @@ vector<string> ModelViewController::CheckComPorts()
 	DIR *d = opendir ("/dev");
 	if (d) { // failed
 		struct	dirent *e;
-		while (e = readdir (d)) {
+		while ((e = readdir (d))) {
 			//fprintf (stderr, "name '%s'\n", e->d_name);
 			if (strstr(e->d_name,ttyPattern)) {
 				string device = string("/dev/") + e->d_name;
@@ -529,9 +529,7 @@ void ModelViewController::ConvertToGCode()
 	ProcessControl.ConvertToGCode(GcodeTxt, GCodeStart, GCodeLayer, GCodeEnd);
 	buffer = gui->GCodeResult->buffer();
 
-	int length = GcodeTxt.length();
 	GcodeTxt += "\0";
-	int length2 = GcodeTxt.length();
 	buffer->append( GcodeTxt.c_str() );
 	redraw();
 }

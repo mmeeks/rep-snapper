@@ -333,13 +333,10 @@ void GCode::draw(const ProcessController &PC)
 
 void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, bool UseIncrementalEcode, bool Use3DGcode)
 {
-	Vector3f pos(0,0,0);
-	
-	float Distance = 0;
-	std::stringstream oss;
-
-	Vector3f LastPos(-10,-10,-10);
 	float lastE = -10;
+	Vector3f pos(0,0,0);
+	Vector3f LastPos(-10,-10,-10);
+	std::stringstream oss;
 
 	GcodeTxt += GcodeStart + "\n";
 

@@ -894,7 +894,7 @@ void ProcessController::BindLua(lua_State *myLuaState)
 
 //			.def ("GCode", ProcessController::GCodeResult)
 
-/*
+
 			// Start, layer, end GCode
 			.def ("GCodeStartText", GCodeStartText)
 			.def ("GCodeLayerText", GCodeLayerText)

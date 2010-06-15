@@ -339,12 +339,11 @@ void RFO_Transform3D::Read(XMLElement* e)
 	for(int i = 0 ; i < nC ; i++)
 	{
 		XMLElement* ch = e->GetChildren()[i];	// Get child i, one of "object" or "transform3D"
-		int nV = ch->GetVariableNum();
 		int nMaxElName = ch->GetElementName(0);
 		char* n = new char[nMaxElName + 1];
 		ch->GetElementName(n);
 		// rwo
-		if(string(n) != "row")
+		if (string(n) != "row")
 			throw std::runtime_error("Malformed xml:Transform3D children not named \"row\" ");
 
 		XMLVariable* y;
