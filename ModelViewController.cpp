@@ -201,38 +201,38 @@ vector<string> ModelViewController::CheckComPorts()
 	int highestCom = 0;
 	for(int i = 1; i <=9 ; i++ )
 	{
-        TCHAR strPort[32] = {0};
-        _stprintf(strPort, _T("COM%d"), i);
+	        TCHAR strPort[32] = {0};
+	        _stprintf(strPort, _T("COM%d"), i);
 
-        DWORD dwSize = 0;
-        LPCOMMCONFIG lpCC = (LPCOMMCONFIG) new BYTE[1];
-        GetDefaultCommConfig(strPort, lpCC, &dwSize);
+	        DWORD dwSize = 0;
+	        LPCOMMCONFIG lpCC = (LPCOMMCONFIG) new BYTE[1];
+	        GetDefaultCommConfig(strPort, lpCC, &dwSize);
 		int r = GetLastError();
-        delete [] lpCC;
+	        delete [] lpCC;
 
-        lpCC = (LPCOMMCONFIG) new BYTE[dwSize];
-        GetDefaultCommConfig(strPort, lpCC, &dwSize);
-        delete [] lpCC;
+	        lpCC = (LPCOMMCONFIG) new BYTE[dwSize];
+	        GetDefaultCommConfig(strPort, lpCC, &dwSize);
+	        delete [] lpCC;
 
 		if( r != 87 )
 		{
+			ToolkitLock guard;
+
 			highestCom = i;
 			if( this ) // oups extremely ugly, should move this code to a static method and a callback
 			{
-				Fl::lock();
 				const_cast<Fl_Menu_Item*>(gui->portInput->menu())[i-1].flags = FL_NORMAL_LABEL;
 				const_cast<Fl_Menu_Item*>(gui->portInputSimple->menu())[i-1].flags = FL_NORMAL_LABEL;
-				Fl::unlock();
 			}
 		}
 		else
 		{
+			ToolkitLock guard;
+
 			if( this ) // oups extremely ugly, should move this code to a static method and a callback
 			{
-				Fl::lock();
 				const_cast<Fl_Menu_Item*>(gui->portInput->menu())[i-1].flags = FL_NO_LABEL;
 				const_cast<Fl_Menu_Item*>(gui->portInputSimple->menu())[i-1].flags = FL_NO_LABEL;
-				Fl::unlock();
 			}
 		}
 
@@ -264,7 +264,7 @@ vector<string> ModelViewController::CheckComPorts()
 
 		if ( bDirty ) {
 			if ( gui ) {
-				Fl::lock();
+				ToolkitLock guard;
 
 				static Fl_Menu_Item emptyList[] = {
 				 {0,0,0,0,0,0,0,0,0}
@@ -280,7 +280,6 @@ vector<string> ModelViewController::CheckComPorts()
 					gui->portInputSimple->add(strdup(menuLabel.c_str()));
 					comports.push_back(currentComports[indx]);
 				}
-				Fl::unlock();
 			}
 		}
 		closedir(d);

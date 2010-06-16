@@ -86,9 +86,12 @@ extern void	RGBTOYUV	(float r, float g, float b, float &y, float &u, float &v);
 extern void YUVTORGB	(float y, float u, float v, float &r, float &g, float &b);
 
 
-// #include "ModelViewController.h"
-
-// #include "AsyncSerial.h"
+// helper for easy locking
+class ToolkitLock {
+ public:
+  ToolkitLock() { Fl::lock(); }
+  ~ToolkitLock() { Fl::unlock(); }
+};
 
 #ifdef ENABLE_LUA
 
