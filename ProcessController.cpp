@@ -70,6 +70,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 				{										// This happens when there's triangles missing in the input STL
 					hackedZ+= 0.1f;
 					stl->CalcCuttingPlane(hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices
+					plane.SetZ(z);
 				}
 
 				// inFill
@@ -293,6 +294,13 @@ void ProcessController::MakeRaft(float &z)
 
 		LayerNr++;
 	}
+
+	// restore the E state
+	Command gotoE;
+	gotoE.Code = GOTO;
+	gotoE.e = 0;
+	gotoE.comment = "Reset E for the remaining print";
+	gcode.commands.push_back(gotoE);
 }
 
 void ProcessController::OptimizeRotation()

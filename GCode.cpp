@@ -372,7 +372,7 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 					}
 				else
 					{
-					if(commands[i].e != 0.0f)
+					if(commands[i].e >= 0.0f)
 						oss << "E" << commands[i].e << " ";
 					}
 			}
@@ -383,7 +383,8 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 				oss <<  "\n";
 			GcodeTxt += oss.str();
 			LastPos = commands[i].where;
-			lastE = commands[i].e;
+			if( commands[i].e >= 0.0f)
+				lastE = commands[i].e;
 			if(commands[i].Code == ZMOVE)
 				GcodeTxt += GcodeLayer + "\n";
 			break;
@@ -408,13 +409,36 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 				oss <<  "\n";
 			GcodeTxt += oss.str();
 			LastPos = commands[i].where;
-			lastE = commands[i].e;
 			break;
 		case RAPIDMOTION:
-			oss  << "G0 X" << commands[i].where.x << " Y" << commands[i].where.y << " Z" << commands[i].where.z  << " E0\n";
+			oss  << "G0 X" << commands[i].where.x << " Y" << commands[i].where.y << " Z" << commands[i].where.z  << "\n";
 			GcodeTxt += oss.str();
 			LastPos = commands[i].where;
-			lastE = commands[i].e;
+			break;
+		case GOTO:
+			oss  << "G92";
+			if(commands[i].where.x != LastPos.x && commands[i].where.x >= 0)
+			{
+				LastPos.x = commands[i].where.x;
+				oss << " X" << commands[i].where.x;
+			}
+			if(commands[i].where.y != LastPos.y && commands[i].where.y >= 0)
+			{
+				LastPos.y = commands[i].where.y;
+				oss << " Y" << commands[i].where.y;
+			}
+			if(commands[i].where.z != LastPos.z && commands[i].where.z >= 0)
+			{
+				LastPos.z = commands[i].where.z;
+				oss << " Z" << commands[i].where.z;
+			}
+			if(commands[i].e != lastE && commands[i].e >= 0.0f)
+			{
+				lastE = commands[i].e;
+				oss << " E" << commands[i].e;
+			}
+			oss <<  "\n";
+			GcodeTxt += oss.str();
 			break;
 		}
 		pos = commands[i].where;
