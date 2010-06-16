@@ -418,7 +418,7 @@ MVC->CopySettingsToGUI();
               xywh {1120 61 45 23} maximum 100 step 1 value 10
             }
             Fl_Value_Input MarginZ {
-              label Y
+              label Z
               callback {MVC->SetPrintMargin("Z", o->value());}
               xywh {1190 62 45 23} minimum -50 maximum 100 step 0.01
             }

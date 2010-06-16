@@ -54,6 +54,7 @@ $(EXECUTABLE): xml_lib $(OBJECTS)
 	$(CXX) ${INC} $(OBJECTS) $(LDFLAGS) -o $@ 
 
 %.cxx %.h:%.fl
+	rm -f $@ # fluid doesn't remove on failure.
 	fluid -c $<
 %.o:%.cxx
 	$(CXX) ${INC} $(CFLAGS) $< -o $@

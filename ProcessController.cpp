@@ -573,7 +573,7 @@ namespace {
 			buffer[0] = '\0';
 			v->GetValue (buffer);
 			std::string retval(buffer);
-			delete buffer;
+			delete[] buffer;
 			return retval;
 		} else
 			return std::string();
