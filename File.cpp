@@ -106,8 +106,21 @@ namespace {
       {
 	initialized = TRUE;
 	g_thread_init (NULL);
+#ifdef DEBUG
+	int   argc = 2;
+	char **argv = g_new (char *, 4);
+	argv[0] = g_strdup ("repsnapper");
+	argv[1] = g_strdup ("--sync");
+	gtk_init (&argc, (char ***)&argv);
+#else
 	gtk_init (NULL, NULL);
+#endif
 	gdk_threads_set_lock_functions (enter_fn, leave_fn);
+
+	// Horrors - fltk loves to do unsafe things with X
+	// and just ignore the (BadMatch etc.) errors.
+	gdk_error_trap_push(); // deliberately leak an error trap.
+
 	g_thread_create (main_loop_fn, NULL, FALSE, NULL);
       }
     Args a(directory, filter, type, title);
