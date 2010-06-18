@@ -12,6 +12,7 @@
 
 
 #include "stdafx.h"
+#include "string.h"
 
 #include "stl.h"
 #include "gcode.h"
@@ -80,6 +81,8 @@ STL::STL()
 # define COR3_MAX 200000
 # define FACE_MAX 200000
 # define ORDER_MAX 10
+#define STL_READ_HEADER_SIZE 4
+#define STL_READ_HEADER_TEXT "soli"
 
 extern float cor3[3][COR3_MAX];
 extern float  face_normal[3][FACE_MAX];
@@ -132,13 +135,14 @@ bool STL::Read(string filename, bool force_binary)
 			return false;
 			
 		// Ascii or binary?
-		long header;
-		infile.read(reinterpret_cast < char * > (&header), sizeof(long));	// Header
+		char header[STL_READ_HEADER_SIZE+1] = STL_READ_HEADER_TEXT; // +1 for the \0 on the c-style string
+		infile.read(reinterpret_cast < char * > (&header), STL_READ_HEADER_SIZE*sizeof(char));	// Header
+
 		Min.x = Min.y = Min.z = 99999999.0f;
 		Max.x = Max.y = Max.z = -99999999.0f;
 
-		//Check if the header is "soli"
-		if(header == 0x696c6f73 && !force_binary)
+		// Check if the header is valid for an ASCII STL
+		if (strcmp(header,STL_READ_HEADER_TEXT) == 0 && !force_binary)
 		{
 			infile.close();
 			FILE* file = fopen(filename.c_str(), "r");

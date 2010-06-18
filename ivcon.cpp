@@ -14024,9 +14024,9 @@ int stla_read ( FILE *filein )
 			// 
 			//  Get the XYZ coordinates of the normal vector to the face. 
 			//
-			sscanf ( next, "%*s %e %e %e", &r1, &r2, &r3 );  
+			int cnt = sscanf ( next, "%*s %e %e %e", &r1, &r2, &r3 );
 
-			if ( face_num < FACE_MAX )
+			if ( cnt == 3 && face_num < FACE_MAX )
 			{
 				face_normal[0][face_num] = r1;
 				face_normal[1][face_num] = r2;
@@ -14133,7 +14133,7 @@ int stla_read ( FILE *filein )
 		{
 			cout << "\n";
 			cout << "STLA_READ - Fatal error!\n";
-			cout << "  Unrecognized first word on line.\n";
+			cout << "  Unrecognized first word on line " << text_num << ": " << token << "\n";
 			return 1;
 		}
 
