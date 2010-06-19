@@ -188,7 +188,7 @@ class Point2f
 {
 public:
 	static uint GetHash(float x, float y) { return ((uint)(x*1000))+((uint)(y*1000))*1000000; }
-	Point2f(Vector2f p, int idx)
+	Point2f(Vector2f p, size_t idx)
 	{
 		Point = p;
 		Index = idx;
@@ -196,7 +196,7 @@ public:
 	list<Point2f*> ConnectedPoints;
 	list<Segment2f*> Lines;
 	Vector2f Point;
-	int Index;
+	size_t Index;
 	bool FindNextPoint(Point2f* origin, Point2f* destination, bool expansion);
 	float AngleTo(Point2f* point);
 };

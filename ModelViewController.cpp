@@ -223,6 +223,7 @@ vector<string> ModelViewController::CheckComPorts()
 			if( this ) // oups extremely ugly, should move this code to a static method and a callback
 			{
 				const_cast<Fl_Menu_Item*>(gui->portInput->menu())[i-1].activate();
+				const_cast<Fl_Menu_Item*>(gui->portInputSimple->menu())[i-1].activate();
 			}
 		}
 		else

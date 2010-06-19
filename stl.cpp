@@ -263,7 +263,7 @@ void STL::displayInfillOld(const ProcessController &PC, CuttingPlane &plane, uin
 		glColor4f(1,1,0,1);
 		glPointSize(5);
 		glBegin(GL_LINES);
-		for(uint i=0;i<infill.size();i+=2)
+		for(size_t i=0;i<infill.size();i+=2)
 		{
 			if(infill.size() > i+1)
 			{
@@ -316,7 +316,7 @@ void STL::draw(const ProcessController &PC, float opasity)
 //		glDepthMask(GL_TRUE);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  //define blending factors
 		glBegin(GL_TRIANGLES);
-		for(uint i=0;i<triangles.size();i++)
+		for(size_t i=0;i<triangles.size();i++)
 		{
 /*			switch(triangles[i].axis)
 				{
@@ -352,7 +352,7 @@ void STL::draw(const ProcessController &PC, float opasity)
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
 
 		glColor3f(r,g,b);
-		for(uint i=0;i<triangles.size();i++)
+		for(size_t i=0;i<triangles.size();i++)
 		{
 			glBegin(GL_LINE_LOOP);
 			glLineWidth(1);
@@ -373,7 +373,7 @@ void STL::draw(const ProcessController &PC, float opasity)
 		HSVtoRGB(PC.NormalsHue, PC.NormalsSat, PC.NormalsVal, r,g,b);
 		glColor3f(r,g,b);
 		glBegin(GL_LINES);
-		for(uint i=0;i<triangles.size();i++)
+		for(size_t i=0;i<triangles.size();i++)
 		{
 			Vector3f center = (triangles[i].A+triangles[i].B+triangles[i].C)/3.0f;
 			glVertex3fv((GLfloat*)&center);
@@ -392,7 +392,7 @@ void STL::draw(const ProcessController &PC, float opasity)
 		glPointSize(PC.EndPointSize);
 		glEnable(GL_POINT_SMOOTH);
 		glBegin(GL_POINTS);
-		for(uint i=0;i<triangles.size();i++)
+		for(size_t i=0;i<triangles.size();i++)
 		{
 			glVertex3f(triangles[i].A.x, triangles[i].A.y, triangles[i].A.z);
 			glVertex3f(triangles[i].B.x, triangles[i].B.y, triangles[i].B.z);
@@ -422,9 +422,9 @@ void STL::draw(const ProcessController &PC, float opasity)
 		}
 		while(z<Max.z)
 		{
-			for(uint o=0;o<PC.rfo.Objects.size();o++)
+			for(size_t o=0;o<PC.rfo.Objects.size();o++)
 			{
-				for(uint f=0;f<PC.rfo.Objects[o].files.size();f++)
+				for(size_t f=0;f<PC.rfo.Objects[o].files.size();f++)
 				{
 					Matrix4f T = PC.GetSTLTransformationMatrix(o,f);
 					Vector3f t = T.getTranslation();
@@ -502,7 +502,7 @@ uint findClosestUnused(std::vector<Vector3f> lines, Vector3f point, std::vector<
 	uint closest = -1;
 	float closestDist = boost::numeric::bounds<float>::highest();
 	
-	uint count = lines.size();
+	size_t count = lines.size();
 	
 	for(uint i=0;i<count;i++)
 	{
@@ -750,15 +750,15 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 
 	std::vector<Vector3f> lines;
 
-	for(uint i=0;i<infill.size();i++)
+	for(size_t i=0;i<infill.size();i++)
 		lines.push_back(Vector3f(infill[i].x, infill[i].y, z));
 
 	// Copy polygons
 	if(offsetPolygons.size() != 0)
 		{
-		for(uint p=0;p<offsetPolygons.size();p++)
+		for(size_t p=0;p<offsetPolygons.size();p++)
 			{
-			for(uint i=0;i<offsetPolygons[p].points.size();i++)
+			for(size_t i=0;i<offsetPolygons[p].points.size();i++)
 				{
 				Vector2f P3 = offsetVertices[offsetPolygons[p].points[i]];
 				Vector2f P4 = offsetVertices[offsetPolygons[p].points[(i+1)%offsetPolygons[p].points.size()]];
@@ -771,7 +771,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 
 	std::vector<bool> used;
 	used.resize(lines.size());
-	for(uint i=0;i<used.size();i++)
+	for(size_t i=0;i<used.size();i++)
 		used[i] = false;
 
 
@@ -841,7 +841,7 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane, const Matrix4f &T)
 
 	uint pointNr = 0;
 	bool foundOne = false;
-	for(uint i=0;i<triangles.size();i++)
+	for(size_t i=0;i<triangles.size();i++)
 	{
 		foundOne=false;
 		Segment line(-1,-1);
@@ -952,9 +952,9 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, uint LayerNr, float Infi
 
 			if(offsetPolygons.size() != 0)
 				{
-				for(uint p=0;p<offsetPolygons.size();p++)
+				for(size_t p=0;p<offsetPolygons.size();p++)
 					{
-					for(uint i=0;i<offsetPolygons[p].points.size();i++)
+					for(size_t i=0;i<offsetPolygons[p].points.size();i++)
 						{
 						Vector2f P3 = offsetVertices[offsetPolygons[p].points[i]];
 						Vector2f P4 = offsetVertices[offsetPolygons[p].points[(i+1)%offsetPolygons[p].points.size()]];
@@ -973,7 +973,7 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, uint LayerNr, float Infi
 /*			else if(vertices.size() != 0)
 				{
 				// Fallback, collide with lines rather then polygons
-				for(uint i=0;i<lines.size();i++)
+				for(size_t i=0;i<lines.size();i++)
 					{
 					Vector2f P3 = vertices[lines[i].start];
 					Vector2f P4 = vertices[lines[i].end];
@@ -996,7 +996,7 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, uint LayerNr, float Infi
 				{
 				glPointSize(4);
 				glBegin(GL_POINTS);
-				for(uint i=0;i<HitsBuffer.size();i++)
+				for(size_t i=0;i<HitsBuffer.size();i++)
 					glVertex3f(HitsBuffer[0].p.x, HitsBuffer[0].p.y, Z);
 				glEnd();
 				glPointSize(1);
@@ -1005,13 +1005,13 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, uint LayerNr, float Infi
 			// Verify hits intregrety
 			// Check if hit extists in table
 restart_check:
-			for(uint i=0;i<HitsBuffer.size();i++)
+			for(size_t i=0;i<HitsBuffer.size();i++)
 				{
 				if(examineThis)
 					int a=0;
 				bool found = false;
 
-				for(uint j=i+1;j<HitsBuffer.size();j++)
+				for(size_t j=i+1;j<HitsBuffer.size();j++)
 					if( abs(HitsBuffer[i].d - HitsBuffer[j].d) < 0.0001)
 						{
 						found = true;
@@ -1063,121 +1063,6 @@ restart_check:
 				}
 		}
 }
-
-
-#define SMALL_NUM  0.00000001 // anything that avoids division overflow
-// dot product (3D) which allows vector operations in arguments
-#define dot(u,v)   ((u).x * (v).x + (u).y * (v).y)
-#define perp(u,v)  ((u).x * (v).y - (u).y * (v).x)  // perp product (2D)
-
-//===================================================================
-
-// inSegment(): determine if a point is inside a segment
-//    Input:  a point P, and a collinear segment S
-//    Return: 1 = P is inside S
-//            0 = P is not inside S
-int inSegment( const Vector2f &P, const Vector2f &p1, const Vector2f &p2)
-{
-	if (p1.x != p2.x) {    // S is not vertical
-		if (p1.x <= P.x && P.x <= p2.x)
-			return 1;
-		if (p1.x >= P.x && P.x >= p2.x)
-			return 1;
-	}
-	else {    // S is vertical, so test y coordinate
-		if (p1.y <= P.y && P.y <= p2.y)
-			return 1;
-		if (p1.y >= P.y && P.y >= p2.y)
-			return 1;
-	}
-	return 0;
-}
-// intersect2D_2Segments(): the intersection of 2 finite 2D segments
-//    Input:  two finite segments S1 and S2
-//    Output: *I0 = intersect point (when it exists)
-//            *I1 = endpoint of intersect segment [I0,I1] (when it exists)
-//    Return: 0=disjoint (no intersect)
-//            1=intersect in unique point I0
-//            2=overlap in segment from I0 to I1
-int intersect2D_Segments( const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, const Vector2f &p4, Vector2f &I0, Vector2f &I1, float &t0, float &t1 )
-{
-	Vector2f    u = p2 - p1;
-	Vector2f    v = p4 - p3;
-	Vector2f    w = p1 - p3;
-	float    D = perp(u,v);
-
-	// test if they are parallel (includes either being a point)
-	if (fabs(D) < SMALL_NUM) {          // S1 and S2 are parallel
-		if (perp(u,w) != 0 || perp(v,w) != 0) {
-			return 0;                   // they are NOT collinear
-		}
-		// they are collinear or degenerate
-		// check if they are degenerate points
-		float du = dot(u,u);
-		float dv = dot(v,v);
-		if (du==0 && dv==0) {           // both segments are points
-			if (p1 != p3)         // they are distinct points
-				return 0;
-			I0 = p1;                // they are the same point
-			return 1;
-		}
-		if (du==0) {                    // S1 is a single point
-			if (inSegment(p1, p3, p4) == 0)  // but is not in S2
-				return 0;
-			I0 = p1;
-			return 1;
-		}
-		if (dv==0) {                    // S2 a single point
-			if (inSegment(p3, p1,p2) == 0)  // but is not in S1
-				return 0;
-			I0 = p3;
-			return 1;
-		}
-		// they are collinear segments - get overlap (or not)
-		//float t0, t1;                   // endpoints of S1 in eqn for S2
-		Vector2f w2 = p2 - p3;
-		if (v.x != 0) {
-			t0 = w.x / v.x;
-			t1 = w2.x / v.x;
-		}
-		else {
-			t0 = w.y / v.y;
-			t1 = w2.y / v.y;
-		}
-		if (t0 > t1) {                  // must have t0 smaller than t1
-			float t=t0; t0=t1; t1=t;    // swap if not
-		}
-		if (t0 > 1 || t1 < 0) {
-			return 0;     // NO overlap
-		}
-		t0 = t0<0? 0 : t0;              // clip to min 0
-		t1 = t1>1? 1 : t1;              // clip to max 1
-		if (t0 == t1) {                 // intersect is a point
-			I0 = p3 + v*t0;
-			return 1;
-		}
-
-		// they overlap in a valid subsegment
-		I0 = p3 + v*t0;
-		I1 = p3 + v*t1;
-		return 2;
-	}
-
-	// the segments are skew and may intersect in a point
-	// get the intersect parameter for S1
-	t0 = perp(v,w) / D;
-	if (t0 < 0 || t0 > 1)               // no intersect with S1
-		return 0;
-
-	// get the intersect parameter for S2
-	t1 = perp(u,w) / D;
-	if (t1 < 0 || t1 > 1)               // no intersect with S2
-		return 0;
-
-	I0 = p1 + u * t0;               // compute S1 intersect point
-	return 1;
-}
-
 
 // calculates intersection and checks for parallel lines.  
 // also checks that the intersection point is actually on  
@@ -1775,15 +1660,15 @@ uint CuttingPlane::selfIntersectAndDivideRecursive(float z, uint startPolygon, u
 {
 	level++;	
 	outline result;
-	for(uint p=startPolygon; p<offsetPolygons.size();p++)
+	for(size_t p=startPolygon; p<offsetPolygons.size();p++)
 	{
-		uint count = offsetPolygons[p].points.size();
-		for(uint v=startVertex; v<count;v++)
+		size_t count = offsetPolygons[p].points.size();
+		for(size_t v=startVertex; v<count;v++)
 		{
-			for(uint p2=0; p2<offsetPolygons.size();p2++)
+			for(size_t p2=0; p2<offsetPolygons.size();p2++)
 			{
-				uint count2 = offsetPolygons[p2].points.size();
-				for(int v2=0; v2<count2;v2++)
+				size_t count2 = offsetPolygons[p2].points.size();
+				for(size_t v2=0; v2<count2;v2++)
 				{
 					if((p==p2) && (v == v2))	// Dont check a point against itself
 						continue;
@@ -1831,18 +1716,18 @@ void CuttingPlane::recurseSelfIntersectAndDivide(float z, vector<locator> &EndPo
 		// search for the start point
 
 		outline result;
-		for(uint p=start.p; p<offsetPolygons.size();p++)
+		for(size_t p=start.p; p<offsetPolygons.size();p++)
 		{
-			for(uint v=start.v; v<offsetPolygons[p].points.size();v++)
+			for(size_t v=start.v; v<offsetPolygons[p].points.size();v++)
 			{
 				Vector2f P1 = offsetVertices[offsetPolygons[p].points[v]];
 				Vector2f P2 = offsetVertices[offsetPolygons[p].points[(v+1)%offsetPolygons[p].points.size()]];
 
 				result.push_back(P1);	// store this point
-				for(uint p2=0; p2<offsetPolygons.size();p2++)
+				for(size_t p2=0; p2<offsetPolygons.size();p2++)
 				{
-					uint count2 = offsetPolygons[p2].points.size();
-					for(int v2=0; v2<count2;v2++)
+					size_t count2 = offsetPolygons[p2].points.size();
+					for(size_t v2=0; v2<count2;v2++)
 					{
 						if((p==p2) && (v == v2))	// Dont check a point against itself
 							continue;
@@ -1856,7 +1741,7 @@ void CuttingPlane::recurseSelfIntersectAndDivide(float z, vector<locator> &EndPo
 							{
 								bool alreadyVisited=false;
 
-								UINT i;
+								size_t i;
 								for(i=0;i<visited.size();i++)
 								{
 									if(visited[i].p == p && visited[i].v == v)
@@ -2049,8 +1934,8 @@ CuttingPlaneOptimizer::CuttingPlaneOptimizer(CuttingPlane* cuttingPlane, float z
 			Polygon2f* newPoly = new Polygon2f();
 			newPoly->hole = poly->hole;
 
-			uint count = poly->points.size();
-			for(int i=0; i<count;i++)
+			size_t count = poly->points.size();
+			for(size_t i=0; i<count;i++)
 			{
 				newPoly->vertices.push_back(((*planeVertices)[poly->points[i]]));
 			}
@@ -2066,7 +1951,7 @@ CuttingPlaneOptimizer::CuttingPlaneOptimizer(CuttingPlane* cuttingPlane, float z
 			Polygon2f* newPoly = new Polygon2f();
 			newPoly->hole = poly->hole;
 
-			uint count = poly->points.size();
+			size_t count = poly->points.size();
 			for(int i=0; i<count;i++)
 			{
 				newPoly->vertices.push_back(((*planeVertices)[poly->points[i]]));
@@ -2129,13 +2014,13 @@ void CuttingPlane::ShrinkFast(float distance, float optimization, bool DisplayCu
 	distance*=ShellCount;
 
 	glColor4f(1,1,1,1);
-	for(int p=0; p<polygons.size();p++)
+	for(size_t p=0; p<polygons.size();p++)
 	{
 		Poly offsetPoly;
 		if(DisplayCuttingPlane)
 			glBegin(GL_LINE_LOOP);
-		uint count = polygons[p].points.size();
-		for(int i=0; i<count;i++)
+		size_t count = polygons[p].points.size();
+		for(size_t i=0; i<count;i++)
 		{
 			Vector2f Na = Vector2f(vertices[polygons[p].points[(i-1+count)%count]].x, vertices[polygons[p].points[(i-1+count)%count]].y);
 			Vector2f Nb = Vector2f(vertices[polygons[p].points[i]].x, vertices[polygons[p].points[i]].y);
@@ -2342,7 +2227,7 @@ int CuttingPlane::RegisterPoint(Vector2f &p)
 			if( res != -1 ) return res;
 		}
 	}
-	int idx = vertices.size();
+	size_t idx = vertices.size();
 	vertices.push_back(p);
 	Point2f* point = new Point2f(p, idx);
 	advVertices.push_back(point);
@@ -2376,10 +2261,10 @@ bool CuttingPlane::VertexIsOutsideOriginalPolygon( Vector2f point, float z)
 	Vector2f EndP(point.x+10000, point.y);
 	int intersectcount = 0;
 	
-	for(int p=0; p<polygons.size();p++)
+	for(size_t p=0; p<polygons.size();p++)
 	{
-		uint count = polygons[p].points.size();
-		for(int i=0; i<count;i++)
+		size_t count = polygons[p].points.size();
+		for(size_t i=0; i<count;i++)
 		{
 		Vector2f P1 = Vector2f( vertices[polygons[p].points[(i-1+count)%count]] );
 		Vector2f P2 = Vector2f( vertices[polygons[p].points[i]]);
@@ -2403,11 +2288,11 @@ void CuttingPlane::Draw(bool DrawVertexNumbers, bool DrawLineNumbers, bool DrawO
 {
 	// Draw the raw poly's in red
 	glColor3f(1,0,0);
-	for(int p=0; p<polygons.size();p++)
+	for(size_t p=0; p<polygons.size();p++)
 	{
 		glLineWidth(1);
 		glBegin(GL_LINE_LOOP);
-		for(int v=0; v<polygons[p].points.size();v++)
+		for(size_t v=0; v<polygons[p].points.size();v++)
 			glVertex3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, Z);
 		glEnd();
 
@@ -2416,7 +2301,7 @@ void CuttingPlane::Draw(bool DrawVertexNumbers, bool DrawLineNumbers, bool DrawO
 		renderBitmapString(Vector3f(polygons[p].center.x, polygons[p].center.y, Z) , GLUT_BITMAP_8_BY_13 , oss.str());
 	}
 
-	for(int o=0;o<optimizers.size();o++)
+	for(size_t o=0;o<optimizers.size();o++)
 	{
 		optimizers[o]->Draw();
 	}
@@ -2424,7 +2309,7 @@ void CuttingPlane::Draw(bool DrawVertexNumbers, bool DrawLineNumbers, bool DrawO
 	glPointSize(1);
 	glBegin(GL_POINTS);
 	glColor4f(1,0,0,1);
-	for(int v=0;v<vertices.size();v++)
+	for(size_t v=0;v<vertices.size();v++)
 	{
 		glVertex3f(vertices[v].x, vertices[v].y, Z);
 	}
@@ -2433,9 +2318,9 @@ void CuttingPlane::Draw(bool DrawVertexNumbers, bool DrawLineNumbers, bool DrawO
 	glColor4f(1,1,0,1);
 	glPointSize(3);
 	glBegin(GL_POINTS);
-	for(int p=0;p<polygons.size();p++)
+	for(size_t p=0;p<polygons.size();p++)
 	{
-		for(int v=0;v<polygons[p].points.size();v++)
+		for(size_t v=0;v<polygons[p].points.size();v++)
 		{
 			glVertex3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, Z);
 		}
@@ -2445,14 +2330,14 @@ void CuttingPlane::Draw(bool DrawVertexNumbers, bool DrawLineNumbers, bool DrawO
 
 	// Vertex numbers
 	if(DrawVertexNumbers)
-		for(int v=0;v<vertices.size();v++)
+		for(size_t v=0;v<vertices.size();v++)
 			{
 				ostringstream oss;
 				oss << v;
 			renderBitmapString(Vector3f (vertices[v].x, vertices[v].y, Z) , GLUT_BITMAP_8_BY_13 , oss.str());
 			}
 	if(DrawLineNumbers)
-		for(int l=0;l<lines.size();l++)
+		for(size_t l=0;l<lines.size();l++)
 		{
 			ostringstream oss;
 			oss << l;
@@ -2482,10 +2367,10 @@ void STL::OptimizeRotation()
 	for(uint i=0;i<6;i++)
 		area[i] = 0.0f;
 
-	for(uint i=0;i<triangles.size();i++)
+	for(size_t i=0;i<triangles.size();i++)
 		{
 		triangles[i].axis = NOT_ALIGNED;				
-		for(uint triangleAxis=0;triangleAxis<3;triangleAxis++)
+		for(size_t triangleAxis=0;triangleAxis<3;triangleAxis++)
 			{
 			if (  triangles[i].Normal.cross(AXIS_VECTORS[triangleAxis]).length() < 0.1)
 				{
@@ -2535,7 +2420,7 @@ void STL::RotateObject(Vector3f axis, float angle)
 	min.x = min.y = min.z = 99999999.0f;
 	max.x = max.y = max.z = -99999999.0f;
 
-	for(uint i=0; i<triangles.size() ; i++)
+	for(size_t i=0; i<triangles.size() ; i++)
 	{
 	triangles[i].Normal = triangles[i].Normal.rotate(angle, axis.x, axis.y, axis.z);
 	triangles[i].A = triangles[i].A.rotate(angle, axis.x, axis.y, axis.z);
@@ -2572,9 +2457,9 @@ float Triangle::area()
 void CuttingPlane::CleanupPolygons(float Optimization)
 {
 	float allowedError = Optimization;
-	for(int p=0;p<polygons.size();p++)
+	for(size_t p=0;p<polygons.size();p++)
 	{
-		for(int v=0;v<polygons[p].points.size();)
+		for(size_t v=0;v<polygons[p].points.size();)
 		{
 			Vector2f p1 =vertices[polygons[p].points[(v-1+polygons[p].points.size())%polygons[p].points.size()]];
 			Vector2f p2 =vertices[polygons[p].points[v]];
@@ -2599,9 +2484,9 @@ void CuttingPlane::CleanupPolygons(float Optimization)
 void CuttingPlane::CleanupOffsetPolygons(float Optimization)
 {
 	float allowedError = Optimization;
-	for(int p=0;p<offsetPolygons.size();p++)
+	for(size_t p=0;p<offsetPolygons.size();p++)
 	{
-		for(int v=0;v<offsetPolygons[p].points.size();)
+		for(size_t v=0;v<offsetPolygons[p].points.size();)
 		{
 			Vector2f p1 =offsetVertices[offsetPolygons[p].points[(v-1+offsetPolygons[p].points.size())%offsetPolygons[p].points.size()]];
 			Vector2f p2 =offsetVertices[offsetPolygons[p].points[v]];
@@ -2627,7 +2512,7 @@ void STL::CenterAroundXY()
 {
 	Vector3f displacement = -Min;
 
-	for(uint i=0; i<triangles.size() ; i++)
+	for(size_t i=0; i<triangles.size() ; i++)
 	{
 		triangles[i].A = triangles[i].A + displacement;
 		triangles[i].B = triangles[i].B + displacement;
@@ -2647,7 +2532,7 @@ void Poly::calcHole(vector<Vector2f> &offsetVertices)
 	Vector2f p(-6000, -6000);
 	int v=0;
 	center = Vector2f(0,0);
-	for(int vert=0;vert<points.size();vert++)
+	for(size_t vert=0;vert<points.size();vert++)
 	{
 		center += offsetVertices[points[vert]];
 		if(offsetVertices[points[vert]].x > p.x)
