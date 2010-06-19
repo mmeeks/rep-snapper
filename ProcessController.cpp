@@ -86,7 +86,8 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 						plane.ShrinkFast(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);
 						break;
 					case SHRINK_NICE:
-						plane.ShrinkNice(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);
+						// gpc stuff removed
+						//plane.ShrinkNice(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);
 						break;
 					case SHRINK_LOGICK:
 						plane.ShrinkLogick(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);

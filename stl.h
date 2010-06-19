@@ -26,7 +26,7 @@
 #include <FL/gl.h>
 
 #include <vmmlib/vmmlib.h>
-#include "Polygon2f.h"
+#include <Polygon2f.h>
 
 #ifdef __GNUC__
 #  define _BACKWARD_BACKWARD_WARNING_H 1 // kill annoying warning

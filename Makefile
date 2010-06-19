@@ -36,7 +36,7 @@ endif
 
 GENERATED=UI.cxx UI.h
 
-SOURCES=AsyncSerial.cpp RepSnapper.cpp stl.cpp gpc.c RepRapSerial.cpp \
+SOURCES=AsyncSerial.cpp RepSnapper.cpp stl.cpp RepRapSerial.cpp \
 	ProcessController.cpp Printer.cpp ModelViewController.cpp \
 	glutils.cpp GCode.cpp ArcBall.cpp stdafx.cpp UI.cxx \
 	RFO.cpp Flu_DND.cpp flu_pixmaps.cpp FluSimpleString.cpp \
@@ -45,7 +45,7 @@ SOURCES=AsyncSerial.cpp RepSnapper.cpp stl.cpp gpc.c RepRapSerial.cpp \
 
 HEADERS=ArcBall.h AsyncSerial.h Convert.h Flu_DND.h Flu_Enumerations.h \
 	flu_export.h flu_pixmaps.h FluSimpleString.h Flu_Tree_Browser.h \
-	gcode.h glutils.h gpc.h ivcon.h miniball.h ModelViewController.h \
+	gcode.h glutils.h ivcon.h miniball.h ModelViewController.h \
 	Printer.h ProcessController.h RepRapSerial.h RFO.h search.h \
 	Serial.h stdafx.h stl.h triangle.h UI.h platform.h
 
@@ -101,8 +101,7 @@ RepSnapper.o: AsyncSerial.h
 stl.o: stdafx.h config.h platform.h ArcBall.h ivcon.h stl.h gcode.h UI.h
 stl.o: File.h ModelViewController.h ProcessController.h Printer.h RFO.h
 stl.o: Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h FluSimpleString.h
-stl.o: glutils.h RepRapSerial.h AsyncSerial.h gpc.h
-gpc.o: gpc.h
+stl.o: glutils.h RepRapSerial.h AsyncSerial.h
 RepRapSerial.o: stdafx.h config.h platform.h ArcBall.h ivcon.h RepRapSerial.h
 RepRapSerial.o: UI.h File.h ModelViewController.h gcode.h stl.h
 RepRapSerial.o: ProcessController.h Printer.h RFO.h Flu_Tree_Browser.h
