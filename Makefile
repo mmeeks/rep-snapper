@@ -14,18 +14,23 @@ ifeq ($(UNAME),Linux)
     GTK_LIBS=`pkg-config --libs gtk+-2.0 gthread-2.0`
     GTK_CFLAGS=`pkg-config --cflags gtk+-2.0 gthread-2.0` -DHAVE_GTK
     INC=$(GTK_CFLAGS) -I/usr/include -I$(LIB_DIR) -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)/ann_1.1.1/include -I/usr/include/boost -I/usr/include/lua5.1
+	INC+=-I$(LIB_DIR)/polylib
     LDFLAGS=$(GTK_LIBS) -L/usr/lib -lGLU -lfltk -lfltk_gl -lfltk_forms -lglut -lboost_thread-mt -lboost_system-mt 
+	LDFLAGS+=-L$(LIB_DIR)/polylib -lpolylib
 endif
 
 # Mac
 ifeq ($(UNAME),Darwin)
 # assumes you have installed MacPorts from http://www.macports.org and run:
 # sudo port install boost fltk lua
-    CFLAGS=-c -g -O2 -Wall # gcc on mac doesn't support no-pragmas. Remember to update the global CFLAGS too if you're adding something that should also be added for the other platform(s).
+    CFLAGS=-c -O1
+    BOOST_HOME=/Users/kimballr/boost
     OPT_DIR=/opt/local
-	INC=-I$(OPT_DIR)/include -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)/ann_1.1.1/include -I$(LIB_DIR)
-	LDFLAGS=-L$(OPT_DIR)/lib -lpthread -lfltk -lfltk_forms -lfltk_gl -L$(LIB_DIR)/xml -L$(LIB_DIR)/polylib
-	LDFLAGS+= -lboost_thread-mt -l boost_system-mt
+	INC=-I$(BOOST_HOME)/include -I$(OPT_DIR)/include -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)/ann_1.1.1/include -I$(LIB_DIR)
+	INC+=-I$(LIB_DIR)/polylib
+	LDFLAGS=-L$(OPT_DIR)/lib -lpthread -lfltk -lfltk_forms -lfltk_gl -L$(LIB_DIR)/xml
+	LDFLAGS+=-L$(LIB_DIR)/polylib -lpolylib
+	LDFLAGS+= $(BOOST_HOME)/lib/libboost_thread-xgcc40-mt.a $(BOOST_HOME)/lib/libboost_system-xgcc40-mt.a
     LDFLAGS+= -framework Carbon -framework OpenGL -framework GLUT -framework AGL
 endif
 
