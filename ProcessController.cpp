@@ -70,7 +70,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 				{										// This happens when there's triangles missing in the input STL
 					hackedZ+= 0.1f;
 					stl->CalcCuttingPlane(hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices
-					stl->SetZ(z);
+					plane.SetZ(z);
 				}
 
 				// inFill
@@ -678,7 +678,6 @@ void ProcessController::LoadXML(XMLElement *e)
 	GCodePath = getXMLString (x, "GCodePath", "");
 	SettingsPath = getXMLString (x, "SettingsPath", "");
 
-	m_bValidateConnection
 	y = getVariable (x, "m_iSerialSpeed", "19200");
 	if(y)	m_iSerialSpeed = y->GetValueInt();
 
