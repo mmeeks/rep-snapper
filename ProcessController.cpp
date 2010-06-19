@@ -70,6 +70,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 				{										// This happens when there's triangles missing in the input STL
 					hackedZ+= 0.1f;
 					stl->CalcCuttingPlane(hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices
+					stl->SetZ(z);
 				}
 
 				// inFill
@@ -99,7 +100,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 						infillDistance = AltInfillDistance;
 					}
 
-					plane.CalcInFill(infill, LayerNr, destinationZ, infillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
+					plane.CalcInFill(infill, LayerNr, infillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
 				}
 				// Make the GCode from the plane and the infill
 				plane.MakeGcode(infill, gcode, E, destinationZ, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, DistanceToReachFullSpeed, extrusionFactor, UseIncrementalEcode, Use3DGcode, EnableAcceleration);
@@ -440,6 +441,7 @@ void ProcessController::SaveXML(XMLElement *e)
 	setVariable (x, "GCodeEndText")->SetValue(GCodeEndText.c_str());
         //setVariable (x, "Notes", true,"[Empty]")->SetValue(Notes.c_str()); // overwriting GCodeEndText
 	setVariable (x, "m_sPortName")->SetValue(m_sPortName.c_str());
+	setVariable (x, "ValidateConnection")->SetValueInt((int)m_bValidateConnection);
 
 	for (int i = 0; i < 20; i++) {
 		std::ostringstream os, name;
@@ -667,12 +669,16 @@ void ProcessController::LoadXML(XMLElement *e)
 			m_sPortName = comportlist.size() > 0 ? comportlist[comportlist.size()-1] : "";
 		}
 	}
+	y = getVariable (x, "ValidateConnection", "1");
+	if(y)	m_bValidateConnection = (bool)y->GetValueInt();
+
 
 	STLPath = getXMLString (x, "STLPath", "");
 	RFOPath = getXMLString (x, "RFOPath", "");
 	GCodePath = getXMLString (x, "GCodePath", "");
 	SettingsPath = getXMLString (x, "SettingsPath", "");
 
+	m_bValidateConnection
 	y = getVariable (x, "m_iSerialSpeed", "19200");
 	if(y)	m_iSerialSpeed = y->GetValueInt();
 
@@ -750,6 +756,9 @@ void ProcessController::LoadXML(XMLElement *e)
 	if(y)	TempReadingEnabled= (bool)y->GetValueInt();
 	y = getVariable (x, "ClearLogfilesWhenPrintStarts", "1");
 	if(y)	ClearLogfilesWhenPrintStarts= (bool)y->GetValueInt();
+
+	y = getVariable (x, "ValidateConnection", "1");
+	if(y)	m_bValidateConnection = (bool)y->GetValueInt();
 
 	// GUI... ?
 	y = getVariable (x, "DisplayEndpoints", "0");

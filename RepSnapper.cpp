@@ -103,7 +103,6 @@ public:
 	// add more options above
 };
 
-
 int main(int argc, char **argv)
 {
 	//initialize threading support in FLTK
@@ -149,3 +148,107 @@ int main(int argc, char **argv)
 	return Fl::run ();
 }
 
+#ifdef WIN32
+
+CHAR wide_to_narrow(WCHAR w)
+{
+    // simple typecast
+    // works because UNICODE incorporates ASCII into itself
+    return CHAR(w);
+}
+class CmdLineArgs : public std::vector<char*>
+{
+public:
+    CmdLineArgs (LPWSTR args)
+    {
+
+        // Save local copy of the command line string, because
+        // ParseCmdLine() modifies this string while parsing it.
+        m_cmdline = new char [wcslen (args) + 1];
+        if (m_cmdline)
+        {
+			std::transform(args, args+wcslen (args) + 1, m_cmdline, wide_to_narrow);
+            ParseCmdLine(); 
+        }
+    }
+    ~CmdLineArgs()
+    {
+        delete m_cmdline;
+    }
+
+private:
+    PSZ m_cmdline; // the command line string
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Parse m_cmdline into individual tokens, which are delimited by spaces. If a
+    // token begins with a quote, then that token is terminated by the next quote
+    // followed immediately by a space or terminator.  This allows tokens to contain
+    // spaces.
+    // This input string:     This "is" a ""test"" "of the parsing" alg"o"rithm.
+    // Produces these tokens: This, is, a, "test", of the parsing, alg"o"rithm
+    ////////////////////////////////////////////////////////////////////////////////
+    void ParseCmdLine ()
+    {
+        enum { TERM  = '\0',
+               QUOTE = '\"' };
+
+        bool bInQuotes = false;
+        PSZ pargs = m_cmdline;
+
+        while (*pargs)
+        {
+            while (isspace (*pargs))        // skip leading whitespace
+                pargs++;
+
+            bInQuotes = (*pargs == QUOTE);  // see if this token is quoted
+
+            if (bInQuotes)                  // skip leading quote
+                pargs++; 
+
+            push_back (pargs);              // store position of current token
+
+            // Find next token.
+            // NOTE: Args are normally terminated by whitespace, unless the
+            // arg is quoted.  That's why we handle the two cases separately,
+            // even though they are very similar.
+            if (bInQuotes)
+            {
+                // find next quote followed by a space or terminator
+                while (*pargs && 
+                      !(*pargs == QUOTE && (isspace (pargs[1]) || pargs[1] == TERM)))
+                    pargs++;
+                if (*pargs)
+                {
+                    *pargs = TERM;  // terminate token
+                    if (pargs[1])   // if quoted token not followed by a terminator
+                        pargs += 2; // advance to next token
+                }
+            }
+            else
+            {
+                // skip to next non-whitespace character
+                while (*pargs && !isspace (*pargs)) 
+                    pargs++;
+                if (*pargs && isspace (*pargs)) // end of token
+                {
+                   *pargs = TERM;    // terminate token
+                    pargs++;         // advance to next token or terminator
+                }
+            }
+        } // while (*pargs)
+    } // ParseCmdLine()
+}; // class CmdLineArgs
+
+
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
+{
+	CmdLineArgs cmdArgs(lpCmdLine);
+	char** arg = (char**)malloc(cmdArgs.size()*sizeof(char*));
+	for(int i=0; i<cmdArgs.size(); i++)
+	{
+		arg[i] = cmdArgs[i];
+	}	 
+
+	return main(cmdArgs.size(), arg);
+}
+#endif

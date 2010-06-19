@@ -134,6 +134,7 @@ public:
 	void SetDisplayCuttingPlane(bool val){ProcessControl.DisplayCuttingPlane = val; redraw();}
 	void SetDrawVertexNumbers(bool val){ProcessControl.DrawVertexNumbers = val; redraw();}
 	void SetDrawLineNumbers(bool val){ProcessControl.DrawLineNumbers = val; redraw();}
+	void SetDrawOutlineNumbers(bool val){ProcessControl.DrawOutlineNumbers = val; redraw();}
 
 	void SetShellOnly(bool val) {ProcessControl.ShellOnly = val; redraw();}
 	void SetShellCount(uint val) {ProcessControl.ShellCount = val; redraw();}
@@ -216,6 +217,7 @@ public:
 	void SendNow(string str);
 	void setPort(string s);
 	void setSerialSpeed(int s );
+	void SetValidateConnection(bool validate);
 
 	void SetKeepLines(float val){ ProcessControl.KeepLines = (int)val;}
 

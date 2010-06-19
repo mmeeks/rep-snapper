@@ -157,6 +157,7 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 
 	ProcessControl.LoadXML();
 	serial->SetReceivingBufferSize(ProcessControl.ReceivingBufferSize);
+	serial->SetValidateConnection(ProcessControl.m_bValidateConnection);
 	CopySettingsToGUI();
 
 	m_bExtruderDirection = true;
@@ -176,7 +177,7 @@ void ModelViewController::Static_Timer_CB(void *userdata) {
 /* Called every 250ms (0.25 of a second) */
 void ModelViewController::Timer_CB()
 {
-	if( gui->Tabs->value() == gui->PrinterDefinitionTab )
+	if( !serial->isConnected() && gui->printerSettingsWindow->visible() != 0 )
 	{
 	  static uint count = 0;
 	  if ((count++ % 4) == 0) /* every second */
@@ -221,8 +222,7 @@ vector<string> ModelViewController::CheckComPorts()
 			highestCom = i;
 			if( this ) // oups extremely ugly, should move this code to a static method and a callback
 			{
-				const_cast<Fl_Menu_Item*>(gui->portInput->menu())[i-1].flags = FL_NORMAL_LABEL;
-				const_cast<Fl_Menu_Item*>(gui->portInputSimple->menu())[i-1].flags = FL_NORMAL_LABEL;
+				const_cast<Fl_Menu_Item*>(gui->portInput->menu())[i-1].activate();
 			}
 		}
 		else
@@ -231,11 +231,10 @@ vector<string> ModelViewController::CheckComPorts()
 
 			if( this ) // oups extremely ugly, should move this code to a static method and a callback
 			{
-				const_cast<Fl_Menu_Item*>(gui->portInput->menu())[i-1].flags = FL_NO_LABEL;
-				const_cast<Fl_Menu_Item*>(gui->portInputSimple->menu())[i-1].flags = FL_NO_LABEL;
+				const_cast<Fl_Menu_Item*>(gui->portInput->menu())[i-1].deactivate();
+				const_cast<Fl_Menu_Item*>(gui->portInputSimple->menu())[i-1].deactivate();
 			}
 		}
-
 	}
 	currentComports.push_back(string("COM"+highestCom));
 
@@ -298,6 +297,13 @@ void ModelViewController::setSerialSpeed(int s )
 void ModelViewController::setPort(string s)
 {
 	ProcessControl.m_sPortName = s;
+	CopySettingsToGUI();
+}
+
+void ModelViewController::SetValidateConnection(bool validate)
+{
+	ProcessControl.m_bValidateConnection = validate;
+	serial->SetValidateConnection(ProcessControl.m_bValidateConnection);
 	CopySettingsToGUI();
 }
 
@@ -601,6 +607,7 @@ void ModelViewController::CopySettingsToGUI()
 	gui->RaftInterfaceThicknessSlider->value(ProcessControl.RaftInterfaceThickness);
 	gui->RaftInterfaceTemperatureSlider->value(ProcessControl.RaftInterfaceTemperature);
 
+	gui->ValidateConnection->value(ProcessControl.m_bValidateConnection);
 	gui->portInput->value(ProcessControl.m_sPortName.c_str());
 	gui->portInputSimple->value(ProcessControl.m_sPortName.c_str());
 	gui->SerialSpeedInput->value(ProcessControl.m_iSerialSpeed);

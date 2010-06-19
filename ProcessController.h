@@ -164,6 +164,7 @@ public:
 	Printer printer;					// Printer settings and functions
 	string m_sPortName;
 	int m_iSerialSpeed;
+	bool m_bValidateConnection;
 	int KeepLines;
 //	STL stl;							// A STL file
 	RFO rfo;
@@ -244,6 +245,7 @@ public:
 	bool DisplayCuttingPlane;
 	bool DrawVertexNumbers;
 	bool DrawLineNumbers;
+	bool DrawOutlineNumbers;
 	//string Notes; // Thers is no ui element for this field, it was causing problems with GCodeEnd UI field
 
 	// Rendering

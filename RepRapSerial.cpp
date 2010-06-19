@@ -218,6 +218,7 @@ void RepRapSerial::SendNow(string s)
 	com->write(s);
 
 }
+
 void RepRapSerial::SendData(string s, const int lineNr)
 {
 	if( !m_bConnected ) return;
@@ -331,13 +332,18 @@ public:
 	int timer;
 };
 
-void ConnectionTimeOutMethod(void *data) {
-	ConnectionTimeOut* timeout = (ConnectionTimeOut*) data;
-	if (timeout->serial->isConnecting() && timeout->ConnectAttempt == timeout->serial->GetConnectAttempt()) {
-		if (--timeout->timer == 0) {
+void ConnectionTimeOutMethod(void *data)
+{
+	ConnectionTimeOut* timeout = (ConnectionTimeOut*)data;
+	if( timeout->serial->isConnecting() && timeout->ConnectAttempt == timeout->serial->GetConnectAttempt() )
+	{
+		if( --timeout->timer == 0)
+		{
 			timeout->serial->DisConnect("Connection attempt timed out");
-		} else {
-			// poll temperature once to ensure we get a response if the firmware doesn't greet
+		}
+		else
+		{
+			// poll temperature once to ensure we get a responce if the firmware doesn't greet.
 			timeout->serial->SendNow("M105");
 			Fl::add_timeout(1.0f, &ConnectionTimeOutMethod, timeout);
 			return;
@@ -375,15 +381,23 @@ void RepRapSerial::Connect(string port, int speed)
 		return;
 	}
 
-	// probe the device to see if it is a reprap
-	SendNow("M105");
+	if( m_bValidateConnection )
+	{
+		ConnectionTimeOut* timeout= new ConnectionTimeOut();
+		timeout->serial = this;
+		timeout->ConnectAttempt = ++ConnectAttempt;
+		timeout->timer = 5;
 
-	ConnectionTimeOut* timeout= new ConnectionTimeOut();
-	timeout->serial = this;
-	timeout->ConnectAttempt = ++ConnectAttempt;
-	timeout->timer = 5;
-
-	Fl::add_timeout(1.0f, &ConnectionTimeOutMethod, timeout);
+		Fl::add_timeout(1.0f, &ConnectionTimeOutMethod, timeout);
+		// probe the device to see if it is a reprap
+		SendNow("M105");
+	}
+	else
+	{
+		ToolkitLock guard;
+		notifyConnection(true);
+		gui->MVC->serialConnected();
+	}
 	Fl::add_timeout(1.0f, &TempReadTimer);
 }
 

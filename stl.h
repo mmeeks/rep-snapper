@@ -11,6 +11,7 @@
 * ------------------------------------------------------------------------- */
 #pragma once
 #include <vector>
+#include <list>
 #include "platform.h"
 
 #include "math.h"                                               // Needed for sqrtf
@@ -25,6 +26,7 @@
 #include <FL/gl.h>
 
 #include <vmmlib/vmmlib.h>
+#include "Polygon2f.h"
 
 #ifdef __GNUC__
 #  define _BACKWARD_BACKWARD_WARNING_H 1 // kill annoying warning
@@ -47,6 +49,7 @@ glVertex3fv( position.xyz );
 
 using namespace std;
 using namespace vmml;
+using namespace PolyLib;
 
 typedef vector<Vector2f> outline;
 
@@ -86,6 +89,7 @@ public:
 	void calcHole(vector<Vector2f> &offsetVertices);
 	vector<uint> points;			// points, indices into ..... a CuttingPlane or a GCode object
 	bool hole;
+	Vector2f center;
 };
 
 struct locator{
@@ -95,6 +99,10 @@ struct locator{
 	float t;
 };
 
+
+class Segment2f;
+class CuttingPlaneOptimizer;
+class Point2f;
 
 // A (set of) 2D polygon extracted from a 3D model
 class CuttingPlane{
@@ -122,8 +130,8 @@ public:
 		offsetVertices.clear();
 	}
 	void recurseSelfIntersectAndDivide(float z, vector<locator> &EndPointStack, vector<outline> &outlines, vector<locator> &visited);
-	void CalcInFill(vector<Vector2f> &infill, uint LayerNr, float z, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill);	// Collide a infill-line with the polygons
-	void Draw(bool DrawVertexNumbers, bool DrawLineNumbers);
+	void CalcInFill(vector<Vector2f> &infill, uint LayerNr, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill);	// Collide a infill-line with the polygons
+	void Draw(bool DrawVertexNumbers, bool DrawLineNumbers, bool DrawOutlineNumbers);
 	bool LinkSegments(float z, float shrinkValue, float Optimization, bool DisplayCuttingPlane, bool ShrinkNice, int ShellCount);		// Link Segments to form polygons
 	void CleanupPolygons(float Optimization);			// remove redudant points
 	void CleanupOffsetPolygons(float Optimization);			// remove redudant points
@@ -145,8 +153,8 @@ public:
 	void SetZ(float value)
 	{
 		Z = value;
-		Clear();
 	}
+	float getZ() { return Z; }
 
 	int RegisterPoint(Vector2f &p);
 	void AddLine(Segment &line);
@@ -160,6 +168,8 @@ private:
 	uint IndexOfPoint(uint hash, Vector2f &p);
 	hash_map<uint, pair<Point2f*, int> > points;
 
+	vector<CuttingPlaneOptimizer*> optimizers;
+
 	vector<Segment> lines;			// Segments - 2 points pr. line-segment
 
 	vector<Poly> polygons;			// Closed loops
@@ -172,7 +182,7 @@ private:
 };
 
 
-#define sqr(x) (x*x)
+#define sqr(x) ((x)*(x))
 
 class Point2f
 {
@@ -205,20 +215,6 @@ public:
 	list<Segment2f> Segments;
 };
 
-class Polygon2f
-{
-public:
-	vector<Vector2f> vertices;
-	bool hole;
-	list<Polygon2f> containedHoles;
-	list<Polygon2f> containedSolids;
-	
-	void Optimize(float minAngle);
-	bool ContainsPoint(Vector2f point);
-	bool InsertPolygon(Polygon2f& poly);
-	void InsertToList(list<Polygon2f>& list);
-	void Shrink(float distance, list<Polygon2f> &polygons);
-};
 
 class CuttingPlaneOptimizer
 {
@@ -226,10 +222,13 @@ public:
 	float Z;
 	CuttingPlaneOptimizer(float z) { Z = z; }
 	CuttingPlaneOptimizer(CuttingPlane* cuttingPlane, float z);
-	list<Polygon2f> positivePolygons;
-	void Shrink(float distance, bool useFillets, list<Polygon2f> &resPolygons);
+	list<Polygon2f*> positivePolygons;
+	void Shrink(float distance, bool useFillets, list<Polygon2f*> &resPolygons);
+	void Draw();
+	void Dispose();
+private:
+	void PushPoly(Polygon2f* poly);
 };
-
 
 
 
@@ -241,6 +240,7 @@ public:
 	bool Read(string filename,bool force_binary = false );
 	void GetObjectsFromIvcon();
 	void clear(){triangles.clear();}
+	void displayInfillOld(const ProcessController &PC, CuttingPlane &plane, uint LayerNr, vector<int>& altInfillLayers);
 	void draw(const ProcessController &PC, float opasity = 1.0f);
 	void CenterAroundXY();
 	void CalcCuttingPlane(float where, CuttingPlane &plane, const Matrix4f &T);	// Extract a 2D polygonset from a 3D model

@@ -228,6 +228,54 @@ void STL::CalcBoundingBoxAndZoom()
 	Center = (Max + Min )/2;
 }
 
+void STL::displayInfillOld(const ProcessController &PC, CuttingPlane &plane, uint LayerNr, vector<int>& altInfillLayers)
+{
+	if(PC.DisplayinFill)
+	{
+		// inFill
+		vector<Vector2f> infill;
+
+		CuttingPlane infillCuttingPlane = plane;
+		infillCuttingPlane.ClearShrink();
+		if(PC.ShellOnly == false)
+		{
+			switch( PC.m_ShrinkQuality )
+			{
+			case SHRINK_FAST:
+				infillCuttingPlane.ShrinkFast(PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane, false, PC.ShellCount);
+				break;
+			case SHRINK_NICE:
+				infillCuttingPlane.ShrinkNice(PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane, false, PC.ShellCount);
+				break;
+			case SHRINK_LOGICK:
+				break;
+			}
+
+			// check if this if a layer we should use the alternate infill distance on
+			float infillDistance = PC.InfillDistance;
+			if (std::find(altInfillLayers.begin(), altInfillLayers.end(), LayerNr) != altInfillLayers.end())
+			{
+				infillDistance = PC.AltInfillDistance;
+			}
+
+			infillCuttingPlane.CalcInFill(infill, LayerNr, infillDistance, PC.InfillRotation, PC.InfillRotationPrLayer, PC.DisplayDebuginFill);
+		}
+		glColor4f(1,1,0,1);
+		glPointSize(5);
+		glBegin(GL_LINES);
+		for(uint i=0;i<infill.size();i+=2)
+		{
+			if(infill.size() > i+1)
+			{
+				glVertex3f(infill[i  ].x, infill[i  ].y, plane.getZ());
+				glVertex3f(infill[i+1].x, infill[i+1].y, plane.getZ());
+			}
+		}
+		glEnd();
+	}
+}
+
+
 
 void STL::draw(const ProcessController &PC, float opasity)
 {
@@ -307,6 +355,7 @@ void STL::draw(const ProcessController &PC, float opasity)
 		for(uint i=0;i<triangles.size();i++)
 		{
 			glBegin(GL_LINE_LOOP);
+			glLineWidth(1);
 			glNormal3fv((GLfloat*)&triangles[i].Normal);
 			glVertex3fv((GLfloat*)&triangles[i].A);
 			glVertex3fv((GLfloat*)&triangles[i].B);
@@ -397,60 +446,16 @@ void STL::draw(const ProcessController &PC, float opasity)
 					{
 					case SHRINK_FAST:
 						plane.ShrinkFast(PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane, false, PC.ShellCount);
+						displayInfillOld(PC, plane, LayerNr, altInfillLayers);
 						break;
 					case SHRINK_NICE:
 						plane.ShrinkNice(PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane, false, PC.ShellCount);
+						displayInfillOld(PC, plane, LayerNr, altInfillLayers);
 						break;
 					case SHRINK_LOGICK:
 						plane.ShrinkLogick(PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane, false, PC.ShellCount);
+						plane.Draw(PC.DrawVertexNumbers, PC.DrawLineNumbers, PC.DrawOutlineNumbers);
 						break;
-					}
-
-					plane.Draw(PC.DrawVertexNumbers, PC.DrawLineNumbers);
-
-					// inFill
-					vector<Vector2f> infill;
-
-					if(PC.DisplayinFill)
-					{
-						CuttingPlane infillCuttingPlane = plane;
-						infillCuttingPlane.ClearShrink();
-						if(PC.ShellOnly == false)
-						{
-							switch( PC.m_ShrinkQuality )
-							{
-							case SHRINK_FAST:
-								infillCuttingPlane.ShrinkFast(PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane, false, PC.ShellCount);
-								break;
-							case SHRINK_NICE:
-								infillCuttingPlane.ShrinkNice(PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane, false, PC.ShellCount);
-								break;
-							case SHRINK_LOGICK:
-								infillCuttingPlane.ShrinkLogick(PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane, false, PC.ShellCount);
-								break;
-							}
-
-							// check if this if a layer we should use the alternate infill distance on
-							float infillDistance = PC.InfillDistance;
-							if (std::find(altInfillLayers.begin(), altInfillLayers.end(), LayerNr) != altInfillLayers.end())
-							{
-								infillDistance = PC.AltInfillDistance;
-							}
-
-							infillCuttingPlane.CalcInFill(infill, LayerNr, z, infillDistance, PC.InfillRotation, PC.InfillRotationPrLayer, PC.DisplayDebuginFill);
-						}
-						glColor4f(1,1,0,1);
-						glPointSize(5);
-						glBegin(GL_LINES);
-						for(uint i=0;i<infill.size();i+=2)
-						{
-							if(infill.size() > i+1)
-							{
-								glVertex3f(infill[i  ].x, infill[i  ].y, z);
-								glVertex3f(infill[i+1].x, infill[i+1].y, z);
-							}
-						}
-						glEnd();
 					}
 					LayerNr++;
 				}
@@ -464,6 +469,7 @@ void STL::draw(const ProcessController &PC, float opasity)
 	{
 		// Draw bbox
 		glColor3f(1,0,0);
+		glLineWidth(1);
 		glBegin(GL_LINE_LOOP);
 		glVertex3f(Min.x, Min.y, Min.z);
 		glVertex3f(Min.x, Max.y, Min.z);
@@ -899,7 +905,7 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane, const Matrix4f &T)
 vector<InFillHit> HitsBuffer;
 
 
-void CuttingPlane::CalcInFill(vector<Vector2f> &infill, uint LayerNr, float z, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill)
+void CuttingPlane::CalcInFill(vector<Vector2f> &infill, uint LayerNr, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill)
 {
 	int c=0;
 
@@ -928,8 +934,8 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, uint LayerNr, float z, f
 			{
 			glBegin(GL_LINES);
 			glColor3f(0,0.2f,0);
-			glVertex3f(P1.x, P1.y, z);
-			glVertex3f(P2.x, P2.y, z);
+			glVertex3f(P1.x, P1.y, Z);
+			glVertex3f(P2.x, P2.y, Z);
 			glEnd();
 			}
 		float Examine = 0.5f;
@@ -939,8 +945,8 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, uint LayerNr, float z, f
 				{
 				examineThis = examine = true;
 				glColor3f(1,1,1);				// Draw the line
-				glVertex3f(P1.x, P1.y, z);
-				glVertex3f(P2.x, P2.y, z);
+				glVertex3f(P1.x, P1.y, Z);
+				glVertex3f(P2.x, P2.y, Z);
 				}
 
 			if(offsetPolygons.size() != 0)
@@ -990,7 +996,7 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, uint LayerNr, float z, f
 				glPointSize(4);
 				glBegin(GL_POINTS);
 				for(uint i=0;i<HitsBuffer.size();i++)
-					glVertex3f(HitsBuffer[0].p.x, HitsBuffer[0].p.y, z);
+					glVertex3f(HitsBuffer[0].p.x, HitsBuffer[0].p.y, Z);
 				glEnd();
 				glPointSize(1);
 				}
@@ -1048,7 +1054,7 @@ restart_check:
 					c++;
 					glPointSize(10);
 					glBegin(GL_POINTS);
-					glVertex3f(HitsBuffer[0].p.x, HitsBuffer[0].p.y, z);
+					glVertex3f(HitsBuffer[0].p.x, HitsBuffer[0].p.y, Z);
 					glEnd();
 					glPointSize(1);
 					}
@@ -1498,7 +1504,17 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 			int connectedlines = pathsfromhere->size();
 			if( connectedlines == 0) 
 			{
-				cout << "\r\npolygon was cut at LinkSegments " << z;
+				glLineWidth(10);
+				glBegin(GL_LINE_LOOP);
+
+				for(int p = 0; p< poly.points.size(); p++ )
+				{
+					glColor4f(1, ((float)p)/((float)poly.points.size()), 0, 1);
+					glVertex3f(vertices[poly.points[p]].x, vertices[poly.points[p]].y, z);
+				}
+				glEnd();
+				
+				cout << "\r\npolygon was cut at LinkSegments " << z << " at vertex " << endPoint;
 				return false;
 				// model failure, can go no further.
 				// Solution: Call myself recursive, with a differetn Z
@@ -1543,34 +1559,6 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 
 	// Cleanup polygons
 	CleanupPolygons(Optimization);
-
-	// Draw resulting poly
-	glColor3f(1,1,0);
-	for(int p=0; p<polygons.size();p++)
-	{
-		glBegin(GL_LINE_LOOP);
-		for(int v=0; v<polygons[p].points.size();v++)
-			glVertex3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, z);
-		glEnd();
-		/*glColor3f(1,0,1);
-		glEnable(GL_POINT_SMOOTH);
-		glPointSize(10);
-		glBegin(GL_POINTS);
-		for(int v=0; v<polygons[p].points.size();v++)
-			glVertex3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, z);
-		glEnd();*/
-	}
-
-	for(int p=0; p<polygons.size();p++)
-	{
-		glColor3f(1,0,1);
-		glEnable(GL_POINT_SMOOTH);
-		glPointSize(10);
-		glBegin(GL_POINTS);
-		for(int v=0; v<polygons[p].points.size();v++)
-			glVertex3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, z);
-		glEnd();
-	}
 
 	return true;
 }
@@ -2041,302 +2029,97 @@ bool intersect(const float& x1, const float& y1,
   return true;
 }
 
-
-bool IsAngleInBetween(double a12, double a32, double aP2)
-{
-    if( aP2 < a12 )
-	{
-		if( a32 > a12 ) return true;
-		return aP2 > a32;
-	}
-	else
-	{
-		if( a32 < a12 ) return false;
-		return aP2 > a32;
-	}
-}
-
-bool Polygon2f::ContainsPoint(Vector2f point)
-{
-	if(vertices.size() < 3)
-		return false;
-
-	int v = 0;
-	float bestdist2 = sqr(point.x-vertices[0].x)+sqr(point.y-vertices[1].y);
-
-	for(int vert=1;vert<vertices.size();vert++)
-	{
-		float dist2 = sqr(point.x-vertices[vert].x)+sqr(point.y-vertices[vert].y);
-		if( dist2 < bestdist2 ) 
-		{
-			bestdist2 = dist2;
-			v = vert;
-		}
-	}
-
-	// we have the x-most vertex, v
-	Vector2f V1 = vertices[(v-1+vertices.size())%vertices.size()];
-	Vector2f V2 = vertices[v];
-	Vector2f V3 = vertices[(v+1)%vertices.size()];
-
-	double a12 = atan2(V1.y-V2.y, V1.x-V2.x);
-	double a32 = atan2(V3.y-V2.y, V3.x-V2.x);
-	double aP2 = atan2(point.y-V2.y, point.x-V2.x);
-
-	return IsAngleInBetween(a12, a32, aP2);
-}
-	
-bool Polygon2f::InsertPolygon(Polygon2f& poly)
-{
-	if( ContainsPoint(poly.vertices[0]) )
-	{
-		for(list<Polygon2f>::iterator pIt =containedSolids.begin(); pIt!=containedSolids.end(); pIt++)
-	   {
-		   if( pIt->InsertPolygon(poly) ) return true;
-	   }
-
-		poly.InsertToList(containedSolids);
-		return true;
-	}
-	return false;
-}
-
-void Polygon2f::InsertToList(list<Polygon2f>& list)
-{
-	std::list<Polygon2f>::iterator pIt =containedSolids.begin();
-	while( pIt!=containedSolids.end() )
-	{
-		if( pIt->ContainsPoint(pIt->vertices[0]) )
-		{
-			containedSolids.push_back(*pIt);
-		}
-		list.erase(pIt++);
-	}
-	list.push_back(*this);
-}
-
-void Polygon2f::Shrink(float distance, list<Polygon2f> &polygons)
-{
-    uint count = vertices.size();
-
-	// build list with translated points
-	vector<Vector2f> resVectors;
-		for(int i=0; i<count;i++)
-		{
-		Vector2f Na = vertices[(i-1+count)%count];
-		Vector2f Nb = vertices[i];
-		Vector2f Nc = vertices[(i+1)%count];
-
-			Vector2f V1 = (Nb-Na).getNormalized();
-			Vector2f V2 = (Nc-Nb).getNormalized();
-
-			Vector2f biplane = (V2 - V1).getNormalized();
-			
-			float a = angleBetween(V1,V2);
-
-			bool convex = V1.cross(V2) < 0;
-			Vector2f p;
-			if(convex)
-				p = Nb+biplane*distance/(cos((M_PI-a)*0.5f));
-		else
-			p = Nb-biplane*distance/(sin(a*0.5f));
-
-		resVectors.push_back(p);
-			}
-
-	for(int i=0; i<count;i++)
-	{
-		Vector2f Na = vertices[(i-1+count)%count];
-		Vector2f Nb = vertices[i];
-		Vector2f Nc = vertices[(i+1)%count];
-
-		Vector2f V1 = (Nb-Na).getNormalized();
-		Vector2f V2 = (Nc-Nb).getNormalized();
-
-		Vector2f biplane = (V2 - V1).getNormalized();
-		
-		float a = angleBetween(V1,V2);
-
-		bool convex = V1.cross(V2) < 0;
-		Vector2f p;
-		if(convex)
-			p = Nb+biplane*distance/(cos((M_PI-a)*0.5f));
-			else
-			p = Nb-biplane*distance/(sin(a*0.5f));
-
-		resVectors.push_back(p);
-	}
-/*
-
-	// build list of translated segments
-	list<Segment2f> resSegments;
-	for(int i=0; i<count;i++)
-			{
-		resSegments.push_back(Segment2f(resVectors[i], resVectors[(i+1)%count]));
-	}
-
-	Polygon2f newPoly;
-	newPoly.hole = false;
-	for(int i=0; i<count;i++)
-				{
-		newPoly.vertices.push_back(resVectors[i]);
-	}
-
-	// clip all segments against old segments
-	list<Segment2f>::iterator resIterator = resSegments.begin(); 
-	while(resIterator != resSegments.end())
-	{
-		for(int i=0; i<count;i++)
-		{
-			Vector2f Na = vertices[(i-1+count)%count];
-			Vector2f Nb = vertices[i];
-			
-			float t0;
-			float t1;
-			Vertex2f intersectPoint;
-			Vertex2f intersectEnd; // only used when the two lines overlap.
-			int intersectResult = intersect2D_Segments(Na, Nb, resIterator->Point1, resIterator->Point2, intersectPoint, intersectEnd, t0, t1);
-
-			if( intersectResult == 1 )
-			{
-				Vertex2f
-
-
-			}
-		}
-
-		resIterator++;
-	} 
-	polygons.push_back(newPoly);
-*/
-}
-
-void Polygon2f::Optimize(float mindelta)
-{
-	Vector2f V1 = vertices[0];
-	Vector2f V2 = vertices[1];
-
-	float oldAngle = atan2(V1.y-V2.y, V1.x-V2.x);
-
-	vector<Vector2f>::iterator it = vertices.begin();
-	it++;
-	it++;
-	while( it != vertices.end() )
-	{
-		V1 = V2;
-		V2 = *it;
-		
-		float angle = atan2(V1.y-V2.y, V1.x-V2.x);
-
-		float delta = oldAngle-angle;
-
-		if( delta > PI ) delta -= PI*2;
-		if( delta < -PI ) delta += PI*2;
-
-		if( ABS(delta) < mindelta)
-		{
-			vector<Vector2f>::iterator deleteIt = it;
-			it++;
-			vertices.erase(deleteIt);
-				}
-				else
-				{
-			oldAngle = angle;
-			it++;
-		}
-	}
-}
-
-
 CuttingPlaneOptimizer::CuttingPlaneOptimizer(CuttingPlane* cuttingPlane, float z)
 { 
 	Z = z; 
 
 	vector<Poly>* planePolygons = &cuttingPlane->GetPolygons();
 	vector<Vector2f>* planeVertices = &cuttingPlane->GetVertices();
-	std::list<Polygon2f> unsortedPolys;
+	std::list<Polygon2f*> unsortedPolys;
 
+	// first add solids. This builds the tree, placing the holes afterwards is easier/faster
 	for(int p=0; p<planePolygons->size();p++)
 	{
 		Poly* poly = &((*planePolygons)[p]);
 		poly->calcHole(*planeVertices);
 
-		// first deal with all the solids
 		if( !poly->hole )
 		{
-			Polygon2f newPoly;
-			newPoly.hole = poly->hole;
+			Polygon2f* newPoly = new Polygon2f();
+			newPoly->hole = poly->hole;
 
 			uint count = poly->points.size();
 			for(int i=0; i<count;i++)
 			{
-				newPoly.vertices.push_back(((*planeVertices)[poly->points[i]]));
+				newPoly->vertices.push_back(((*planeVertices)[poly->points[i]]));
 			}
-			newPoly.Optimize(0.1f);
-
-			// try to push it into each existing polygon.
-			for(list<Polygon2f>::iterator pIt =positivePolygons.begin(); pIt!=positivePolygons.end(); pIt++)
-		   {
-			   if( pIt->InsertPolygon(newPoly) ) return;
-		   }
-
-			newPoly.InsertToList(positivePolygons);
+			PushPoly(newPoly);
 		}
-				}
-			}
-
-void CuttingPlaneOptimizer::Shrink(float distance, bool useFillets, list<Polygon2f> &resPolygons)
-{
-	for(list<Polygon2f>::iterator pIt =positivePolygons.begin(); pIt!=positivePolygons.end(); pIt++)
-	{
-		pIt->Shrink(distance, resPolygons);
 	}
-}
-
-void DisplayPolygons(list<Polygon2f> &polygons, float z, float r, float g, float b, float a)
-{
-	glColor4f(r,g,b,a);
-	bool fullcolor = true;
-	for(std::list<Polygon2f>::iterator pIt =polygons.begin(); pIt!=polygons.end(); pIt++)
+	// then add holes
+	for(int p=0; p<planePolygons->size();p++)
+	{
+		Poly* poly = &((*planePolygons)[p]);
+		if( poly->hole )
 		{
-		glBegin(GL_LINE_LOOP);
-		uint count = pIt->vertices.size();
+			Polygon2f* newPoly = new Polygon2f();
+			newPoly->hole = poly->hole;
+
+			uint count = poly->points.size();
 			for(int i=0; i<count;i++)
 			{
-			glVertex3f(pIt->vertices[i].x,pIt->vertices[i].y,z);
-			fullcolor = !fullcolor;
-			if( fullcolor ) 
-			{
-				glColor4f(1,1,1,1);
-		}
-			else
-			{
-				glColor4f(0.5*r,0.5*g,0.5*b,a);
+				newPoly->vertices.push_back(((*planeVertices)[poly->points[i]]));
 			}
+			PushPoly(newPoly);
 		}
-		glEnd();
 	}
 }
+
+void CuttingPlaneOptimizer::Dispose()
+{
+	for(list<Polygon2f*>::iterator pIt =positivePolygons.begin(); pIt!=positivePolygons.end(); pIt++)
+	{
+		delete (*pIt);
+		*pIt = NULL;
+	}
+}
+
+
+void CuttingPlaneOptimizer::PushPoly(Polygon2f* poly)
+{
+	poly->PlaceInList(positivePolygons);
+}
+
+void CuttingPlaneOptimizer::Draw()
+{
+	float color = 1;
+	Polygon2f::DisplayPolygons(positivePolygons, Z, 0,color,0,1);
+	for(list<Polygon2f*>::iterator pIt =positivePolygons.begin(); pIt!=positivePolygons.end(); pIt++)
+	{
+		Polygon2f::DrawRecursive(*pIt, Z, color);
+	}
+}
+
+void CuttingPlaneOptimizer::Shrink(float distance, bool useFillets, list<Polygon2f*> &resPolygons)
+{
+	for(list<Polygon2f*>::iterator pIt =positivePolygons.begin(); pIt!=positivePolygons.end(); pIt++)
+	{
+		list<Polygon2f*> parentPolygons;
+		(*pIt)->Shrink(distance, parentPolygons, resPolygons);
+		assert(parentPolygons.size() == 0);
+	}
+}
+
 
 void CuttingPlane::ShrinkLogick(float distance, float optimization, bool DisplayCuttingPlane, bool useFillets, int ShellCount)
 {
-
 	distance*=ShellCount;
-	CuttingPlaneOptimizer cpo(this, Z);
-	CuttingPlaneOptimizer clippingPlane(Z);
-	CuttingPlaneOptimizer shrinkedPlane(Z);
-	CuttingPlaneOptimizer growedPlane(Z);
-	cpo.Shrink(distance, useFillets, clippingPlane.positivePolygons);
-	clippingPlane.Shrink(distance, useFillets, shrinkedPlane.positivePolygons);
-	shrinkedPlane.Shrink(-distance, useFillets, growedPlane.positivePolygons);
+	CuttingPlaneOptimizer* cpo = new CuttingPlaneOptimizer(this, Z);
+	CuttingPlaneOptimizer* clippingPlane = new CuttingPlaneOptimizer(Z);
+	optimizers.push_back(cpo);
 
-    if(DisplayCuttingPlane)
-	{
-		DisplayPolygons(clippingPlane.positivePolygons, Z, 1,1,1,1);
-		DisplayPolygons(shrinkedPlane.positivePolygons, Z, 1,1,0,1);
-		DisplayPolygons(growedPlane.positivePolygons, Z, 1,0,0,1);
-	}
-//	selfIntersectAndDivide();		//make this work for z-tensioner_1off.stl rotated 45d on X axis
+	cpo->Shrink(distance, useFillets, clippingPlane->positivePolygons);
+	optimizers.push_back(clippingPlane);
 }
 
 
@@ -2883,47 +2666,49 @@ void CuttingPlane::ShrinkNice(float distance, float optimization, bool DisplayCu
 	CleanupOffsetPolygons(0.1f);
 }
 
-void CuttingPlane::Draw(bool DrawVertexNumbers, bool DrawLineNumbers)
+void CuttingPlane::Draw(bool DrawVertexNumbers, bool DrawLineNumbers, bool DrawOutlineNumbers)
 {
-//	if(DisplayCuttingPlane)
-		{
-		glColor4f(1,0,0,1);
-		glBegin(GL_LINES);
-		for(uint i=0;i<lines.size();i++)
-			{
-/*				if(DisplayDebug && (int)(Examine*((float)lines.size()-1)) == i)
-				{
-				glEnd();
-				glColor4f(1,1,0,1);
-				glLineWidth(3);
-				glBegin(GL_LINES);
-				glVertex3f(vertices[lines[i].start].x, vertices[lines[i].start].y, Z);
-				glVertex3f(vertices[lines[i].end].x, vertices[lines[i].end].y, Z);
-				glEnd();
-				glColor4f(0.5f,0.5f,0.5f,1);
-				glLineWidth(1);
-				glBegin(GL_LINES);
-				glColor4f(1,0,0,1);
-				}*/
-
-			glVertex3f(vertices[lines[i].start].x, vertices[lines[i].start].y, Z);
-			glVertex3f(vertices[lines[i].end].x, vertices[lines[i].end].y, Z);
-			}
+	// Draw the raw poly's in red
+	glColor3f(1,0,0);
+	for(int p=0; p<polygons.size();p++)
+	{
+		glLineWidth(1);
+		glBegin(GL_LINE_LOOP);
+		for(int v=0; v<polygons[p].points.size();v++)
+			glVertex3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, Z);
 		glEnd();
 
-
-	// Endpoints
-		glColor4f(1,1,0,1);
-		glPointSize(2);
-		glBegin(GL_POINTS);
-		for(uint i=0;i<lines.size();i++)
-		{
-				glVertex3f(vertices[lines[i].start].x, vertices[lines[i].start].y, Z);
-				glVertex3f(vertices[lines[i].end].x, vertices[lines[i].end].y, Z);
-		}
-		glEnd();
+		ostringstream oss;
+		oss << p;
+		renderBitmapString(Vector3f(polygons[p].center.x, polygons[p].center.y, Z) , GLUT_BITMAP_8_BY_13 , oss.str());
 	}
 
+	for(int o=0;o<optimizers.size();o++)
+	{
+		optimizers[o]->Draw();
+	}
+
+	glPointSize(1);
+	glBegin(GL_POINTS);
+	glColor4f(1,0,0,1);
+	for(int v=0;v<vertices.size();v++)
+	{
+		glVertex3f(vertices[v].x, vertices[v].y, Z);
+	}
+	glEnd();
+
+	glColor4f(1,1,0,1);
+	glPointSize(3);
+	glBegin(GL_POINTS);
+	for(int p=0;p<polygons.size();p++)
+	{
+		for(int v=0;v<polygons[p].points.size();v++)
+		{
+			glVertex3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, Z);
+		}
+	}
+	glEnd();
+	
 
 	// Vertex numbers
 	if(DrawVertexNumbers)
@@ -3128,21 +2913,24 @@ void Poly::calcHole(vector<Vector2f> &offsetVertices)
 		return;	// hole is undefined
 	Vector2f p(-6000, -6000);
 	int v=0;
+	center = Vector2f(0,0);
 	for(int vert=0;vert<points.size();vert++)
 	{
+		center += offsetVertices[points[vert]];
 		if(offsetVertices[points[vert]].x > p.x)
-		{
-			p.x = offsetVertices[points[vert]].x;
-			v=vert;
-		}
-		else if(offsetVertices[points[vert]].x == p.x && offsetVertices[points[vert]].y > p.y)
 		{
 			p = offsetVertices[points[vert]];
 			v=vert;
 		}
+		else if(offsetVertices[points[vert]].x == p.x && offsetVertices[points[vert]].y > p.y)
+		{
+			p.y = offsetVertices[points[vert]].y;
+			v=vert;
+		}
 	}
+	center /= points.size();
 
-	// we have the x-most vertex, v
+	// we have the x-most vertex (with the highest y if there was a contest), v 
 	Vector2f V1 = offsetVertices[points[(v-1+points.size())%points.size()]];
 	Vector2f V2 = offsetVertices[points[v]];
 	Vector2f V3 = offsetVertices[points[(v+1)%points.size()]];

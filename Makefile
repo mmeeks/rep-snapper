@@ -24,7 +24,7 @@ ifeq ($(UNAME),Darwin)
     CFLAGS=-c -g -O2 -Wall # gcc on mac doesn't support no-pragmas. Remember to update the global CFLAGS too if you're adding something that should also be added for the other platform(s).
     OPT_DIR=/opt/local
 	INC=-I$(OPT_DIR)/include -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)/ann_1.1.1/include -I$(LIB_DIR)
-	LDFLAGS=-L$(OPT_DIR)/lib -lpthread -lfltk -lfltk_forms -lfltk_gl -L$(LIB_DIR)/xml
+	LDFLAGS=-L$(OPT_DIR)/lib -lpthread -lfltk -lfltk_forms -lfltk_gl -L$(LIB_DIR)/xml -L$(LIB_DIR)/polylib
 	LDFLAGS+= -lboost_thread-mt -l boost_system-mt
     LDFLAGS+= -framework Carbon -framework OpenGL -framework GLUT -framework AGL
 endif
@@ -50,7 +50,7 @@ EXECUTABLE=repsnapper
 
 all: $(SOURCES) $(EXECUTABLE)
 
-$(EXECUTABLE): xml_lib $(OBJECTS)
+$(EXECUTABLE): xml_lib poly_lib $(OBJECTS)
 	$(CXX) ${INC} $(OBJECTS) $(LDFLAGS) -o $@ 
 
 %.cxx %.h:%.fl
@@ -66,9 +66,13 @@ $(EXECUTABLE): xml_lib $(OBJECTS)
 xml_lib:
 	make -C ../Libraries/xml/ all
 
+poly_lib:
+	make -C ../Libraries/polylib/ all
+	
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE) $(GENERATED)
 	make -i -C ../Libraries/xml/ clean
+	make -i -C ../Libraries/polylib/ clean
 
 # make update-deps will re-write the dependenciues below
 update-depends:
