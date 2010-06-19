@@ -880,7 +880,7 @@ MVC->redraw();}
             xywh {710 230 575 600}
           } {
             Fl_Group {} {
-              label {Communation Log} open
+              label {Communication Logs} open
               xywh {710 255 575 575} hide
             } {
               Fl_Tabs {} {open
