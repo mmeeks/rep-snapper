@@ -49,7 +49,7 @@ ifeq ($(UNAME),Darwin)
     MACPORTS_DIR=/opt/local
 	INC=$(BOOST_INC) -I$(MACPORTS_DIR)/include -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)/ann_1.1.1/include -I$(LIB_DIR)
 	INC+=-I$(LIB_DIR)/polylib
-	LDFLAGS=$(BOOST_LIB) -L$(MACPORTS_DIR)/lib -lpthread -lfltk -lfltk_forms -lfltk_gl -L$(LIB_DIR)/xml
+	LDFLAGS=$(BOOST_LIB) -L$(MACPORTS_DIR)/lib -lpthread -lfltk -lfltk_forms -lfltk_gl
 	LDFLAGS+=-L$(LIB_DIR)/polylib -lpolylib
     LDFLAGS+=-framework Carbon -framework OpenGL -framework GLUT -framework AGL
 endif
@@ -74,7 +74,7 @@ OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(SOURCES))))
 
 all: $(SOURCES) $(EXECUTABLE)
 
-$(EXECUTABLE): xml_lib poly_lib $(OBJECTS)
+$(EXECUTABLE): poly_lib $(OBJECTS)
 	$(CXX) ${INC} $(OBJECTS) $(LDFLAGS) -o $@
 
 %.cxx %.h:%.fl
@@ -87,15 +87,11 @@ $(EXECUTABLE): xml_lib poly_lib $(OBJECTS)
 %.o:%.c
 	$(CC) ${INC} $(CFLAGS) $< -o $@
 
-xml_lib:
-	make -C ../Libraries/xml/ all
-
 poly_lib:
 	make -C ../Libraries/polylib/ all
-	
+
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE) $(GENERATED)
-	make -i -C ../Libraries/xml/ clean
 	make -i -C ../Libraries/polylib/ clean
 
 # make update-deps will re-write the dependenciues below
