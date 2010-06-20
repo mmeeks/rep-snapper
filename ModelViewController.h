@@ -136,6 +136,11 @@ public:
 	void SetDrawLineNumbers(bool val){ProcessControl.DrawLineNumbers = val; redraw();}
 	void SetDrawOutlineNumbers(bool val){ProcessControl.DrawOutlineNumbers = val; redraw();}
 
+	void SetDrawCuttingPlanePolyNumbers(bool val){ProcessControl.DrawCPOutlineNumbers = val; redraw();}
+	void SetDrawCuttingPlaneLineNumbers(bool val){ProcessControl.DrawCPLineNumbers = val; redraw();}
+	void SetDrawCuttingPlaneVertexNumbers(bool val){ProcessControl.DrawCPVertexNumbers = val; redraw();}
+	
+
 	void SetShellOnly(bool val) {ProcessControl.ShellOnly = val; redraw();}
 	void SetShellCount(uint val) {ProcessControl.ShellCount = val; redraw();}
 

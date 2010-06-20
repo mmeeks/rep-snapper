@@ -235,13 +235,13 @@ void STL::displayInfillOld(const ProcessController &PC, CuttingPlane &plane, uin
 		vector<Vector2f> infill;
 
 		CuttingPlane infillCuttingPlane = plane;
-		infillCuttingPlane.ClearShrink();
 		if(PC.ShellOnly == false)
 		{
 			switch( PC.m_ShrinkQuality )
 			{
 			case SHRINK_FAST:
 				infillCuttingPlane.ShrinkFast(PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane, false, PC.ShellCount);
+				infillCuttingPlane.ClearShrink();
 				break;
 			case SHRINK_NICE:
 				// GPC stuff removed
@@ -455,7 +455,8 @@ void STL::draw(const ProcessController &PC, float opasity)
 						break;
 					case SHRINK_LOGICK:
 						plane.ShrinkLogick(PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane, false, PC.ShellCount);
-						plane.Draw(PC.DrawVertexNumbers, PC.DrawLineNumbers, PC.DrawOutlineNumbers);
+						plane.Draw(PC.DrawVertexNumbers, PC.DrawLineNumbers, PC.DrawCPOutlineNumbers, PC.DrawCPLineNumbers, PC.DrawCPVertexNumbers);
+						displayInfillOld(PC, plane, LayerNr, altInfillLayers);
 						break;
 					}
 					LayerNr++;
@@ -1933,6 +1934,7 @@ CuttingPlaneOptimizer::CuttingPlaneOptimizer(CuttingPlane* cuttingPlane, float z
 		{
 			Polygon2f* newPoly = new Polygon2f();
 			newPoly->hole = poly->hole;
+			newPoly->index = p;
 
 			size_t count = poly->points.size();
 			for(size_t i=0; i<count;i++)
@@ -1967,6 +1969,35 @@ void CuttingPlaneOptimizer::Dispose()
 	{
 		delete (*pIt);
 		*pIt = NULL;
+	}
+}
+
+void CuttingPlaneOptimizer::MakeOffsetPolygons(vector<Poly>& polys, vector<Vector2f>& vectors)
+{
+	for(list<Polygon2f*>::iterator pIt=this->positivePolygons.begin(); pIt!=this->positivePolygons.end(); pIt++)
+	{
+		DoMakeOffsetPolygons(*pIt, polys, vectors);
+	}
+}
+
+void CuttingPlaneOptimizer::DoMakeOffsetPolygons(Polygon2f* pPoly, vector<Poly>& polys, vector<Vector2f>& vectors)
+{
+	Poly p;
+	for( vector<Vector2f>::iterator pIt = pPoly->vertices.begin(); pIt!=pPoly->vertices.end(); pIt++)
+	{
+		p.points.push_back(vectors.size());
+		vectors.push_back(*pIt);
+	}
+	p.hole = pPoly->hole;
+	polys.push_back(p);
+
+	for( list<Polygon2f*>::iterator pIt = pPoly->containedSolids.begin(); pIt!=pPoly->containedSolids.end(); pIt++)
+	{
+		DoMakeOffsetPolygons(*pIt, polys, vectors);
+	}
+	for( list<Polygon2f*>::iterator pIt = pPoly->containedHoles.begin(); pIt!=pPoly->containedHoles.end(); pIt++)
+	{
+		DoMakeOffsetPolygons(*pIt, polys, vectors);
 	}
 }
 
@@ -2006,6 +2037,8 @@ void CuttingPlane::ShrinkLogick(float distance, float optimization, bool Display
 
 	cpo->Shrink(distance, useFillets, clippingPlane->positivePolygons);
 	optimizers.push_back(clippingPlane);
+
+	clippingPlane->MakeOffsetPolygons(offsetPolygons, offsetVertices);
 }
 
 
@@ -2284,7 +2317,7 @@ bool CuttingPlane::VertexIsOutsideOriginalPolygon( Vector2f point, float z)
 #define FREE(p)            {if (p) {free(p); (p)= NULL;}}
 
 
-void CuttingPlane::Draw(bool DrawVertexNumbers, bool DrawLineNumbers, bool DrawOutlineNumbers)
+void CuttingPlane::Draw(bool DrawVertexNumbers, bool DrawLineNumbers, bool DrawOutlineNumbers, bool DrawCPLineNumbers, bool DrawCPVertexNumbers)
 {
 	// Draw the raw poly's in red
 	glColor3f(1,0,0);
@@ -2296,9 +2329,12 @@ void CuttingPlane::Draw(bool DrawVertexNumbers, bool DrawLineNumbers, bool DrawO
 			glVertex3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, Z);
 		glEnd();
 
-		ostringstream oss;
-		oss << p;
-		renderBitmapString(Vector3f(polygons[p].center.x, polygons[p].center.y, Z) , GLUT_BITMAP_8_BY_13 , oss.str());
+		if(DrawOutlineNumbers)
+		{
+			ostringstream oss;
+			oss << p;
+			renderBitmapString(Vector3f(polygons[p].center.x, polygons[p].center.y, Z) , GLUT_BITMAP_8_BY_13 , oss.str());
+		}
 	}
 
 	for(size_t o=0;o<optimizers.size();o++)
@@ -2328,15 +2364,17 @@ void CuttingPlane::Draw(bool DrawVertexNumbers, bool DrawLineNumbers, bool DrawO
 	glEnd();
 	
 
-	// Vertex numbers
 	if(DrawVertexNumbers)
+	{
 		for(size_t v=0;v<vertices.size();v++)
-			{
-				ostringstream oss;
-				oss << v;
+		{
+			ostringstream oss;
+			oss << v;
 			renderBitmapString(Vector3f (vertices[v].x, vertices[v].y, Z) , GLUT_BITMAP_8_BY_13 , oss.str());
-			}
+		}
+	}
 	if(DrawLineNumbers)
+	{
 		for(size_t l=0;l<lines.size();l++)
 		{
 			ostringstream oss;
@@ -2345,7 +2383,37 @@ void CuttingPlane::Draw(bool DrawVertexNumbers, bool DrawLineNumbers, bool DrawO
 			glColor4f(1,0.5,0,1);
 			renderBitmapString(Vector3f (Center.x, Center.y, Z) , GLUT_BITMAP_8_BY_13 , oss.str());
 		}
+	}
 
+	if(DrawCPVertexNumbers)
+	{
+		for(size_t p=0; p<polygons.size();p++)
+		{
+			for(size_t v=0; v<polygons[p].points.size();v++)
+			{
+				ostringstream oss;
+				oss << v;
+				renderBitmapString(Vector3f(vertices[polygons[p].points[v]].x, vertices[polygons[p].points[v]].y, Z) , GLUT_BITMAP_8_BY_13 , oss.str());
+			}
+		}
+	}
+	
+	if(DrawCPLineNumbers)
+	{
+		Vector3f loc;
+		loc.z = Z;
+		for(size_t p=0; p<polygons.size();p++)
+		{
+			for(size_t v=0; v<polygons[p].points.size();v++)
+			{
+				loc.x = (vertices[polygons[p].points[v]].x + vertices[polygons[p].points[(v+1)%polygons[p].points.size()]].x) /2;
+				loc.y = (vertices[polygons[p].points[v]].y + vertices[polygons[p].points[(v+1)%polygons[p].points.size()]].y) /2;
+				ostringstream oss;
+				oss << v;
+				renderBitmapString(loc, GLUT_BITMAP_8_BY_13 , oss.str());
+			}
+		}
+	}
 
 //	Pathfinder a(offsetPolygons, offsetVertices);
 
@@ -2459,10 +2527,10 @@ void CuttingPlane::CleanupPolygons(float Optimization)
 	float allowedError = Optimization;
 	for(size_t p=0;p<polygons.size();p++)
 	{
-		for(size_t v=0;v<polygons[p].points.size();)
+		for(size_t v=0;v<=polygons[p].points.size();)
 		{
 			Vector2f p1 =vertices[polygons[p].points[(v-1+polygons[p].points.size())%polygons[p].points.size()]];
-			Vector2f p2 =vertices[polygons[p].points[v]];
+			Vector2f p2 =vertices[polygons[p].points[v%polygons[p].points.size()]];
 			Vector2f p3 =vertices[polygons[p].points[(v+1)%polygons[p].points.size()]];
 
 			Vector2f v1 = (p2-p1);

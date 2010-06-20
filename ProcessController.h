@@ -99,6 +99,10 @@ public:
 		DisplayDebuginFill = true;
 		DisplayCuttingPlane = true;
 
+		DrawCPVertexNumbers = false;
+		DrawCPLineNumbers = false;
+		DrawCPOutlineNumbers = false;
+
 		FileLogginEnabled = true;
 		TempReadingEnabled = true;
 		ClearLogfilesWhenPrintStarts = true;
@@ -246,6 +250,9 @@ public:
 	bool DrawVertexNumbers;
 	bool DrawLineNumbers;
 	bool DrawOutlineNumbers;
+	bool DrawCPVertexNumbers;
+	bool DrawCPLineNumbers;
+	bool DrawCPOutlineNumbers;
 	//string Notes; // Thers is no ui element for this field, it was causing problems with GCodeEnd UI field
 
 	// Rendering

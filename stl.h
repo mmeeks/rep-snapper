@@ -131,7 +131,7 @@ public:
 	}
 	void recurseSelfIntersectAndDivide(float z, vector<locator> &EndPointStack, vector<outline> &outlines, vector<locator> &visited);
 	void CalcInFill(vector<Vector2f> &infill, uint LayerNr, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill);	// Collide a infill-line with the polygons
-	void Draw(bool DrawVertexNumbers, bool DrawLineNumbers, bool DrawOutlineNumbers);
+	void Draw(bool DrawVertexNumbers, bool DrawLineNumbers, bool DrawOutlineNumbers, bool DrawCPLineNumbers, bool DrawCPVertexNumbers);
 	bool LinkSegments(float z, float shrinkValue, float Optimization, bool DisplayCuttingPlane, bool ShrinkNice, int ShellCount);		// Link Segments to form polygons
 	void CleanupPolygons(float Optimization);			// remove redudant points
 	void CleanupOffsetPolygons(float Optimization);			// remove redudant points
@@ -226,8 +226,11 @@ public:
 	void Shrink(float distance, bool useFillets, list<Polygon2f*> &resPolygons);
 	void Draw();
 	void Dispose();
+	void MakeOffsetPolygons(vector<Poly>& polys, vector<Vector2f>& vectors);
 private:
 	void PushPoly(Polygon2f* poly);
+	void DoMakeOffsetPolygons(Polygon2f* pPoly, vector<Poly>& polys, vector<Vector2f>& vectors);
+
 };
 
 

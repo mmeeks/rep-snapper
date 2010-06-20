@@ -16,7 +16,7 @@ class GUI {open
   } {
     Fl_Window mainWindow {
       label {RepSnapper by Kulitorum www.kulitorum.com} open
-      xywh {313 92 1290 837} type Double box UP_BOX color 39 selection_color 39 labelsize 12 resizable visible
+      xywh {452 69 1290 837} type Double box UP_BOX color 39 selection_color 39 labelsize 12 hide resizable
     } {
       Fl_Box MVC {
         label {An instace of ModelViewController}
@@ -441,7 +441,7 @@ MVC->redraw();}
                 label {Logick's Algorithm}
                 callback {MVC->SetShrinkQuality("Logick");
 MVC->redraw();}
-                xywh {15 15 30 20} hide deactivate
+                xywh {15 15 30 20}
               }
             }
             Fl_Value_Slider OptimizationSlider {
@@ -553,173 +553,173 @@ MVC->redraw();}
           }
         }
         Fl_Group {} {
-          label {Display options}
+          label {Display options} open
           xywh {715 25 545 805} color 47 hide
         } {
           Fl_Group {} {
             label {STL rendering} open
-            xywh {715 55 535 305} box ENGRAVED_FRAME color 39
+            xywh {715 45 535 305} box ENGRAVED_FRAME color 39
           } {
             Fl_Light_Button DisplayPolygonsButton {
               label {Display Polygons}
               callback {MVC->SetDisplayPolygons(o->value());}
-              xywh {750 65 220 20} value 1 selection_color 63
+              xywh {750 55 220 20} value 1 selection_color 63
             }
             Fl_Light_Button DisplayWireframeButton {
               label {Display Wireframe}
               callback {MVC->SetDisplayWireframe(o->value());}
-              xywh {1015 65 140 20} selection_color 63
+              xywh {1015 55 140 20} selection_color 63
             }
             Fl_Light_Button DisplayNormalsButton {
               label {Display Normals}
               callback {MVC->SetDisplayNormals(o->value());}
-              xywh {750 190 220 20} selection_color 63
+              xywh {750 180 220 20} selection_color 63
             }
             Fl_Light_Button DisplayEndpointsButton {
               label {Display Endpoints}
               callback {MVC->SetDisplayEndpoints(o->value());}
-              xywh {1015 190 220 20} selection_color 63
+              xywh {1015 180 220 20} selection_color 63
             }
             Fl_Value_Slider PolygonValSlider {
               label Val
               callback {MVC->SetPolygonVal(o->value());
 MVC->redraw();}
-              xywh {750 130 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
+              xywh {750 120 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
             }
             Fl_Value_Slider PolygonSatSlider {
               label Sat
               callback {MVC->SetPolygonSat(o->value());
 MVC->redraw();}
-              xywh {750 110 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
+              xywh {750 100 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
             }
             Fl_Value_Slider PolygonHueSlider {
               label Hue
               callback {MVC->SetPolygonHue(o->value());
 MVC->redraw();}
-              xywh {750 90 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
+              xywh {750 80 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
             }
             Fl_Value_Slider WireframeValSlider {
               label Val
               callback {MVC->SetWireframeVal(o->value());
 MVC->redraw();}
-              xywh {1015 130 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
+              xywh {1015 120 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
             }
             Fl_Value_Slider WireframeSatSlider {
               label Sat
               callback {MVC->SetWireframeSat(o->value());
 MVC->redraw();}
-              xywh {1015 110 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
+              xywh {1015 100 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
             }
             Fl_Value_Slider WireframeHueSlider {
               label Hue
               callback {MVC->SetWireframeHue(o->value());
 MVC->redraw();}
-              xywh {1015 90 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
+              xywh {1015 80 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
             }
             Fl_Value_Slider NormalValSlider {
               label Val
               callback {MVC->SetNormalsVal(o->value());
 MVC->redraw();}
-              xywh {750 255 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
+              xywh {750 245 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
             }
             Fl_Value_Slider NormalSatSlider {
               label Sat
               callback {MVC->SetNormalsSat(o->value());
 MVC->redraw();}
-              xywh {750 235 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
+              xywh {750 225 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
             }
             Fl_Value_Slider NormalHueSlider {
               label Hue
               callback {MVC->SetNormalsHue(o->value());
 MVC->redraw();}
-              xywh {750 215 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
+              xywh {750 205 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
             }
             Fl_Value_Slider EndpointValSlider {
               label Val
               callback {MVC->SetEndpointsVal(o->value());
 MVC->redraw();}
-              xywh {1015 255 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
+              xywh {1015 245 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
             }
             Fl_Value_Slider EndpointSatSlider {
               label Sat
               callback {MVC->SetEndpointsSat(o->value());
 MVC->redraw();}
-              xywh {1015 235 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
+              xywh {1015 225 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
             }
             Fl_Value_Slider EndpointHueSlider {
               label Hue
               callback {MVC->SetEndpointsHue(o->value());
 MVC->redraw();}
-              xywh {1015 215 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
+              xywh {1015 205 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
             }
             Fl_Light_Button DisplayBBoxButton {
               label {Display Bounding Box}
               callback {MVC->SetDisplayBBox(o->value());}
-              xywh {750 335 220 20} selection_color 63
+              xywh {750 325 220 20} selection_color 63
             }
             Fl_Value_Slider HighlightSlider {
               label Highlight
               callback {MVC->SetHighlight(o->value());
 MVC->redraw();}
-              xywh {1015 335 220 20} type {Horz Knob} selection_color 2 align 5 value 0.5 textsize 14
+              xywh {1015 325 220 20} type {Horz Knob} selection_color 2 align 5 value 0.5 textsize 14
             }
             Fl_Value_Slider NormalLengthSlider {
               label {Normals length}
               callback {MVC->SetNormalsLength(o->value());
 MVC->redraw();}
-              xywh {750 295 220 20} type {Horz Knob} selection_color 2 align 5 minimum 1 maximum 30 step 0.1 value 10 textsize 14
+              xywh {750 285 220 20} type {Horz Knob} selection_color 2 align 5 minimum 1 maximum 30 step 0.1 value 10 textsize 14
             }
             Fl_Value_Slider EndpointSizeSlider {
               label {Endpoints size}
               callback {MVC->SetEndPointSize(o->value());
 MVC->redraw();}
-              xywh {1015 295 220 20} type {Horz Knob} selection_color 2 align 5 minimum 1 maximum 20 step 0.1 value 8 textsize 14
+              xywh {1015 285 220 20} type {Horz Knob} selection_color 2 align 5 minimum 1 maximum 20 step 0.1 value 8 textsize 14
             }
             Fl_Light_Button DisplayWireframeShadedButton {
               label Shaded
               callback {MVC->SetDisplayWireframeShaded(o->value());}
-              xywh {1160 65 75 20} selection_color 63
+              xywh {1160 55 75 20} selection_color 63
             }
             Fl_Value_Slider PolygonOpasitySlider {
               label Opa
               callback {MVC->SetPolygonOpasity(o->value());
 MVC->redraw();}
-              xywh {750 150 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
+              xywh {750 140 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
             }
           }
           Fl_Group {} {
             label {GCode rendering} open
-            xywh {715 380 535 185} box ENGRAVED_FRAME color 39
+            xywh {715 370 535 175} box ENGRAVED_FRAME color 39
           } {
             Fl_Light_Button DisplayGCodeButton {
               label {Display GCode}
               callback {MVC->SetDisplayGCode(o->value());
 MVC->redraw();}
-              xywh {750 390 220 20} value 1 selection_color 63
+              xywh {750 380 220 20} value 1 selection_color 63
             }
             Fl_Value_Slider GCodeExtrudeValSlider {
               label Val
               callback {MVC->SetGCodeExtrudeVal(o->value());
 MVC->redraw();}
-              xywh {750 455 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
+              xywh {750 445 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
             }
             Fl_Value_Slider GCodeExtrudeSatSlider {
               label Sat
               callback {MVC->SetGCodeExtrudeSat(o->value());
 MVC->redraw();}
-              xywh {750 435 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
+              xywh {750 425 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
             }
             Fl_Value_Slider GCodeExtrudeHueSlider {
               label Hue
               callback {MVC->SetGCodeExtrudeHue(o->value());
 MVC->redraw();}
-              xywh {750 415 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
+              xywh {750 405 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
             }
             Fl_Light_Button LuminanceShowsSpeedButton {
               label {Luminance shows speed}
               callback {MVC->SetLuminanceShowsSpeed(o->value());
 MVC->redraw();}
-              xywh {1015 390 220 20} value 1 selection_color 63
+              xywh {1015 380 220 20} value 1 selection_color 63
             }
             Fl_Button {} {
               label {Crop Range}
@@ -729,7 +729,7 @@ GCodeDrawStartSlider->range(start,end);
 GCodeDrawEndSlider->range(start,end);
 GCodeDrawStartSlider->redraw();
 GCodeDrawEndSlider->redraw();}
-              xywh {750 530 220 20}
+              xywh {750 520 220 20}
             }
             Fl_Button {} {
               label {Reset crop range}
@@ -737,60 +737,75 @@ GCodeDrawEndSlider->redraw();}
 GCodeDrawEndSlider->range(0,1);
 GCodeDrawStartSlider->redraw();
 GCodeDrawEndSlider->redraw();}
-              xywh {1020 530 220 20}
+              xywh {1020 520 220 20}
             }
             Fl_Slider GCodeDrawStartSlider {
               label From
               callback {MVC->SetGCodeDrawStart(o->value());}
-              xywh {750 480 490 20} type {Horz Knob} color 39 selection_color 2 align 4
+              xywh {750 470 490 20} type {Horz Knob} color 39 selection_color 2 align 4
             }
             Fl_Slider GCodeDrawEndSlider {
               label To
               callback {MVC->SetGCodeDrawEnd(o->value());}
-              xywh {750 505 490 20} type {Horz Knob} color 39 selection_color 2 align 4
+              xywh {750 495 490 20} type {Horz Knob} color 39 selection_color 2 align 4
             }
             Fl_Value_Slider GCodeMoveValSlider {
               label Val
               callback {MVC->SetGCodeMoveVal(o->value());
 MVC->redraw();}
-              xywh {1015 455 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
+              xywh {1015 445 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
             }
             Fl_Value_Slider GCodeMoveSatSlider {
               label Sat
               callback {MVC->SetGCodeMoveSat(o->value());
 MVC->redraw();}
-              xywh {1015 435 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
+              xywh {1015 425 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
             }
             Fl_Value_Slider GCodeMoveHueSlider {
               label Hue
               callback {MVC->SetGCodeMoveHue(o->value());
 MVC->redraw();}
-              xywh {1015 415 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
+              xywh {1015 405 220 20} type {Horz Knob} selection_color 2 align 4 value 0.5 textsize 14
             }
           }
           Fl_Group {} {
             label {Layer preview} open
-            xywh {715 585 540 90} box ENGRAVED_FRAME color 39
+            xywh {715 565 540 120} box ENGRAVED_FRAME color 39
           } {
             Fl_Value_Slider CuttingPlaneValueSlider {
               label Cuttingplane
               callback {MVC->SetCuttingPlaneValue(o->value());}
-              xywh {725 645 515 20} type {Horz Knob} align 5 value 0.5 textsize 14
+              xywh {725 615 515 20} type {Horz Knob} align 5 value 0.5 textsize 14
             }
             Fl_Light_Button DisplayCuttingPlaneButton {
               label {Display CuttingPlane}
               callback {MVC->SetDisplayCuttingPlane(o->value());}
-              xywh {725 600 170 20} selection_color 63
+              xywh {725 575 170 20} selection_color 63
             }
             Fl_Light_Button DisplayinFillButton {
               label {Display inFill}
               callback {MVC->SetDisplayinFill(o->value());}
-              xywh {900 600 165 20} selection_color 63
+              xywh {900 575 165 20} selection_color 63
             }
             Fl_Light_Button DisplayAllLayersButton {
               label {Display all layers}
               callback {MVC->SetDisplayAllLayers(o->value());}
-              xywh {1070 600 170 20} selection_color 63
+              xywh {1070 575 170 20} selection_color 63
+            }
+            Fl_Light_Button DrawCuttingPlaneVertexNumbersButton {
+              label {Vertex numbers}
+              callback {MVC->SetDrawCuttingPlaneVertexNumbers(o->value());}
+              xywh {725 645 180 25} selection_color 63
+            }
+            Fl_Light_Button DrawCuttingPlaneLineNumbersButton {
+              label {Line numbers}
+              callback {MVC->SetDrawCuttingPlaneLineNumbers(o->value());}
+              xywh {910 645 160 25} selection_color 63
+            }
+            Fl_Light_Button DrawCuttingPlanePolygonNumbersButton {
+              label {Polygon numbers}
+              callback {MVC->SetDrawCuttingPlanePolyNumbers(o->value());}
+              xywh {1075 645 165 25} selection_color 63
             }
           }
           Fl_Group {} {
