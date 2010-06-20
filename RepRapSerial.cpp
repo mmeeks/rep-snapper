@@ -180,13 +180,20 @@ void RepRapSerial::SendNextLine()
 		if (time - lastUpdateTime > 1000) {
 			ToolkitLock guard;
 
-			gui->ProgressBar->value ((float)m_iLineNr);
-
-			double elapsed = (time - startTime) / 1000.f;
+			double elapsed = (time - startTime) / 1000.0;
 			double max = gui->ProgressBar->maximum();
 			double progress = max > 0.0 ? m_iLineNr / gui->ProgressBar->maximum() : 0.0;
 			double total_time = progress > 0.0 ? elapsed / progress : elapsed;
 			double remaining = total_time - elapsed;
+
+			/*
+			 * Fltk has no way of knowing if this is a meaningful
+			 * change, and has a habit of doing expensive re-draws.
+			 * Detect whether there will be any visible change and
+			 * if not, don't update.
+			 */
+			if (fabs (((double)m_iLineNr - gui->ProgressBar->value()) / max) > 1.0/1000.0)
+				gui->ProgressBar->value ((float)m_iLineNr);
 
 			int remaining_seconds = (int)fmod (remaining, 60.0);
 			int remaining_minutes = ((int)fmod (remaining, 3600.0) - remaining_seconds) / 60;
@@ -194,17 +201,22 @@ void RepRapSerial::SendNextLine()
 
 			std::stringstream oss;
 
+			/*
+			 * Trade accuracy for reduced UI update frequency.
+			 */
 			if (remaining_hours > 0)
-				oss << setw(2) << remaining_hours << "h";
-			if (remaining_minutes > 0 || oss.tellp())
+				oss << setw(2) << remaining_hours << "h" << remaining_minutes << "m";
+			else if (remaining_minutes > 5)
 				oss << setw(2) << remaining_minutes << "m";
-			if (remaining_seconds > 0 || oss.tellp())
-				oss << setw(2) << remaining_seconds << "s";
-			if (!oss.tellp())
-				oss << "no estimate";
+			else if (remaining_seconds > 0)
+				oss << setw(2) << remaining_minutes << "m" << remaining_seconds << "s";
+			else
+				oss << "Progress";
 
 			std::string s = oss.str();
-			gui->ProgressBar->copy_label(s.c_str());
+			const char *old_label = gui->ProgressBar->label();
+			if (!old_label || strcmp (old_label, s.c_str()))
+				gui->ProgressBar->copy_label(s.c_str());
 		}
 
 	}
@@ -509,8 +521,11 @@ void RepRapSerial::OnEvent(char* data, size_t dwBytesRead)
 				debugPrint( string("Received:") + command+ " with parameter " + parameter);
 
 				ToolkitLock guard;
-				gui->CurrentTempText->value(parameter.c_str());
-				// Check parameter
+
+				// Reduce re-draws by only updating the GUI on a real change
+				const char *old_value = gui->CurrentTempText->value();
+				if (!old_value || strcmp (parameter.c_str(), old_value))
+					gui->CurrentTempText->value(parameter.c_str());
 			}
 			else if(command == "start")
 			{
