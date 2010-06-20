@@ -6,8 +6,22 @@ CC=gcc
 CXX=g++
 LIB_DIR=../Libraries
 UNAME := $(shell uname)
-WARNING_FLAGS = -Wall -Wno-pragmas
-CFLAGS = -c -g -O2 $(WARNING_FLAGS) #Remember to update in Mac OS X section too.
+ifeq ($(TARGET),)
+	TARGET=RELEASE
+endif
+ifeq ($(UNAME),Darwin)
+	WARNING_FLAGS = -Wall
+else
+	WARNING_FLAGS = -Wall -Wno-pragmas
+endif
+
+ifeq ($(TARGET),RELEASE)
+	CFLAGS = -c -O2 $(WARNING_FLAGS)
+	EXECUTABLE=repsnapper
+else
+	CFLAGS = -c -g -O0 $(WARNING_FLAGS)
+	EXECUTABLE=repsnapper_debug
+endif
 
 # Linux
 ifeq ($(UNAME),Linux)
@@ -21,17 +35,23 @@ endif
 
 # Mac
 ifeq ($(UNAME),Darwin)
-# assumes you have installed MacPorts from http://www.macports.org and run:
-# sudo port install boost fltk lua
-    CFLAGS=-c -O1
-    BOOST_HOME=/Users/kimballr/boost
-    OPT_DIR=/opt/local
-	INC=-I$(BOOST_HOME)/include -I$(OPT_DIR)/include -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)/ann_1.1.1/include -I$(LIB_DIR)
+    # assumes you have installed MacPorts from http://www.macports.org and run:
+    # sudo port install boost fltk lua
+	# assumes you have built boost as in the Readme.MacOsx.txt
+
+    BOOST_HOME=../Libraries/boost-darwin
+    BOOST_INC=-I$(BOOST_HOME)/include/boost-1_43
+	ifeq ($(TARGET),RELEASE)
+		BOOST_LIB=$(BOOST_HOME)/lib/libboost_thread-xgcc40-mt.a $(BOOST_HOME)/lib/libboost_system-xgcc40-mt.a
+	else
+		BOOST_LIB=$(BOOST_HOME)/lib/libboost_thread-xgcc40-mt-d.a $(BOOST_HOME)/lib/libboost_system-xgcc40-mt-d.a
+	endif
+    MACPORTS_DIR=/opt/local
+	INC=$(BOOST_INC) -I$(MACPORTS_DIR)/include -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)/ann_1.1.1/include -I$(LIB_DIR)
 	INC+=-I$(LIB_DIR)/polylib
-	LDFLAGS=-L$(OPT_DIR)/lib -lpthread -lfltk -lfltk_forms -lfltk_gl -L$(LIB_DIR)/xml
+	LDFLAGS=$(BOOST_LIB) -L$(MACPORTS_DIR)/lib -lpthread -lfltk -lfltk_forms -lfltk_gl -L$(LIB_DIR)/xml
 	LDFLAGS+=-L$(LIB_DIR)/polylib -lpolylib
-	LDFLAGS+= $(BOOST_HOME)/lib/libboost_thread-xgcc40-mt.a $(BOOST_HOME)/lib/libboost_system-xgcc40-mt.a
-    LDFLAGS+= -framework Carbon -framework OpenGL -framework GLUT -framework AGL
+    LDFLAGS+=-framework Carbon -framework OpenGL -framework GLUT -framework AGL
 endif
 
 GENERATED=UI.cxx UI.h
@@ -51,12 +71,11 @@ HEADERS=ArcBall.h AsyncSerial.h Convert.h Flu_DND.h Flu_Enumerations.h \
 
 OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(SOURCES))))
 
-EXECUTABLE=repsnapper
 
 all: $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): xml_lib poly_lib $(OBJECTS)
-	$(CXX) ${INC} $(OBJECTS) $(LDFLAGS) -o $@ 
+	$(CXX) ${INC} $(OBJECTS) $(LDFLAGS) -o $@
 
 %.cxx %.h:%.fl
 	rm -f $@ # fluid doesn't remove on failure.
