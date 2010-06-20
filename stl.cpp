@@ -50,18 +50,31 @@ extern "C" {
 
 #define PI 3.141592653589793238462643383279502884197169399375105820974944592308
 
-
-
 using namespace std;
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
 
+/* call me before glutting */
+void checkGlutInit()
+{
+	static bool inited = false;
+	if (inited)
+		return;
+	inited = true;
+	int argc;
+	char *argv[] = { "repsnapper" };
+	glutInit (&argc, argv);
+}
+
 void renderBitmapString(Vector3f pos, void* font, string text)
 {
 	char asd[100];
 	char *a = &asd[0];
+
+	checkGlutInit();
+
 	sprintf(asd,text.c_str());
 	glRasterPos3f(pos.x, pos.y, pos.z);
 	for (int c=0;c<text.size();c++)
@@ -1391,6 +1404,8 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 			int connectedlines = pathsfromhere->size();
 			if( connectedlines == 0) 
 			{
+				cout << "\r\npolygon was cut at LinkSegments " << z << " at vertex " << endPoint;
+
 				glLineWidth(10);
 				glBegin(GL_LINE_LOOP);
 
@@ -1401,7 +1416,6 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 				}
 				glEnd();
 				
-				cout << "\r\npolygon was cut at LinkSegments " << z << " at vertex " << endPoint;
 				return false;
 				// model failure, can go no further.
 				// Solution: Call myself recursive, with a differetn Z
