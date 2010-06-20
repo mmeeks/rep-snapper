@@ -76,12 +76,6 @@ struct InFillHit{
 	float t;		// intersection point on first line
 };
 
-struct Segment{
-	Segment(uint s, uint e){start = s; end = e;}
-	int start;		// Vertex index of start point
-	int end;		// Vertex index of end point
-};
-
 class Poly{
 public:
 	Poly(){};
@@ -157,6 +151,12 @@ public:
 	float getZ() { return Z; }
 
 	int RegisterPoint(Vector2f &p);
+
+	struct Segment {
+		Segment(uint s, uint e){start = s; end = e;}
+		int start;		// Vertex index of start point
+		int end;		// Vertex index of end point
+	};
 	void AddLine(Segment &line);
 
 	vector<Poly>& GetPolygons() { return polygons; }
@@ -170,10 +170,10 @@ private:
 
 	vector<CuttingPlaneOptimizer*> optimizers;
 
-	vector<Segment> lines;			// Segments - 2 points pr. line-segment
+	vector<Segment> lines;		// Segments - 2 points pr. line-segment
 
-	vector<Poly> polygons;			// Closed loops
-	vector<Vector2f> vertices;		// points
+	vector<Poly> polygons;		// Closed loops
+	vector<Vector2f> vertices;	// points
 	vector<Point2f*> advVertices;	// points
 	float Z;
 

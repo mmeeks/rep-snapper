@@ -70,7 +70,6 @@ class RFO_File;
 class RFO_Object;
 class RFO_Transform3D;
 
-struct Segment;
 struct InFillHit;
 
 typedef unsigned int uint;

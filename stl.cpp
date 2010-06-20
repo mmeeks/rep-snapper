@@ -858,7 +858,7 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane, const Matrix4f &T)
 	for(size_t i=0;i<triangles.size();i++)
 	{
 		foundOne=false;
-		Segment line(-1,-1);
+		CuttingPlane::Segment line(-1,-1);
 		Vector3f P1 = T*triangles[i].A;
 		Vector3f P2 = T*triangles[i].B;
 		if(where <= P1.z != where <= P2.z)
