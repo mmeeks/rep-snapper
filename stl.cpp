@@ -240,8 +240,8 @@ void STL::displayInfillOld(const ProcessController &PC, CuttingPlane &plane, uin
 			switch( PC.m_ShrinkQuality )
 			{
 			case SHRINK_FAST:
-				infillCuttingPlane.ShrinkFast(PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane, false, PC.ShellCount);
 				infillCuttingPlane.ClearShrink();
+				infillCuttingPlane.ShrinkFast(PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane, false, PC.ShellCount);
 				break;
 			case SHRINK_NICE:
 				// GPC stuff removed
