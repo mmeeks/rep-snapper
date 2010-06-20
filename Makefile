@@ -90,6 +90,9 @@ $(EXECUTABLE): poly_lib $(OBJECTS)
 poly_lib:
 	make -C ../Libraries/polylib/ all
 
+check:
+	cd ../test ; python ./rpstest.py ../Src/repsnapper
+
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE) $(GENERATED)
 	make -i -C ../Libraries/polylib/ clean
