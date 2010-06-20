@@ -67,7 +67,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 
 				float hackedZ = z;
 				while(plane.LinkSegments(hackedZ, ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, m_ShrinkQuality, ShellCount) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
-				{										// This happens when there's triangles missing in the input STL
+				{ // This happens when there's triangles missing in the input STL
 					hackedZ+= 0.1f;
 					stl->CalcCuttingPlane(hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices
 					plane.SetZ(z);
@@ -337,21 +337,20 @@ void ProcessController::Draw(Flu_Tree_Browser::Node *selected_node)
 	Vector3f translation = rfo.transform3D.transform.getTranslation();
 
 	printer.Draw(*this);
+
 	// Move objects
 	glTranslatef(translation.x+printOffset.x, translation.y+printOffset.y, translation.z+PrintMargin.z);
 	glPolygonOffset (0.5f, 0.5f);
 	rfo.Draw(*this, 1.0f, selected_node);
-	if(DisplayGCode)
+
+	if (DisplayGCode)
 	{
 		glTranslatef(-(translation.x+printOffset.x), -(translation.y+printOffset.y), -(translation.z+PrintMargin.z));
 		gcode.draw(*this);
-	}
 		glTranslatef(translation.x+printOffset.x, translation.y+printOffset.y, translation.z+PrintMargin.z);
-
-		glPolygonOffset (-0.5f, -0.5f);
-		rfo.Draw(*this, PolygonOpasity);
-//	float z=0;
-//	MakeRaft(z);
+	}
+	glPolygonOffset (-0.5f, -0.5f);
+	rfo.Draw(*this, PolygonOpasity);
 
 	if(DisplayBBox)
 	{
