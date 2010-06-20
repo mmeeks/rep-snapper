@@ -495,6 +495,7 @@ MVC->redraw();}
             }
             Fl_Button {} {
               label {Raft Settings}
+              callback {raftSettingsWindow->show();}
               xywh {905 390 165 25}
             }
           }
