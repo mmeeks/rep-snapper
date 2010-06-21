@@ -10,6 +10,13 @@
 
 #pragma once
 
+#ifdef __APPLE__
+	// disable the kqueue_reactor so the selector_reactor will be used instead.
+	// On Mac OS X 10.5, the kevent call was failing with errno 45 on every
+	// invocation which made it useless and just clogged up the queue
+	#define BOOST_ASIO_DISABLE_KQUEUE 0
+#endif
+
 #include <vector>
 #include <boost/thread.hpp>
 #include <boost/system/error_code.hpp>
@@ -115,12 +122,6 @@ private:
      */
     void readStart();
 
-#ifdef __APPLE__
-    /**
-     * helper function for readEnd on error.value() == 45
-     */
-    void doRead();
-#endif
     /**
      * Callback called at the end of the asynchronous operation
      */

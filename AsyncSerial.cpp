@@ -45,6 +45,19 @@ void AsyncSerial::open(const std::string& devname, unsigned int baud_rate,
     port_.set_option(opt_flow);
     port_.set_option(opt_stop);
 
+#if __APPLE__
+    // Note that open() follows POSIX semantics: multiple open() calls to the same file will succeed
+    // unless the TIOCEXCL ioctl is issued. This will prevent additional opens except by root-owned
+    // processes.
+    // See tty(4) ("man 4 tty") and ioctl(2) ("man 2 ioctl") for details.
+
+    int fd = port_.native();
+    if (ioctl(fd, TIOCEXCL) == -1) {
+    	setErrorStatus(true);
+    	return;
+    }
+#endif
+
     readStart();
 
     thread t(bind(&asio::io_service::run, &io_));
@@ -132,32 +145,12 @@ void AsyncSerial::readStart()
             asio::placeholders::bytes_transferred));
 }
 
-#ifdef __APPLE__
-void AsyncSerial::doRead()
-{
-    port_.async_read_some(asio::buffer(readBuffer_,readBufferSize),
-            bind(&AsyncSerial::readEnd,
-            this,
-            asio::placeholders::error,
-            asio::placeholders::bytes_transferred));
-}
-#endif
-
 void AsyncSerial::readEnd(const boost::system::error_code& error,
         size_t bytes_transferred)
 {
     if(error)
     {
-		#ifdef __APPLE__
-		if(error.value()==45)
-		{
-			//Bug on OS X, it might be necessary to repeat the setup
-			//http://osdir.com/ml/lib.boost.asio.user/2008-08/msg00004.html
-			doRead();
-			return;
-		}
-		#endif //__APPLE__
-       //error can be true even because the serial port was closed.
+    	//error can be true even because the serial port was closed.
         //In this case it is not a real error, so ignore
         if(isOpen())
         {

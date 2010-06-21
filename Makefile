@@ -49,7 +49,8 @@ ifeq ($(UNAME),Darwin)
     MACPORTS_DIR=/opt/local
 	INC=$(BOOST_INC) -I$(MACPORTS_DIR)/include -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)/ann_1.1.1/include -I$(LIB_DIR)
 	INC+=-I$(LIB_DIR)/polylib
-	LDFLAGS=$(BOOST_LIB) -L$(MACPORTS_DIR)/lib -lpthread -lfltk -lfltk_forms -lfltk_gl
+	INC+=-pthread
+	LDFLAGS=$(BOOST_LIB) -L$(MACPORTS_DIR)/lib -pthread -lfltk -lfltk_forms -lfltk_gl
 	LDFLAGS+=-L$(LIB_DIR)/polylib -lpolylib
     LDFLAGS+=-framework Carbon -framework OpenGL -framework GLUT -framework AGL
 endif
