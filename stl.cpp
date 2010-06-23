@@ -467,7 +467,7 @@ void STL::draw(const ProcessController &PC, float opasity)
 						displayInfillOld(PC, plane, LayerNr, altInfillLayers);
 						break;
 					case SHRINK_LOGICK:
-						plane.ShrinkLogick(PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane, false, PC.ShellCount);
+						plane.ShrinkLogick(PC.ExtrudedMaterialWidth, PC.Optimization, PC.DisplayCuttingPlane, PC.ShellCount);
 						plane.Draw(PC.DrawVertexNumbers, PC.DrawLineNumbers, PC.DrawCPOutlineNumbers, PC.DrawCPLineNumbers, PC.DrawCPVertexNumbers);
 						displayInfillOld(PC, plane, LayerNr, altInfillLayers);
 						break;
@@ -767,20 +767,33 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	for(size_t i=0;i<infill.size();i++)
 		lines.push_back(Vector3f(infill[i].x, infill[i].y, z));
 
-	// Copy polygons
-	if(offsetPolygons.size() != 0)
+	if( optimizers.size() != 0 )
+	{
+		// new method
+		for( int i = 1; i < optimizers.size()-1; i++)
 		{
-		for(size_t p=0;p<offsetPolygons.size();p++)
+			optimizers[i]->RetrieveLines(lines);
+		}
+	}
+	else
+	{
+		// old method
+		// Copy polygons
+		if(offsetPolygons.size() != 0)
+		{
+			for(size_t p=0;p<offsetPolygons.size();p++)
 			{
-			for(size_t i=0;i<offsetPolygons[p].points.size();i++)
+				for(size_t i=0;i<offsetPolygons[p].points.size();i++)
 				{
-				Vector2f P3 = offsetVertices[offsetPolygons[p].points[i]];
-				Vector2f P4 = offsetVertices[offsetPolygons[p].points[(i+1)%offsetPolygons[p].points.size()]];
-				lines.push_back(Vector3f(P3.x, P3.y, z));
-				lines.push_back(Vector3f(P4.x, P4.y, z));
+					Vector2f P3 = offsetVertices[offsetPolygons[p].points[i]];
+					Vector2f P4 = offsetVertices[offsetPolygons[p].points[(i+1)%offsetPolygons[p].points.size()]];
+					lines.push_back(Vector3f(P3.x, P3.y, z));
+					lines.push_back(Vector3f(P4.x, P4.y, z));
 				}
 			}
 		}
+	}
+
 	// Find closest point to last point
 
 	std::vector<bool> used;
@@ -2016,6 +2029,42 @@ void CuttingPlaneOptimizer::DoMakeOffsetPolygons(Polygon2f* pPoly, vector<Poly>&
 }
 
 
+void CuttingPlaneOptimizer::RetrieveLines(vector<Vector3f>& lines)
+{
+	for(list<Polygon2f*>::iterator pIt=this->positivePolygons.begin(); pIt!=this->positivePolygons.end(); pIt++)
+	{
+		DoRetrieveLines(*pIt, lines);
+	}
+}
+
+void CuttingPlaneOptimizer::DoRetrieveLines(Polygon2f* pPoly, vector<Vector3f>& lines)
+{
+	if( pPoly->vertices.size() == 0) return;
+	lines.reserve(lines.size()+pPoly->vertices.size()*2);
+	
+	{
+		vector<Vector2f>::iterator pIt = pPoly->vertices.begin();
+		lines.push_back(Vector3f(pIt->x, pIt->y, Z));
+		pIt++;
+		for( ; pIt!=pPoly->vertices.end(); pIt++)
+		{
+			lines.push_back(Vector3f(pIt->x, pIt->y, Z));
+			lines.push_back(Vector3f(pIt->x, pIt->y, Z));
+		}
+		lines.push_back(Vector3f(pPoly->vertices.front().x, pPoly->vertices.front().y, Z));
+	}
+
+	for( list<Polygon2f*>::iterator pIt = pPoly->containedSolids.begin(); pIt!=pPoly->containedSolids.end(); pIt++)
+	{
+		DoRetrieveLines(*pIt, lines);
+	}
+	for( list<Polygon2f*>::iterator pIt = pPoly->containedHoles.begin(); pIt!=pPoly->containedHoles.end(); pIt++)
+	{
+		DoRetrieveLines(*pIt, lines);
+	}
+}
+
+
 void CuttingPlaneOptimizer::PushPoly(Polygon2f* poly)
 {
 	poly->PlaceInList(positivePolygons);
@@ -2031,28 +2080,32 @@ void CuttingPlaneOptimizer::Draw()
 	}
 }
 
-void CuttingPlaneOptimizer::Shrink(float distance, bool useFillets, list<Polygon2f*> &resPolygons)
+void CuttingPlaneOptimizer::Shrink(float distance, list<Polygon2f*> &resPolygons)
 {
 	for(list<Polygon2f*>::iterator pIt =positivePolygons.begin(); pIt!=positivePolygons.end(); pIt++)
 	{
 		list<Polygon2f*> parentPolygons;
 		(*pIt)->Shrink(distance, parentPolygons, resPolygons);
-		assert(parentPolygons.size() == 0);
 	}
 }
 
 
-void CuttingPlane::ShrinkLogick(float distance, float optimization, bool DisplayCuttingPlane, bool useFillets, int ShellCount)
+void CuttingPlane::ShrinkLogick(float extrudedWidth, float optimization, bool DisplayCuttingPlane, int ShellCount)
 {
-	distance*=ShellCount;
 	CuttingPlaneOptimizer* cpo = new CuttingPlaneOptimizer(this, Z);
-	CuttingPlaneOptimizer* clippingPlane = new CuttingPlaneOptimizer(Z);
 	optimizers.push_back(cpo);
 
-	cpo->Shrink(distance, useFillets, clippingPlane->positivePolygons);
+	CuttingPlaneOptimizer* clippingPlane = new CuttingPlaneOptimizer(Z);
+	cpo->Shrink(extrudedWidth*0.5, clippingPlane->positivePolygons);
 	optimizers.push_back(clippingPlane);
 
-	clippingPlane->MakeOffsetPolygons(offsetPolygons, offsetVertices);
+	for(int outline = 2; outline <= ShellCount+1; outline++)
+	{
+		CuttingPlaneOptimizer* newOutline = new CuttingPlaneOptimizer(Z);
+		optimizers.back()->Shrink(extrudedWidth, newOutline->positivePolygons);
+		optimizers.push_back(newOutline);
+	}
+	optimizers.back()->MakeOffsetPolygons(offsetPolygons, offsetVertices);
 }
 
 
@@ -2351,7 +2404,7 @@ void CuttingPlane::Draw(bool DrawVertexNumbers, bool DrawLineNumbers, bool DrawO
 		}
 	}
 
-	for(size_t o=0;o<optimizers.size();o++)
+	for(size_t o=1;o<optimizers.size()-1;o++)
 	{
 		optimizers[o]->Draw();
 	}

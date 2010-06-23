@@ -104,7 +104,7 @@ public:
 	CuttingPlane();
 	~CuttingPlane();
 	void ShrinkFast(float distance, float optimization, bool DisplayCuttingPlane, bool useFillets, int ShellCount);		// Contracts polygons
-	void ShrinkLogick(float distance, float optimization, bool DisplayCuttingPlane, bool useFillets, int ShellCount);		// Contracts polygons
+	void ShrinkLogick(float distance, float optimization, bool DisplayCuttingPlane, int ShellCount);		// Contracts polygons
 	void ShrinkNice(float distance, float optimization, bool DisplayCuttingPlane, bool useFillets, int ShellCount);		// Contracts polygons
 	void selfIntersectAndDivide();
 	uint selfIntersectAndDivideRecursive(float z, uint startPolygon, uint startVertex, vector<outline> &outlines, const Vector2f endVertex, uint &level);
@@ -223,14 +223,15 @@ public:
 	CuttingPlaneOptimizer(float z) { Z = z; }
 	CuttingPlaneOptimizer(CuttingPlane* cuttingPlane, float z);
 	list<Polygon2f*> positivePolygons;
-	void Shrink(float distance, bool useFillets, list<Polygon2f*> &resPolygons);
+	void Shrink(float distance, list<Polygon2f*> &resPolygons);
 	void Draw();
 	void Dispose();
 	void MakeOffsetPolygons(vector<Poly>& polys, vector<Vector2f>& vectors);
+	void RetrieveLines(vector<Vector3f>& lines);
 private:
 	void PushPoly(Polygon2f* poly);
 	void DoMakeOffsetPolygons(Polygon2f* pPoly, vector<Poly>& polys, vector<Vector2f>& vectors);
-
+	void DoRetrieveLines(Polygon2f* pPoly, vector<Vector3f>& lines);
 };
 
 

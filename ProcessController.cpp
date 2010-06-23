@@ -37,15 +37,15 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 
 	gcode.commands.clear();
 
-	float destinationZ=PrintMargin.z;
+	float printOffsetZ=PrintMargin.z;
 
 	if(RaftEnable)
 	{
 		printOffset += Vector3f(RaftSize, RaftSize, 0);
-		MakeRaft(destinationZ);
+		MakeRaft(printOffsetZ);
 	}
 	float E=0.0f;
-	while(z<Max.z+LayerThickness*0.5f)
+	while(z<Max.z)
 	{
 		if(gui)
 		{
@@ -70,8 +70,8 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 				{ // This happens when there's triangles missing in the input STL
 					hackedZ+= 0.1f;
 					stl->CalcCuttingPlane(hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices
-					plane.SetZ(z);
 				}
+				plane.SetZ(z+printOffsetZ);
 
 				// inFill
 				vector<Vector2f> infill;
@@ -90,7 +90,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 						//plane.ShrinkNice(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);
 						break;
 					case SHRINK_LOGICK:
-						plane.ShrinkLogick(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);
+						plane.ShrinkLogick(ExtrudedMaterialWidth, Optimization, DisplayCuttingPlane, ShellCount);
 						break;
 					}
 
@@ -104,11 +104,10 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 					plane.CalcInFill(infill, LayerNr, infillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
 				}
 				// Make the GCode from the plane and the infill
-				plane.MakeGcode(infill, gcode, E, destinationZ, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, DistanceToReachFullSpeed, extrusionFactor, UseIncrementalEcode, Use3DGcode, EnableAcceleration);
+				plane.MakeGcode(infill, gcode, E, z+printOffsetZ, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, DistanceToReachFullSpeed, extrusionFactor, UseIncrementalEcode, Use3DGcode, EnableAcceleration);
 			}
 		}
 		LayerNr++;
-		destinationZ += LayerThickness;
 		z+=LayerThickness;
 	}
 
