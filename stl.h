@@ -98,6 +98,16 @@ class Segment2f;
 class CuttingPlaneOptimizer;
 class Point2f;
 
+/* associates adjacent points with integers */
+class PointHash {
+ public:
+	PointHash();
+	~PointHash();
+	uint GetHash (float x, float y);
+	uint IndexOfPoint (uint hash, Vector2f *p);
+	void InsertPoint (uint idx, Vector2f *p);
+};
+
 // A (set of) 2D polygon extracted from a 3D model
 class CuttingPlane{
 public:
@@ -191,14 +201,14 @@ public:
 	Point2f(Vector2f p, size_t idx)
 	{
 		Point = p;
-		Index = idx;
+//		Index = idx;
 	}
-	list<Point2f*> ConnectedPoints;
-	list<Segment2f*> Lines;
+//	list<Point2f*> ConnectedPoints;
+//	list<Segment2f*> Lines;
 	Vector2f Point;
-	size_t Index;
-	bool FindNextPoint(Point2f* origin, Point2f* destination, bool expansion);
-	float AngleTo(Point2f* point);
+//	size_t Index;
+//	bool FindNextPoint(Point2f* origin, Point2f* destination, bool expansion);
+//	float AngleTo(Point2f* point);
 };
 
 class Segment2f

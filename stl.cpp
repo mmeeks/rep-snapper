@@ -50,6 +50,8 @@ extern "C" {
 
 #define PI 3.141592653589793238462643383279502884197169399375105820974944592308
 
+#define CUTTING_PLANE_DEBUG 0
+
 using namespace std;
 
 #ifndef M_PI
@@ -851,6 +853,10 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 void STL::CalcCuttingPlane(float where, CuttingPlane &plane, const Matrix4f &T)
 {
 	// intersect lines with plane
+
+#if CUTTING_PLANE_DEBUG
+	cout << "intersect with z " << where << "\n";
+#endif
 	
 	plane.Clear();
 	plane.SetZ(where);
@@ -1378,6 +1384,7 @@ public:
 	Vector2f s,e;
 };
 
+const float float_epsilon = 0.0001;
 
 bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, bool DisplayCuttingPlane, bool ShrinkQuality, int ShellCount)
 {
@@ -1417,8 +1424,64 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 			int connectedlines = pathsfromhere->size();
 			if( connectedlines == 0) 
 			{
+				// lets get to the bottom of this data set:
+				cout.precision (8);
+				cout.width (12);
 				cout << "\r\npolygon was cut at LinkSegments " << z << " at vertex " << endPoint;
+				cout << "\n " << vertices.size() << " vertices:\nvtx\tpos x\tpos y\trefs\n";
+				for (int i = 0; i < vertices.size(); i++)
+				{
+					int refs = 0;
+					for (int j = 0; j < lines.size(); j++)
+					{
+						if (lines[j].start == i) refs++;
+						if (lines[j].end == i)   refs++;
+					}
+					cout << i << "\t" << vertices[i].x << "\t" << vertices[i].y << "\t" << refs;
+					if (refs % 2) // oh dear, a dangling vertex
+					{
+						cout << " odd ! - hashes: ";
+						cout << GetHash(vertices[i].x, vertices[i].y) << ", ";
+						cout << GetHash(vertices[i].x+float_epsilon*2, vertices[i].y) << ", ";
+						cout << GetHash(vertices[i].x, vertices[i].y+float_epsilon*2) << ", ";
+						cout << GetHash(vertices[i].x+float_epsilon*2, vertices[i].y+float_epsilon*2);
+					}
+					cout << "\n";
+				}
+				cout << "\n " << lines.size() << " lines:\nline\tstart vtx\tend vtx\n";
+				for (int i = 0; i < lines.size(); i++)
+				{
+					if (i == endPoint)
+						cout << "problem line:\n";
+					cout << i << "\t" << lines[i].start << "\t" << lines[i].end << "\n";
+				}
 
+				cout << "\n " << vertices.size() << " vertices:\nvtx\tpos x\tpos y\tlinked to\n";
+				for (int i = 0; i < planepoints.size(); i++)
+				{
+					if (i == endPoint)
+						cout << "problem vertex:\n";
+					cout << i << "\t" << vertices[i].x << "\t" << vertices[i].y << "\t";
+					int j;
+					switch (planepoints[i].size()) {
+					case 0:
+						cout << "nothing - error !\n";
+						break;
+					case 1:
+						cout << "neighbour: " << planepoints[i][0];
+						break;
+					default:
+						cout << "Unusual - multiple: \n";
+						for (j = 0; j < planepoints[i].size(); j++)
+							cout << planepoints[i][j] << " ";
+						cout << " ( " << j << " other vertices )";
+						break;
+					}
+						
+					cout << "\n";
+				}
+
+#if 0 // non-functioning graphical rendering
 				glLineWidth(10);
 				glBegin(GL_LINE_LOOP);
 
@@ -1428,6 +1491,7 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 					glVertex3f(vertices[poly.points[p]].x, vertices[poly.points[p]].y, z);
 				}
 				glEnd();
+#endif
 				
 				return false;
 				// model failure, can go no further.
@@ -2185,6 +2249,7 @@ void CuttingPlane::ShrinkFast(float distance, float optimization, bool DisplayCu
 //	selfIntersectAndDivide();		//make this work for z-tensioner_1off.stl rotated 45d on X axis
 }
 
+/*
 bool Point2f::FindNextPoint(Point2f* origin, Point2f* destination, bool expansion)
 {
 	assert(ConnectedPoints.size() >= 2 );
@@ -2252,7 +2317,7 @@ float Point2f::AngleTo(Point2f* point)
 {
 	return atan2f(Point.y-point->Point.y, Point.x-point->Point.x);
 }
-
+*/
 
 /*********************************************************************************************/
 /***                                                                                       ***/
@@ -2270,18 +2335,26 @@ uint CuttingPlane::GetHash(float x, float y)
 	return Point2f::GetHash(x, y);
 }
 
-
-const float float_epsilon = 0.0001;
-
 uint CuttingPlane::IndexOfPoint(uint hash, Vector2f &p)
 {
 	hash_map<uint, pair<Point2f*, int> >::const_iterator it = points.find(hash);
 	while( it != points.end() )
 	{
-		if( ABS(it->second.first->Point.x-p.x) < float_epsilon && ABS(it->second.first->Point.y-p.y) < float_epsilon)
+		Point2f *h = it->second.first;
+		if( ABS(h->Point.x-p.x) < float_epsilon*2 && ABS(h->Point.y-p.y) < float_epsilon*2)
 		{
 			return it->second.second;
 		}
+#if CUTTING_PLANE_DEBUG
+		else if( ABS(h->Point.x-p.x) < 0.01 && ABS(h->Point.y-p.y) < 0.01)
+		{
+			cout << "hash " << hash << " missed idx " << it->second.second
+			     << " by " << (h->Point.x - p.x) << ", " << (h->Point.y - p.y)
+			     << " hash: " << h->Point.x << ", " << h->Point.y
+			     << " vs. p " << p.x << ", " << p.y
+			     << "\n";
+		}
+#endif
 		it++;
 	}
 	return -1;
@@ -2302,33 +2375,26 @@ int CuttingPlane::RegisterPoint(Vector2f &p)
 		GetHash(p.x+float_epsilon*2, p.y+float_epsilon*2)
 	};
 
-	int res = IndexOfPoint(hash[0], p);
-	if( res != -1 ) return res;
+	int res;
 
-	if( hash[0] != hash[1] )
-	{
-		res = IndexOfPoint(hash[1], p);
-		if( res != -1 ) return res;
+	if( (res = IndexOfPoint(hash[0], p)) >= 0)
+		return res;
 
-		if( hash[0] != hash[2] )
-		{
-			res = IndexOfPoint(hash[2], p);
-			if( res != -1 ) return res;
+	if( hash[1] != hash[0] && (res = IndexOfPoint(hash[1], p)) >= 0)
+		return res;
 
-			res = IndexOfPoint(hash[3], p);
-			if( res != -1 ) return res;
-		}
-	}
-	else
-	{
-		if( hash[0] != hash[2] )
-		{
-			res = IndexOfPoint(hash[2], p);
-			if( res != -1 ) return res;
-		}
-	}
+	if( hash[2] != hash[0] && (res = IndexOfPoint(hash[2], p)) >= 0)
+		return res;
+
+	if( hash[3] != hash[0] && (res = IndexOfPoint(hash[3], p)) >= 0)
+		return res;
+
 	size_t idx = vertices.size();
 	vertices.push_back(p);
+#if CUTTING_PLANE_DEBUG
+	cout << "insert vertex idx " << idx << " at " << p.x << ", " << p.y << "\n";
+#endif
+
 	Point2f* point = new Point2f(p, idx);
 	advVertices.push_back(point);
 
