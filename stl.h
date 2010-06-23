@@ -28,18 +28,6 @@
 #include <vmmlib/vmmlib.h>
 #include <Polygon2f.h>
 
-#ifdef __GNUC__
-#  define _BACKWARD_BACKWARD_WARNING_H 1 // kill annoying warning
-#  include <ext/hash_map>
-namespace std
-{
-  using namespace __gnu_cxx;
-}
-#else
-#  include <hash_map>
-using namespace stdext;
-#endif
-
 /*
 Vector3f position, normal;
 // fill vertices
@@ -93,19 +81,18 @@ struct locator{
 	float t;
 };
 
-
-class Segment2f;
 class CuttingPlaneOptimizer;
-class Point2f;
 
 /* associates adjacent points with integers */
 class PointHash {
+	struct Impl;
+	Impl *impl;
  public:
 	PointHash();
 	~PointHash();
-	uint GetHash (float x, float y);
-	uint IndexOfPoint (uint hash, Vector2f *p);
-	void InsertPoint (uint idx, Vector2f *p);
+	int  IndexOfPoint (const Vector2f &p);
+	void InsertPoint  (uint idx, const Vector2f &p);
+	void clear();
 };
 
 // A (set of) 2D polygon extracted from a 3D model
@@ -124,7 +111,6 @@ public:
 		res = *this;
 		res.polygons = res.offsetPolygons;
 		res.vertices = res.offsetVertices;
-		res.advVertices = res.advVertices;
 		res.offsetPolygons.clear();
 		res.offsetVertices.clear();
 	}
@@ -137,18 +123,18 @@ public:
 	void CalcInFill(vector<Vector2f> &infill, uint LayerNr, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill);	// Collide a infill-line with the polygons
 	void Draw(bool DrawVertexNumbers, bool DrawLineNumbers, bool DrawOutlineNumbers, bool DrawCPLineNumbers, bool DrawCPVertexNumbers);
 	bool LinkSegments(float z, float shrinkValue, float Optimization, bool DisplayCuttingPlane, bool ShrinkNice, int ShellCount);		// Link Segments to form polygons
+	bool CleanupSegments(float z);
 	void CleanupPolygons(float Optimization);			// remove redudant points
 	void CleanupOffsetPolygons(float Optimization);			// remove redudant points
 	void MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float &E, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, float DistanceToReachFullSpeed, float extrusionFactor, bool UseIncrementalEcode, bool Use3DGcode, bool EnableAcceleration);	// Convert Cuttingplane to GCode
 	bool VertexIsOutsideOriginalPolygon( Vector2f point, float z);
 
-	Vector2f Min, Max;				// Bounding box
+	Vector2f Min, Max;  // Bounding box
 
 	void Clear() 
 	{ 	
 		lines.clear();
 		vertices.clear();
-		advVertices.clear();
 		polygons.clear();
 		points.clear();
 		offsetPolygons.clear();
@@ -163,28 +149,28 @@ public:
 	int RegisterPoint(Vector2f &p);
 
 	struct Segment {
-		Segment(uint s, uint e){start = s; end = e;}
+		Segment(uint s, uint e) { start = s; end = e; }
 		int start;		// Vertex index of start point
 		int end;		// Vertex index of end point
+		void Swap() {
+			int tmp = start;
+			start = end;
+			end = tmp;
+		}
 	};
 	void AddLine(Segment &line);
 
 	vector<Poly>& GetPolygons() { return polygons; }
 	vector<Vector2f>& GetVertices() { return vertices; }
-	vector<Point2f*>& GetAdvVertices() { return advVertices; }
 
 private:
-	uint GetHash(float x, float y);
-	uint IndexOfPoint(uint hash, Vector2f &p);
-	hash_map<uint, pair<Point2f*, int> > points;
+	PointHash points;
 
 	vector<CuttingPlaneOptimizer*> optimizers;
 
 	vector<Segment> lines;		// Segments - 2 points pr. line-segment
-
 	vector<Poly> polygons;		// Closed loops
 	vector<Vector2f> vertices;	// points
-	vector<Point2f*> advVertices;	// points
 	float Z;
 
 	vector<Poly> offsetPolygons;	// Shrinked closed loops
@@ -193,38 +179,6 @@ private:
 
 
 #define sqr(x) ((x)*(x))
-
-class Point2f
-{
-public:
-	static uint GetHash(float x, float y) { return ((uint)(x*1000))+((uint)(y*1000))*1000000; }
-	Point2f(Vector2f p, size_t idx)
-	{
-		Point = p;
-//		Index = idx;
-	}
-//	list<Point2f*> ConnectedPoints;
-//	list<Segment2f*> Lines;
-	Vector2f Point;
-//	size_t Index;
-//	bool FindNextPoint(Point2f* origin, Point2f* destination, bool expansion);
-//	float AngleTo(Point2f* point);
-};
-
-class Segment2f
-{
-public:
-	Segment2f(Point2f* p1, Point2f* p2) { Point1 = p1; Point2 = p2; }
-	Point2f* Point1;
-	Point2f* Point2;
-};
-
-class Outline2f
-{
-public:
-	list<Segment2f> Segments;
-};
-
 
 class CuttingPlaneOptimizer
 {
@@ -251,7 +205,7 @@ class STL
 public:
 	STL();
 
-	bool Read(string filename,bool force_binary = false );
+	bool Read(string filename, bool force_binary = false );
 	void GetObjectsFromIvcon();
 	void clear(){triangles.clear();}
 	void displayInfillOld(const ProcessController &PC, CuttingPlane &plane, uint LayerNr, vector<int>& altInfillLayers);

@@ -37,6 +37,19 @@ extern "C" {
 }
 #endif
 
+// for PointHash
+#ifdef __GNUC__
+#  define _BACKWARD_BACKWARD_WARNING_H 1 // kill annoying warning
+#  include <ext/hash_map>
+namespace std
+{
+  using namespace __gnu_cxx;
+}
+#else
+#  include <hash_map>
+using namespace stdext;
+#endif
+
 /*
 extern "C" {
 	#include "triangle.h"
@@ -66,7 +79,7 @@ void checkGlutInit()
 		return;
 	inited = true;
 	int argc;
-	char *argv[] = { "repsnapper" };
+	char *argv[] = { (char *) "repsnapper" };
 	glutInit (&argc, argv);
 }
 
@@ -79,7 +92,7 @@ void renderBitmapString(Vector3f pos, void* font, string text)
 
 	sprintf(asd,text.c_str());
 	glRasterPos3f(pos.x, pos.y, pos.z);
-	for (int c=0;c<text.size();c++)
+	for (uint c=0;c<text.size();c++)
 		glutBitmapCharacter(font, (int)*a++);
 }
 
@@ -114,7 +127,7 @@ void STL::GetObjectsFromIvcon()
 	// Vertices in cor3[i][cor3_num] = temp[i];
 
 	triangles.reserve(face_num);
-	for(uint i=0;i<face_num;i++)
+	for(int i=0;i<face_num;i++)
 	{
 		Triangle Tri;
 		uint v1 = face[0][i];
@@ -772,7 +785,7 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 	if( optimizers.size() != 0 )
 	{
 		// new method
-		for( int i = 1; i < optimizers.size()-1; i++)
+		for( uint i = 1; i < optimizers.size()-1; i++)
 		{
 			optimizers[i]->RetrieveLines(lines);
 		}
@@ -850,14 +863,12 @@ void CuttingPlane::MakeGcode(const std::vector<Vector2f> &infill, GCode &code, f
 }
 
 
+// intersect lines with plane
 void STL::CalcCuttingPlane(float where, CuttingPlane &plane, const Matrix4f &T)
 {
-	// intersect lines with plane
-
 #if CUTTING_PLANE_DEBUG
 	cout << "intersect with z " << where << "\n";
 #endif
-	
 	plane.Clear();
 	plane.SetZ(where);
 	
@@ -878,9 +889,12 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane, const Matrix4f &T)
 	{
 		foundOne=false;
 		CuttingPlane::Segment line(-1,-1);
+
 		Vector3f P1 = T*triangles[i].A;
 		Vector3f P2 = T*triangles[i].B;
-		if(where <= P1.z != where <= P2.z)
+
+		// Are the points on opposite sides of the plane ?
+		if ((where <= P1.z) != (where <= P2.z))
 		{
 			float t = (where-P1.z)/(float)(P2.z-P1.z);
 			Vector3f p = P1+((Vector3f)(P2-P1)*t);
@@ -888,9 +902,10 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane, const Matrix4f &T)
 			line.start = plane.RegisterPoint(lineStart);
 			foundOne = true;
 		}
+
 		P1 = T*triangles[i].B;
 		P2 = T*triangles[i].C;
-		if(where <= P1.z != where <= P2.z)
+		if ((where <= P1.z) != (where <= P2.z))
 		{
 			float t = (where-P1.z)/(float)(P2.z-P1.z);
 			Vector3f p = P1+((Vector3f)(P2-P1)*t);
@@ -907,9 +922,9 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane, const Matrix4f &T)
 		}
 		P1 = T*triangles[i].C;
 		P2 = T*triangles[i].A;
-		if(where <= P1.z != where <= P2.z)
+		if ((where <= P1.z) != (where <= P2.z))
 		{
-			float t = (where-P1.z)/(P2.z-P1.z);
+			float t = (where-P1.z)/(float)(P2.z-P1.z);
 			Vector3f p = P1+((Vector3f)(P2-P1)*t);
 
 			lineEnd = Vector2f(p.x,p.y);
@@ -918,19 +933,15 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane, const Matrix4f &T)
 			if( line.end == line.start ) continue;
 		}
 		// Check segment normal against triangle normal. Flip segment, as needed.
-		if(line.start != -1 && line.end != -1 && line.end != line.start)	// if we found a intersecting triangle
+		if (line.start != -1 && line.end != -1 && line.end != line.start)	// if we found a intersecting triangle
 		{
 			Vector3f Norm = triangles[i].Normal;
 			Vector2f triangleNormal = Vector2f(Norm.x, Norm.y);
-				Vector2f segmentNormal = (lineEnd - lineStart).normal();
+			Vector2f segmentNormal = (lineEnd - lineStart).normal();
 			triangleNormal.normalise();
 			segmentNormal.normalise();
 			if( (triangleNormal-segmentNormal).lengthSquared() > 0.2f)	// if normals does not align, flip the segment
-			{
-				int tmp = line.start;
-				line.start = line.end;
-				line.end = tmp;
-			}
+				line.Swap();
 			plane.AddLine(line);
 		}
 	}
@@ -1384,35 +1395,117 @@ public:
 	Vector2f s,e;
 };
 
-const float float_epsilon = 0.0001;
+/*
+ * Unfortunately, finding connections via co-incident points detected by
+ * the PointHash is not perfect. For reasons unknown (probably rounding
+ * errors), this is often not enough. We fall-back to finding a nearest
+ * match from any detached points and joining them, with new synthetic
+ * segments.
+ */
+bool CuttingPlane::CleanupSegments(float z)
+{
+	vector<int> vertex_types;
+	vertex_types.resize (vertices.size());
 
+	// which vertices are referred to, and how much:
+	for (int i = 0; i < lines.size(); i++)
+	{
+		vertex_types[lines[i].start]++;
+		vertex_types[lines[i].end]--;
+	}
+
+	// the count should be zero for all connected lines,
+	// positive for those ending no-where, and negative for
+	// those starting no-where.
+	std::vector<int> detached_points;
+	for (int i = 0; i < vertex_types.size(); i++)
+	{
+		if (vertex_types[i])
+		{
+#if CUTTING_PLANE_DEBUG
+			cout << "detached point " << i << "\t" << vertex_types[i] << " refs at " << vertices[i].x << "\t" << vertices[i].y << "\n";
+#endif
+			detached_points.push_back (i);
+		}
+	}
+
+	// Lets hope we have an even number of detached points
+	if (detached_points.size() % 2) {
+		cout << "oh dear - an odd number of detached points => an un-pairable impossibility\n";
+		return false;
+	}
+
+	// pair them nicely to their matching type
+	for (uint i = 0; i < detached_points.size(); i++)
+	{
+		float nearest_dist_sq = std::numeric_limits<float>::max();
+		int   nearest = 0;
+		int   n = detached_points[i];
+		if (n < 0)
+			continue;
+
+		const Vector2f &p = vertices[n];
+		for (uint j = i + 1; j < detached_points.size(); j++)
+		{
+			int pt = detached_points[j];
+			if (pt < 0)
+				continue; // already connected
+
+			// don't connect a start to a start
+			if (vertex_types[n] == vertex_types[pt])
+				continue;
+
+			const Vector2f &q = vertices[pt];
+			float dist_sq = pow (p.x - q.x, 2) + pow (p.y - q.y, 2);
+			if (dist_sq < nearest_dist_sq)
+			{
+				nearest_dist_sq = dist_sq;
+				nearest = j;
+			}
+		}
+		assert (nearest != 0);
+		CuttingPlane::Segment seg(detached_points[nearest], seg.end = detached_points[i]);
+		if (vertex_types[n] < 0) // end at this point but no start.
+			seg.Swap();
+		AddLine (seg);
+		detached_points[nearest] = -1;
+	}
+
+	return true;
+}
+
+/*
+ * Attempt to link all the Segments in 'lines' together.
+ */
 bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, bool DisplayCuttingPlane, bool ShrinkQuality, int ShellCount)
 {
-	if(vertices.size() == 0)
+	if (vertices.size() == 0)
 		return true;
+
+	if (!CleanupSegments(z))
+		return false;
 
 	vector<vector<int> > planepoints;
 	planepoints.resize(vertices.size());
-
-	for(int i=0;i<lines.size();i++)
-	{
+	
+	for (uint i = 0; i < lines.size(); i++)
 		planepoints[lines[i].start].push_back(i);
-	}
 
 	// Build polygons
 	vector<bool> used;
 	used.resize(lines.size());
-	for(int i=0;i>used.size();i++)
-		used[i]= false;
+	for (uint i=0;i>used.size();i++)
+		used[i] = false;
 
 	bool error = false;
-	int startLine = 0;//Examine*(float)(lines.size()-1);
-	while(startLine != -1)
+	for (uint current = 0; current < lines.size(); current++)
 	{
-		used[startLine]=true;
-		int currentLine = startLine;
-		int startPoint = lines[startLine].start;
-		int endPoint = lines[startLine].end;
+		if (used[current])
+			continue; // already used 
+		used[current] = true;
+
+		uint startPoint = lines[current].start;
+		uint endPoint = lines[current].end;
 
 		Poly poly;
 		poly.points.push_back(endPoint);
@@ -1427,29 +1520,23 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 				// lets get to the bottom of this data set:
 				cout.precision (8);
 				cout.width (12);
-				cout << "\r\npolygon was cut at LinkSegments " << z << " at vertex " << endPoint;
+				cout << "\r\npolygon was cut at z " << z << " LinkSegments at vertex " << endPoint;
 				cout << "\n " << vertices.size() << " vertices:\nvtx\tpos x\tpos y\trefs\n";
-				for (int i = 0; i < vertices.size(); i++)
+				for (uint i = 0; i < vertices.size(); i++)
 				{
-					int refs = 0;
-					for (int j = 0; j < lines.size(); j++)
+					int refs = 0, pol = 0;
+					for (uint j = 0; j < lines.size(); j++)
 					{
-						if (lines[j].start == i) refs++;
-						if (lines[j].end == i)   refs++;
+						if (lines[j].start == i) { refs++; pol++; }
+						if (lines[j].end == i) { refs++; pol--; }
 					}
-					cout << i << "\t" << vertices[i].x << "\t" << vertices[i].y << "\t" << refs;
+					cout << i << "\t" << vertices[i].x << "\t" << vertices[i].y << "\t" << refs << " pol " << pol;
 					if (refs % 2) // oh dear, a dangling vertex
-					{
-						cout << " odd ! - hashes: ";
-						cout << GetHash(vertices[i].x, vertices[i].y) << ", ";
-						cout << GetHash(vertices[i].x+float_epsilon*2, vertices[i].y) << ", ";
-						cout << GetHash(vertices[i].x, vertices[i].y+float_epsilon*2) << ", ";
-						cout << GetHash(vertices[i].x+float_epsilon*2, vertices[i].y+float_epsilon*2);
-					}
+						cout << " odd, dangling vertex\n";
 					cout << "\n";
 				}
 				cout << "\n " << lines.size() << " lines:\nline\tstart vtx\tend vtx\n";
-				for (int i = 0; i < lines.size(); i++)
+				for (uint i = 0; i < lines.size(); i++)
 				{
 					if (i == endPoint)
 						cout << "problem line:\n";
@@ -1457,7 +1544,7 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 				}
 
 				cout << "\n " << vertices.size() << " vertices:\nvtx\tpos x\tpos y\tlinked to\n";
-				for (int i = 0; i < planepoints.size(); i++)
+				for (uint i = 0; i < planepoints.size(); i++)
 				{
 					if (i == endPoint)
 						cout << "problem vertex:\n";
@@ -1492,7 +1579,6 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 				}
 				glEnd();
 #endif
-				
 				return false;
 				// model failure, can go no further.
 				// Solution: Call myself recursive, with a differetn Z
@@ -1510,30 +1596,15 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 		}
 
 		// Check if loop is complete
-		if(count != 0)
-			polygons.push_back(poly);		// This is good
+		if (count != 0)
+			polygons.push_back (poly);		// This is good
 		else
 		{
+			// We will be called for a slightly different z
 			cout << "\r\nentered loop at LinkSegments " << z;
 			return false;
-			assert(-1);
-			error = true;
-			// Should return here or try and fix problem
-			//Solution: Call myself recursive, with a differetn Z
 		}
-
-		int nextStartLine = startLine+1;
-		startLine = -1;
-		// find next unused line
-		for(; nextStartLine < lines.size(); nextStartLine++)
-			{
-			if(used[nextStartLine] == false)
-				{
-				startLine = nextStartLine;
-				break;	// process this line loop
-				}
-			}
-		}	// while startLine != -1
+	}
 
 	// Cleanup polygons
 	CleanupPolygons(Optimization);
@@ -2330,34 +2401,107 @@ float Point2f::AngleTo(Point2f* point)
 
 }*/
 
-uint CuttingPlane::GetHash(float x, float y)
+ /*
+  * We bucket space up into a grid of size 1/mult and generate hash values
+  * from this. We use a margin of 2 * float_epsilon to detect values near
+  * the bottom or right hand edge of the bucket, and check the adjacent
+  * grid entries for similar values within float_epsilon of us.
+  */
+struct PointHash::Impl {
+	typedef std::vector< std::pair< uint, Vector2f > > IdxPointList;
+
+	hash_map<uint, IdxPointList> points;
+	typedef hash_map<uint, IdxPointList>::iterator iter;
+	typedef hash_map<uint, IdxPointList>::const_iterator const_iter;
+
+	static const float mult = 10;
+	static const float float_epsilon = 0.01;
+
+	static uint GetHashes (uint *hashes, float x, float y)
+	{
+		uint xh = x * mult;
+		uint yh = y * mult;
+		int xt, yt;
+		uint c = 0;
+		hashes[c++] = xh + yh * 1000000;
+		if ((xt = (uint)((x + 2*float_epsilon) * mult) - xh))
+			hashes[c++] = xh + xt + yh * 1000000;
+		if ((yt = (uint)((y + 2*float_epsilon) * mult) - yh))
+			hashes[c++] = xh + (yt + yh) * 1000000;
+		if (xt && yt)
+			hashes[c++] = xh + xt + (yt + yh) * 1000000;
+#if CUTTING_PLANE_DEBUG > 1
+		cout << "hashes for " << x << ", " << y << " count: " << c << ": ";
+		for (int i = 0; i < c; i++)
+			cout << hashes[i] << ", ";
+		cout << "\n";
+#endif
+		return c;
+	}
+};
+
+PointHash::PointHash()
 {
-	return Point2f::GetHash(x, y);
+	impl = new Impl();
 }
 
-uint CuttingPlane::IndexOfPoint(uint hash, Vector2f &p)
+PointHash::~PointHash()
 {
-	hash_map<uint, pair<Point2f*, int> >::const_iterator it = points.find(hash);
-	while( it != points.end() )
+	clear();
+  //	delete impl;
+}
+
+void PointHash::clear()
+{
+	impl->points.clear();
+}
+
+int PointHash::IndexOfPoint(const Vector2f &p)
+{
+	uint hashes[4];
+	uint c = Impl::GetHashes (hashes, p.x, p.y);
+
+	for (uint i = 0; i < c; i++) 
 	{
-		Point2f *h = it->second.first;
-		if( ABS(h->Point.x-p.x) < float_epsilon*2 && ABS(h->Point.y-p.y) < float_epsilon*2)
+		Impl::const_iter iter = impl->points.find (hashes[i]);
+
+		if (iter == impl->points.end())
+			continue;
+		const Impl::IdxPointList &pts = iter->second;
+		for (uint j = 0; j < pts.size(); j++)
 		{
-			return it->second.second;
-		}
-#if CUTTING_PLANE_DEBUG
-		else if( ABS(h->Point.x-p.x) < 0.01 && ABS(h->Point.y-p.y) < 0.01)
-		{
-			cout << "hash " << hash << " missed idx " << it->second.second
-			     << " by " << (h->Point.x - p.x) << ", " << (h->Point.y - p.y)
-			     << " hash: " << h->Point.x << ", " << h->Point.y
-			     << " vs. p " << p.x << ", " << p.y
-			     << "\n";
-		}
+			const Vector2f &v = pts[j].second;
+			if( ABS(v.x - p.x) < Impl::float_epsilon &&
+			    ABS(v.y - p.y) < Impl::float_epsilon)
+				return pts[j].first;
+#if CUTTING_PLANE_DEBUG > 1
+			else if( ABS(v.x-p.x) < 0.01 && ABS(v.y-p.y) < 0.01)
+				cout << "hash " << hashes[i] << " missed idx " << pts[j].first
+				     << " by " << (v.x - p.x) << ", " << (v.y - p.y)
+				     << " hash: " << v.x << ", " << v.y
+				     << " vs. p " << p.x << ", " << p.y
+				     << "\n";
 #endif
-		it++;
+		}
 	}
 	return -1;
+}
+
+void PointHash::InsertPoint (uint idx, const Vector2f &p)
+{
+	uint hashes[4];
+	int c = Impl::GetHashes (hashes, p.x, p.y);
+
+	for (int i = 0; i < c; i++) 
+	{
+		Impl::IdxPointList &pts = impl->points[hashes[i]];
+		pts.push_back (pair<uint, Vector2f>( idx, p ));
+#if CUTTING_PLANE_DEBUG > 1
+		cout << "insert " << hashes[i] << " idx " << idx
+		     << " vs. p " << p.x << ", " << p.y
+		     << "\n";
+#endif
+	}
 }
 
 void CuttingPlane::AddLine(Segment &line)
@@ -2367,55 +2511,25 @@ void CuttingPlane::AddLine(Segment &line)
 
 int CuttingPlane::RegisterPoint(Vector2f &p)
 {
-	uint hash[] =  
-	{
-		GetHash(p.x, p.y),
-		GetHash(p.x+float_epsilon*2, p.y),
-		GetHash(p.x, p.y+float_epsilon*2),
-		GetHash(p.x+float_epsilon*2, p.y+float_epsilon*2)
-	};
-
 	int res;
 
-	if( (res = IndexOfPoint(hash[0], p)) >= 0)
+	if( (res = points.IndexOfPoint(p)) >= 0)
+	{
+#if CUTTING_PLANE_DEBUG > 1
+		cout << "found  vertex idx " << res << " at " << p.x << ", " << p.y << "\n";
+#endif
 		return res;
+	}
 
-	if( hash[1] != hash[0] && (res = IndexOfPoint(hash[1], p)) >= 0)
-		return res;
-
-	if( hash[2] != hash[0] && (res = IndexOfPoint(hash[2], p)) >= 0)
-		return res;
-
-	if( hash[3] != hash[0] && (res = IndexOfPoint(hash[3], p)) >= 0)
-		return res;
-
-	size_t idx = vertices.size();
+	res = vertices.size();
 	vertices.push_back(p);
-#if CUTTING_PLANE_DEBUG
-	cout << "insert vertex idx " << idx << " at " << p.x << ", " << p.y << "\n";
+#if CUTTING_PLANE_DEBUG > 1
+	cout << "insert vertex idx " << res << " at " << p.x << ", " << p.y << "\n";
 #endif
 
-	Point2f* point = new Point2f(p, idx);
-	advVertices.push_back(point);
+	points.InsertPoint(res, p);
 
-	points.insert(pair<uint, pair<Point2f*, int> >(hash[0], pair<Point2f*, int>(point, idx)));
-	if( hash[0] != hash[1] )
-	{
-		points.insert(pair<uint, pair<Point2f*, int> >(hash[1], pair<Point2f*, int>(point, idx)));
-		if( hash[0] != hash[2] )
-		{
-			points.insert(pair<uint, pair<Point2f*, int> >(hash[2], pair<Point2f*, int>(point, idx)));
-			points.insert(pair<uint, pair<Point2f*, int> >(hash[3], pair<Point2f*, int>(point, idx)));
-		}
-	}
-	else
-	{
-		if( hash[0] != hash[2] )
-		{
-			points.insert(pair<uint, pair<Point2f*, int> >(hash[2], pair<Point2f*, int>(point, idx)));
-		}
-	}
-	return idx;
+	return res;
 }
 
 
