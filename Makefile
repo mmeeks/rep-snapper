@@ -27,7 +27,7 @@ endif
 ifeq ($(UNAME),Linux)
     GTK_LIBS=`pkg-config --libs gtk+-2.0 gthread-2.0`
     GTK_CFLAGS=`pkg-config --cflags gtk+-2.0 gthread-2.0` -DHAVE_GTK
-    INC=$(GTK_CFLAGS) -I/usr/include -I$(LIB_DIR) -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)/ann_1.1.1/include -I/usr/include/boost -I/usr/include/lua5.1
+    INC=$(GTK_CFLAGS) -I/usr/include -I$(LIB_DIR) -I$(LIB_DIR)/vmmlib/include -I/usr/include/boost -I/usr/include/lua5.1
 	INC+=-I$(LIB_DIR)/polylib
     LDFLAGS=$(GTK_LIBS) -L/usr/lib -lGLU -lfltk -lfltk_gl -lfltk_forms -lglut -lboost_thread-mt -lboost_system-mt 
 	LDFLAGS+=-L$(LIB_DIR)/polylib -lpolylib
@@ -47,7 +47,7 @@ ifeq ($(UNAME),Darwin)
 		BOOST_LIB=$(BOOST_HOME)/lib/libboost_thread-xgcc40-mt-d.a $(BOOST_HOME)/lib/libboost_system-xgcc40-mt-d.a
 	endif
     MACPORTS_DIR=/opt/local
-	INC=$(BOOST_INC) -I$(MACPORTS_DIR)/include -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)/ann_1.1.1/include -I$(LIB_DIR)
+	INC=$(BOOST_INC) -I$(MACPORTS_DIR)/include -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)
 	INC+=-I$(LIB_DIR)/polylib
 	INC+=-pthread
 	LDFLAGS=$(BOOST_LIB) -L$(MACPORTS_DIR)/lib -pthread -lfltk -lfltk_forms -lfltk_gl
@@ -67,8 +67,8 @@ SOURCES=AsyncSerial.cpp RepSnapper.cpp stl.cpp RepRapSerial.cpp \
 HEADERS=ArcBall.h AsyncSerial.h Convert.h Flu_DND.h Flu_Enumerations.h \
 	flu_export.h flu_pixmaps.h FluSimpleString.h Flu_Tree_Browser.h \
 	gcode.h glutils.h ivcon.h miniball.h ModelViewController.h \
-	Printer.h ProcessController.h RepRapSerial.h RFO.h search.h \
-	Serial.h stdafx.h stl.h triangle.h UI.h platform.h
+	Printer.h ProcessController.h RepRapSerial.h RFO.h \
+	stdafx.h stl.h triangle.h UI.h platform.h
 
 OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(SOURCES))))
 
