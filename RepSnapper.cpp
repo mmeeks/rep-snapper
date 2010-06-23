@@ -38,6 +38,8 @@ Connect to printer crashes if settings are not first saved, even if com port is 
 #include "gcode.h"
 #include "UI.h"
 
+#ifndef UNITTEST
+
 GUI *gui;
 
 
@@ -251,4 +253,5 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	return main(cmdArgs.size(), arg);
 }
+#endif
 #endif
