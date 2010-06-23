@@ -1039,7 +1039,7 @@ restart_check:
 				bool found = false;
 
 				for(size_t j=i+1;j<HitsBuffer.size();j++)
-					if( abs(HitsBuffer[i].d - HitsBuffer[j].d) < 0.0001)
+					if( ABS(HitsBuffer[i].d - HitsBuffer[j].d) < 0.0001)
 						{
 						found = true;
 						// Delete both points, and continue
@@ -1107,28 +1107,28 @@ bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, con
 		return false;
 
 
-	if(abs(p1.x-p3.x) < 0.01 && abs(p1.y - p3.y) < 0.01)
+	if(ABS(p1.x-p3.x) < 0.01 && ABS(p1.y - p3.y) < 0.01)
 	{
 		hit.p = p1;
 		hit.d = sqrtf( (p1.x-hit.p.x) * (p1.x-hit.p.x) + (p1.y-hit.p.y) * (p1.y-hit.p.y));
 		hit.t = 0.0f;
 		return true;
 	}
-	if(abs(p2.x-p3.x) < 0.01 && abs(p2.y - p3.y) < 0.01)
+	if(ABS(p2.x-p3.x) < 0.01 && ABS(p2.y - p3.y) < 0.01)
 	{
 		hit.p = p2;
 		hit.d = sqrtf( (p1.x-hit.p.x) * (p1.x-hit.p.x) + (p1.y-hit.p.y) * (p1.y-hit.p.y));
 		hit.t = 1.0f;
 		return true;
 	}
-	if(abs(p1.x-p4.x) < 0.01 && abs(p1.y - p4.y) < 0.01)
+	if(ABS(p1.x-p4.x) < 0.01 && ABS(p1.y - p4.y) < 0.01)
 	{
 		hit.p = p1;
 		hit.d = sqrtf( (p1.x-hit.p.x) * (p1.x-hit.p.x) + (p1.y-hit.p.y) * (p1.y-hit.p.y));
 		hit.t = 0.0f;
 		return true;
 	}
-	if(abs(p2.x-p4.x) < 0.01 && abs(p2.y - p4.y) < 0.01)
+	if(ABS(p2.x-p4.x) < 0.01 && ABS(p2.y - p4.y) < 0.01)
 	{
 		hit.p = p2;
 		hit.d = sqrtf( (p1.x-hit.p.x) * (p1.x-hit.p.x) + (p1.y-hit.p.y) * (p1.y-hit.p.y));
@@ -1168,9 +1168,9 @@ bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, con
   dot=(xD1*xD2+yD1*yD2); // dot product  
   deg=dot/(len1*len2);  
   
-  // if abs(angle)==1 then the lines are parallell,  
+  // if ABS(angle)==1 then the lines are parallell,  
   // so no intersection is possible  
-  if(abs(deg)==1)
+  if(ABS(deg)==1)
 	  return false;
   
   // find intersection Pt between two lines  
@@ -1202,7 +1202,7 @@ bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, con
   // on the line segment.  
   
   // if the point isn't on the line, return null  
-  if(abs(len1-segmentLen1)>0.00 || abs(len2-segmentLen2)>0.00)  
+  if(ABS(len1-segmentLen1)>0.00 || ABS(len2-segmentLen2)>0.00)  
     return false;
 
   hit.d = segmentLen1-segmentLen2;
@@ -1243,7 +1243,7 @@ int PntOnLine(Vector2f p1, Vector2f p2, Vector2f t)
  * into a larger, spanning vectors within the Lemming editor.
  
 
-    if ( abs((p2.y-p1.y)*(t.x-p1.x)-(t.y-p1.y)*(p2.x-p1.x)) >= (MAX(abs(p2.x-p1.x), abs(p2.y-p1.y)))) return(0);
+    if ( ABS((p2.y-p1.y)*(t.x-p1.x)-(t.y-p1.y)*(p2.x-p1.x)) >= (MAX(ABS(p2.x-p1.x), ABS(p2.y-p1.y)))) return(0);
     if (((p2.x<=p1.x)&&(p1.x<=t.x)) || ((p2.y<=p1.y)&&(p1.y<=t.y))) return(1);
     if (((t.x<=p1.x)&&(p1.x<=p2.x)) || ((t.y<=p1.y)&&(p1.y<=p2.y))) return(1);
     if (((p1.x<=p2.x)&&(p2.x<=t.x)) || ((p1.y<=p2.y)&&(p2.y<=t.y))) return(3);
@@ -1264,7 +1264,7 @@ int PntOnLine(Vector2f p1, Vector2f p2, Vector2f t, float &where)
 	float C = p2.x - p1.x;
 	float D = p2.y - p1.y;
 
-	where = abs(A * D - C * B) / sqrt(C * C + D * D);
+	where = ABS(A * D - C * B) / sqrt(C * C + D * D);
 
 	if(where > 0.01)
 		return 0;
@@ -2278,7 +2278,7 @@ uint CuttingPlane::IndexOfPoint(uint hash, Vector2f &p)
 	hash_map<uint, pair<Point2f*, int> >::const_iterator it = points.find(hash);
 	while( it != points.end() )
 	{
-		if( abs(it->second.first->Point.x-p.x) < float_epsilon && abs(it->second.first->Point.y-p.y) < float_epsilon)
+		if( ABS(it->second.first->Point.x-p.x) < float_epsilon && ABS(it->second.first->Point.y-p.y) < float_epsilon)
 		{
 			return it->second.second;
 		}
@@ -2514,7 +2514,7 @@ void STL::OptimizeRotation()
 					positive=1;
 				AXIS axisNr = (AXIS)(triangleAxis*2+positive);
 				triangles[i].axis = axisNr;
-				if( ! (abs(Min[triangleAxis]-triangles[i].A[triangleAxis]) < 1.1 || abs(Max[triangleAxis]-triangles[i].A[triangleAxis]) < 1.1) )	// not close to boundingbox edges?
+				if( ! (ABS(Min[triangleAxis]-triangles[i].A[triangleAxis]) < 1.1 || ABS(Max[triangleAxis]-triangles[i].A[triangleAxis]) < 1.1) )	// not close to boundingbox edges?
 					{
 					triangles[i].axis = NOT_ALIGNED;	// Not close to bounding box
 					break;
