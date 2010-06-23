@@ -290,6 +290,8 @@ void GCode::draw(const ProcessController &PC)
 			glVertex3fv((GLfloat*)&commands[i].where);
 			glEnd();
 			break;
+		default:
+			break; // ignored GCodes
 		}
 		if(commands[i].Code != EXTRUDERON && commands[i].Code != EXTRUDEROFF)
 		pos = commands[i].where;
@@ -440,6 +442,8 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 			oss <<  "\n";
 			GcodeTxt += oss.str();
 			break;
+		default:
+			break; // ignored CGCode
 		}
 		pos = commands[i].where;
 	}

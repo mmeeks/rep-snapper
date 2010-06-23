@@ -486,6 +486,12 @@ int ModelViewController::handle(int event)
 			MousePt.T[1] = (GLfloat)Fl::event_y();
 			redraw();
 			return 1;
+		case FL_MOUSEWHEEL: { //mouse scroll event
+			int mwscrolled = Fl::event_dy();
+			zoom += mwscrolled*1;
+			redraw();
+			return 1;
+			}
 		case FL_FOCUS :
 		case FL_UNFOCUS : // Return 1 if you want keyboard events, 0 otherwise
 			return 0;
