@@ -2402,8 +2402,8 @@ struct PointHash::Impl {
 	typedef hash_map<uint, IdxPointList>::iterator iter;
 	typedef hash_map<uint, IdxPointList>::const_iterator const_iter;
 
-	static const float mult = 10;
-	static const float float_epsilon = 0.01;
+	static const float mult;
+	static const float float_epsilon;
 
 	static uint GetHashes (uint *hashes, float x, float y)
 	{
@@ -2427,6 +2427,9 @@ struct PointHash::Impl {
 		return c;
 	}
 };
+
+const float PointHash::Impl::mult = 10;
+const float PointHash::Impl::float_epsilon = 0.01;
 
 PointHash::PointHash()
 {
