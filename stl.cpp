@@ -563,17 +563,6 @@ CuttingPlane::CuttingPlane()
 
 CuttingPlane::~CuttingPlane()
 {
-//	for(hash_map<uint, pair<Point2f*, int> >::iterator it=points.begin(); it != points.end(); it++ )
-//	{
-//		it->second.first = NULL;
-////		delete it->second.first;
-//	}
-//
-//	for(int i=0; i < advVertices.size(); i++ )
-//	{
-////		delete advVertices[i];
-//		advVertices[i] = NULL;
-//	}
 }
 
 void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, float DistanceToReachFullSpeed, float extrusionFactor, GCode &code, float z, float minSpeedXY, float maxSpeedXY, float minSpeedZ, float maxSpeedZ, bool UseIncrementalEcode, bool Use3DGcode, float &E, bool EnableAcceleration)
@@ -1497,7 +1486,6 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 	for (uint i=0;i>used.size();i++)
 		used[i] = false;
 
-	bool error = false;
 	for (uint current = 0; current < lines.size(); current++)
 	{
 		if (used[current])
@@ -2448,7 +2436,15 @@ PointHash::PointHash()
 PointHash::~PointHash()
 {
 	clear();
-  //	delete impl;
+	delete impl;
+}
+
+PointHash::PointHash(const PointHash &copy)
+{
+	impl = new Impl();
+	Impl::const_iter it;
+	for (it = copy.impl->points.begin(); it != copy.impl->points.end(); it++)
+		impl->points[it->first] = it->second;
 }
 
 void PointHash::clear()

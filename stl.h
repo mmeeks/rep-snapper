@@ -90,6 +90,7 @@ class PointHash {
  public:
 	PointHash();
 	~PointHash();
+	PointHash(const PointHash &copy);
 	int  IndexOfPoint (const Vector2f &p);
 	void InsertPoint  (uint idx, const Vector2f &p);
 	void clear();
