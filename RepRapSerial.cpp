@@ -182,9 +182,8 @@ void RepRapSerial::SendNextLine()
 
 			double elapsed = (time - startTime) / 1000.0;
 			double max = gui->ProgressBar->maximum();
-			double progress = max > 0.0 ? m_iLineNr / gui->ProgressBar->maximum() : 0.0;
-			double total_time = progress > 0.0 ? elapsed / progress : elapsed;
-			double remaining = total_time - elapsed;
+			double lines_per_sec = elapsed > 1 ? (double)m_iLineNr / elapsed : 1.0;
+			double remaining = (double)(max - m_iLineNr) / lines_per_sec;
 
 			/*
 			 * Fltk has no way of knowing if this is a meaningful
