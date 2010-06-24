@@ -1446,6 +1446,13 @@ bool CuttingPlane::CleanupSegments(float z)
 			}
 		}
 		assert (nearest != 0);
+
+		// allow points 1mm apart to be joined, not more
+		if (nearest_dist_sq > 1.0) {
+			cout << "oh dear - the nearest connecting point is " << sqrt (nearest_dist_sq) << "mm away - aborting\n";
+			return false;
+		}
+
 		CuttingPlane::Segment seg(detached_points[nearest], detached_points[i]);
 		if (vertex_types[n] < 0) // end at this point but no start.
 			seg.Swap();
@@ -2421,8 +2428,8 @@ struct PointHash::Impl {
 	}
 };
 
-const float PointHash::Impl::mult = 10;
-const float PointHash::Impl::float_epsilon = 0.01;
+const float PointHash::Impl::mult = 100;
+const float PointHash::Impl::float_epsilon = 0.001;
 
 PointHash::PointHash()
 {
@@ -2764,9 +2771,9 @@ float Triangle::area()
 void CuttingPlane::CleanupPolygons(float Optimization)
 {
 	float allowedError = Optimization;
-	for(size_t p=0;p<polygons.size();p++)
+	for (size_t p = 0; p < polygons.size(); p++)
 	{
-		for(size_t v=0;v<=polygons[p].points.size();)
+		for (size_t v=0; v < polygons[p].points.size(); )
 		{
 			Vector2f p1 =vertices[polygons[p].points[(v-1+polygons[p].points.size())%polygons[p].points.size()]];
 			Vector2f p2 =vertices[polygons[p].points[v%polygons[p].points.size()]];
