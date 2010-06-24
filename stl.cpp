@@ -312,14 +312,14 @@ void STL::draw(const ProcessController &PC, float opasity)
 	glEnable(GL_POINT_SMOOTH);
 
 	float no_mat[] = {0.0f, 0.0f, 0.0f, 1.0f};
-	float mat_ambient[] = {0.7f, 0.7f, 0.7f, 1.0f};
-	float mat_ambient_color[] = {0.8f, 0.8f, 0.2f, 1.0f};
+//	float mat_ambient[] = {0.7f, 0.7f, 0.7f, 1.0f};
+//	float mat_ambient_color[] = {0.8f, 0.8f, 0.2f, 1.0f};
 	float mat_diffuse[] = {0.1f, 0.5f, 0.8f, opasity};
 	float mat_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
-	float no_shininess = 0.0f;
-	float low_shininess = 5.0f;
+//	float no_shininess = 0.0f;
+//	float low_shininess = 5.0f;
 	float high_shininess = 100.0f;
-	float mat_emission[] = {0.3f, 0.2f, 0.2f, 0.0f};
+//	float mat_emission[] = {0.3f, 0.2f, 0.2f, 0.0f};
 
 	HSVtoRGB(PC.PolygonHue, PC.PolygonSat, PC.PolygonVal, mat_diffuse[0], mat_diffuse[1], mat_diffuse[2]);
 
@@ -579,7 +579,6 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, float DistanceToReac
 		{
 			float len;
 			lastCommand.where = start;
-			float accumulatedE = 0;
 
 			Vector3f direction = end-start;
 			len = direction.length();	// total distance
@@ -669,7 +668,6 @@ void MakeAcceleratedGCodeLine(Vector3f start, Vector3f end, float DistanceToReac
 	} // Firmware acceleration
 	else	// No accleration
 	{
-		float accumulatedE = 0;
 		// Make a accelerated line from lastCommand.where to lines[thisPoint]
 		if(end != start) //If we are going to somewhere else
 		{
@@ -872,9 +870,8 @@ void STL::CalcCuttingPlane(float where, CuttingPlane &plane, const Matrix4f &T)
 	Vector2f lineStart;
 	Vector2f lineEnd;
 
-	uint pointNr = 0;
 	bool foundOne = false;
-	for(size_t i=0;i<triangles.size();i++)
+	for (size_t i = 0; i < triangles.size(); i++)
 	{
 		foundOne=false;
 		CuttingPlane::Segment line(-1,-1);
@@ -976,33 +973,31 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, uint LayerNr, float Infi
 
 		if(DisplayDebuginFill)
 			if(!examine && ((Examine-0.5f)*2 * Length <= x))
-				{
+			{
 				examineThis = examine = true;
 				glColor3f(1,1,1);				// Draw the line
 				glVertex3f(P1.x, P1.y, Z);
 				glVertex3f(P2.x, P2.y, Z);
-				}
+			}
 
 			if(offsetPolygons.size() != 0)
-				{
+			{
 				for(size_t p=0;p<offsetPolygons.size();p++)
-					{
+				{
 					for(size_t i=0;i<offsetPolygons[p].points.size();i++)
-						{
+					{
 						Vector2f P3 = offsetVertices[offsetPolygons[p].points[i]];
 						Vector2f P4 = offsetVertices[offsetPolygons[p].points[(i+1)%offsetPolygons[p].points.size()]];
 
 						Vector3f point;
 						InFillHit hit;
 						if(IntersectXY(P1,P2,P3,P4,hit))
-							{
-							if(examineThis)
-								int a=0;
+						{
 							HitsBuffer.push_back(hit);
-							}
 						}
 					}
 				}
+			}
 /*			else if(vertices.size() != 0)
 				{
 				// Fallback, collide with lines rather then polygons
@@ -1026,37 +1021,35 @@ void CuttingPlane::CalcInFill(vector<Vector2f> &infill, uint LayerNr, float Infi
 			std::sort(HitsBuffer.begin(), HitsBuffer.end(), InFillHitCompareFunc);
 
 			if(examineThis)
-				{
+			{
 				glPointSize(4);
 				glBegin(GL_POINTS);
 				for(size_t i=0;i<HitsBuffer.size();i++)
 					glVertex3f(HitsBuffer[0].p.x, HitsBuffer[0].p.y, Z);
 				glEnd();
 				glPointSize(1);
-				}
+			}
 
 			// Verify hits intregrety
 			// Check if hit extists in table
 restart_check:
 			for(size_t i=0;i<HitsBuffer.size();i++)
-				{
-				if(examineThis)
-					int a=0;
+			{
 				bool found = false;
 
 				for(size_t j=i+1;j<HitsBuffer.size();j++)
 					if( ABS(HitsBuffer[i].d - HitsBuffer[j].d) < 0.0001)
-						{
+					{
 						found = true;
 						// Delete both points, and continue
 						HitsBuffer.erase(HitsBuffer.begin()+j);
 						if(i != 0 && i != HitsBuffer.size()-1)	//If we are "Going IN" to solid material, and there's more points, keep one of the points
 							HitsBuffer.erase(HitsBuffer.begin()+i);
 						goto restart_check;
-						}
+					}
 					if(found)
 						continue;
-				}		
+			}		
 
 
 			// Sort hits by distance and transfer to InFill Buffer
@@ -1217,7 +1210,7 @@ bool IntersectXY(const Vector2f &p1, const Vector2f &p2, const Vector2f &p3, con
 /*
 int PntOnLine(Vector2f p1, Vector2f p2, Vector2f t)
 {
-/*
+ *
  * given a line through P:(px,py) Q:(qx,qy) and T:(tx,ty)
  * return 0 if T is not on the line through      <--P--Q-->
  *        1 if T is on the open ray ending at P: <--P
@@ -1397,7 +1390,7 @@ bool CuttingPlane::CleanupSegments(float z)
 	vertex_types.resize (vertices.size());
 
 	// which vertices are referred to, and how much:
-	for (int i = 0; i < lines.size(); i++)
+	for (uint i = 0; i < lines.size(); i++)
 	{
 		vertex_types[lines[i].start]++;
 		vertex_types[lines[i].end]--;
@@ -1407,7 +1400,7 @@ bool CuttingPlane::CleanupSegments(float z)
 	// positive for those ending no-where, and negative for
 	// those starting no-where.
 	std::vector<int> detached_points;
-	for (int i = 0; i < vertex_types.size(); i++)
+	for (uint i = 0; i < vertex_types.size(); i++)
 	{
 		if (vertex_types[i])
 		{
@@ -1607,7 +1600,7 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
   struct triangulateio mid;
   struct triangulateio out;
   struct triangulateio vorout;
-/* 
+* 
   Define the input points. 
 *
 		in.pointlist = 0;
@@ -1635,7 +1628,7 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 				in.segmentlist[v] = i;
 				in.pointlist[v++] = vertices[polygons[p].points[i]].y;
 				}
-/*
+ *
   in.numberofpointattributes = 1;
   in.pointlist = (REAL *) malloc(in.numberofpoints * 2 * sizeof(REAL));
   in.pointlist[0] = 0.0;
@@ -1671,7 +1664,7 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
 	in.regionlist = 0;
 	in.segmentmarkerlist = 0;
 //  in.regionlist[2] = 7.0;
-/* 
+* 
   Area constraint that will not be used. 
 *
 //  in.regionlist[3] = 0.1;          
@@ -1679,7 +1672,7 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
   printf("Input point set:\n\n");
 
 //  report ( &in, 1, 0, 0, 0, 0, 0 );
-/* 
+* 
   Make necessary initializations so that Triangle can return a 
   triangulation in `mid' and a Voronoi diagram in `vorout'.  
 *
@@ -1698,7 +1691,7 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
   vorout.pointattributelist = (REAL *) NULL;
   vorout.edgelist = (int *) NULL;
   vorout.normlist = (REAL *) NULL;
-/* 
+* 
   Triangulate the points.  Switches are chosen to 
     read and write a PSLG (p), 
     preserve the convex hull (c), 
@@ -1746,7 +1739,7 @@ bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, 
   
   }
   
-/*
+*
   printf("Initial triangulation:\n\n");
 
 //  report ( &mid, 1, 1, 1, 1, 1, 0 );
@@ -1912,13 +1905,13 @@ void CuttingPlane::recurseSelfIntersectAndDivide(float z, vector<locator> &EndPo
 
 								result.push_back(hit.p);
 								// Did we hit the starting point?
-								if(start.p == p  && start.v == v) // we have a loop
-									{
+								if (start.p == p && start.v == v) // we have a loop
+								{
 									outlines.push_back(result);
 									result.clear();
 									recurseSelfIntersectAndDivide(z, EndPointStack, outlines, visited);
 									return;
-									}
+								}
 								glPointSize(10);
 								glColor3f(1,1,1);
 								glBegin(GL_POINTS);
@@ -2075,7 +2068,7 @@ CuttingPlaneOptimizer::CuttingPlaneOptimizer(CuttingPlane* cuttingPlane, float z
 	std::list<Polygon2f*> unsortedPolys;
 
 	// first add solids. This builds the tree, placing the holes afterwards is easier/faster
-	for(int p=0; p<planePolygons->size();p++)
+	for(uint p = 0; p < planePolygons->size(); p++)
 	{
 		Poly* poly = &((*planePolygons)[p]);
 		poly->calcHole(*planeVertices);
@@ -2095,7 +2088,7 @@ CuttingPlaneOptimizer::CuttingPlaneOptimizer(CuttingPlane* cuttingPlane, float z
 		}
 	}
 	// then add holes
-	for(int p=0; p<planePolygons->size();p++)
+	for(uint p = 0; p < planePolygons->size(); p++)
 	{
 		Poly* poly = &((*planePolygons)[p]);
 		if( poly->hole )
@@ -2104,7 +2097,7 @@ CuttingPlaneOptimizer::CuttingPlaneOptimizer(CuttingPlane* cuttingPlane, float z
 			newPoly->hole = poly->hole;
 
 			size_t count = poly->points.size();
-			for(int i=0; i<count;i++)
+			for (size_t i = 0; i < count; i++)
 			{
 				newPoly->vertices.push_back(((*planeVertices)[poly->points[i]]));
 			}
@@ -2682,37 +2675,37 @@ void STL::OptimizeRotation()
 		area[i] = 0.0f;
 
 	for(size_t i=0;i<triangles.size();i++)
-		{
+	{
 		triangles[i].axis = NOT_ALIGNED;				
 		for(size_t triangleAxis=0;triangleAxis<3;triangleAxis++)
+		{
+			if (triangles[i].Normal.cross(AXIS_VECTORS[triangleAxis]).length() < 0.1)
 			{
-			if (  triangles[i].Normal.cross(AXIS_VECTORS[triangleAxis]).length() < 0.1)
-				{
 				int positive=0;
 				if(triangles[i].Normal[triangleAxis] > 0)// positive
 					positive=1;
 				AXIS axisNr = (AXIS)(triangleAxis*2+positive);
 				triangles[i].axis = axisNr;
 				if( ! (ABS(Min[triangleAxis]-triangles[i].A[triangleAxis]) < 1.1 || ABS(Max[triangleAxis]-triangles[i].A[triangleAxis]) < 1.1) )	// not close to boundingbox edges?
-					{
+				{
 					triangles[i].axis = NOT_ALIGNED;	// Not close to bounding box
 					break;
-					}
+				}
 				area[axisNr] += triangles[i].area();
 				break;
-				}
 			}
 		}
+	}
 
 
 	AXIS down = NOT_ALIGNED;
 	float LargestArea = 0;
 	for(uint i=0;i<6;i++)
 	{
-	if(area[i] > LargestArea)
+		if(area[i] > LargestArea)
 		{
-		LargestArea = area[i];
-		down = (AXIS)i;
+			LargestArea = area[i];
+			down = (AXIS)i;
 		}
 	}
 
