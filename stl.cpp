@@ -1427,7 +1427,7 @@ bool CuttingPlane::CleanupSegments(float z)
 	// pair them nicely to their matching type
 	for (uint i = 0; i < detached_points.size(); i++)
 	{
-		float nearest_dist_sq = std::numeric_limits<float>::max();
+		float nearest_dist_sq = (std::numeric_limits<float>::max)();
 		int   nearest = 0;
 		int   n = detached_points[i];
 		if (n < 0)
@@ -1453,7 +1453,7 @@ bool CuttingPlane::CleanupSegments(float z)
 			}
 		}
 		assert (nearest != 0);
-		CuttingPlane::Segment seg(detached_points[nearest], seg.end = detached_points[i]);
+		CuttingPlane::Segment seg(detached_points[nearest], detached_points[i]);
 		if (vertex_types[n] < 0) // end at this point but no start.
 			seg.Swap();
 		AddLine (seg);
