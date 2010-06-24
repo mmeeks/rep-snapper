@@ -85,9 +85,13 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 					case SHRINK_FAST:
 						plane.ShrinkFast(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);
 						break;
+
 					case SHRINK_NICE:
-						// gpc stuff removed
-						//plane.ShrinkNice(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);
+#if defined(ENABLE_GPC) && ENABLE_GPC
+						plane.ShrinkNice(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);
+#else
+						// "Warning: ShrinkNice is disabled without gpc code\n";
+#endif
 						break;
 					case SHRINK_LOGICK:
 						plane.ShrinkLogick(ExtrudedMaterialWidth, Optimization, DisplayCuttingPlane, ShellCount);
