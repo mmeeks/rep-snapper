@@ -3,6 +3,7 @@
  * native gtk+ file selection under Unix.
  */
 #include "stdafx.h"
+#include <string>
 #include "File.h"
 
 #ifdef HAVE_GTK
@@ -82,9 +83,24 @@ namespace {
       if (a->directory)
 	gtk_file_chooser_set_current_folder (chooser, a->directory);
       gtk_file_chooser_set_select_multiple (chooser, multiple);
+
+      // essentially case-insensitive file filter
       GtkFileFilter *filter = gtk_file_filter_new ();
-      gtk_file_filter_add_pattern (filter, a->filter);
+      string filter_work_string = a->filter;
+      gtk_file_filter_add_pattern (filter, filter_work_string.c_str());
+      transform(filter_work_string.begin(), filter_work_string.end(),filter_work_string.begin(),::toupper);
+      gtk_file_filter_add_pattern (filter, filter_work_string.c_str());
+      transform(filter_work_string.begin(), filter_work_string.end(),filter_work_string.begin(),::tolower);
+      gtk_file_filter_add_pattern (filter, filter_work_string.c_str());
+      gtk_file_filter_set_name (filter,filter_work_string.c_str());
       gtk_file_chooser_add_filter (chooser, filter);
+
+      // an option to open improperly named files
+      GtkFileFilter *allfiles = gtk_file_filter_new();
+      gtk_file_filter_add_pattern (allfiles, "*");
+      gtk_file_filter_set_name (allfiles, "All Files");
+      gtk_file_chooser_add_filter (chooser, allfiles);
+
       if (gtk_dialog_run (GTK_DIALOG (chooser)) == GTK_RESPONSE_ACCEPT) {
 	gchar *fname = gtk_file_chooser_get_filename (chooser);
 	a->result = std::string (fname ? fname : "");
