@@ -1390,16 +1390,20 @@ public:
  * match from any detached points and joining them, with new synthetic
  * segments.
  */
-bool CuttingPlane::CleanupSegments(float z)
+bool CuttingPlane::CleanupConnectSegments(float z)
 {
 	vector<int> vertex_types;
+	vector<int> vertex_counts;
 	vertex_types.resize (vertices.size());
+	vertex_counts.resize (vertices.size());
 
 	// which vertices are referred to, and how much:
 	for (uint i = 0; i < lines.size(); i++)
 	{
 		vertex_types[lines[i].start]++;
 		vertex_types[lines[i].end]--;
+		vertex_counts[lines[i].start]++;
+		vertex_counts[lines[i].end]++;
 	}
 
 	// the count should be zero for all connected lines,
@@ -1459,6 +1463,9 @@ bool CuttingPlane::CleanupSegments(float z)
 			return false;
 		}
 
+#if CUTTING_PLANE_DEBUG
+		cout << "add join of length " << sqrt (nearest_dist_sq) << "\n" ;
+#endif
 		CuttingPlane::Segment seg(detached_points[nearest], detached_points[i]);
 		if (vertex_types[n] < 0) // start but no end at this point
 			seg.Swap();
@@ -1470,6 +1477,82 @@ bool CuttingPlane::CleanupSegments(float z)
 }
 
 /*
+ * sometimes we find adjacent polygons with shared boundary
+ * points and lines; these cause grief and slowness in
+ * LinkSegments, so try to identify and join those polygons
+ * now.
+ */
+bool CuttingPlane::CleanupSharedSegments(float z)
+{
+	vector<int> vertex_counts;
+	vertex_counts.resize (vertices.size());
+
+	for (uint i = 0; i < lines.size(); i++)
+	{
+		vertex_counts[lines[i].start]++;
+		vertex_counts[lines[i].end]++;
+	}
+
+	// ideally all points have an entrance and
+	// an exit, if we have co-incident lines, then
+	// we have more than one; do we ?
+	std::vector<int> duplicate_points;
+	for (uint i = 0; i < vertex_counts.size(); i++)
+	{
+#if CUTTING_PLANE_DEBUG
+		cout << "vtx " << i << " count: " << vertex_counts[i] << "\n";
+#endif
+		if (vertex_counts[i] > 2)
+			duplicate_points.push_back (i);
+	}
+
+	if (duplicate_points.size() == 0)
+		return true; // all sane
+
+	for (uint i = 0; i < duplicate_points.size(); i++)
+	{
+		std::vector<int> dup_lines;
+
+		// find all line segments with this point in use
+		for (uint j = 0; j < lines.size(); j++)
+		{
+			if (lines[j].start == duplicate_points[i] ||
+			    lines[j].end == duplicate_points[i])
+				dup_lines.push_back (j);
+		}
+
+		// identify and eliminate identical line segments
+		// NB. hopefully by here dup_lines.size is small.
+		std::vector<int> lines_to_delete;
+		for (uint j = 0; j < dup_lines.size(); j++)
+		{
+			const Segment &jr = lines[dup_lines[j]];
+			for (uint k = j + 1; k < dup_lines.size(); k++)
+			{
+				const Segment &kr = lines[dup_lines[k]];
+				if ((jr.start == kr.start && jr.end == kr.end) ||
+				    (jr.end == kr.start && jr.start == kr.end))
+				{
+					lines_to_delete.push_back (dup_lines[j]);
+					lines_to_delete.push_back (dup_lines[k]);
+				}
+			}
+		}
+		// we need to remove from the end first to avoid disturbing
+		// the order of removed items
+		std::sort(lines_to_delete.begin(), lines_to_delete.end());
+		for (int r = lines_to_delete.size() - 1; r >= 0; r--)
+		{
+#if CUTTING_PLANE_DEBUG
+			cout << "delete co-incident line: " << lines_to_delete[r] << "\n";
+#endif
+			lines.erase(lines.begin() + lines_to_delete[r]);
+		}
+	}
+	return true;
+}
+
+/*
  * Attempt to link all the Segments in 'lines' together.
  */
 bool CuttingPlane::LinkSegments(float z, float Optimization)
@@ -1477,7 +1560,10 @@ bool CuttingPlane::LinkSegments(float z, float Optimization)
 	if (vertices.size() == 0)
 		return true;
 
-	if (!CleanupSegments(z))
+	if (!CleanupSharedSegments (z))
+		return false;
+
+	if (!CleanupConnectSegments (z))
 		return false;
 
 	vector<vector<int> > planepoints;

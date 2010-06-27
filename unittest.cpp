@@ -121,9 +121,7 @@ BOOST_AUTO_TEST_CASE( Logick_Advanced_Polygon_Split_Tests )
 	BOOST_CHECK( res.size() == 2 );
 
 	for(list<Polygon2f*>::iterator pIt = res.begin(); pIt != res.end(); pIt++)
-	{
 		delete *pIt;
-	}
 }
 
 BOOST_AUTO_TEST_CASE( Slicing_PointHash )
@@ -214,7 +212,7 @@ BOOST_AUTO_TEST_CASE( Slicing_Lines_Square_Nastier )
 //   c---d---e
 //       |   |
 //       f---g
-BOOST_AUTO_TEST_CASE( Slicing_Lines_Co_Incident )
+BOOST_AUTO_TEST_CASE( Slicing_Lines_Single_Co_Incident )
 {
 	CuttingPlane cp;
 	int a = cp.RegisterPoint (Vector2f (10, 30));
@@ -236,6 +234,36 @@ BOOST_AUTO_TEST_CASE( Slicing_Lines_Co_Incident )
 
 	BOOST_CHECK (cp.LinkSegments (0.1, 0.001) == true);
 	BOOST_CHECK (cp.GetPolygons().size() == 2);
+}
+
+// Co-incident boundary
+//   a---b
+//   |   |
+//   c---d
+//   |   |
+//   e---f
+BOOST_AUTO_TEST_CASE( Slicing_Lines_Boundary_Co_Incident )
+{
+	CuttingPlane cp;
+	int a = cp.RegisterPoint (Vector2f (10, 30));
+	int b = cp.RegisterPoint (Vector2f (20, 30));
+	int c = cp.RegisterPoint (Vector2f (10, 20));
+	int d = cp.RegisterPoint (Vector2f (20, 20));
+	int e = cp.RegisterPoint (Vector2f (10, 10));
+	int f = cp.RegisterPoint (Vector2f (20, 10));
+
+	cp.AddLine (CuttingPlane::Segment (a, b));
+	cp.AddLine (CuttingPlane::Segment (b, d));
+	cp.AddLine (CuttingPlane::Segment (d, c));
+	cp.AddLine (CuttingPlane::Segment (c, a));
+	cp.AddLine (CuttingPlane::Segment (d, f));
+	cp.AddLine (CuttingPlane::Segment (f, e));
+	cp.AddLine (CuttingPlane::Segment (e, c));
+	cp.AddLine (CuttingPlane::Segment (c, d));
+
+	BOOST_CHECK (cp.LinkSegments (0.1, 0.001) == true);
+	BOOST_CHECK (cp.GetPolygons().size() == 1);
+	BOOST_CHECK (cp.GetPolygons()[0].points.size() == 4);
 }
 
 #endif // !defined(WIN32) || defined (UNITTEST)

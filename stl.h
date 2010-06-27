@@ -127,7 +127,8 @@ public:
 	void CalcInFill(vector<Vector2f> &infill, uint LayerNr, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill);	// Collide a infill-line with the polygons
 	void Draw(bool DrawVertexNumbers, bool DrawLineNumbers, bool DrawOutlineNumbers, bool DrawCPLineNumbers, bool DrawCPVertexNumbers);
 	bool LinkSegments(float z, float Optimization);		        // Link Segments to form polygons
-	bool CleanupSegments(float z);
+	bool CleanupConnectSegments(float z);
+	bool CleanupSharedSegments(float z);
 	void CleanupPolygons(float Optimization);			// remove redudant points
 	void CleanupOffsetPolygons(float Optimization);			// remove redudant points
 	void MakeGcode(const std::vector<Vector2f> &infill, GCode &code, float &E, float z, float MinPrintSpeedXY, float MaxPrintSpeedXY, float MinPrintSpeedZ, float MaxPrintSpeedZ, float DistanceToReachFullSpeed, float extrusionFactor, bool UseIncrementalEcode, bool Use3DGcode, bool EnableAcceleration);	// Convert Cuttingplane to GCode
