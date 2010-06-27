@@ -66,12 +66,12 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 				stl->CalcCuttingPlane(z, plane, T);	// output is alot of un-connected line segments with individual vertices, describing the outline
 
 				float hackedZ = z;
-				while(plane.LinkSegments(hackedZ, ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, m_ShrinkQuality, ShellCount) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
+				while (plane.LinkSegments (hackedZ, Optimization) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
 				{ // This happens when there's triangles missing in the input STL
 					hackedZ+= 0.1f;
-					stl->CalcCuttingPlane(hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices
+					stl->CalcCuttingPlane (hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices
 				}
-				plane.SetZ(z+printOffsetZ);
+				plane.SetZ (z + printOffsetZ);
 
 				// inFill
 				vector<Vector2f> infill;

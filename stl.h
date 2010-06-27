@@ -126,7 +126,7 @@ public:
 	void recurseSelfIntersectAndDivide(float z, vector<locator> &EndPointStack, vector<outline> &outlines, vector<locator> &visited);
 	void CalcInFill(vector<Vector2f> &infill, uint LayerNr, float InfillDistance, float InfillRotation, float InfillRotationPrLayer, bool DisplayDebuginFill);	// Collide a infill-line with the polygons
 	void Draw(bool DrawVertexNumbers, bool DrawLineNumbers, bool DrawOutlineNumbers, bool DrawCPLineNumbers, bool DrawCPVertexNumbers);
-	bool LinkSegments(float z, float shrinkValue, float Optimization, bool DisplayCuttingPlane, bool ShrinkNice, int ShellCount);		// Link Segments to form polygons
+	bool LinkSegments(float z, float Optimization);		        // Link Segments to form polygons
 	bool CleanupSegments(float z);
 	void CleanupPolygons(float Optimization);			// remove redudant points
 	void CleanupOffsetPolygons(float Optimization);			// remove redudant points
@@ -150,7 +150,7 @@ public:
 	}
 	float getZ() { return Z; }
 
-	int RegisterPoint(Vector2f &p);
+	int RegisterPoint(const Vector2f &p);
 
 	struct Segment {
 		Segment(uint s, uint e) { start = s; end = e; }
@@ -162,7 +162,7 @@ public:
 			end = tmp;
 		}
 	};
-	void AddLine(Segment &line);
+	void AddLine(const Segment &line);
 
 	vector<Poly>& GetPolygons() { return polygons; }
 	vector<Vector2f>& GetVertices() { return vertices; }

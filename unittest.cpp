@@ -130,7 +130,73 @@ BOOST_AUTO_TEST_CASE( Slicing_PointHash )
 {
 	PointHash h;
 	float x = 10.0, y = 7.0;
-	float d = PointHash::float_epsilon;
+	float d = PointHash::float_epsilon / 2;
+
+	BOOST_CHECK (h.IndexOfPoint (Vector2f(x, y)) < 0);
+	h.InsertPoint (0, Vector2f (x, y));
+
+	// look around that point
+	BOOST_CHECK (h.IndexOfPoint (Vector2f(x, y)) == 0);
+	BOOST_CHECK (h.IndexOfPoint (Vector2f(x + d, y)) == 0);
+	BOOST_CHECK (h.IndexOfPoint (Vector2f(x - d, y)) == 0);
+	BOOST_CHECK (h.IndexOfPoint (Vector2f(x, y + d)) == 0);
+	BOOST_CHECK (h.IndexOfPoint (Vector2f(x, y - d)) == 0);
+	BOOST_CHECK (h.IndexOfPoint (Vector2f(x + d, y + d)) == 0);
+	BOOST_CHECK (h.IndexOfPoint (Vector2f(x - d, y - d)) == 0);
+	BOOST_CHECK (h.IndexOfPoint (Vector2f(x + d, y - d)) == 0);
+	BOOST_CHECK (h.IndexOfPoint (Vector2f(x - d, y + d)) == 0);
+
+	// look nearby but not there
+	float e = PointHash::float_epsilon * 3 / 2;
+	BOOST_CHECK (h.IndexOfPoint (Vector2f(x + e, y)) < 0);
+	BOOST_CHECK (h.IndexOfPoint (Vector2f(x - e, y)) < 0);
+	BOOST_CHECK (h.IndexOfPoint (Vector2f(x, y + e)) < 0);
+	BOOST_CHECK (h.IndexOfPoint (Vector2f(x, y - e)) < 0);
+	BOOST_CHECK (h.IndexOfPoint (Vector2f(x + e, y + e)) < 0);
+	BOOST_CHECK (h.IndexOfPoint (Vector2f(x - e, y - e)) < 0);
+	BOOST_CHECK (h.IndexOfPoint (Vector2f(x + e, y - e)) < 0);
+	BOOST_CHECK (h.IndexOfPoint (Vector2f(x - e, y + e)) < 0);
+}
+
+
+
+// Simple neat square
+BOOST_AUTO_TEST_CASE( Slicing_Lines_Square_Simple )
+{
+	CuttingPlane cp;
+	int tl = cp.RegisterPoint (Vector2f (10, 20));
+	int tr = cp.RegisterPoint (Vector2f (20, 20));
+	int bl = cp.RegisterPoint (Vector2f (10, 10));
+	int br = cp.RegisterPoint (Vector2f (20, 10));
+
+	cp.AddLine (CuttingPlane::Segment (tl, tr));
+	cp.AddLine (CuttingPlane::Segment (bl, tl));
+	cp.AddLine (CuttingPlane::Segment (tr, br));
+	cp.AddLine (CuttingPlane::Segment (br, bl));
+
+	BOOST_CHECK (cp.LinkSegments (0.1, 0.001) == true);
+}
+
+// Dis-connected square
+BOOST_AUTO_TEST_CASE( Slicing_Lines_Square_Nastier )
+{
+	CuttingPlane cp;
+	float d = PointHash::float_epsilon / 2;
+	int tl  = cp.RegisterPoint (Vector2f (10, 20));
+	int tln = cp.RegisterPoint (Vector2f (10, 20 + 0.01));
+	int tr = cp.RegisterPoint (Vector2f (20, 20));
+	int trn = cp.RegisterPoint (Vector2f (20 + d, 20));
+	int bl = cp.RegisterPoint (Vector2f (10, 10));
+	int bln = cp.RegisterPoint (Vector2f (10 + 0.5, 10 + 0.5));
+	int br = cp.RegisterPoint (Vector2f (20, 10));
+	int brn = cp.RegisterPoint (Vector2f (20 + 0.5, 10 + d));
+
+	cp.AddLine (CuttingPlane::Segment (tl, trn));
+	cp.AddLine (CuttingPlane::Segment (bl, tln));
+	cp.AddLine (CuttingPlane::Segment (tr, brn));
+	cp.AddLine (CuttingPlane::Segment (br, bln));
+
+	BOOST_CHECK (cp.LinkSegments (0.1, 0.001) == true);
 }
 
 #endif // !defined(WIN32) || defined (UNITTEST)

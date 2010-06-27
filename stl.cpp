@@ -468,9 +468,9 @@ void STL::draw(const ProcessController &PC, float opasity)
 					CalcCuttingPlane(z, plane, T);	// output is alot of un-connected line segments with individual vertices
 
 					float hackedZ = z;
-					while(plane.LinkSegments(hackedZ, PC.ExtrudedMaterialWidth*0.5f, PC.Optimization, PC.DisplayCuttingPlane, PC.m_ShrinkQuality, PC.ShellCount) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
-					{										// This happens when there's triangles missing in the input STL
-								break;
+					while (plane.LinkSegments(hackedZ, PC.Optimization) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
+					{							         // This happens when there's triangles missing in the input STL
+						break;
 						hackedZ+= 0.1f;
 						CalcCuttingPlane(hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices
 					}
@@ -1472,7 +1472,7 @@ bool CuttingPlane::CleanupSegments(float z)
 /*
  * Attempt to link all the Segments in 'lines' together.
  */
-bool CuttingPlane::LinkSegments(float z, float ShrinkValue, float Optimization, bool DisplayCuttingPlane, bool ShrinkQuality, int ShellCount)
+bool CuttingPlane::LinkSegments(float z, float Optimization)
 {
 	if (vertices.size() == 0)
 		return true;
@@ -2702,12 +2702,12 @@ void PointHash::InsertPoint (uint idx, const Vector2f &p)
 	}
 }
 
-void CuttingPlane::AddLine(Segment &line)
+void CuttingPlane::AddLine(const Segment &line)
 {
 	lines.push_back(line);
 }
 
-int CuttingPlane::RegisterPoint(Vector2f &p)
+int CuttingPlane::RegisterPoint(const Vector2f &p)
 {
 	int res;
 
