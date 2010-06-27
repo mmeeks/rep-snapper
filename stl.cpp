@@ -1502,14 +1502,14 @@ bool CuttingPlane::LinkSegments(float z, float Optimization)
 		uint endPoint = lines[current].end;
 
 		Poly poly;
-		poly.points.push_back(endPoint);
+		poly.points.push_back (endPoint);
 		int count = lines.size()+100;
-		while(endPoint != startPoint && count != 0)	// While not closed
+		while (endPoint != startPoint && count != 0)	// While not closed
 		{
-			vector<int> *pathsfromhere = &planepoints[endPoint];
+			const vector<int> &pathsfromhere = planepoints[endPoint];
+
 			// Find the next line.
-			int connectedlines = pathsfromhere->size();
-			if( connectedlines == 0) 
+			if (pathsfromhere.size() == 0) // no where to go ...
 			{
 				// lets get to the bottom of this data set:
 				cout.precision (8);
@@ -1561,31 +1561,33 @@ bool CuttingPlane::LinkSegments(float z, float Optimization)
 						
 					cout << "\n";
 				}
-
-#if 0 // non-functioning graphical rendering
-				glLineWidth(10);
-				glBegin(GL_LINE_LOOP);
-
-				for(int p = 0; p< poly.points.size(); p++ )
-				{
-					glColor4f(1, ((float)p)/((float)poly.points.size()), 0, 1);
-					glVertex3f(vertices[poly.points[p]].x, vertices[poly.points[p]].y, z);
-				}
-				glEnd();
-#endif
+				// model failure - we will get called recursivelly
+				// for a different z and different cutting plane.
 				return false;
-				// model failure, can go no further.
-				// Solution: Call myself recursive, with a differetn Z
 			}
-	
-			//assert(connectedlines==1); // todo: need to find the "right" next line.
+			if (pathsfromhere.size() != 1)
+				cout << "Risky co-incident node during shrinking\n";
 
-			used[(*pathsfromhere)[0]]=true;
-			Segment* nextsegment = &lines[(*pathsfromhere)[0]];
-			assert( nextsegment->start == endPoint );
-			endPoint = nextsegment->end;
+			// TODO: we need to do better here, some idas:
+			//       a) calculate the shortest path back to our start node, and
+			//          choose that and/or
+			//       b) identify all 2+ nodes and if they share start/end
+			//          directions eliminate them to join the polygons.
 
-			poly.points.push_back(endPoint);
+			int i;
+			for (i = 0; i < pathsfromhere.size() && used[pathsfromhere[i]]; i++);
+			if (i >= pathsfromhere.size())
+			{
+				cout << "no-where unused to go";
+				return false;
+			}
+			used[pathsfromhere[i]] = true;
+
+			const Segment &nextsegment = lines[pathsfromhere[i]];
+			assert( nextsegment.start == endPoint );
+			endPoint = nextsegment.end;
+
+			poly.points.push_back (endPoint);
 			count--;
 		}
 
@@ -2967,16 +2969,16 @@ float Triangle::area()
 	return ( ((C-A).cross(B-A)).length() );
 }
 
-void CuttingPlane::CleanupPolygons(float Optimization)
+void CuttingPlane::CleanupPolygons (float Optimization)
 {
 	float allowedError = Optimization;
 	for (size_t p = 0; p < polygons.size(); p++)
 	{
-		for (size_t v=0; v < polygons[p].points.size(); )
+		for (size_t v = 0; v < polygons[p].points.size() + 1; )
 		{
-			Vector2f p1 =vertices[polygons[p].points[(v-1+polygons[p].points.size())%polygons[p].points.size()]];
-			Vector2f p2 =vertices[polygons[p].points[v%polygons[p].points.size()]];
-			Vector2f p3 =vertices[polygons[p].points[(v+1)%polygons[p].points.size()]];
+			Vector2f p1 = vertices[polygons[p].points[(v-1+polygons[p].points.size())%polygons[p].points.size()]];
+			Vector2f p2 = vertices[polygons[p].points[v%polygons[p].points.size()]];
+			Vector2f p3 = vertices[polygons[p].points[(v+1)%polygons[p].points.size()]];
 
 			Vector2f v1 = (p2-p1);
 			Vector2f v2 = (p3-p2);
@@ -2984,10 +2986,8 @@ void CuttingPlane::CleanupPolygons(float Optimization)
 			v1.normalize();
 			v2.normalize();
 
-			if((v1-v2).lengthSquared() < allowedError)
-			{
-				polygons[p].points.erase(polygons[p].points.begin()+v);
-			}
+			if ((v1-v2).lengthSquared() < allowedError)
+				polygons[p].points.erase(polygons[p].points.begin()+(v%polygons[p].points.size()));
 			else
 				v++;
 		}
