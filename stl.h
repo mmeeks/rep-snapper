@@ -94,6 +94,9 @@ class PointHash {
 	int  IndexOfPoint (const Vector2f &p);
 	void InsertPoint  (uint idx, const Vector2f &p);
 	void clear();
+
+        static const float mult;
+        static const float float_epsilon;
 };
 
 // A (set of) 2D polygon extracted from a 3D model

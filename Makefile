@@ -15,12 +15,14 @@ else
 	WARNING_FLAGS = -Wall -Wno-pragmas
 endif
 
+EXEC=repsnapper
+EXEC_DEBUG=repsnapper_debug
 ifeq ($(TARGET),RELEASE)
 	CFLAGS = -c -O2 $(WARNING_FLAGS)
-	EXECUTABLE=repsnapper
+	EXECUTABLE=$(EXEC)
 else
 	CFLAGS = -c -g -O0 $(WARNING_FLAGS)
-	EXECUTABLE=repsnapper_debug
+	EXECUTABLE=$(EXEC_DEBUG)
 endif
 
 # Linux
@@ -28,9 +30,10 @@ ifeq ($(UNAME),Linux)
     GTK_LIBS=`pkg-config --libs gtk+-2.0 gthread-2.0`
     GTK_CFLAGS=`pkg-config --cflags gtk+-2.0 gthread-2.0` -DHAVE_GTK
     INC=$(GTK_CFLAGS) -I/usr/include -I$(LIB_DIR) -I$(LIB_DIR)/vmmlib/include -I/usr/include/boost -I/usr/include/lua5.1
-	INC+=-I$(LIB_DIR)/polylib
+    INC+=-I$(LIB_DIR)/polylib
     LDFLAGS=$(GTK_LIBS) -L/usr/lib -lGLU -lfltk -lfltk_gl -lfltk_forms -lglut -lboost_thread-mt -lboost_system-mt 
-	LDFLAGS+=-L$(LIB_DIR)/polylib -lpolylib
+    LDFLAGS+=-L$(LIB_DIR)/polylib -lpolylib
+    TEST_LDFLAGS=-lboost_unit_test_framework
 endif
 
 # Mac
@@ -57,7 +60,9 @@ endif
 
 GENERATED=UI.cxx UI.h
 
-SOURCES=AsyncSerial.cpp RepSnapper.cpp stl.cpp RepRapSerial.cpp \
+MAIN_SOURCES=RepSnapper.cpp
+TEST_SOURCES=unittest.cpp
+SHARED_SOURCES=AsyncSerial.cpp stl.cpp RepRapSerial.cpp \
 	ProcessController.cpp Printer.cpp ModelViewController.cpp \
 	glutils.cpp GCode.cpp ArcBall.cpp stdafx.cpp UI.cxx \
 	RFO.cpp Flu_DND.cpp flu_pixmaps.cpp FluSimpleString.cpp \
@@ -72,13 +77,18 @@ HEADERS=ArcBall.h AsyncSerial.h Convert.h Flu_DND.h Flu_Enumerations.h \
 	stdafx.h stl.h triangle.h UI.h platform.h \
 	gpc.h
 
-OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(SOURCES))))
+SHARED_OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(SHARED_SOURCES))))
+MAIN_OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(MAIN_SOURCES)))) $(SHARED_OBJECTS)
+TEST_OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(TEST_SOURCES)))) $(SHARED_OBJECTS)
 
 
-all: $(SOURCES) $(EXECUTABLE)
+all: $(EXECUTABLE)
 
-$(EXECUTABLE): poly_lib $(OBJECTS)
-	$(CXX) ${INC} $(OBJECTS) $(LDFLAGS) -o $@
+$(EXECUTABLE): poly_lib $(MAIN_OBJECTS)
+	$(CXX) ${INC} $(MAIN_OBJECTS) $(LDFLAGS) -o $@
+
+unittest : poly_lib $(TEST_OBJECTS)
+	$(CXX) ${INC} $(TEST_OBJECTS) $(LDFLAGS) $(TEST_LDFLAGS) -o $@
 
 %.cxx %.h:%.fl
 	rm -f $@ # fluid doesn't remove on failure.
@@ -93,16 +103,18 @@ $(EXECUTABLE): poly_lib $(OBJECTS)
 poly_lib:
 	make -C ../Libraries/polylib/ all
 
-check:
-	cd ../test ; python ./rpstest.py ../Src/repsnapper
+check: unittest
+	./unittest
+#	cd ../test ; python ./rpstest.py ../Src/repsnapper
 
 clean:
-	rm -f $(OBJECTS) $(EXECUTABLE) $(GENERATED)
+	rm -f $(SHARED_OBJECTS) $(MAIN_OBJECTS) $(TEST_OBJECTS) \
+	      $(EXEC) $(EXEC_DEBUG) $(GENERATED) unittest
 	make -i -C ../Libraries/polylib/ clean
 
 # make update-deps will re-write the dependenciues below
 update-depends:
-	makedepend -Y $(SOURCES)
+	makedepend -Y $(SHARED_SOURCES) $(MAIN_SOURCES) $(TEST_SOURCES)
 
 # not needed
 #	<Kulitorum> fillet.cpp

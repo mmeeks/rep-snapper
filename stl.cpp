@@ -542,14 +542,14 @@ uint findClosestUnused(std::vector<Vector3f> lines, Vector3f point, std::vector<
 	for(uint i=0;i<count;i++)
 	{
 		if(used[i] == false)
-			{
+		{
 			float dist = (lines[i]-point).length();
 			if(dist < closestDist)
-				{
+			{
 				closestDist = dist;
 				closest = i;
-				}
 			}
+		}
 	}
 	
 	return closest;
@@ -1460,7 +1460,7 @@ bool CuttingPlane::CleanupSegments(float z)
 		}
 
 		CuttingPlane::Segment seg(detached_points[nearest], detached_points[i]);
-		if (vertex_types[n] < 0) // end at this point but no start.
+		if (vertex_types[n] < 0) // start but no end at this point
 			seg.Swap();
 		AddLine (seg);
 		detached_points[nearest] = -1;
@@ -2604,9 +2604,6 @@ struct PointHash::Impl {
 	typedef hash_map<uint, IdxPointList>::iterator iter;
 	typedef hash_map<uint, IdxPointList>::const_iterator const_iter;
 
-	static const float mult;
-	static const float float_epsilon;
-
 	static uint GetHashes (uint *hashes, float x, float y)
 	{
 		uint xh = x * mult;
@@ -2614,9 +2611,9 @@ struct PointHash::Impl {
 		int xt, yt;
 		uint c = 0;
 		hashes[c++] = xh + yh * 1000000;
-		if ((xt = (uint)((x + 2*float_epsilon) * mult) - xh))
+		if ((xt = (uint)((x + 2*PointHash::float_epsilon) * PointHash::mult) - xh))
 			hashes[c++] = xh + xt + yh * 1000000;
-		if ((yt = (uint)((y + 2*float_epsilon) * mult) - yh))
+		if ((yt = (uint)((y + 2*PointHash::float_epsilon) * PointHash::mult) - yh))
 			hashes[c++] = xh + (yt + yh) * 1000000;
 		if (xt && yt)
 			hashes[c++] = xh + xt + (yt + yh) * 1000000;
@@ -2630,8 +2627,8 @@ struct PointHash::Impl {
 	}
 };
 
-const float PointHash::Impl::mult = 100;
-const float PointHash::Impl::float_epsilon = 0.001;
+const float PointHash::mult = 100;
+const float PointHash::float_epsilon = 0.001;
 
 PointHash::PointHash()
 {
@@ -2672,8 +2669,8 @@ int PointHash::IndexOfPoint(const Vector2f &p)
 		for (uint j = 0; j < pts.size(); j++)
 		{
 			const Vector2f &v = pts[j].second;
-			if( ABS(v.x - p.x) < Impl::float_epsilon &&
-			    ABS(v.y - p.y) < Impl::float_epsilon)
+			if( ABS(v.x - p.x) < float_epsilon &&
+			    ABS(v.y - p.y) < float_epsilon)
 				return pts[j].first;
 #if CUTTING_PLANE_DEBUG > 1
 			else if( ABS(v.x-p.x) < 0.01 && ABS(v.y-p.y) < 0.01)

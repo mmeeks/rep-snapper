@@ -26,17 +26,19 @@ Logick: Add more Unittest :)
 #include "gcode.h"
 #include "UI.h"
 
-#ifdef UNITTEST
+#if !defined(WIN32) || defined (UNITTEST)
 
 GUI *gui;
-
 
 #include <boost/thread.hpp>
 
 using namespace std;
 
-#include <polygon2f.h>
-#define BOOST_TEST_MODULE MyTest
+#include <Polygon2f.h>
+
+#define BOOST_TEST_MODULE RepSnapperTest
+#define BOOST_TEST_MAIN 1
+#define BOOST_TEST_DYN_LINK 1
 #include <boost/test/unit_test.hpp>
 
 using namespace PolyLib;
@@ -72,7 +74,7 @@ BOOST_AUTO_TEST_CASE( Logick_Basic_Shrink_Test )
 	list<Polygon2f*> res;
 
 	p.Shrink(1, parent, res);
-    BOOST_CHECK( p.vertices.size() == res.front()->vertices.size() );
+	BOOST_CHECK( p.vertices.size() == res.front()->vertices.size() );
 	BOOST_CHECK( res.front()->vertices.front() == Vector2f(11,11) );
 	BOOST_CHECK( res.front()->vertices.back() == Vector2f(109,11) );
 
@@ -94,7 +96,7 @@ BOOST_AUTO_TEST_CASE( Logick_Advanced_Shrink_Test )
 	list<Polygon2f*> res;
 
 	p.Shrink(2, parent, res);
-    BOOST_CHECK( p.vertices.size()-2 == res.front()->vertices.size() );
+	BOOST_CHECK( p.vertices.size()-2 == res.front()->vertices.size() );
 	BOOST_CHECK( res.front()->vertices.front() == Vector2f(12,12) );
 	BOOST_CHECK( res.front()->vertices.back() == Vector2f(108,12) );
 
@@ -116,7 +118,7 @@ BOOST_AUTO_TEST_CASE( Logick_Advanced_Polygon_Split_Tests )
 	list<Polygon2f*> res;
 
 	p.Shrink(2, parent, res);
-    BOOST_CHECK( res.size() == 2 );
+	BOOST_CHECK( res.size() == 2 );
 
 	for(list<Polygon2f*>::iterator pIt = res.begin(); pIt != res.end(); pIt++)
 	{
@@ -124,6 +126,11 @@ BOOST_AUTO_TEST_CASE( Logick_Advanced_Polygon_Split_Tests )
 	}
 }
 
+BOOST_AUTO_TEST_CASE( Slicing_PointHash )
+{
+	PointHash h;
+	float x = 10.0, y = 7.0;
+	float d = PointHash::float_epsilon;
+}
 
-
-#endif
+#endif // !defined(WIN32) || defined (UNITTEST)
