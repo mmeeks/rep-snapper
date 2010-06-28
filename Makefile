@@ -56,6 +56,7 @@ ifeq ($(UNAME),Darwin)
 	LDFLAGS=$(BOOST_LIB) -L$(MACPORTS_DIR)/lib -pthread -lfltk -lfltk_forms -lfltk_gl
 	LDFLAGS+=-L$(LIB_DIR)/polylib -lpolylib
     LDFLAGS+=-framework Carbon -framework OpenGL -framework GLUT -framework AGL
+    TEST_LDFLAGS=-lboost_unit_test_framework
 endif
 
 GENERATED=UI.cxx UI.h
