@@ -27,9 +27,12 @@
 #include "glutils.h"
 #include "RepRapSerial.h"
 
-enum SHRINK_QUALITY {SHRINK_FAST, SHRINK_NICE, SHRINK_LOGICK};
+enum SHRINK_QUALITY { SHRINK_FAST, SHRINK_NICE, SHRINK_LOGICK };
+enum FileType { TYPE_STL, TYPE_RFO, TYPE_GCODE, TYPE_AUTO };
 
-#pragma warning( disable : 4244 4267)
+#ifdef WIN32
+#  pragma warning( disable : 4244 4267)
+#endif
 
 // Construct a model and a view, and link them together.
 
@@ -79,11 +82,12 @@ public:
 	void Rotate(string axis, float distance);
 
 	// Callback functions
+	vector<string> comports;                           // list of available usb serial ports
 	void resize (int x,int y, int width, int height);		// Reshape The Window When It's Moved Or Resized
-	int  CheckComPorts();
+	vector<string>  CheckComPorts();
 	static void Static_Timer_CB(void *userdata);
 	void Timer_CB();
-	
+
 	// LUA
 	void RunLua(char* buffer);
 
@@ -130,12 +134,18 @@ public:
 	void SetDisplayCuttingPlane(bool val){ProcessControl.DisplayCuttingPlane = val; redraw();}
 	void SetDrawVertexNumbers(bool val){ProcessControl.DrawVertexNumbers = val; redraw();}
 	void SetDrawLineNumbers(bool val){ProcessControl.DrawLineNumbers = val; redraw();}
+	void SetDrawOutlineNumbers(bool val){ProcessControl.DrawOutlineNumbers = val; redraw();}
+
+	void SetDrawCuttingPlanePolyNumbers(bool val){ProcessControl.DrawCPOutlineNumbers = val; redraw();}
+	void SetDrawCuttingPlaneLineNumbers(bool val){ProcessControl.DrawCPLineNumbers = val; redraw();}
+	void SetDrawCuttingPlaneVertexNumbers(bool val){ProcessControl.DrawCPVertexNumbers = val; redraw();}
+	
 
 	void SetShellOnly(bool val) {ProcessControl.ShellOnly = val; redraw();}
 	void SetShellCount(uint val) {ProcessControl.ShellCount = val; redraw();}
 
 	void SetEnableAcceleration(bool val) {ProcessControl.EnableAcceleration = val; redraw();}
-	
+
 	// Raft GUI values
 	void SetRaftSize(float val){ProcessControl.RaftSize=val; redraw();}
 	void SetRaftBaseLayerCount(int val){ProcessControl.RaftBaseLayerCount=val;}
@@ -212,7 +222,8 @@ public:
 	void SendNow(string str);
 	void setPort(string s);
 	void setSerialSpeed(int s );
-	
+	void SetValidateConnection(bool validate);
+
 	void SetKeepLines(float val){ ProcessControl.KeepLines = (int)val;}
 
 	void SetFileLogging(bool on);
@@ -261,7 +272,7 @@ public:
 	float zoom;
 	void SetEnableLight(int lightNr, bool on){ if(on) lights[lightNr].TurnOn(); else lights[lightNr].TurnOff(); redraw(); }
 	CGL_Light3D lights[4];
-	
+
 	/*- Custom button interface -*/
 	void SendCustomButton(int nr);
 	void SaveCustomButton();

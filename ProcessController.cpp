@@ -37,15 +37,15 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 
 	gcode.commands.clear();
 
-	float destinationZ=PrintMargin.z;
+	float printOffsetZ=PrintMargin.z;
 
 	if(RaftEnable)
 	{
 		printOffset += Vector3f(RaftSize, RaftSize, 0);
-		MakeRaft(destinationZ);
+		MakeRaft(printOffsetZ);
 	}
 	float E=0.0f;
-	while(z<Max.z+LayerThickness*0.5f)
+	while(z<Max.z)
 	{
 		if(gui)
 		{
@@ -66,11 +66,12 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 				stl->CalcCuttingPlane(z, plane, T);	// output is alot of un-connected line segments with individual vertices, describing the outline
 
 				float hackedZ = z;
-				while(plane.LinkSegments(hackedZ, ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, m_ShrinkQuality, ShellCount) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
-				{										// This happens when there's triangles missing in the input STL
+				while (plane.LinkSegments (hackedZ, Optimization) == false)	// If segment linking fails, re-calc a new layer close to this one, and use that.
+				{ // This happens when there's triangles missing in the input STL
 					hackedZ+= 0.1f;
-					stl->CalcCuttingPlane(hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices
+					stl->CalcCuttingPlane (hackedZ, plane, T);	// output is alot of un-connected line segments with individual vertices
 				}
+				plane.SetZ (z + printOffsetZ);
 
 				// inFill
 				vector<Vector2f> infill;
@@ -84,11 +85,16 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 					case SHRINK_FAST:
 						plane.ShrinkFast(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);
 						break;
+
 					case SHRINK_NICE:
+#if defined(ENABLE_GPC) && ENABLE_GPC
 						plane.ShrinkNice(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);
+#else
+						// "Warning: ShrinkNice is disabled without gpc code\n";
+#endif
 						break;
 					case SHRINK_LOGICK:
-						plane.ShrinkLogick(ExtrudedMaterialWidth*0.5f, Optimization, DisplayCuttingPlane, false, ShellCount);
+						plane.ShrinkLogick(ExtrudedMaterialWidth, Optimization, DisplayCuttingPlane, ShellCount);
 						break;
 					}
 
@@ -99,14 +105,13 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 						infillDistance = AltInfillDistance;
 					}
 
-					plane.CalcInFill(infill, LayerNr, destinationZ, infillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
+					plane.CalcInFill(infill, LayerNr, infillDistance, InfillRotation, InfillRotationPrLayer, DisplayDebuginFill);
 				}
 				// Make the GCode from the plane and the infill
-				plane.MakeGcode(infill, gcode, E, destinationZ, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, DistanceToReachFullSpeed, extrusionFactor, UseIncrementalEcode, Use3DGcode, EnableAcceleration);
+				plane.MakeGcode(infill, gcode, E, z+printOffsetZ, MinPrintSpeedXY, MaxPrintSpeedXY, MinPrintSpeedZ, MaxPrintSpeedZ, DistanceToReachFullSpeed, extrusionFactor, UseIncrementalEcode, Use3DGcode, EnableAcceleration);
 			}
 		}
 		LayerNr++;
-		destinationZ += LayerThickness;
 		z+=LayerThickness;
 	}
 
@@ -115,7 +120,7 @@ void ProcessController::ConvertToGCode(string &GcodeTxt, const string &GcodeStar
 	gui->ProgressBar->label("Done");
 }
 
-Matrix4f ProcessController::GetSTLTransformationMatrix(int object, int file) const 
+Matrix4f ProcessController::GetSTLTransformationMatrix(int object, int file) const
 {
 	Matrix4f result = rfo.transform3D.transform;
 	Vector3f translation = result.getTranslation();
@@ -293,6 +298,13 @@ void ProcessController::MakeRaft(float &z)
 
 		LayerNr++;
 	}
+
+	// restore the E state
+	Command gotoE;
+	gotoE.Code = GOTO;
+	gotoE.e = 0;
+	gotoE.comment = "Reset E for the remaining print";
+	gcode.commands.push_back(gotoE);
 }
 
 void ProcessController::OptimizeRotation()
@@ -328,21 +340,20 @@ void ProcessController::Draw(Flu_Tree_Browser::Node *selected_node)
 	Vector3f translation = rfo.transform3D.transform.getTranslation();
 
 	printer.Draw(*this);
+
 	// Move objects
 	glTranslatef(translation.x+printOffset.x, translation.y+printOffset.y, translation.z+PrintMargin.z);
 	glPolygonOffset (0.5f, 0.5f);
 	rfo.Draw(*this, 1.0f, selected_node);
-	if(DisplayGCode)
+
+	if (DisplayGCode)
 	{
 		glTranslatef(-(translation.x+printOffset.x), -(translation.y+printOffset.y), -(translation.z+PrintMargin.z));
 		gcode.draw(*this);
-	}
 		glTranslatef(translation.x+printOffset.x, translation.y+printOffset.y, translation.z+PrintMargin.z);
-	
-		glPolygonOffset (-0.5f, -0.5f);
-		rfo.Draw(*this, PolygonOpasity);
-//	float z=0;
-//	MakeRaft(z);
+	}
+	glPolygonOffset (-0.5f, -0.5f);
+	rfo.Draw(*this, PolygonOpasity);
 
 	if(DisplayBBox)
 	{
@@ -399,7 +410,7 @@ namespace {
 		std::string s = name.str();
 		setXMLString (x, s.c_str(), value);
 	}
-	
+
 	// Calm our warning problem down ...
 	XMLVariable *setVariable (XMLElement *x, const char *variable)
 	{
@@ -428,11 +439,12 @@ void ProcessController::SaveXML(XMLElement *e)
 	setVariable (x, "RaftInterfaceTemperature")->SetValueFloat(RaftInterfaceTemperature);
 
 	// GCode parameters
-	setVariable (x, "GCodeStartText")->SetValue(GCodeStartText.c_str());	
-	setVariable (x, "GCodeLayerText")->SetValue(GCodeLayerText.c_str());	
-	setVariable (x, "GCodeEndText")->SetValue(GCodeEndText.c_str());	
-        //setVariable (x, "Notes", true,"[Empty]")->SetValue(Notes.c_str()); // overwriting GCodeEndText	
-	setVariable (x, "m_sPortName")->SetValue(m_sPortName.c_str());	
+	setVariable (x, "GCodeStartText")->SetValue(GCodeStartText.c_str());
+	setVariable (x, "GCodeLayerText")->SetValue(GCodeLayerText.c_str());
+	setVariable (x, "GCodeEndText")->SetValue(GCodeEndText.c_str());
+        //setVariable (x, "Notes", true,"[Empty]")->SetValue(Notes.c_str()); // overwriting GCodeEndText
+	setVariable (x, "m_sPortName")->SetValue(m_sPortName.c_str());
+	setVariable (x, "ValidateConnection")->SetValueInt((int)m_bValidateConnection);
 
 	for (int i = 0; i < 20; i++) {
 		std::ostringstream os, name;
@@ -444,7 +456,7 @@ void ProcessController::SaveXML(XMLElement *e)
 		setXMLString (x, name, CustomButtonLabel[i].c_str());
 	}
 
-	setVariable (x, "m_iSerialSpeed")->SetValueInt(m_iSerialSpeed);	
+	setVariable (x, "m_iSerialSpeed")->SetValueInt(m_iSerialSpeed);
 
 	setVariable (x, "GCodeDrawStart")->SetValueFloat(GCodeDrawStart);
 	setVariable (x, "GCodeDrawEnd")->SetValueFloat(GCodeDrawEnd);
@@ -463,11 +475,11 @@ void ProcessController::SaveXML(XMLElement *e)
 	setVariable (x, "EnableAcceleration")->SetValueInt((int)EnableAcceleration);
 	setVariable (x, "UseIncrementalEcode")->SetValueInt((int)UseIncrementalEcode);
 	setVariable (x, "Use3DGcode")->SetValueInt((int)Use3DGcode);
-	
+
 	setVariable (x, "FileLogginEnabled")->SetValueInt((int)FileLogginEnabled);
 	setVariable (x, "TempReadingEnabled")->SetValueInt((int)TempReadingEnabled);
 	setVariable (x, "ClearLogfilesWhenPrintStarts")->SetValueInt((int)ClearLogfilesWhenPrintStarts);
-	
+
 	setVariable (x, "m_fVolume.x")->SetValueFloat(m_fVolume.x);
 	setVariable (x, "m_fVolume.y")->SetValueFloat(m_fVolume.y);
 	setVariable (x, "m_fVolume.z")->SetValueFloat(m_fVolume.z);
@@ -483,7 +495,7 @@ void ProcessController::SaveXML(XMLElement *e)
 	setVariable (x, "InfillRotation")->SetValueFloat(InfillRotation);
 	setVariable (x, "InfillRotationPrLayer")->SetValueFloat(InfillRotationPrLayer);
 	setVariable (x, "AltInfillDistance")->SetValueFloat(AltInfillDistance);
-	setVariable (x, "AltInfillLayers")->SetValue(AltInfillLayersText.c_str());	
+	setVariable (x, "AltInfillLayers")->SetValue(AltInfillLayersText.c_str());
 	setVariable (x, "PolygonOpasity")->SetValueFloat(PolygonOpasity);
 
 
@@ -504,7 +516,7 @@ void ProcessController::SaveXML(XMLElement *e)
 	setVariable (x, "DisplayCuttingPlane")->SetValueInt((int)DisplayCuttingPlane);
 	setVariable (x, "DrawVertexNumbers")->SetValueInt((int)DrawVertexNumbers);
 	setVariable (x, "DrawLineNumbers")->SetValueInt((int)DrawLineNumbers);
-	
+
 	setVariable (x, "PolygonVal")->SetValueFloat(PolygonVal);
 	setVariable (x, "PolygonSat")->SetValueFloat(PolygonSat);
 	setVariable (x, "PolygonHue")->SetValueFloat(PolygonHue);
@@ -565,7 +577,7 @@ namespace {
 			buffer[0] = '\0';
 			v->GetValue (buffer);
 			std::string retval(buffer);
-			delete buffer;
+			delete[] buffer;
 			return retval;
 		} else
 			return std::string();
@@ -647,7 +659,7 @@ void ProcessController::LoadXML(XMLElement *e)
 		gui->MVC->RefreshCustomButtonLabels();
 
 	GCodeLayerText = getXMLString (x, "GCodeLayerText", "");
-	GCodeEndText = getXMLString (x, "GCodeEndText", 
+	GCodeEndText = getXMLString (x, "GCodeEndText",
 				     "G1 X0 Y0 F2000.0       ;feed for start of next move\n"
 				     "M104 S0.0              ;Heater off\n");
 
@@ -655,10 +667,14 @@ void ProcessController::LoadXML(XMLElement *e)
 	if (m_sPortName.length() == 0)
 	{
 		std::ostringstream port;
-		int highestCom = MVC->CheckComPorts(); // warning this code is likely to be called with MVC == null, extremely ugly. TODO: REWRITE!
-		port << "COM" << highestCom;
-		m_sPortName = port.str();
+		if ( MVC ) {
+			vector<string> comportlist = MVC->CheckComPorts(); // warning this code is likely to be called with MVC == null, extremely ugly. TODO: REWRITE!
+			m_sPortName = comportlist.size() > 0 ? comportlist[comportlist.size()-1] : "";
+		}
 	}
+	y = getVariable (x, "ValidateConnection", "1");
+	if(y)	m_bValidateConnection = (bool)y->GetValueInt();
+
 
 	STLPath = getXMLString (x, "STLPath", "");
 	RFOPath = getXMLString (x, "RFOPath", "");
@@ -735,13 +751,16 @@ void ProcessController::LoadXML(XMLElement *e)
 	if(y)	UseIncrementalEcode= (bool)y->GetValueInt();
 	y = getVariable (x, "Use3DGcode", "0");
 	if(y)	Use3DGcode= (bool)y->GetValueInt();
-	
+
 	y = getVariable (x, "FileLogginEnabled", "1");
 	if(y)	FileLogginEnabled= (bool)y->GetValueInt();
 	y = getVariable (x, "TempReadingEnabled", "1");
 	if(y)	TempReadingEnabled= (bool)y->GetValueInt();
 	y = getVariable (x, "ClearLogfilesWhenPrintStarts", "1");
 	if(y)	ClearLogfilesWhenPrintStarts= (bool)y->GetValueInt();
+
+	y = getVariable (x, "ValidateConnection", "1");
+	if(y)	m_bValidateConnection = (bool)y->GetValueInt();
 
 	// GUI... ?
 	y = getVariable (x, "DisplayEndpoints", "0");
@@ -840,7 +859,7 @@ void ProcessController::LoadXML(XMLElement *e)
 	y = getVariable (x, "ApronInfillDistance", "2");
 	if(y)	ApronInfillDistance = (bool)y->GetValueFloat();
 
-	y = getVariable (x, "ShrinkFast", "1"); // "1" makes this the default, must be on top to allow the others to overwrite if set. 
+	y = getVariable (x, "ShrinkFast", "1"); // "1" makes this the default, must be on top to allow the others to overwrite if set.
 	if(y && (bool)y->GetValueInt())	m_ShrinkQuality = SHRINK_FAST;
 	y = getVariable (x, "ShrinkNice", "0");
 	if(y && (bool)y->GetValueInt())	m_ShrinkQuality = SHRINK_NICE;
@@ -850,7 +869,7 @@ void ProcessController::LoadXML(XMLElement *e)
 
 void ProcessController::LoadXML(string filename)
 {
-	XML* xml = new XML (filename.c_str()); 
+	XML* xml = new XML (filename.c_str());
 	XMLElement* e = xml->GetRootElement ();
 	LoadXML (e);
 }
@@ -864,7 +883,7 @@ void ProcessController::SaveXML()
 {
 	string filename = m_Filename + ".xml";
 
-	XML* xml = new XML (filename.c_str()); 
+	XML* xml = new XML (filename.c_str());
 	if (xml) {
 		XMLElement* e = xml->GetRootElement();
 		SaveXML (e);
@@ -893,7 +912,7 @@ void ProcessController::BindLua(lua_State *myLuaState)
 
 //			.def ("GCode", ProcessController::GCodeResult)
 
-/*
+
 			// Start, layer, end GCode
 			.def ("GCodeStartText", GCodeStartText)
 			.def ("GCodeLayerText", GCodeLayerText)
@@ -940,7 +959,7 @@ void ProcessController::BindLua(lua_State *myLuaState)
 			.def ("ExtrudedMaterialWidth", ExtrudedMaterialWidth)
 			.def ("UseIncrementalEcode", UseIncrementalEcode)
 
-			// STL 
+			// STL
 			.def ("LayerThickness", LayerThickness)
 			.def ("CuttingPlaneValue", CuttingPlaneValue)
 

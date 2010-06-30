@@ -290,6 +290,8 @@ void GCode::draw(const ProcessController &PC)
 			glVertex3fv((GLfloat*)&commands[i].where);
 			glEnd();
 			break;
+		default:
+			break; // ignored GCodes
 		}
 		if(commands[i].Code != EXTRUDERON && commands[i].Code != EXTRUDEROFF)
 		pos = commands[i].where;
@@ -333,13 +335,10 @@ void GCode::draw(const ProcessController &PC)
 
 void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, bool UseIncrementalEcode, bool Use3DGcode)
 {
-	Vector3f pos(0,0,0);
-	
-	float Distance = 0;
-	std::stringstream oss;
-
-	Vector3f LastPos(-10,-10,-10);
 	float lastE = -10;
+	Vector3f pos(0,0,0);
+	Vector3f LastPos(-10,-10,-10);
+	std::stringstream oss;
 
 	GcodeTxt += GcodeStart + "\n";
 
@@ -375,7 +374,7 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 					}
 				else
 					{
-					if(commands[i].e != 0.0f)
+					if(commands[i].e >= 0.0f)
 						oss << "E" << commands[i].e << " ";
 					}
 			}
@@ -386,7 +385,8 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 				oss <<  "\n";
 			GcodeTxt += oss.str();
 			LastPos = commands[i].where;
-			lastE = commands[i].e;
+			if( commands[i].e >= 0.0f)
+				lastE = commands[i].e;
 			if(commands[i].Code == ZMOVE)
 				GcodeTxt += GcodeLayer + "\n";
 			break;
@@ -411,14 +411,39 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 				oss <<  "\n";
 			GcodeTxt += oss.str();
 			LastPos = commands[i].where;
-			lastE = commands[i].e;
 			break;
 		case RAPIDMOTION:
-			oss  << "G0 X" << commands[i].where.x << " Y" << commands[i].where.y << " Z" << commands[i].where.z  << " E0\n";
+			oss  << "G0 X" << commands[i].where.x << " Y" << commands[i].where.y << " Z" << commands[i].where.z  << "\n";
 			GcodeTxt += oss.str();
 			LastPos = commands[i].where;
-			lastE = commands[i].e;
 			break;
+		case GOTO:
+			oss  << "G92";
+			if(commands[i].where.x != LastPos.x && commands[i].where.x >= 0)
+			{
+				LastPos.x = commands[i].where.x;
+				oss << " X" << commands[i].where.x;
+			}
+			if(commands[i].where.y != LastPos.y && commands[i].where.y >= 0)
+			{
+				LastPos.y = commands[i].where.y;
+				oss << " Y" << commands[i].where.y;
+			}
+			if(commands[i].where.z != LastPos.z && commands[i].where.z >= 0)
+			{
+				LastPos.z = commands[i].where.z;
+				oss << " Z" << commands[i].where.z;
+			}
+			if(commands[i].e != lastE && commands[i].e >= 0.0f)
+			{
+				lastE = commands[i].e;
+				oss << " E" << commands[i].e;
+			}
+			oss <<  "\n";
+			GcodeTxt += oss.str();
+			break;
+		default:
+			break; // ignored CGCode
 		}
 		pos = commands[i].where;
 	}

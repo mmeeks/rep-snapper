@@ -4,66 +4,114 @@
 
 CC=gcc
 CXX=g++
-CFLAGS=-c -O0 -g -Wall
+LIB_DIR=../Libraries
 UNAME := $(shell uname)
-LIB_DIR=Libraries
+ifeq ($(TARGET),)
+	TARGET=RELEASE
+endif
+ifeq ($(UNAME),Darwin)
+	WARNING_FLAGS = -Wall
+else
+	WARNING_FLAGS = -Wall -Wno-pragmas
+endif
+
+EXEC=repsnapper
+EXEC_DEBUG=repsnapper_debug
+ifeq ($(TARGET),RELEASE)
+	CFLAGS = -c -O2 $(WARNING_FLAGS)
+	EXECUTABLE=$(EXEC)
+else
+	CFLAGS = -c -g -O0 $(WARNING_FLAGS)
+	EXECUTABLE=$(EXEC_DEBUG)
+endif
 
 # Linux
 ifeq ($(UNAME),Linux)
     GTK_LIBS=`pkg-config --libs gtk+-2.0 gthread-2.0`
     GTK_CFLAGS=`pkg-config --cflags gtk+-2.0 gthread-2.0` -DHAVE_GTK
-    INC=$(GTK_CFLAGS) -I/usr/include -I$(LIB_DIR) -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)/ann_1.1.1/include -I/usr/include/boost -I/usr/include/lua5.1
+    INC=$(GTK_CFLAGS) -I/usr/include -I$(LIB_DIR) -I$(LIB_DIR)/vmmlib/include -I/usr/include/boost -I/usr/include/lua5.1
+    INC+=-I$(LIB_DIR)/polylib
     LDFLAGS=$(GTK_LIBS) -L/usr/lib -lGLU -lfltk -lfltk_gl -lfltk_forms -lglut -lboost_thread-mt -lboost_system-mt 
+    LDFLAGS+=-L$(LIB_DIR)/polylib -lpolylib
+    TEST_LDFLAGS=-lboost_unit_test_framework
 endif
 
 # Mac
 ifeq ($(UNAME),Darwin)
-# assumes you installed MacPorts http://www.macports.org and run:
-# sudo port install boost fltk lua
-    OPT_DIR=/opt/local
-	INC=-I$(OPT_DIR)/include -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)/ann_1.1.1/include -I$(LIB_DIR)
-	LDFLAGS=-L$(OPT_DIR)/lib -lpthread -lfltk -lfltk_forms -lfltk_gl -L$(LIB_DIR)/xml
-	LDFLAGS+= -lboost_thread-mt -l boost_system-mt
-    LDFLAGS+= -framework Carbon -framework OpenGL -framework GLUT -framework AGL
+    # assumes you have installed MacPorts from http://www.macports.org and run:
+    # sudo port install boost fltk lua
+	# assumes you have built boost as in the Readme.MacOsx.txt
+
+    BOOST_HOME=../Libraries/boost-darwin
+    BOOST_INC=-I$(BOOST_HOME)/include/boost-1_43
+	ifeq ($(TARGET),RELEASE)
+		BOOST_LIB=$(BOOST_HOME)/lib/libboost_thread-xgcc40-mt.a $(BOOST_HOME)/lib/libboost_system-xgcc40-mt.a
+	else
+		BOOST_LIB=$(BOOST_HOME)/lib/libboost_thread-xgcc40-mt-d.a $(BOOST_HOME)/lib/libboost_system-xgcc40-mt-d.a
+	endif
+    MACPORTS_DIR=/opt/local
+	INC=$(BOOST_INC) -I$(MACPORTS_DIR)/include -I$(LIB_DIR)/vmmlib/include -I$(LIB_DIR)
+	INC+=-I$(LIB_DIR)/polylib
+	INC+=-pthread
+	LDFLAGS=$(BOOST_LIB) -L$(MACPORTS_DIR)/lib -pthread -lfltk -lfltk_forms -lfltk_gl
+	LDFLAGS+=-L$(LIB_DIR)/polylib -lpolylib
+    LDFLAGS+=-framework Carbon -framework OpenGL -framework GLUT -framework AGL
+    TEST_LDFLAGS=-lboost_unit_test_framework
 endif
 
 GENERATED=UI.cxx UI.h
 
-SOURCES=AsyncSerial.cpp RepSnapper.cpp stl.cpp gpc.c RepRapSerial.cpp \
+MAIN_SOURCES=RepSnapper.cpp
+TEST_SOURCES=unittest.cpp
+SHARED_SOURCES=AsyncSerial.cpp stl.cpp RepRapSerial.cpp \
 	ProcessController.cpp Printer.cpp ModelViewController.cpp \
 	glutils.cpp GCode.cpp ArcBall.cpp stdafx.cpp UI.cxx \
 	RFO.cpp Flu_DND.cpp flu_pixmaps.cpp FluSimpleString.cpp \
 	Flu_Tree_Browser.cpp ivcon.cpp File.cpp platform.cpp \
-	$(LIB_DIR)/xml/xml.cpp 
+	$(LIB_DIR)/xml/xml.cpp \
+	gpc.c
 
 HEADERS=ArcBall.h AsyncSerial.h Convert.h Flu_DND.h Flu_Enumerations.h \
 	flu_export.h flu_pixmaps.h FluSimpleString.h Flu_Tree_Browser.h \
-	gcode.h glutils.h gpc.h ivcon.h miniball.h ModelViewController.h \
-	Printer.h ProcessController.h RepRapSerial.h RFO.h search.h \
-	Serial.h stdafx.h stl.h triangle.h UI.h platform.h
+	gcode.h glutils.h ivcon.h miniball.h ModelViewController.h \
+	Printer.h ProcessController.h RepRapSerial.h RFO.h \
+	stdafx.h stl.h triangle.h UI.h platform.h \
+	gpc.h
 
-OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(subst .CPP,.o,$(SOURCES)))))
+SHARED_OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(SHARED_SOURCES))))
+MAIN_OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(MAIN_SOURCES)))) $(SHARED_OBJECTS)
+TEST_OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(TEST_SOURCES)))) $(SHARED_OBJECTS)
 
-EXECUTABLE=repsnapper
 
-all: $(SOURCES) $(EXECUTABLE)
+all: $(EXECUTABLE)
 
-$(EXECUTABLE): $(OBJECTS)
-	$(CXX) ${INC} $(OBJECTS) $(LDFLAGS) -o $@ 
+$(EXECUTABLE): poly_lib $(MAIN_OBJECTS)
+	$(CXX) ${INC} $(MAIN_OBJECTS) $(LDFLAGS) -o $@
+
+unittest : poly_lib $(TEST_OBJECTS)
+	$(CXX) ${INC} $(TEST_OBJECTS) $(LDFLAGS) $(TEST_LDFLAGS) -o $@
 
 %.cxx %.h:%.fl
+	rm -f $@ # fluid doesn't remove on failure.
 	fluid -c $<
 %.o:%.cxx
 	$(CXX) ${INC} $(CFLAGS) $< -o $@
 %.o:%.cpp
 	$(CXX) ${INC} $(CFLAGS) $< -o $@
-%.o:%.CPP # sexy XML.CPP naming ...
-	$(CXX) ${INC} $(CFLAGS) $< -o $@
 %.o:%.c
 	$(CC) ${INC} $(CFLAGS) $< -o $@
 
+poly_lib:
+	make -C ../Libraries/polylib/ all
+
+check: unittest
+	./unittest
+#	cd ../test ; python ./rpstest.py ../Src/repsnapper
+
 clean:
-	rm -f $(OBJECTS) $(EXECUTABLE) $(GENERATED)
+	rm -f $(SHARED_OBJECTS) $(MAIN_OBJECTS) $(TEST_OBJECTS) \
+	      $(EXEC) $(EXEC_DEBUG) $(GENERATED) unittest
+	make -i -C ../Libraries/polylib/ clean
 
 VER=0.1.0
 PKG_NAME=repsnapper
@@ -76,7 +124,7 @@ dist:
 
 # make update-deps will re-write the dependenciues below
 update-depends:
-	makedepend -Y $(SOURCES)
+	makedepend -Y $(SHARED_SOURCES) $(MAIN_SOURCES) $(TEST_SOURCES)
 
 # not needed
 #	<Kulitorum> fillet.cpp
@@ -96,8 +144,7 @@ RepSnapper.o: AsyncSerial.h
 stl.o: stdafx.h config.h platform.h ArcBall.h ivcon.h stl.h gcode.h UI.h
 stl.o: File.h ModelViewController.h ProcessController.h Printer.h RFO.h
 stl.o: Flu_Tree_Browser.h Flu_Enumerations.h flu_export.h FluSimpleString.h
-stl.o: glutils.h RepRapSerial.h AsyncSerial.h gpc.h
-gpc.o: gpc.h
+stl.o: glutils.h RepRapSerial.h AsyncSerial.h
 RepRapSerial.o: stdafx.h config.h platform.h ArcBall.h ivcon.h RepRapSerial.h
 RepRapSerial.o: UI.h File.h ModelViewController.h gcode.h stl.h
 RepRapSerial.o: ProcessController.h Printer.h RFO.h Flu_Tree_Browser.h

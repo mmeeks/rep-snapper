@@ -20,7 +20,9 @@
 #define _WIN32_WINNT 0x0501	// Change this to the appropriate value to target other versions of Windows.
 #endif						
 
-#pragma warning( disable : 4311 4312 4244 4267 4800)
+#ifdef WIN32
+#  pragma warning( disable : 4311 4312 4244 4267 4800)
+#endif
 typedef unsigned int        uint;
 
 #define DEBUG_ECHO (1<<0)
@@ -68,7 +70,6 @@ class RFO_File;
 class RFO_Object;
 class RFO_Transform3D;
 
-struct Segment;
 struct InFillHit;
 
 typedef unsigned int uint;
@@ -84,9 +85,12 @@ extern void	RGBTOYUV	(float r, float g, float b, float &y, float &u, float &v);
 extern void YUVTORGB	(float y, float u, float v, float &r, float &g, float &b);
 
 
-// #include "ModelViewController.h"
-
-// #include "AsyncSerial.h"
+// helper for easy locking
+class ToolkitLock {
+ public:
+  ToolkitLock() { Fl::lock(); }
+  ~ToolkitLock() { Fl::unlock(); }
+};
 
 #ifdef ENABLE_LUA
 

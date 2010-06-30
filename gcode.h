@@ -135,7 +135,7 @@ enum GCodes{GOTO, DRAWTO, MILLIMETERSASUNITS, RAPIDMOTION, COORDINATEDMOTION, CO
 class Command
 {
 public:
-	Command(){f=e=0.0f;};
+	Command(){where.x=where.y=where.z=e=-1.0f;f=0.0f;};
 	GCodes Code;
 	Vector3f where;
 	float f,e;	// Feedrates f=speed, e=extrusion to preform while moving (Pythagoras)

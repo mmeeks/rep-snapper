@@ -10,6 +10,8 @@
 *
 * ------------------------------------------------------------------------- */
 #include "stdafx.h"
+#include <vector>
+#include <string>
 #include "ModelViewController.h"
 #include "RFO.h"
 
@@ -43,7 +45,7 @@ char* itoa(int value, char* result, int base) {
 	}
 	return result;
 }
-	
+
 #endif
 
 
@@ -155,6 +157,7 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 
 	ProcessControl.LoadXML();
 	serial->SetReceivingBufferSize(ProcessControl.ReceivingBufferSize);
+	serial->SetValidateConnection(ProcessControl.m_bValidateConnection);
 	CopySettingsToGUI();
 
 	m_bExtruderDirection = true;
@@ -172,9 +175,9 @@ void ModelViewController::Static_Timer_CB(void *userdata) {
 }
 
 /* Called every 250ms (0.25 of a second) */
-void ModelViewController::Timer_CB() 
+void ModelViewController::Timer_CB()
 {
-	if( gui->Tabs->value() == gui->PrinterDefinitionTab )
+	if( !serial->isConnected() && gui->printerSettingsWindow->visible() != 0 )
 	{
 	  static uint count = 0;
 	  if ((count++ % 4) == 0) /* every second */
@@ -191,50 +194,99 @@ void ModelViewController::resize(int x,int y, int width, int height)					// Resh
 	Fl_Gl_Window::resize(x,y,width,height);
 }
 
-int ModelViewController::CheckComPorts()
+vector<string> ModelViewController::CheckComPorts()
 {
-	int highestCom = 0;
+	vector<std::string> currentComports;
+	bool bDirty = false; // did the list of available com ports change
 #ifdef WIN32
+	int highestCom = 0;
 	for(int i = 1; i <=9 ; i++ )
 	{
-        TCHAR strPort[32] = {0};
-        _stprintf(strPort, _T("COM%d"), i);   
+	        TCHAR strPort[32] = {0};
+	        _stprintf(strPort, _T("COM%d"), i);
 
-        DWORD dwSize = 0;
-        LPCOMMCONFIG lpCC = (LPCOMMCONFIG) new BYTE[1];
-        GetDefaultCommConfig(strPort, lpCC, &dwSize);
+	        DWORD dwSize = 0;
+	        LPCOMMCONFIG lpCC = (LPCOMMCONFIG) new BYTE[1];
+	        GetDefaultCommConfig(strPort, lpCC, &dwSize);
 		int r = GetLastError();
-        delete [] lpCC;    
+	        delete [] lpCC;
 
-        lpCC = (LPCOMMCONFIG) new BYTE[dwSize];
-        GetDefaultCommConfig(strPort, lpCC, &dwSize);
-        delete [] lpCC;    
+	        lpCC = (LPCOMMCONFIG) new BYTE[dwSize];
+	        GetDefaultCommConfig(strPort, lpCC, &dwSize);
+	        delete [] lpCC;
 
 		if( r != 87 )
 		{
+			ToolkitLock guard;
+
 			highestCom = i;
 			if( this ) // oups extremely ugly, should move this code to a static method and a callback
 			{
-				const_cast<Fl_Menu_Item*>(gui->portInput->menu())[i-1].flags = FL_NORMAL_LABEL;
-				const_cast<Fl_Menu_Item*>(gui->portInputSimple->menu())[i-1].flags = FL_NORMAL_LABEL;
+				const_cast<Fl_Menu_Item*>(gui->portInput->menu())[i-1].activate();
+				const_cast<Fl_Menu_Item*>(gui->portInputSimple->menu())[i-1].activate();
 			}
 		}
 		else
 		{
+			ToolkitLock guard;
+
 			if( this ) // oups extremely ugly, should move this code to a static method and a callback
 			{
-				const_cast<Fl_Menu_Item*>(gui->portInput->menu())[i-1].flags = FL_NO_LABEL;
-				const_cast<Fl_Menu_Item*>(gui->portInputSimple->menu())[i-1].flags = FL_NO_LABEL;
+				const_cast<Fl_Menu_Item*>(gui->portInput->menu())[i-1].deactivate();
+				const_cast<Fl_Menu_Item*>(gui->portInputSimple->menu())[i-1].deactivate();
+			}
+		}
+	}
+	currentComports.push_back(string("COM"+highestCom));
+
+#elif defined(__APPLE__)
+	const char *ttyPattern = "tty.";
+
+#else // Linux
+	const char *ttyPattern = "ttyUSB";
+#endif
+
+#ifndef WIN32
+	DIR *d = opendir ("/dev");
+	if (d) { // failed
+		struct	dirent *e;
+		while ((e = readdir (d))) {
+			//fprintf (stderr, "name '%s'\n", e->d_name);
+			if (strstr(e->d_name,ttyPattern)) {
+				string device = string("/dev/") + e->d_name;
+				currentComports.push_back(device);
 			}
 		}
 
+		if ( currentComports.size() != this->comports.size() ) {
+			bDirty=true;
+		}
+
+		if ( bDirty ) {
+			if ( gui ) {
+				ToolkitLock guard;
+
+				static Fl_Menu_Item emptyList[] = {
+				 {0,0,0,0,0,0,0,0,0}
+				};
+
+				gui->portInputSimple->menu(emptyList);
+				gui->portInput->menu(emptyList);
+				comports.clear();
+				 //{"COM1", 0,  0, (void*)(1), 4, FL_NORMAL_LABEL, 0, 14, 0},
+				for(size_t indx = 0; indx < currentComports.size(); ++indx) {
+					string menuLabel = string(currentComports[indx]);
+					gui->portInput->add(strdup(menuLabel.c_str()));
+					gui->portInputSimple->add(strdup(menuLabel.c_str()));
+					comports.push_back(currentComports[indx]);
+				}
+			}
+		}
+		closedir(d);
 	}
-#else // Linux
-	// FIXME: this API needs massaging to return a string vector
-	highestCom = 1;
 #endif
 
-	return highestCom;
+	return currentComports;
 }
 
 void ModelViewController::setSerialSpeed(int s )
@@ -246,6 +298,13 @@ void ModelViewController::setSerialSpeed(int s )
 void ModelViewController::setPort(string s)
 {
 	ProcessControl.m_sPortName = s;
+	CopySettingsToGUI();
+}
+
+void ModelViewController::SetValidateConnection(bool validate)
+{
+	ProcessControl.m_bValidateConnection = validate;
+	serial->SetValidateConnection(ProcessControl.m_bValidateConnection);
 	CopySettingsToGUI();
 }
 
@@ -323,7 +382,7 @@ void ModelViewController::draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);				// Clear Screen And Depth Buffer
 	glLoadIdentity();												// Reset The Current Modelview Matrix
 	glTranslatef(0.0f,0.0f,-zoom*2);								// Move Left 1.5 Units And Into The Screen 6.0
-	
+
 	glMultMatrixf(Transform.M);										// NEW: Apply Dynamic Transform
 	CenterView();
 
@@ -348,12 +407,12 @@ void ModelViewController::draw()
 //	swap_buffers();
 }
 
-int ModelViewController::handle(int event) 
+int ModelViewController::handle(int event)
 {
 	Vector2f    Clickpoint;												// NEW: Current Mouse Point
 	static float Click_y;
 	static float old_zoom;
-	
+
 	Clickpoint.x =  (GLfloat)Fl::event_x();;
 	Clickpoint.y =  (GLfloat)Fl::event_y();;
 
@@ -414,12 +473,12 @@ int ModelViewController::handle(int event)
 					downPoint=Clickpoint;
 					}
 
-					break;				
+					break;
 				case FL_RIGHT_MOUSE:
 					float y = 	Click_y - Clickpoint.y;
 					zoom = old_zoom + y*0.1;
 					redraw();
-					break;				
+					break;
 				}
 			return 1;
 		case FL_RELEASE: //mouse up event ...
@@ -427,6 +486,12 @@ int ModelViewController::handle(int event)
 			MousePt.T[1] = (GLfloat)Fl::event_y();
 			redraw();
 			return 1;
+		case FL_MOUSEWHEEL: { //mouse scroll event
+			int mwscrolled = Fl::event_dy();
+			zoom += mwscrolled*1;
+			redraw();
+			return 1;
+			}
 		case FL_FOCUS :
 		case FL_UNFOCUS : // Return 1 if you want keyboard events, 0 otherwise
 			return 0;
@@ -456,7 +521,7 @@ void ModelViewController::DrawGridAndAxis()
 void ModelViewController::ConvertToGCode()
 {
 	string GcodeTxt;
-	
+
 	Fl_Text_Buffer* buffer = gui->GCodeResult->buffer();
 	buffer->remove(0, buffer->length());
 
@@ -475,10 +540,8 @@ void ModelViewController::ConvertToGCode()
 
 	ProcessControl.ConvertToGCode(GcodeTxt, GCodeStart, GCodeLayer, GCodeEnd);
 	buffer = gui->GCodeResult->buffer();
-	
-	int length = GcodeTxt.length();
+
 	GcodeTxt += "\0";
-	int length2 = GcodeTxt.length();
 	buffer->append( GcodeTxt.c_str() );
 	redraw();
 }
@@ -506,7 +569,7 @@ void ModelViewController::WriteGCode (string filename)
 {
   Fl_Text_Buffer* buffer = gui->GCodeResult->buffer();
   int result = buffer->savefile (filename.c_str());
-  
+
   switch (result)
     {
     case 0: // Succes
@@ -551,6 +614,7 @@ void ModelViewController::CopySettingsToGUI()
 	gui->RaftInterfaceThicknessSlider->value(ProcessControl.RaftInterfaceThickness);
 	gui->RaftInterfaceTemperatureSlider->value(ProcessControl.RaftInterfaceTemperature);
 
+	gui->ValidateConnection->value(ProcessControl.m_bValidateConnection);
 	gui->portInput->value(ProcessControl.m_sPortName.c_str());
 	gui->portInputSimple->value(ProcessControl.m_sPortName.c_str());
 	gui->SerialSpeedInput->value(ProcessControl.m_iSerialSpeed);
@@ -569,7 +633,7 @@ void ModelViewController::CopySettingsToGUI()
 	gui->extrusionFactorSlider->value(ProcessControl.extrusionFactor);
 	gui->UseIncrementalEcodeButton->value(ProcessControl.UseIncrementalEcode);
 	gui->Use3DGcodeButton->value(ProcessControl.Use3DGcode);
-	
+
 
 	// Printer
 	gui->VolumeX->value(ProcessControl.m_fVolume.x);
@@ -581,7 +645,7 @@ void ModelViewController::CopySettingsToGUI()
 
 	gui->ExtrudedMaterialWidthSlider->value(ProcessControl.ExtrudedMaterialWidth);
 
-	// STL 
+	// STL
 	gui->LayerThicknessSlider->value(ProcessControl.LayerThickness);
 	gui->CuttingPlaneValueSlider->value(ProcessControl.CuttingPlaneValue);
 	gui->PolygonOpasitySlider->value(ProcessControl.PolygonOpasity);
@@ -601,7 +665,7 @@ void ModelViewController::CopySettingsToGUI()
 	gui->FileLogginEnabledButton->value(ProcessControl.FileLogginEnabled);
 	gui->TempReadingEnabledButton->value(ProcessControl.TempReadingEnabled);
 	gui->ClearLogfilesWhenPrintStartsButton->value(ProcessControl.ClearLogfilesWhenPrintStarts);
-	
+
 	// GUI GUI
 	gui->DisplayEndpointsButton->value(ProcessControl.DisplayEndpoints);
 	gui->DisplayNormalsButton->value(ProcessControl.DisplayNormals);
@@ -748,7 +812,7 @@ void ModelViewController::SimplePrint()
 
 	Print();
 }
-	
+
 void ModelViewController::WaitForConnection(float seconds)
 {
 	serial->WaitForConnection(seconds*1000);
@@ -964,7 +1028,7 @@ void ModelViewController::Home(string axis)
 		buffer="G92 ";
 		buffer += axis;
 		buffer+="0";
-		SendNow(buffer);	// Set this as home		
+		SendNow(buffer);	// Set this as home
 		oss.str("");
 		buffer="G1 ";
 		buffer += axis;
@@ -987,7 +1051,7 @@ void ModelViewController::Home(string axis)
 		buffer="G92 ";
 		buffer += axis;
 		buffer+="0";
-		SendNow(buffer);	// Set this as home		
+		SendNow(buffer);	// Set this as home
 	}
 	else if(axis == "ALL")
 	{
@@ -1112,7 +1176,7 @@ size_t getResourceCount() const {
  size_t m_ResourceCount;
 };
 #ifdef ENABLE_LUA
- 
+
 void print_hello(int number)
 {
 	cout << "hello world " << number << endl;
@@ -1141,9 +1205,9 @@ void ModelViewController::RunLua(char* script)
 {
 #ifdef ENABLE_LUA
 	try{
-		
+
 		lua_State *myLuaState = lua_open();				// Create a new lua state
-		
+
 		luabind::open(myLuaState);						// Connect LuaBind to this lua state
 		luaL_openlibs(myLuaState);
 

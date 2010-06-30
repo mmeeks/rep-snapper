@@ -34,33 +34,32 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 	s=oss.str();
 
 	if(gui)
-		{
+	{
+		ToolkitLock guard;
+
 /*			Fl_Text_Buffer* buffer = gui->CommunationLog->buffer();
 			buffer->append(s.c_str());
 			cout << s;
 			Fl::check();*/
 
-		Fl::lock();
 		gui->CommunationLog->add(s.c_str());
 		if(gui->AutoscrollButton->value())
 			gui->CommunationLog->bottomline(gui->CommunationLog->size());
 		if(selectLine)
-			{
+		{
 			gui->CommunationLog->select(gui->CommunationLog->size());
 			gui->ErrorLog->add(s.c_str());
 			if(gui->AutoscrollButton->value())
 				gui->ErrorLog->bottomline(gui->ErrorLog->size());
-			}
+		}
 
-	//Fl::delete_widget(Fl_Widget *wi) 
 		while(gui->CommunationLog->size() > MVC->ProcessControl.KeepLines)
 			gui->CommunationLog->remove(1);
 		while(gui->ErrorLog->size() > MVC->ProcessControl.KeepLines)
 			gui->ErrorLog->remove(1);
 		while(gui->Echo->size() > MVC->ProcessControl.KeepLines)
 			gui->Echo->remove(1);
-		Fl::unlock();
-		}
+	}
 	else
 		printf("%s", s.c_str());
 
@@ -101,14 +100,14 @@ void RepRapSerial::echo(string s)
 
 	if(gui)
 	{
-		Fl::lock();
+		ToolkitLock guard;
+
 		gui->Echo->add(s.c_str());
 		if(gui->AutoscrollButton->value())
 		{
 			gui->Echo->bottomline(gui->Echo->size());
 			gui->Echo->redraw();
 		}
-		Fl::unlock();
 	}
 	else
 		printf("%s", s.c_str());
@@ -150,58 +149,73 @@ void RepRapSerial::SendNextLine()
 		m_bConnecting = false;
 		m_bConnected = false;
 		m_bPrinting = false;
-		gui->MVC->serialConnectionLost();
+		{
+			ToolkitLock guard;
+			gui->MVC->serialConnectionLost();
+		}
 		return;
 	}
 	if (m_bPrinting == false)
 		return;
 	if (m_iLineNr < buffer.size())
-		{
+	{
 		string a = buffer[m_iLineNr];
 		SendData(a.c_str(), m_iLineNr++);
-		}
+	}
 	else	// we are done
-		{
+	{
+		ToolkitLock guard;
+
 		m_bPrinting = false;
 		buffer.clear();
 		gui->ProgressBar->label("Print done");
 		MVC->PrintDone();
 		return;
-		}
+	}
 	if (gui) {
 		unsigned long time = Platform::getTickCount();
 		if (startTime == 0)
 			startTime = time;
 		// it is just wasteful to update the GUI > once per sec.
 		if (time - lastUpdateTime > 1000) {
-			gui->ProgressBar->value ((float)m_iLineNr);
+			ToolkitLock guard;
 
-		Fl::lock();
+			double elapsed = (time - startTime) / 1000.0;
+			double max = gui->ProgressBar->maximum();
+			double lines_per_sec = elapsed > 1 ? (double)m_iLineNr / elapsed : 1.0;
+			double remaining = (double)(max - m_iLineNr) / lines_per_sec;
 
-		double elapsed = (time - startTime) / 1000.f;
-		double max = gui->ProgressBar->maximum();
-		double progress = max > 0.0 ? m_iLineNr / gui->ProgressBar->maximum() : 0.0;
-		double total_time = progress > 0.0 ? elapsed / progress : elapsed;
-		double remaining = total_time - elapsed;
+			/*
+			 * Fltk has no way of knowing if this is a meaningful
+			 * change, and has a habit of doing expensive re-draws.
+			 * Detect whether there will be any visible change and
+			 * if not, don't update.
+			 */
+			if (fabs (((double)m_iLineNr - gui->ProgressBar->value()) / max) > 1.0/1000.0)
+				gui->ProgressBar->value ((float)m_iLineNr);
 
-		int remaining_seconds = (int)fmod (remaining, 60.0);
-		int remaining_minutes = ((int)fmod (remaining, 3600.0) - remaining_seconds) / 60;
-		int remaining_hours = (int)remaining / 3600;
+			int remaining_seconds = (int)fmod (remaining, 60.0);
+			int remaining_minutes = ((int)fmod (remaining, 3600.0) - remaining_seconds) / 60;
+			int remaining_hours = (int)remaining / 3600;
 
-		std::stringstream oss;
+			std::stringstream oss;
 
-		if (remaining_hours > 0)
-			oss << setw(2) << remaining_hours << "h";
-		if (remaining_minutes > 0 || oss.tellp())
-			oss << setw(2) << remaining_minutes << "m";
-		if (remaining_seconds > 0 || oss.tellp())
-			oss << setw(2) << remaining_seconds << "s";
-		if (!oss.tellp())
-			oss << "no estimate";
+			/*
+			 * Trade accuracy for reduced UI update frequency.
+			 */
+			if (remaining_hours > 0)
+				oss << setw(2) << remaining_hours << "h" << remaining_minutes << "m";
+			else if (remaining_minutes > 5)
+				oss << setw(2) << remaining_minutes << "m";
+			else if (remaining_seconds > 0)
+				oss << setw(2) << remaining_minutes << "m" << remaining_seconds << "s";
+			else
+				oss << "Progress";
 
-		std::string s = oss.str();
-		gui->ProgressBar->label(s.c_str());
-		Fl::unlock();
+			std::string s = oss.str();
+			const char *old_label = gui->ProgressBar->label();
+			if (!old_label || strcmp (old_label, s.c_str()))
+				gui->ProgressBar->copy_label(s.c_str());
 		}
 
 	}
@@ -215,6 +229,7 @@ void RepRapSerial::SendNow(string s)
 	com->write(s);
 
 }
+
 void RepRapSerial::SendData(string s, const int lineNr)
 {
 	if( !m_bConnected ) return;
@@ -224,7 +239,10 @@ void RepRapSerial::SendData(string s, const int lineNr)
 		m_bConnecting = false;
 		m_bConnected = false;
 		m_bPrinting = false;
-		gui->MVC->serialConnectionLost();
+		{
+			ToolkitLock guard;
+			gui->MVC->serialConnectionLost();
+		}
 		return;
 	}
 
@@ -234,6 +252,8 @@ void RepRapSerial::SendData(string s, const int lineNr)
 	float ExtrusionMultiplier = 1.0f;
 	if(gui)
 	{
+		ToolkitLock guard;
+
 		DSMultiplier = gui->DownstreamMultiplierSlider->value();
 		ExtrusionMultiplier = gui->DownstreamExtrusionMultiplierSlider->value();
 	}
@@ -320,6 +340,7 @@ class ConnectionTimeOut
 public:
 	RepRapSerial* serial;
 	ulong ConnectAttempt;
+	int timer;
 };
 
 void ConnectionTimeOutMethod(void *data)
@@ -327,7 +348,17 @@ void ConnectionTimeOutMethod(void *data)
 	ConnectionTimeOut* timeout = (ConnectionTimeOut*)data;
 	if( timeout->serial->isConnecting() && timeout->ConnectAttempt == timeout->serial->GetConnectAttempt() )
 	{
-		timeout->serial->DisConnect("Connection attempt timed out");
+		if( --timeout->timer == 0)
+		{
+			timeout->serial->DisConnect("Connection attempt timed out");
+		}
+		else
+		{
+			// poll temperature once to ensure we get a responce if the firmware doesn't greet.
+			timeout->serial->SendNow("M105");
+			Fl::add_timeout(1.0f, &ConnectionTimeOutMethod, timeout);
+			return;
+		}
 	}
 	delete timeout;
 }
@@ -355,16 +386,29 @@ void RepRapSerial::Connect(string port, int speed)
 	}
 	if( error )
 	{
+		ToolkitLock guard;
 		m_bConnecting = false;
 		gui->MVC->serialConnectionLost();
 		return;
 	}
 
-	ConnectionTimeOut* timeout= new ConnectionTimeOut();
-	timeout->serial = this;
-	timeout->ConnectAttempt = ++ConnectAttempt;
+	if( m_bValidateConnection )
+	{
+		ConnectionTimeOut* timeout= new ConnectionTimeOut();
+		timeout->serial = this;
+		timeout->ConnectAttempt = ++ConnectAttempt;
+		timeout->timer = 5;
 
-	Fl::add_timeout(5.0f, &ConnectionTimeOutMethod, timeout);
+		Fl::add_timeout(1.0f, &ConnectionTimeOutMethod, timeout);
+		// probe the device to see if it is a reprap
+		SendNow("M105");
+	}
+	else
+	{
+		ToolkitLock guard;
+		notifyConnection(true);
+		gui->MVC->serialConnected();
+	}
 	Fl::add_timeout(1.0f, &TempReadTimer);
 }
 
@@ -388,6 +432,8 @@ void RepRapSerial::DisConnect()
 	notifyConnection (false);
 	com->close();
 	Clear();
+
+	ToolkitLock guard;
 	gui->MVC->serialConnectionLost();
 }
 
@@ -473,8 +519,12 @@ void RepRapSerial::OnEvent(char* data, size_t dwBytesRead)
 				string parameter = command.substr(2,command.length()-2);
 				debugPrint( string("Received:") + command+ " with parameter " + parameter);
 
-				gui->CurrentTempText->value(parameter.c_str());
-				// Check parameter
+				ToolkitLock guard;
+
+				// Reduce re-draws by only updating the GUI on a real change
+				const char *old_value = gui->CurrentTempText->value();
+				if (!old_value || strcmp (parameter.c_str(), old_value))
+					gui->CurrentTempText->value(parameter.c_str());
 			}
 			else if(command == "start")
 			{
@@ -523,6 +573,8 @@ void RepRapSerial::OnEvent(char* data, size_t dwBytesRead)
 
 			if (knownCommand && m_bConnecting)
 			{
+				ToolkitLock guard;
+
 				// Tell GUI we are ready to go.
 				notifyConnection(true);
 				gui->MVC->serialConnected();

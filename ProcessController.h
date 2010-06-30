@@ -99,6 +99,10 @@ public:
 		DisplayDebuginFill = true;
 		DisplayCuttingPlane = true;
 
+		DrawCPVertexNumbers = false;
+		DrawCPLineNumbers = false;
+		DrawCPOutlineNumbers = false;
+
 		FileLogginEnabled = true;
 		TempReadingEnabled = true;
 		ClearLogfilesWhenPrintStarts = true;
@@ -164,6 +168,7 @@ public:
 	Printer printer;					// Printer settings and functions
 	string m_sPortName;
 	int m_iSerialSpeed;
+	bool m_bValidateConnection;
 	int KeepLines;
 //	STL stl;							// A STL file
 	RFO rfo;
@@ -244,6 +249,10 @@ public:
 	bool DisplayCuttingPlane;
 	bool DrawVertexNumbers;
 	bool DrawLineNumbers;
+	bool DrawOutlineNumbers;
+	bool DrawCPVertexNumbers;
+	bool DrawCPLineNumbers;
+	bool DrawCPOutlineNumbers;
 	//string Notes; // Thers is no ui element for this field, it was causing problems with GCodeEnd UI field
 
 	// Rendering

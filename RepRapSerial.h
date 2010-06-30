@@ -134,6 +134,7 @@ public:
 	bool m_bPrinting;
 	void WaitForConnection(ulong timeoutMS);
 	void SetReceivingBufferSize(int val) { ReceivingBufferSize = val; }
+	void SetValidateConnection(bool val) { m_bValidateConnection = val; }
 private:
 	void internalWrite(string s, const int lineNr);
 	void debugPrint(string s, bool selectLine = false);
@@ -143,6 +144,7 @@ private:
 	vector<string> buffer;
 	bool m_bConnected;
 	bool m_bConnecting;
+	bool m_bValidateConnection;
 	uint m_iLineNr;
 	string InBuffer;
 	short debugMask;
