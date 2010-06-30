@@ -1,5 +1,5 @@
 # polylib makefile
-INC=../vmmlib/include
+INC=..
 CXXFLAGS=-c -I$(INC) -Wall
 
 all: libpolylib.a

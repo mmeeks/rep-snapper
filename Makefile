@@ -102,7 +102,7 @@ unittest : poly_lib $(TEST_OBJECTS)
 	$(CC) ${INC} $(CFLAGS) $< -o $@
 
 poly_lib:
-	make -C $(LIBDIR)/polylib/ all
+	make -C $(LIB_DIR)/polylib/ all
 
 check: unittest
 	./unittest
@@ -111,7 +111,7 @@ check: unittest
 clean:
 	rm -f $(SHARED_OBJECTS) $(MAIN_OBJECTS) $(TEST_OBJECTS) \
 	      $(EXEC) $(EXEC_DEBUG) $(GENERATED) unittest
-	make -i -C $(LIBDIR)/polylib/ clean
+	make -i -C $(LIB_DIR)/polylib/ clean
 
 VER=0.1.0
 PKG_NAME=repsnapper
