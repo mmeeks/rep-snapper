@@ -4,7 +4,7 @@
 
 CC=gcc
 CXX=g++
-LIB_DIR=../Libraries
+LIB_DIR=Libraries
 UNAME := $(shell uname)
 ifeq ($(TARGET),)
 	TARGET=RELEASE
@@ -102,7 +102,7 @@ unittest : poly_lib $(TEST_OBJECTS)
 	$(CC) ${INC} $(CFLAGS) $< -o $@
 
 poly_lib:
-	make -C ../Libraries/polylib/ all
+	make -C $(LIBDIR)/polylib/ all
 
 check: unittest
 	./unittest
@@ -111,7 +111,7 @@ check: unittest
 clean:
 	rm -f $(SHARED_OBJECTS) $(MAIN_OBJECTS) $(TEST_OBJECTS) \
 	      $(EXEC) $(EXEC_DEBUG) $(GENERATED) unittest
-	make -i -C ../Libraries/polylib/ clean
+	make -i -C $(LIBDIR)/polylib/ clean
 
 VER=0.1.0
 PKG_NAME=repsnapper
