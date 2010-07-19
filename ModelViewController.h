@@ -41,6 +41,7 @@ class ModelViewController : public Fl_Gl_Window
 public:
 	ModelViewController(int x,int y,int w,int h,const char *l);
 	~ModelViewController();
+	void Init(GUI *gui);
 
 	// RFO Functions
 	void ReadRFO(string filename);
@@ -63,7 +64,7 @@ public:
 	void setFileLocation(string location);
 
 	// GCode Functions
-	void ReadGCode(string filename) {ProcessControl.gcode.Read(filename);}
+	void ReadGCode(string filename) {ProcessControl.ReadGCode(filename);}
 	void ConvertToGCode();
 	void init();
 	void SetUseIncrementalEcode(bool val) {ProcessControl.UseIncrementalEcode = val;}
@@ -84,7 +85,7 @@ public:
 	// Callback functions
 	vector<string> comports;                           // list of available usb serial ports
 	void resize (int x,int y, int width, int height);		// Reshape The Window When It's Moved Or Resized
-	vector<string>  CheckComPorts();
+	vector<string>  CheckComPorts(bool init = false);
 	static void Static_Timer_CB(void *userdata);
 	void Timer_CB();
 

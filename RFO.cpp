@@ -422,9 +422,9 @@ void RFO::Load(string path, ProcessController &PC)
 	BuildBrowser(PC);
 }
 
-void RFO::DeleteSelected()
+void RFO::DeleteSelected(ModelViewController *MVC)
 {
-	Flu_Tree_Browser::Node *node=MVC->gui->RFP_Browser->get_selected( 1 );
+	Flu_Tree_Browser::Node *node = MVC->gui->RFP_Browser->get_selected( 1 );
 	// first check files
 	for(UINT o=0;o<Objects.size();o++)
 	{

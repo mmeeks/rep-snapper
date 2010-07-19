@@ -111,11 +111,11 @@ int main(int argc, char **argv)
 	CommandLineOptions opts (argc, argv);
 
 	gui = new GUI();
-	MVC = gui->MVC;
+	ModelViewController *MVC = gui->MVC;
 
 	Fl::visual(FL_DOUBLE|FL_INDEX);
-
-	MVC->gui = gui;
+	
+	MVC->Init(gui);
 	MVC->serial->setGUI(gui);
 	MVC->ProcessControl.gui = gui;
 	

@@ -53,23 +53,23 @@ void RepRapSerial::debugPrint(string s, bool selectLine)
 				gui->ErrorLog->bottomline(gui->ErrorLog->size());
 		}
 
-		while(gui->CommunationLog->size() > MVC->ProcessControl.KeepLines)
+		while(gui->CommunationLog->size() > gui->MVC->ProcessControl.KeepLines)
 			gui->CommunationLog->remove(1);
-		while(gui->ErrorLog->size() > MVC->ProcessControl.KeepLines)
+		while(gui->ErrorLog->size() > gui->MVC->ProcessControl.KeepLines)
 			gui->ErrorLog->remove(1);
-		while(gui->Echo->size() > MVC->ProcessControl.KeepLines)
+		while(gui->Echo->size() > gui->MVC->ProcessControl.KeepLines)
 			gui->Echo->remove(1);
 	}
 	else
 		printf("%s", s.c_str());
 
-	if(MVC->ProcessControl.FileLogginEnabled)
+	if(gui->MVC->ProcessControl.FileLogginEnabled)
 	{
 	// is the files open?
 	if(logFile == 0)
 		{
 		// Append or new?
-		if(MVC->ProcessControl.ClearLogfilesWhenPrintStarts)
+		if(gui->MVC->ProcessControl.ClearLogfilesWhenPrintStarts)
 			logFile = fopen("./RepSnapper.log", "w");
 		else
 			{
@@ -112,13 +112,13 @@ void RepRapSerial::echo(string s)
 	else
 		printf("%s", s.c_str());
 
-	if(MVC->ProcessControl.FileLogginEnabled)
+	if(gui->MVC->ProcessControl.FileLogginEnabled)
 	{
 	// is the files open?
 	if(logFile == 0)
 		{
 		// Append or new?
-		if(MVC->ProcessControl.ClearLogfilesWhenPrintStarts)
+		if(gui->MVC->ProcessControl.ClearLogfilesWhenPrintStarts)
 			logFile = fopen("./RepSnapper.log", "w");
 		else
 			{
@@ -169,7 +169,7 @@ void RepRapSerial::SendNextLine()
 		m_bPrinting = false;
 		buffer.clear();
 		gui->ProgressBar->label("Print done");
-		MVC->PrintDone();
+		gui->MVC->PrintDone();
 		return;
 	}
 	if (gui) {

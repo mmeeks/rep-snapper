@@ -167,12 +167,12 @@ void ProcessController::CalcBoundingBoxAndZoom()
 		if(Max.x - Min.x > L)	L = Max.x - Min.x;
 		if(Max.y - Min.y > L)	L = Max.y - Min.y;
 		if(Max.z - Min.z > L)	L = Max.z - Min.z;
-		if(MVC)
-			MVC->zoom= L;
+		if(gui->MVC)
+			gui->MVC->zoom= L;
 	}
 	else
-		if(MVC)
-			MVC->zoom = 100.0f;
+		if(gui->MVC)
+			gui->MVC->zoom = 100.0f;
 
 	Center = (Max-Min)*0.5f;
 }
@@ -315,7 +315,7 @@ void ProcessController::OptimizeRotation()
 
 void ProcessController::RotateObject(Vector3f axis, float a)
 {
-	Flu_Tree_Browser::Node *node=MVC->gui->RFP_Browser->get_selected( 1 );
+	Flu_Tree_Browser::Node *node=gui->RFP_Browser->get_selected( 1 );
 	// first check files
 	for(uint o=0;o<rfo.Objects.size();o++)
 	{
@@ -324,7 +324,7 @@ void ProcessController::RotateObject(Vector3f axis, float a)
 			if(rfo.Objects[o].files[f].node == node)
 			{
 				rfo.Objects[o].files[f].stl.RotateObject(axis,a);
-				MVC->redraw();
+				gui->MVC->redraw();
 				return;
 			}
 		}
@@ -384,9 +384,15 @@ void ProcessController::Draw(Flu_Tree_Browser::Node *selected_node)
 	}
 
 }
-void WriteGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, string filename)
-{
 
+void ProcessController::ReadGCode(string filename)
+{
+	gcode.Read (gui->MVC, filename);
+}
+
+void ProcessController::WriteGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, string filename)
+{
+	fprintf (stderr, "Unimplemented\n");
 }
 
 void ProcessController::SaveXML(string filename)
@@ -655,7 +661,7 @@ void ProcessController::LoadXML(XMLElement *e)
 		CustomButtonLabel[i] = getXMLString (x, name, label);
 	}
 
-	if (gui && gui ->MVC )
+	if (gui && gui->MVC )
 		gui->MVC->RefreshCustomButtonLabels();
 
 	GCodeLayerText = getXMLString (x, "GCodeLayerText", "");
@@ -667,8 +673,9 @@ void ProcessController::LoadXML(XMLElement *e)
 	if (m_sPortName.length() == 0)
 	{
 		std::ostringstream port;
-		if ( MVC ) {
-			vector<string> comportlist = MVC->CheckComPorts(); // warning this code is likely to be called with MVC == null, extremely ugly. TODO: REWRITE!
+		if ( gui->MVC ) {
+			fprintf (stderr, "LOAD Com-Port ! '%s'\n", m_sPortName.c_str());
+			vector<string> comportlist = gui->MVC->CheckComPorts (true);
 			m_sPortName = comportlist.size() > 0 ? comportlist[comportlist.size()-1] : "";
 		}
 	}

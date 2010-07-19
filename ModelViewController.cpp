@@ -49,18 +49,19 @@ char* itoa(int value, char* result, int base) {
 #endif
 
 
-void tree_callback( Fl_Widget* w, void* )
+void tree_callback( Fl_Widget* w, void *_gui )
 {
 	Flu_Tree_Browser *t = (Flu_Tree_Browser*)w;
 	int reason = t->callback_reason();
-
+	GUI *gui = (GUI *)_gui;
+	
 	Flu_Tree_Browser::Node *n = t->callback_node();
 
-	Matrix4f &transform = MVC->SelectedNodeMatrix();
+	Matrix4f &transform = gui->MVC->SelectedNodeMatrix();
 	Vector3f translate = transform.getTranslation();
 	RFO_Object *selectedObject=0;
 	RFO_File *selectedFile=0;
-	MVC->GetSelectedRFO(&selectedObject, &selectedFile);
+	gui->MVC->GetSelectedRFO(&selectedObject, &selectedFile);
 
 	switch( reason )
 	{
@@ -73,25 +74,25 @@ void tree_callback( Fl_Widget* w, void* )
 		break;
 
 	case FLU_SELECTED:
-		MVC->gui->TranslateX->value(translate.x);
-		MVC->gui->TranslateY->value(translate.y);
-		MVC->gui->TranslateZ->value(translate.z);
+		gui->TranslateX->value(translate.x);
+		gui->TranslateY->value(translate.y);
+		gui->TranslateZ->value(translate.z);
 
 		if(selectedObject)
-			MVC->gui->ObjectNameInput->value(selectedObject->name.c_str());
+			gui->ObjectNameInput->value(selectedObject->name.c_str());
 		else
-			MVC->gui->ObjectNameInput->value("no selection");
+			gui->ObjectNameInput->value("no selection");
 		if(selectedFile)
 		{
-		MVC->gui->FileLocationInput->value(selectedFile->location.c_str());
-		MVC->gui->FileTypeInput->value(selectedFile->filetype.c_str());
-		MVC->gui->FileMaterialInput->value(selectedFile->material.c_str());
+			gui->FileLocationInput->value(selectedFile->location.c_str());
+			gui->FileTypeInput->value(selectedFile->filetype.c_str());
+			gui->FileMaterialInput->value(selectedFile->material.c_str());
 		}
 		else
 		{
-			MVC->gui->FileLocationInput->value("no file selected");
-			MVC->gui->FileTypeInput->value("no file selected");
-			MVC->gui->FileMaterialInput->value("no file selected");
+			gui->FileLocationInput->value("no file selected");
+			gui->FileTypeInput->value("no file selected");
+			gui->FileMaterialInput->value("no file selected");
 		}
 
 		printf( "%s selected\n", n->label() );
@@ -126,7 +127,7 @@ void tree_callback( Fl_Widget* w, void* )
 		printf( "node '%s' added to the tree\n", n->label() );
 		break;
 	}
-	MVC->redraw();
+	gui->MVC->redraw();
 }
 
 ModelViewController::~ModelViewController()
@@ -168,6 +169,12 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 	Fl::add_timeout(0.25, Static_Timer_CB, (void*)this);
 }
 
+void ModelViewController::Init(GUI *_gui)
+{
+	gui = _gui;
+	CheckComPorts (true);
+}
+
 void ModelViewController::Static_Timer_CB(void *userdata) {
     ModelViewController *o = (ModelViewController*)userdata;
     o->Timer_CB();
@@ -194,10 +201,13 @@ void ModelViewController::resize(int x,int y, int width, int height)					// Resh
 	Fl_Gl_Window::resize(x,y,width,height);
 }
 
-vector<string> ModelViewController::CheckComPorts()
+vector<string> ModelViewController::CheckComPorts(bool init)
 {
+	bool bDirty = init;
 	vector<std::string> currentComports;
-	bool bDirty = false; // did the list of available com ports change
+
+	fprintf (stderr, "Check ports !\n");
+
 #ifdef WIN32
 	int highestCom = 0;
 	for(int i = 1; i <=9 ; i++ )
@@ -257,32 +267,29 @@ vector<string> ModelViewController::CheckComPorts()
 				currentComports.push_back(device);
 			}
 		}
-
-		if ( currentComports.size() != this->comports.size() ) {
-			bDirty=true;
-		}
-
-		if ( bDirty ) {
-			if ( gui ) {
-				ToolkitLock guard;
-
-				static Fl_Menu_Item emptyList[] = {
-				 {0,0,0,0,0,0,0,0,0}
-				};
-
-				gui->portInputSimple->menu(emptyList);
-				gui->portInput->menu(emptyList);
-				comports.clear();
-				 //{"COM1", 0,  0, (void*)(1), 4, FL_NORMAL_LABEL, 0, 14, 0},
-				for(size_t indx = 0; indx < currentComports.size(); ++indx) {
-					string menuLabel = string(currentComports[indx]);
-					gui->portInput->add(strdup(menuLabel.c_str()));
-					gui->portInputSimple->add(strdup(menuLabel.c_str()));
-					comports.push_back(currentComports[indx]);
-				}
-			}
-		}
 		closedir(d);
+
+		if ( currentComports.size() != this->comports.size() )
+			bDirty = true;
+	}
+
+	if ( bDirty && gui) {
+		ToolkitLock guard;
+
+		static Fl_Menu_Item emptyList[] = {
+			{0,0,0,0,0,0,0,0,0}
+		};
+
+		gui->portInputSimple->menu(emptyList);
+		gui->portInput->menu(emptyList);
+		comports.clear();
+
+		for (size_t indx = 0; indx < currentComports.size(); ++indx) {
+			string menuLabel = string(currentComports[indx]);
+			gui->portInput->add(strdup(menuLabel.c_str()));
+			gui->portInputSimple->add(strdup(menuLabel.c_str()));
+			comports.push_back(currentComports[indx]);
+		}
 	}
 #endif
 
@@ -317,7 +324,7 @@ void ModelViewController::draw()
 {
     if (!valid())
 		{
-		gui->RFP_Browser->callback( &tree_callback );
+		gui->RFP_Browser->callback( &tree_callback, gui );
 		gui->RFP_Browser->redraw();
 
 		glLoadIdentity();
@@ -398,7 +405,7 @@ void ModelViewController::draw()
 
 	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
 
-	Flu_Tree_Browser::Node *node=MVC->gui->RFP_Browser->get_selected( 1 );
+	Flu_Tree_Browser::Node *node = gui->RFP_Browser->get_selected( 1 );
 	ProcessControl.Draw(node);
 
 	/*--------------- Exit -----------------*/
@@ -469,7 +476,7 @@ int ModelViewController::handle(int event)
 					Y = matrix * Y;
 					ProcessControl.Center += X*delta.length()*0.01f;
 					ProcessControl.Center += Y*delta.length()*0.01f;
-					MVC->redraw();
+					redraw();
 					downPoint=Clickpoint;
 					}
 
@@ -723,8 +730,8 @@ void ModelViewController::CopySettingsToGUI()
 	gui->OptimizationSlider->value(ProcessControl.Optimization);
 	gui->ReceivingBufferSizeSlider->value(ProcessControl.ReceivingBufferSize);
 
-	gui->MVC->RefreshCustomButtonLabels();
-    gui->MVC->GetCustomButtonText(0);
+	RefreshCustomButtonLabels();
+	GetCustomButtonText(0);
 }
 
 void ModelViewController::Continue()
@@ -1182,7 +1189,7 @@ void print_hello(int number)
 	cout << "hello world " << number << endl;
 }
 
-void refreshGraphicsView()
+void refreshGraphicsView(ModelViewController *MVC)
 {
 	// Hack: save and load the gcode, to force redraw
 
@@ -1241,7 +1248,7 @@ void ModelViewController::RunLua(char* script)
 	{
 		cerr << TheError.what() << endl;
 	}
-	refreshGraphicsView();
+	refreshGraphicsView (this);
 #endif // ENABLE_LUA
 }
 void ModelViewController::ReadRFO(string filename)
@@ -1427,7 +1434,7 @@ RFO_File* ModelViewController::AddStl(STL stl, string filename)
 
 void ModelViewController::Duplicate()
 {
-	Flu_Tree_Browser::Node *node=MVC->gui->RFP_Browser->get_selected( 1 );
+	Flu_Tree_Browser::Node *node = gui->RFP_Browser->get_selected( 1 );
 	// first check files
 	for(uint o=0;o<ProcessControl.rfo.Objects.size();o++)
 	{
@@ -1441,7 +1448,7 @@ void ModelViewController::Duplicate()
 				Vector3f size = ProcessControl.rfo.Objects[o].files[f].stl.Max - ProcessControl.rfo.Objects[o].files[f].stl.Min;
 				p.x += size.x+5.0f;	// 5mm space
 				obj->transform3D.transform.setTranslation(p);
-				MVC->gui->RFP_Browser->set_hilighted(obj->node);
+				gui->RFP_Browser->set_hilighted(obj->node);
 				ProcessControl.CalcBoundingBoxAndZoom();
 				redraw();
 				return;
@@ -1460,7 +1467,7 @@ void ModelViewController::setObjectname(string name)
 {
 	RFO_Object *selectedObject=0;
 	RFO_File *selectedFile=0;
-	MVC->GetSelectedRFO(&selectedObject, &selectedFile);
+	GetSelectedRFO(&selectedObject, &selectedFile);
 	if(selectedObject)
 		selectedObject->name = name;
 }
@@ -1468,7 +1475,7 @@ void ModelViewController::setFileMaterial(string material)
 {
 	RFO_Object *selectedObject=0;
 	RFO_File *selectedFile=0;
-	MVC->GetSelectedRFO(&selectedObject, &selectedFile);
+	GetSelectedRFO(&selectedObject, &selectedFile);
 	if(selectedFile)
 		selectedFile->material = material;
 }
@@ -1476,7 +1483,7 @@ void ModelViewController::setFileType(string type)
 {
 	RFO_Object *selectedObject=0;
 	RFO_File *selectedFile=0;
-	MVC->GetSelectedRFO(&selectedObject, &selectedFile);
+	GetSelectedRFO(&selectedObject, &selectedFile);
 	if(selectedFile)
 		selectedFile->filetype = type;
 }
@@ -1484,7 +1491,7 @@ void ModelViewController::setFileLocation(string location)
 {
 	RFO_Object *selectedObject=0;
 	RFO_File *selectedFile=0;
-	MVC->GetSelectedRFO(&selectedObject, &selectedFile);
+	GetSelectedRFO(&selectedObject, &selectedFile);
 	if(selectedFile)
 		selectedFile->location = location;
 }
@@ -1511,7 +1518,7 @@ void ModelViewController::SendCustomButton(int nr)
 }
 void ModelViewController::SaveCustomButton()
 {
-	int ButtonNr = MVC->gui->CustomButtonSelectorSlider->value()-1;
+	int ButtonNr = gui->CustomButtonSelectorSlider->value()-1;
 
 	Fl_Text_Buffer* buffer = gui->CustomButtonText->buffer();
 	char* pText = buffer->text();
@@ -1575,19 +1582,19 @@ void ModelViewController::RefreshCustomButtonLabels()
 
 void ModelViewController::ClearGcode()
 {
-	Fl_Text_Buffer* buffer = MVC->gui->GCodeResult->buffer();
+	Fl_Text_Buffer* buffer = gui->GCodeResult->buffer();
 	buffer->remove(0, buffer->length());
 }
 int ModelViewController::GCodeSize()
 {
-	return MVC->gui->GCodeResult->buffer()->length();
+	return gui->GCodeResult->buffer()->length();
 }
 void ModelViewController::AddText(string line)
 {
-	MVC->gui->GCodeResult->buffer()->append(line.c_str());
+	gui->GCodeResult->buffer()->append(line.c_str());
 }
 string ModelViewController::GetText()
 {
-	return MVC->gui->GCodeResult->buffer()->text();
+	return gui->GCodeResult->buffer()->text();
 }
 

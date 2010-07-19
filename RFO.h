@@ -149,7 +149,7 @@ public:
 	void ReadVersion0x1(XMLElement* e);
 	void BuildBrowser(ProcessController &PC);
 	void clear(ProcessController &PC);
-	void DeleteSelected();
+	void DeleteSelected(ModelViewController *MVC);
 	bool Open(string filename, ProcessController &PC);
 	bool Save(string filename, ProcessController &PC);
 	Matrix4f &SelectedNodeMatrix(Flu_Tree_Browser::Node *node);

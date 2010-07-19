@@ -133,7 +133,7 @@ public:
 	void ConvertToGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd);
 
 	// GCode Functions
-	void ReadGCode(string filename) {gcode.Read(filename);};
+	void ReadGCode(string filename);
 	void WriteGCode(string &GcodeTxt, const string &GcodeStart, const string &GcodeLayer, const string &GcodeEnd, string filename);
 
 	void MakeRaft(float &z);

@@ -102,7 +102,7 @@ using namespace luabind;
 
 #endif // ENABLE_LUA
 
-extern ModelViewController *MVC;
+// extern ModelViewController *MVC;
 
 // TODO: reference additional headers your program requires here
 

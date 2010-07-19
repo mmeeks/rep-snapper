@@ -30,14 +30,14 @@ GCode::GCode()
 	Center.x = Center.y = Center.z = 0.0f;
 }
 
-void GCode::Read(string filename)
+void GCode::Read(ModelViewController *MVC, string filename)
 {
 	commands.clear();
 
 	if(MVC->gui)
 	{
-	Fl_Text_Buffer* buffer = MVC->gui->GCodeResult->buffer();
-	buffer->remove(0, buffer->length());
+		Fl_Text_Buffer* buffer = MVC->gui->GCodeResult->buffer();
+		buffer->remove(0, buffer->length());
 	}
 
 
@@ -452,7 +452,7 @@ void GCode::MakeText(string &GcodeTxt, const string &GcodeStart, const string &G
 }
 
 
-void GCode::Write(string filename)
+void GCode::Write (ModelViewController *MVC, string filename)
 {
 	Fl_Text_Buffer *buffer = MVC->gui->GCodeResult->buffer();
 

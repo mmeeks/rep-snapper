@@ -336,7 +336,7 @@ MVC->redraw();}
           }
           Fl_Button {} {
             label Delete
-            callback {MVC->ProcessControl.rfo.DeleteSelected();}
+            callback {MVC->ProcessControl.rfo.DeleteSelected(MVC);}
             xywh {995 95 135 25}
           }
           Fl_Button {} {
@@ -1724,7 +1724,7 @@ Function {TempReadTimer(void *)} {open return_type void
 } {
   code {if(gui->TempReadingEnabledButton->value())
 {
-MVC->serial->SendNow("M105");
-Fl::repeat_timeout(MVC->gui ? MVC->ProcessControl.TempUpdateSpeed: 10.0f , &TempReadTimer);
+gui->MVC->serial->SendNow("M105");
+Fl::repeat_timeout(gui->MVC->gui ? gui->MVC->ProcessControl.TempUpdateSpeed: 10.0f , &TempReadTimer);
 }} {}
 } 
