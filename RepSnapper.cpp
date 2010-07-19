@@ -115,9 +115,9 @@ int main(int argc, char **argv)
 
 	Fl::visual(FL_DOUBLE|FL_INDEX);
 	
+	MVC->ProcessControl.gui = gui;
 	MVC->Init(gui);
 	MVC->serial->setGUI(gui);
-	MVC->ProcessControl.gui = gui;
 	
 	if (!opts.use_gui) {
 		if (opts.stl_input_path.size() > 0) {

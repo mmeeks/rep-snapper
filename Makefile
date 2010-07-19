@@ -9,19 +9,14 @@ UNAME := $(shell uname)
 ifeq ($(TARGET),)
 	TARGET=RELEASE
 endif
-ifeq ($(UNAME),Darwin)
-	WARNING_FLAGS = -Wall
-else
-	WARNING_FLAGS = -Wall -Wno-pragmas
-endif
 
 EXEC=repsnapper
 EXEC_DEBUG=repsnapper_debug
 ifeq ($(TARGET),RELEASE)
-	CFLAGS = -c -O2 $(WARNING_FLAGS)
+	CFLAGS ?= -O2 -Wall
 	EXECUTABLE=$(EXEC)
 else
-	CFLAGS = -c -g -O0 $(WARNING_FLAGS)
+	CFLAGS ?= -g -O0 -Wall
 	EXECUTABLE=$(EXEC_DEBUG)
 endif
 
@@ -40,7 +35,7 @@ endif
 ifeq ($(UNAME),Darwin)
     # assumes you have installed MacPorts from http://www.macports.org and run:
     # sudo port install boost fltk lua
-	# assumes you have built boost as in the Readme.MacOsx.txt
+    # assumes you have built boost as in the Readme.MacOsx.txt
 
     BOOST_HOME=../Libraries/boost-darwin
     BOOST_INC=-I$(BOOST_HOME)/include/boost-1_43
@@ -95,11 +90,11 @@ unittest : poly_lib $(TEST_OBJECTS)
 	rm -f $@ # fluid doesn't remove on failure.
 	fluid -c $<
 %.o:%.cxx
-	$(CXX) ${INC} $(CFLAGS) $< -o $@
+	$(CXX) ${INC} -c $(CFLAGS) $< -o $@
 %.o:%.cpp
-	$(CXX) ${INC} $(CFLAGS) $< -o $@
+	$(CXX) ${INC} -c $(CFLAGS) $< -o $@
 %.o:%.c
-	$(CC) ${INC} $(CFLAGS) $< -o $@
+	$(CC) ${INC} -c $(CFLAGS) $< -o $@
 
 poly_lib:
 	make -C $(LIB_DIR)/polylib/ all

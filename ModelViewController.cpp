@@ -156,23 +156,21 @@ ModelViewController::ModelViewController(int x,int y,int w,int h,const char *l) 
 	ThisRot.M[3]=0.0f;ThisRot.M[4]=1.0f;ThisRot.M[5]=0.0f;					// NEW: Last Rotation
 	ThisRot.M[6]=0.0f;ThisRot.M[7]=0.0f;ThisRot.M[8]=1.0f;					// NEW: Last Rotation
 
-	ProcessControl.LoadXML();
-	serial->SetReceivingBufferSize(ProcessControl.ReceivingBufferSize);
-	serial->SetValidateConnection(ProcessControl.m_bValidateConnection);
-	CopySettingsToGUI();
-
 	m_bExtruderDirection = true;
 	m_iExtruderSpeed = 3000;
 	m_iExtruderLength = 150;
 	m_fTargetTemp = 63.0f;
-
-	Fl::add_timeout(0.25, Static_Timer_CB, (void*)this);
 }
 
 void ModelViewController::Init(GUI *_gui)
 {
 	gui = _gui;
-	CheckComPorts (true);
+	DetectComPorts (true);
+	ProcessControl.LoadXML();
+	serial->SetReceivingBufferSize(ProcessControl.ReceivingBufferSize);
+	serial->SetValidateConnection(ProcessControl.m_bValidateConnection);
+	CopySettingsToGUI();
+	Fl::add_timeout(0.25, Static_Timer_CB, (void*)this);
 }
 
 void ModelViewController::Static_Timer_CB(void *userdata) {
@@ -188,7 +186,7 @@ void ModelViewController::Timer_CB()
 	{
 	  static uint count = 0;
 	  if ((count++ % 4) == 0) /* every second */
-		CheckComPorts();
+		DetectComPorts();
 	}
 	if( gui->Tabs->value() == gui->PrintTab )
 	{
@@ -201,12 +199,10 @@ void ModelViewController::resize(int x,int y, int width, int height)					// Resh
 	Fl_Gl_Window::resize(x,y,width,height);
 }
 
-vector<string> ModelViewController::CheckComPorts(bool init)
+void ModelViewController::DetectComPorts(bool init)
 {
 	bool bDirty = init;
 	vector<std::string> currentComports;
-
-	fprintf (stderr, "Check ports !\n");
 
 #ifdef WIN32
 	int highestCom = 0;
@@ -280,6 +276,8 @@ vector<string> ModelViewController::CheckComPorts(bool init)
 			{0,0,0,0,0,0,0,0,0}
 		};
 
+		bool bWasEmpty = !comports.size();
+
 		gui->portInputSimple->menu(emptyList);
 		gui->portInput->menu(emptyList);
 		comports.clear();
@@ -290,10 +288,30 @@ vector<string> ModelViewController::CheckComPorts(bool init)
 			gui->portInputSimple->add(strdup(menuLabel.c_str()));
 			comports.push_back(currentComports[indx]);
 		}
+
+		// auto-select a new com-port
+		if (bWasEmpty && comports.size()) {
+			ProcessControl.m_sPortName = ValidateComPort(comports[0]);
+			CopySettingsToGUI();
+		}
 	}
 #endif
+}
 
-	return currentComports;
+string ModelViewController::ValidateComPort (const string &port)
+{
+	DetectComPorts();
+
+	// is it a valid port ?
+	for (uint i = 0; i < comports.size(); i++) {
+		if (port == comports[i])
+			return port;
+	}
+	       
+	if (comports.size())
+		return comports[0];
+	else
+		return "No ports found";
 }
 
 void ModelViewController::setSerialSpeed(int s )

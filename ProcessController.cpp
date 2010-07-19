@@ -670,15 +670,9 @@ void ProcessController::LoadXML(XMLElement *e)
 				     "M104 S0.0              ;Heater off\n");
 
 	m_sPortName = getXMLString (x, "m_sPortName", "");
-	if (m_sPortName.length() == 0)
-	{
-		std::ostringstream port;
-		if ( gui->MVC ) {
-			fprintf (stderr, "LOAD Com-Port ! '%s'\n", m_sPortName.c_str());
-			vector<string> comportlist = gui->MVC->CheckComPorts (true);
-			m_sPortName = comportlist.size() > 0 ? comportlist[comportlist.size()-1] : "";
-		}
-	}
+	if ( gui && gui->MVC )
+		  m_sPortName = gui->MVC->ValidateComPort( m_sPortName );
+
 	y = getVariable (x, "ValidateConnection", "1");
 	if(y)	m_bValidateConnection = (bool)y->GetValueInt();
 
