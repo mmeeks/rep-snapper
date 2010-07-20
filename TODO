@@ -1,4 +1,4 @@
-* openSUSE build service ... [!?]
+* use the openSUSE build service ... [!?]
 
 GCode:
 	Printer Temperature:
@@ -8,10 +8,6 @@ GCode:
 			+ M109 - set temp & wait for it ...
 		+ why not move to the purge location ?
 
-	Raft layers:
-		+ bad news - look buggy ...
-
-
 	GCode:
 		+ add mimimal comments: 'new layer'
 		+ 'start outline %d', 'start in-fill'
@@ -20,15 +16,9 @@ GCode:
 			+ it is not changing, so ... why bother ?
 		+ Why F70 and not F5 during the G1 Z command ?
 
-
-	Reversing extruder:
-		+ we *need* a G92 E0 between each layuer [!]
-		+ but not each foundation layer ?
-
 	Temperature Ratio:
 		+ does it work ? why set to 1.90 ? [ most odd ! ]
 		+ no M codes generated to change the raft temperature [!]
-
 
 
 Using it to generage gcode:
@@ -36,10 +26,6 @@ Using it to generage gcode:
 	EbiDK: not
 	Rickta59 is ...
 	Logick: is ...	
-
-
-Search for USB ttys on Linux ... :-)
-
 
 /* 
 
@@ -54,24 +40,12 @@ Default to:
 
 [ Rafts dont work: ]
 
-Don't reverse at top speed for ages & break my extruder
-
 Have a 'calculate steps_per_mm' for geared extruders etc.
 
 * Fltk / gtk ...
 
-* Threading:
-	+ we should use the:
-		Fl::awake() method to throw stuff to the mainloop ...
-
-
-* Queue up patches removing affl headers - un-needed ... clean that up
-
-* Queue up file-chooser pieces ...
-
-
 ** sooo ! ...
-	+ it seems the movements are all clocked off the extruder:
+	+ it seems the movements are all clocked off the extruder, or 'feed rate'
 		+ there is a mm/minute metric there ...
 	+ Hence, 'E22.4' - will extrude 22.4 mm - as it moves A->B
 
@@ -92,16 +66,28 @@ Will set a feedrate of 1500 mm/minute, then do the move described above at that 
 G1 F1500
 G1 X90.6 Y13.8 E22.4 F3000
 
-Will set a feedrate of 1500 mm/minute, then do the move described above accelerating to a feedrate of 3000 mm/minute as it does so. The extrusion will accelerate along with the X, Y movement so everything stays synchronized.
+Will set a feedrate of 1500 mm/minute, then do the move described
+above accelerating to a feedrate of 3000 mm/minute as it does so. The
+extrusion will accelerate along with the X, Y movement so everything
+stays synchronized.
 
-RepRap thus treats feedrate as simply another variable (like X, Y, Z, and E) to be linearly interpolated. This gives complete control over accelerations and decelerations in a way that ensures that everything moves together and the right volume of material is extruded at all points.
+RepRap thus treats feedrate as simply another variable (like X, Y, Z,
+and E) to be linearly interpolated. This gives complete control over
+accelerations and decelerations in a way that ensures that everything
+moves together and the right volume of material is extruded at all
+points.
 
-The first example shows how to get a constant-speed movement. The second how to accelerate or decelerate. Thus
+The first example shows how to get a constant-speed movement. The
+second how to accelerate or decelerate. Thus
 
 G1 F1500
 G1 X90.6 Y13.8 E22.4 F3000
 G1 X80 Y20 E36 F1500
 
-Will do the first movement accelerating as before, and the second decelerating from 3000 mm/minute back to 1500 mm/minute.
+Will do the first movement accelerating as before, and the second
+decelerating from 3000 mm/minute back to 1500 mm/minute.
 
-To reverse the extruder by a given amount (for example to reduce its internal pressure while it does an in-air movement so that it doesn't dribble) simply use G1 to send an E value that is less than the currently extruded length. 
+To reverse the extruder by a given amount (for example to reduce its
+internal pressure while it does an in-air movement so that it doesn't
+dribble) simply use G1 to send an E value that is less than the
+currently extruded length.
