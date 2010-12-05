@@ -78,7 +78,10 @@ MAIN_OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(MAIN_SOURCES)))) $(
 TEST_OBJECTS=$(subst .c,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(TEST_SOURCES)))) $(SHARED_OBJECTS)
 
 
-all: $(EXECUTABLE)
+all:
+	@echo "This is obsolete, see the README_*"
+
+# all: $(EXECUTABLE)
 
 $(EXECUTABLE): poly_lib $(MAIN_OBJECTS)
 	$(CXX) ${INC} $(MAIN_OBJECTS) $(LDFLAGS) -o $@
